@@ -1,0 +1,58 @@
+name: Clean legacy CAFASSO assignments UI
+on:
+  push:
+    paths:
+      - '.github/workflows/cleanup-admin-assignments.yml'
+permissions:
+  contents: write
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Remove legacy assignments code
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('cafasso-wix-import/admin.html')
+          s=p.read_text(encoding='utf-8')
+
+          # Remove the obsolete inline assignments panel now that assignments.html is the canonical UI.
+          s,n=re.subn(r'<section id="asignaciones" class="panel">.*?</section>', '', s, count=1, flags=re.S)
+          assert n==1, 'Legacy assignments section not found'
+
+          # Stop rendering the removed panel.
+          s=s.replace(';renderAssignments();renderCourses()', ';renderCourses()')
+
+          # Remove obsolete renderer.
+          s,n=re.subn(r'function renderAssignments\(\)\{.*?\}function renderCourses\(\)', 'function renderCourses()', s, count=1, flags=re.S)
+          assert n==1, 'renderAssignments function not found'
+
+          # Remove obsolete assignment modal branch and target helper.
+          s,n=re.subn(r'if\(mode===\'assignment\'\)\{.*?\}\$\(\'modalFields\'\)', "$('modalFields')", s, count=1, flags=re.S)
+          assert n==1, 'Assignment modal branch not found'
+          s,n=re.subn(r';if\(mode===\'assignment\'\)\{fillTargets\(\);\$\(\'mTargetType\'\)\.onchange=fillTargets\}\}function fillTargets\(\)\{.*?\}function closeModal\(\)', '}function closeModal()', s, count=1, flags=re.S)
+          assert n==1, 'Assignment target helper not found'
+
+          # Remove obsolete save branch.
+          s=s.replace(";if(modalMode==='assignment')body={action:'saveAssignment',assignment:{_id:editing._id,courseId:$('mCourse').value,targetType:$('mTargetType').value,targetId:$('mTarget').value,active:$('mActive').value==='true'}}", '')
+
+          # Remove edit/delete assignment handlers from the admin page.
+          s,n=re.subn(r";const a=e\.target\.closest\('\[data-edit-assignment\]'\);if\(a\)return openModal\('assignment',state\.assignments\.find\(x=>x\._id===a\.dataset\.editAssignment\)\|\|\{\}\);const d=e\.target\.closest\('\[data-del-assignment\]'\);if\(d&&confirm\('¿Quitar esta asignación\?'\)\)return mutate\(\{action:'deleteAssignment',id:d\.dataset\.delAssignment\}\)", '', s, count=1)
+          assert n==1, 'Assignment click handlers not found'
+
+          # Remove obsolete add button binding.
+          s=s.replace(";$('addAssignment').onclick=()=>openModal('assignment',{})", '')
+
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cafasso-wix-import/admin.html
+          git commit -m "Remove legacy assignments UI from admin"
+          git push
