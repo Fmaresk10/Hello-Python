@@ -1,4 +1,4 @@
-name: Clean legacy CAFASSO groups UI
+name: Finalize CAFASSO admin cleanup
 on:
   push:
     paths:
@@ -12,41 +12,35 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Remove legacy groups code
+      - name: Final cleanup and hash navigation
         run: |
           python - <<'PY'
           from pathlib import Path
-          import re
           p=Path('cafasso-wix-import/admin.html')
           s=p.read_text(encoding='utf-8')
 
-          # Remove the obsolete inline groups panel. grupos.html is now canonical.
-          s,n=re.subn(r'<section id="grupos" class="panel">.*?</section>', '', s, count=1, flags=re.S)
-          assert n==1, 'Legacy groups section not found'
+          # Remove stale initial-only arrays from the old inline screens.
+          old="let state={users:[],groups:[],courses:[],assignments:[],progress:[],submissions:[],summary:{}};"
+          new="let state={users:[],groups:[],courses:[],summary:{}};"
+          assert old in s, 'Old state initializer not found'
+          s=s.replace(old,new,1)
 
-          # Stop rendering the removed groups panel.
-          s=s.replace(';renderGroups();renderCourses()', ';renderCourses()')
+          # Make tab navigation reusable and keep the URL hash in sync.
+          old_handler="const tab=e.target.closest('[data-tab]');if(tab){document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===tab));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===tab.dataset.tab));window.scrollTo(0,0);return}"
+          new_handler="const tab=e.target.closest('[data-tab]');if(tab){activateTab(tab.dataset.tab,true);return}"
+          assert old_handler in s, 'Old tab click handler not found'
+          s=s.replace(old_handler,new_handler,1)
 
-          # Remove obsolete groups renderer.
-          s,n=re.subn(r'function renderGroups\(\)\{.*?\}function renderCourses\(\)', 'function renderCourses()', s, count=1, flags=re.S)
-          assert n==1, 'renderGroups function not found'
+          marker="document.addEventListener('click',async e=>{"
+          helper="function activateTab(id,updateHash=false){const allowed=['resumen','usuarios','cursos'];const target=allowed.includes(id)?id:'resumen';document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===target));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===target));if(updateHash)history.replaceState(null,'','#'+target);window.scrollTo(0,0)}"
+          assert marker in s, 'Click listener marker not found'
+          s=s.replace(marker,helper+marker,1)
 
-          # Remove obsolete group modal branch, but keep group data available for animador filters/forms.
-          s,n=re.subn(r"if\(mode==='group'\)\{.*?\}if\(mode==='assignment'\)", "if(mode==='assignment')", s, count=1, flags=re.S)
-          if n==0:
-              # Assignments branch was already removed in prior cleanup; remove group branch up to modalFields.
-              s,n=re.subn(r"if\(mode==='group'\)\{.*?\}\$\('modalFields'\)", "$('modalFields')", s, count=1, flags=re.S)
-          assert n==1, 'Group modal branch not found'
-
-          # Remove obsolete save branch.
-          s=s.replace(";if(modalMode==='group')body={action:'saveGroup',group:{_id:editing._id,name:$('mName').value,description:$('mDesc').value,active:$('mActive').value==='true'}}", '')
-
-          # Remove edit-group click handler.
-          s,n=re.subn(r";const g=e\.target\.closest\('\[data-edit-group\]'\);if\(g\)return openModal\('group',state\.groups\.find\(x=>x\._id===g\.dataset\.editGroup\)\|\|\{\}\)", '', s, count=1)
-          assert n==1, 'Group click handler not found'
-
-          # Remove obsolete add button binding.
-          s=s.replace(";$('addGroup').onclick=()=>openModal('group',{})", '')
+          # Honor links such as admin.html#cursos when returning from the course editor.
+          old_end=";$('importBtn').onclick=()=>location.href='./importar-usuarios.html';load();</script>"
+          new_end=";$('importBtn').onclick=()=>location.href='./importar-usuarios.html';activateTab(location.hash.replace('#','')||'resumen');window.addEventListener('hashchange',()=>activateTab(location.hash.replace('#','')||'resumen'));load();</script>"
+          assert old_end in s, 'Admin startup marker not found'
+          s=s.replace(old_end,new_end,1)
 
           p.write_text(s,encoding='utf-8')
           PY
@@ -55,5 +49,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add cafasso-wix-import/admin.html
-          git commit -m "Remove legacy groups UI from admin"
+          git commit -m "Finalize CAFASSO admin cleanup and tab navigation"
           git push
