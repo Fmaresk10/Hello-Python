@@ -17,3 +17,4 @@ jobs:
           git add cafasso-wix-import/animadores.html cafasso-wix-import/grupos.html cafasso-wix-import/asignaciones.html
           git diff --cached --quiet || git commit -m "Adapt admin core screens for mobile"
           git push
+# triggered
