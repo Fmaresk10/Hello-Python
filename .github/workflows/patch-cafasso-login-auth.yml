@@ -1,0 +1,25 @@
+name: Patch CAFASSO login auth
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/patch-cafasso-login-auth.yml'
+      - '.github/scripts/patch_cafasso_login_auth.py'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python .github/scripts/patch_cafasso_login_auth.py
+      - run: |
+          git config user.name "CAFASSO Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add cafasso-wix-import/login.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Authenticate CAFASSO access check with Wix member token"
+          git push
