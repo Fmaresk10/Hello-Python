@@ -1,0 +1,43 @@
+name: Install CAFASSO auth guard
+on:
+  push:
+    paths:
+      - '.github/workflows/install-cafasso-auth-guard.yml'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Add shared role guard to protected pages
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          pages=['index.html','admin.html','formador.html','animadores.html','grupos.html','grupo.html','asignaciones.html','importar-usuarios.html','animador.html','curso-editor.html','entregas.html','reportes.html']
+          root=Path('cafasso-wix-import')
+          tag='<script src="./auth-guard.js"></script>'
+          for name in pages:
+            p=root/name
+            if not p.exists():
+              continue
+            s=p.read_text(encoding='utf-8')
+            if tag in s:
+              continue
+            if '<head>' in s:
+              s=s.replace('<head>','<head>'+tag,1)
+            elif '</head>' in s:
+              s=s.replace('</head>',tag+'</head>',1)
+            else:
+              raise SystemExit(f'No head found in {name}')
+            p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit protected pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+Fmaresk10@users.noreply.github.com"
+          git add cafasso-wix-import
+          git commit -m "Protect CAFASSO pages with shared role guard" || exit 0
+          git push
