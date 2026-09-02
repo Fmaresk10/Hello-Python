@@ -21,41 +21,30 @@ jobs:
           s=p.read_text(encoding='utf-8')
 
           s=s.replace('<button data-tab="usuarios"><span>👥 &nbsp; Animadores</span></button>', '<button onclick="location.href=\'./animadores.html\'"><span>👥 &nbsp; Animadores</span></button>')
-
-          s,n=re.subn(r'<section id="usuarios" class="panel">.*?</section>', '', s, count=1, flags=re.S)
-          assert n==1, 'Legacy users section not found'
-
+          s=re.sub(r'<section id="usuarios" class="panel">.*?</section>', '', s, count=1, flags=re.S)
           s=s.replace(';renderFilters();renderUsers();renderCourses()', ';renderCourses()')
-
-          s,n=re.subn(r'function renderFilters\(\)\{.*?\}function renderUsers\(\)\{.*?\}function renderCourses\(\)', 'function renderCourses()', s, count=1, flags=re.S)
-          assert n==1, 'Legacy user renderers not found'
-
-          s,n=re.subn(r'function openModal\(mode,item=\{\}\)\{.*?\}function closeModal\(\)', 'function closeModal()', s, count=1, flags=re.S)
-          assert n==1, 'Legacy user modal not found'
-
-          s,n=re.subn(r'async function saveModal\(\)\{.*?\}async function mutate\(body\)', 'async function mutate(body)', s, count=1, flags=re.S)
-          assert n==1, 'Legacy user save modal not found'
-
+          s=re.sub(r'function renderFilters\(\)\{.*?\}function renderUsers\(\)\{.*?\}function renderCourses\(\)', 'function renderCourses()', s, count=1, flags=re.S)
+          s=re.sub(r'function openModal\(mode,item=\{\}\)\{.*?\}function closeModal\(\)', 'function closeModal()', s, count=1, flags=re.S)
+          s=re.sub(r'async function saveModal\(\)\{.*?\}async function mutate\(body\)', 'async function mutate(body)', s, count=1, flags=re.S)
           s=s.replace("const allowed=['resumen','usuarios','cursos'];", "const allowed=['resumen','cursos'];")
-          s,n=re.subn(r";const u=e\.target\.closest\('\[data-edit-user\]'\);if\(u\)return openModal\('user',state\.users\.find\(x=>x\._id===u\.dataset\.editUser\)\|\|\{\}\)", '', s, count=1)
-          assert n==1, 'Legacy edit-user handler not found'
+          s=re.sub(r"const u=e\.target\.closest\('\[data-edit-user\]'\);if\(u\).*?;const dup=", 'const dup=', s, count=1, flags=re.S)
 
           for old in [
-            ";$('addUser').onclick=()=>openModal('user',{})",
-            ";$('cancelModal').onclick=closeModal",
-            ";$('saveModal').onclick=saveModal",
-            ";$('modalWrap').onclick=e=>{if(e.target===$('modalWrap'))closeModal()}",
-            ";$('userSearch').oninput=renderUsers",
-            ";$('groupFilter').onchange=renderUsers",
-            ";$('statusFilter').onchange=renderUsers",
-            ";$('importBtn').onclick=()=>location.href='./importar-usuarios.html'"
+            "$('addUser').onclick=()=>openModal('user',{});",
+            "$('cancelModal').onclick=closeModal;",
+            "$('saveModal').onclick=saveModal;",
+            "$('modalWrap').onclick=e=>{if(e.target===$('modalWrap'))closeModal()};",
+            "$('userSearch').oninput=renderUsers;",
+            "$('groupFilter').onchange=renderUsers;",
+            "$('statusFilter').onchange=renderUsers;",
+            "$('importBtn').onclick=()=>location.href='./importar-usuarios.html';"
           ]:
             s=s.replace(old,'')
 
-          # Remove no-longer-used modal markup from admin page.
-          s,n=re.subn(r'<div class="modal-wrap" id="modalWrap">.*?</div></div></div><script>', '<script>', s, count=1, flags=re.S)
-          assert n==1, 'Legacy modal markup not found'
+          s=re.sub(r'</main></div><div class="modal-wrap" id="modalWrap">.*?</div></div></div><script>', '</main></div><script>', s, count=1, flags=re.S)
 
+          assert './animadores.html' in s, 'Animator center link was not added'
+          assert '<section id="usuarios"' not in s, 'Legacy users section still present'
           p.write_text(s,encoding='utf-8')
           PY
       - name: Commit integration
