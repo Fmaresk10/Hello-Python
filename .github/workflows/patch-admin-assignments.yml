@@ -1,0 +1,43 @@
+name: Integrate CAFASSO assignments center
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-admin-assignments.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-admin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update Assignments menu link
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('cafasso-wix-import/admin.html')
+          text = path.read_text(encoding='utf-8')
+          old = '<button data-tab="asignaciones"><span>↗ &nbsp; Asignaciones</span></button>'
+          new = '<button onclick="location.href=\'./asignaciones.html\'"><span>↗ &nbsp; Asignaciones</span></button>'
+          if old not in text:
+              if new in text:
+                  print('Assignments menu is already integrated.')
+              else:
+                  raise SystemExit('Expected Assignments menu button was not found.')
+          else:
+              path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Commit change
+        run: |
+          if git diff --quiet; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add cafasso-wix-import/admin.html
+          git commit -m 'Link admin assignments menu to assignments center'
+          git push
