@@ -1,7 +1,6 @@
 (()=>{
   const CLIENT_ID='fcef70e2-7f6f-4fa8-b3a8-f673c0c74f59';
   const TOKEN_URL='https://www.wixapis.com/oauth2/token';
-  const INVOKE='https://www.wixapis.com/velo/v1/http/invoke/';
   const SITE_API=/^https:\/\/federicomaresca\.wixstudio\.com\/my-site-1\/_functions\/([A-Za-z0-9_]+)(\?.*)?$/;
   const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
   const publicPages=new Set(['login.html']);
@@ -43,17 +42,12 @@
 
   window.fetch=async function(input,init={}){
     const raw=typeof input==='string'?input:(input&&input.url)||'';
-    const match=raw.match(SITE_API);
-    if(!match)return nativeFetch(input,init);
+    if(!SITE_API.test(raw))return nativeFetch(input,init);
     try{
       const a=await validAuth();
       const headers=new Headers(init.headers||(input instanceof Request?input.headers:undefined));
       headers.set('Authorization',a.accessToken);
-      const url=INVOKE+encodeURIComponent(match[1])+(match[2]||'');
-      const options={...init,headers};
-      const res=await nativeFetch(url,options);
-      if(res.status===401){login();throw new Error('Tu sesión venció. Volvé a ingresar.');}
-      return res;
+      return await nativeFetch(input,{...init,headers});
     }catch(e){
       if(/sesión|renovar/i.test(String(e?.message||'')))login();
       throw e;
