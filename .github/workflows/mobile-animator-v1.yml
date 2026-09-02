@@ -1,17 +1,19 @@
 name: CAFASSO mobile animator v1
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 permissions:
   contents: write
 jobs:
   patch:
-    if: github.actor != 'github-actions[bot]'
+    if: "${{ github.actor != 'github-actions[bot]' }}"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Patch animator mobile experience
+        shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -19,71 +21,20 @@ jobs:
           p=Path('cafasso-wix-import/index.html')
           s=p.read_text()
           marker='/* CAFASSO MOBILE APP V1 */'
-          css=r'''
+          css='''
 /* CAFASSO MOBILE APP V1 */
 .mobile-head,.mobile-nav,.mobile-sheet{display:none}
 @media(max-width:680px){
-  body{padding-bottom:78px;background:#F8F3EB}
-  .shell{display:block;min-height:100vh}
-  .side{display:none!important}
-  .mobile-head{display:flex;position:sticky;top:0;z-index:40;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(135deg,var(--navy),#0A2440);padding:10px 14px;min-height:66px;box-shadow:0 5px 18px rgba(10,36,64,.16)}
-  .mobile-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;min-width:0}
-  .mobile-brand img{width:34px;height:40px;object-fit:contain}
-  .mobile-brand b{display:block;font:700 20px Georgia,serif;line-height:1}
-  .mobile-brand small{display:block;font-size:9px;letter-spacing:.08em;opacity:.72;margin-top:4px;white-space:nowrap}
-  .mobile-user{border:0;background:transparent;padding:0;display:flex;align-items:center;cursor:pointer}
-  .mobile-user .avatar{width:40px;height:40px;border:2px solid rgba(255,255,255,.45);box-shadow:0 2px 8px rgba(0,0,0,.12)}
-  main{padding:18px 14px 26px;max-width:none}
-  .top{margin-bottom:18px;gap:12px;align-items:center;flex-direction:row}
-  .top h1{font-size:29px;line-height:1.08}
-  .top p{font-size:13px;line-height:1.45}
-  .top .pill{display:none}
-  .hero{padding:22px 20px;border-radius:22px;gap:16px}
-  .hero h2{font-size:31px;line-height:1.08;margin:8px 0 10px}
-  .hero p{font-size:14px;line-height:1.55}
-  .quote{padding:16px;border-radius:16px}
-  .quote strong{font-size:20px}
-  .section{margin-top:24px}
-  .section h3{font-size:24px;margin-bottom:12px}
-  .courses{grid-template-columns:1fr;gap:12px}
-  .card{border-radius:18px;padding:17px}
-  .course h4{font-size:18px}
-  .course p{line-height:1.5}
-  .course .btn{min-height:44px;padding:11px 14px}
-  .stats{grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
-  .stat{padding:14px;border-radius:14px;min-height:88px}
-  .stat strong{font-size:25px;overflow-wrap:anywhere}
-  .stat span{font-size:12px;color:var(--muted)}
-  .module-detail{max-width:none}
-  .module{display:block;margin-bottom:10px}
-  .module>div:first-child{margin-bottom:14px}
-  .module-actions{display:grid;grid-template-columns:1fr;justify-content:stretch;gap:8px}
-  .module-actions .badge{text-align:center}
-  .module-actions .btn{width:100%;min-height:44px}
-  .block h4{font-size:19px}
-  .block-text{font-size:15px;line-height:1.65}
-  .activity{padding:14px}
-  .activity textarea{min-height:150px;font-size:16px}
-  .activity-actions,.review-row,.complete-box{display:grid;grid-template-columns:1fr;align-items:stretch}
-  .activity-actions .btn,.review-row .btn,.complete-box .btn{width:100%;min-height:46px}
-  .module-progress{border-radius:14px;padding:13px 14px}
-  .backline{margin-bottom:12px}
-  .backline button{min-height:40px}
-  input,textarea,select,button{touch-action:manipulation}
-  input[type=password],input[type=email],input[type=text]{font-size:16px!important;min-height:46px}
-  .mobile-nav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(255,253,249,.97);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:7px 7px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -8px 24px rgba(15,45,77,.10)}
-  .mobile-nav button{border:0;background:transparent;color:#647284;border-radius:13px;min-height:54px;padding:5px 3px;display:grid;place-items:center;gap:1px;font:700 10px Inter,system-ui;cursor:pointer}
-  .mobile-nav button .ico{font-size:20px;line-height:1}
-  .mobile-nav button.active{background:#FFF4CC;color:var(--navy)}
-  .mobile-more{position:fixed;inset:0;z-index:80;background:rgba(10,25,45,.38);display:none;align-items:flex-end;padding:14px}
-  .mobile-more.show{display:flex}
-  .mobile-sheet{display:block;width:100%;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));box-shadow:0 22px 70px rgba(10,25,45,.28)}
-  .mobile-sheet-head{display:flex;align-items:center;justify-content:space-between;padding:8px 8px 12px}
-  .mobile-sheet-head strong{font:22px Georgia,serif;color:var(--navy)}
-  .mobile-sheet-head button{border:0;background:#F2ECE3;border-radius:50%;width:36px;height:36px;font-size:18px}
-  .mobile-sheet a,.mobile-sheet>button:not(.close){display:flex;width:100%;align-items:center;gap:12px;text-decoration:none;border:0;background:transparent;color:var(--navy);padding:14px;border-radius:14px;font:800 14px Inter,system-ui;text-align:left}
-  .mobile-sheet a:active,.mobile-sheet>button:not(.close):active{background:#F7F1E8}
-  .mobile-sheet .danger{color:var(--red)}
+body{padding-bottom:78px;background:#F8F3EB}.shell{display:block;min-height:100vh}.side{display:none!important}
+.mobile-head{display:flex;position:sticky;top:0;z-index:40;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(135deg,var(--navy),#0A2440);padding:10px 14px;min-height:66px;box-shadow:0 5px 18px rgba(10,36,64,.16)}
+.mobile-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;min-width:0}.mobile-brand img{width:34px;height:40px;object-fit:contain}.mobile-brand b{display:block;font:700 20px Georgia,serif;line-height:1}.mobile-brand small{display:block;font-size:9px;letter-spacing:.08em;opacity:.72;margin-top:4px;white-space:nowrap}.mobile-user{border:0;background:transparent;padding:0;display:flex;align-items:center;cursor:pointer}.mobile-user .avatar{width:40px;height:40px;border:2px solid rgba(255,255,255,.45);box-shadow:0 2px 8px rgba(0,0,0,.12)}
+main{padding:18px 14px 26px;max-width:none}.top{margin-bottom:18px;gap:12px;align-items:center;flex-direction:row}.top h1{font-size:29px;line-height:1.08}.top p{font-size:13px;line-height:1.45}.top .pill{display:none}
+.hero{padding:22px 20px;border-radius:22px;gap:16px}.hero h2{font-size:31px;line-height:1.08;margin:8px 0 10px}.hero p{font-size:14px;line-height:1.55}.quote{padding:16px;border-radius:16px}.quote strong{font-size:20px}.section{margin-top:24px}.section h3{font-size:24px;margin-bottom:12px}
+.courses{grid-template-columns:1fr;gap:12px}.card{border-radius:18px;padding:17px}.course h4{font-size:18px}.course p{line-height:1.5}.course .btn{min-height:44px;padding:11px 14px}.stats{grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.stat{padding:14px;border-radius:14px;min-height:88px}.stat strong{font-size:25px;overflow-wrap:anywhere}.stat span{font-size:12px;color:var(--muted)}
+.module-detail{max-width:none}.module{display:block;margin-bottom:10px}.module>div:first-child{margin-bottom:14px}.module-actions{display:grid;grid-template-columns:1fr;justify-content:stretch;gap:8px}.module-actions .badge{text-align:center}.module-actions .btn{width:100%;min-height:44px}.block h4{font-size:19px}.block-text{font-size:15px;line-height:1.65}.activity{padding:14px}.activity textarea{min-height:150px;font-size:16px}.activity-actions,.review-row,.complete-box{display:grid;grid-template-columns:1fr;align-items:stretch}.activity-actions .btn,.review-row .btn,.complete-box .btn{width:100%;min-height:46px}.module-progress{border-radius:14px;padding:13px 14px}.backline{margin-bottom:12px}.backline button{min-height:40px}
+input,textarea,select,button{touch-action:manipulation}input[type=password],input[type=email],input[type=text]{font-size:16px!important;min-height:46px}
+.mobile-nav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(255,253,249,.97);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:7px 7px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -8px 24px rgba(15,45,77,.10)}.mobile-nav button{border:0;background:transparent;color:#647284;border-radius:13px;min-height:54px;padding:5px 3px;display:grid;place-items:center;gap:1px;font:700 10px Inter,system-ui;cursor:pointer}.mobile-nav button .ico{font-size:20px;line-height:1}.mobile-nav button.active{background:#FFF4CC;color:var(--navy)}
+.mobile-more{position:fixed;inset:0;z-index:80;background:rgba(10,25,45,.38);display:none;align-items:flex-end;padding:14px}.mobile-more.show{display:flex}.mobile-sheet{display:block;width:100%;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));box-shadow:0 22px 70px rgba(10,25,45,.28)}.mobile-sheet-head{display:flex;align-items:center;justify-content:space-between;padding:8px 8px 12px}.mobile-sheet-head strong{font:22px Georgia,serif;color:var(--navy)}.mobile-sheet-head button{border:0;background:#F2ECE3;border-radius:50%;width:36px;height:36px;font-size:18px}.mobile-sheet a,.mobile-sheet>button:not(.close){display:flex;width:100%;align-items:center;gap:12px;text-decoration:none;border:0;background:transparent;color:var(--navy);padding:14px;border-radius:14px;font:800 14px Inter,system-ui;text-align:left}.mobile-sheet .danger{color:var(--red)}
 }
 '''
           if marker not in s:
@@ -93,7 +44,7 @@ jobs:
           repl=new_layout+"\n  function top(title,sub)"
           s2,n=re.subn(pat,repl,s,count=1,flags=re.S)
           if n!=1:
-              raise SystemExit(f'layout patch failed: {n}')
+              raise SystemExit('layout patch failed: %s' % n)
           p.write_text(s2)
           PY
           git config user.name github-actions[bot]
