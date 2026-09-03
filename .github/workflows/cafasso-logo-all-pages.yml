@@ -1,0 +1,41 @@
+name: CAFASSO logo all pages
+
+on:
+  push:
+    paths:
+      - '.github/workflows/cafasso-logo-all-pages.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-logo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace legacy crest across CAFASSO
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path('cafasso-wix-import')
+          old = 'https://static.wixstatic.com/media/47bf07_3bf4fe6421f34a05990caa87c98fffc2~mv2.webp'
+          new = './cafasso-mark.svg'
+          changed = []
+
+          for p in root.glob('*.html'):
+              s = p.read_text(encoding='utf-8')
+              ns = s.replace(old, new)
+              if ns != s:
+                  p.write_text(ns, encoding='utf-8')
+                  changed.append(str(p))
+
+          print('Updated:', ', '.join(changed) if changed else 'none')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add cafasso-wix-import/*.html
+          git diff --cached --quiet || git commit -m "Use CAFASSO logo throughout platform"
+          git push
