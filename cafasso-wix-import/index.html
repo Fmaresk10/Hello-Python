@@ -96,7 +96,7 @@ input,textarea,select,button{touch-action:manipulation}input[type=password],inpu
   var COURSE_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
   var PROGRESS_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoProgress';
   var SUBMISSION_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoSubmission';
-  var CREST='https://static.wixstatic.com/media/47bf07_3bf4fe6421f34a05990caa87c98fffc2~mv2.webp';
+  var CREST='./cafasso-mark.svg';
   var session=null,data=null,myCourses=[],selectedCourse=null,selectedModule=null,courseSubmissions=[];
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c];});}
   function readSession(){try{return JSON.parse(localStorage.getItem('cafassoSession')||'null');}catch(e){return null;}}
