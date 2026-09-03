@@ -149,5 +149,6 @@ input,textarea,select,button{touch-action:manipulation}input[type=password],inpu
   window.addEventListener('popstate',function(){if(!data||!session)return;var view=(location.hash||'#inicio').slice(1);if(view==='curso'&&!selectedCourse)view='cursos';if(view==='modulo'&&(!selectedCourse||!selectedModule))view='cursos';render(view);});init();
 })();
 </script>
+<script src="./profile-photo.js"></script>
 </body>
 </html>
