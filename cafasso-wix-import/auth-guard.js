@@ -1,7 +1,21 @@
 (()=>{
   const SITE_API=/^https:\/\/federicomaresca\.wixstudio\.com\/my-site-1\/_functions\/([A-Za-z0-9_]+)(\?.*)?$/;
   const MAIL_APP='https://script.google.com/macros/s/AKfycbwwFIjRoNrptAA1_hjgE-gkX3lxxY1yjv6AzNpohH5Csx37VbAR-sjCLm9apnyAha0/exec';
+  const LEGACY_CREST='47bf07_3bf4fe6421f34a05990caa87c98fffc2';
+  const BRAND_MARK='./cafasso-mark.svg';
   const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
+
+  function applyBranding(){
+    document.querySelectorAll('img').forEach(img=>{
+      if(String(img.getAttribute('src')||'').includes(LEGACY_CREST)){
+        img.src=BRAND_MARK;
+        img.alt='CAFASSO';
+      }
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyBranding,{once:true});
+  else applyBranding();
+
   if(page==='login.html')return;
 
   function read(key){try{return JSON.parse(localStorage.getItem(key)||'null')}catch(e){return null}}
@@ -72,4 +86,4 @@
     return res;
   };
 })();
-// CAFASSO deploy marker: welcome-email-on-new-animator-and-formador
+// CAFASSO deploy marker: new-logo-and-welcome-email
