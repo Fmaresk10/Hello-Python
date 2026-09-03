@@ -65,6 +65,7 @@
 
   function decorateAvatars(){
     const photo=String(session.user?.avatarData||'');
+    const fallback=String(session.user?.name||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'?';
     document.querySelectorAll('.avatar').forEach(el=>{
       if(photo){
         el.classList.add('cafasso-photo');
@@ -73,6 +74,7 @@
       }else{
         el.classList.remove('cafasso-photo');
         el.style.backgroundImage='';
+        el.textContent=fallback;
       }
     });
   }
@@ -125,7 +127,7 @@
   }
 
   async function saveProfilePhoto(avatarData){
-    const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'updateProfilePhoto',avatarData})});
+    const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saveAvatar',avatarData})});
     const j=await r.json();
     if(!r.ok||!j.ok)throw new Error(j.error||'No se pudo guardar la foto.');
     saveSessionUser(j.user||{avatarData});
