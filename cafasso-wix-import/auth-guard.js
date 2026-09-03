@@ -46,6 +46,9 @@
     style.id='cafassoRolePreviewStyles';
     style.textContent=`
       #cafasso-role-preview-btn{position:fixed;right:18px;bottom:18px;z-index:120;border:0;border-radius:999px;background:#0F2D4D;color:#fff;padding:11px 16px;font:800 13px Inter,system-ui;box-shadow:0 10px 28px rgba(15,45,77,.24);cursor:pointer}
+      #cafasso-role-preview-btn.admin-inline{position:static;right:auto;bottom:auto;box-shadow:none;background:#F2C94C;color:#0F2D4D;border-radius:12px;padding:10px 13px}
+      .cafasso-admin-preview-entry{width:100%;border:0;background:rgba(242,201,76,.16);color:#F7D276;text-align:left;padding:12px 13px;border-radius:13px;font:800 14px Inter,system-ui;cursor:pointer}
+      .cafasso-admin-preview-entry:hover{background:rgba(242,201,76,.24)}
       #cafasso-role-preview-overlay{position:fixed;inset:0;z-index:140;background:rgba(10,25,45,.48);display:none;place-items:center;padding:18px}
       #cafasso-role-preview-overlay.show{display:grid}
       .cafasso-role-preview-modal{width:min(470px,100%);background:#FFFDF9;border:1px solid #E8DCCB;border-radius:24px;padding:23px;box-shadow:0 24px 70px rgba(10,25,45,.28);color:#11233A;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -57,7 +60,7 @@
       html[data-cafasso-preview-role] body{padding-top:42px!important}
       html[data-cafasso-preview-role="animador"] a[href*="admin.html"],html[data-cafasso-preview-role="animador"] a[href*="formador.html"],html[data-cafasso-preview-role="animador"] a[href*="entregas.html"],html[data-cafasso-preview-role="animador"] a[href*="reportes.html"],html[data-cafasso-preview-role="animador"] a[href*="animadores.html"],html[data-cafasso-preview-role="animador"] a[href*="grupos.html"],html[data-cafasso-preview-role="animador"] a[href*="asignaciones.html"]{display:none!important}
       html[data-cafasso-preview-role="formador"] a[href*="admin.html"],html[data-cafasso-preview-role="formador"] a[href*="animadores.html"],html[data-cafasso-preview-role="formador"] a[href*="grupos.html"],html[data-cafasso-preview-role="formador"] a[href*="asignaciones.html"],html[data-cafasso-preview-role="formador"] a[href*="importar-usuarios.html"]{display:none!important}
-      @media(max-width:680px){#cafasso-role-preview-btn{right:12px;bottom:86px;padding:10px 13px}.cafasso-role-preview-modal{padding:19px;border-radius:21px}#cafasso-role-preview-bar{justify-content:space-between}}
+      @media(max-width:680px){#cafasso-role-preview-btn{right:12px;bottom:86px;padding:10px 13px}.cafasso-role-preview-modal{padding:19px;border-radius:21px}#cafasso-role-preview-bar{justify-content:space-between}.cafasso-admin-preview-entry{min-height:46px}}
     `;
     document.head.appendChild(style);
 
@@ -82,6 +85,26 @@
       document.body.appendChild(bar);
       bar.querySelector('[data-change-preview]').onclick=open;
       bar.querySelector('[data-exit-preview]').onclick=()=>{let back='';try{back=sessionStorage.getItem('cafassoPreviewReturn')||'';sessionStorage.removeItem('cafassoPreviewReturn');}catch(e){}if(back){location.href=back;return}params.delete('previewRole');const q=params.toString();location.href=location.pathname+(q?'?'+q:'')+location.hash;};
+    }else if(page==='admin.html'&&isAdmin){
+      const menu=document.querySelector('.menu');
+      if(menu){
+        const entry=document.createElement('button');
+        entry.type='button';
+        entry.className='cafasso-admin-preview-entry';
+        entry.innerHTML='<span>👁 &nbsp; Ver como…</span>';
+        entry.onclick=open;
+        menu.appendChild(entry);
+      }
+      const head=document.querySelector('.head');
+      if(head){
+        const btn=document.createElement('button');
+        btn.id='cafasso-role-preview-btn';
+        btn.className='admin-inline';
+        btn.type='button';
+        btn.textContent='👁 Ver como…';
+        btn.onclick=open;
+        head.appendChild(btn);
+      }
     }else{
       const btn=document.createElement('button');
       btn.id='cafasso-role-preview-btn';
@@ -145,4 +168,4 @@
     return res;
   };
 })();
-// CAFASSO deploy marker: role-preview-v1
+// CAFASSO deploy marker: admin-role-preview-entry-v2
