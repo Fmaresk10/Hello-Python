@@ -6,7 +6,7 @@
   const BRAND_MARK='./cafasso-mark.svg';
   const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
   const params0=new URLSearchParams(location.search);
-  const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[c]));
   const json=(storage,key)=>{try{return JSON.parse(storage.getItem(key)||'null')}catch(e){return null}};
 
   function applyBranding(){
@@ -182,9 +182,19 @@
     }else{const b=document.createElement('button');b.id='cafasso-role-preview-btn';b.textContent='👁 Ver como…';b.onclick=open;document.body.appendChild(b)}
   }
 
+  function installAdminDashboard(){
+    if(page!=='admin.html'||!isAdmin||document.getElementById('cafassoAdminDashboardLoader'))return;
+    const s=document.createElement('script');
+    s.id='cafassoAdminDashboardLoader';
+    s.src='./admin-dashboard.js?v=20260903-2';
+    s.defer=true;
+    document.body.appendChild(s);
+  }
+
   if(document.readyState==='loading'){
     document.addEventListener('DOMContentLoaded',installReadOnly,{once:true});
     document.addEventListener('DOMContentLoaded',installPreviewUI,{once:true});
-  }else{installReadOnly();installPreviewUI()}
+    document.addEventListener('DOMContentLoaded',installAdminDashboard,{once:true});
+  }else{installReadOnly();installPreviewUI();installAdminDashboard()}
 })();
-// CAFASSO deploy marker: exact-user-preview-v2
+// CAFASSO deploy marker: admin-dashboard-loader-v3
