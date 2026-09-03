@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-labelledby="title desc">
+  <title id="title">Logo CAFASSO</title>
+  <desc id="desc">Dos personas caminan juntas como símbolo de acompañamiento pastoral.</desc>
+  <g id="acompanamiento" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="76" cy="74" r="17" fill="#FFFFFF"/>
+    <circle cx="143" cy="66" r="17" fill="#F5B91B"/>
+    <path d="M55 112 C69 99 90 98 103 111 C116 125 113 146 104 166 C95 186 91 205 97 224 C101 238 109 252 120 269 L91 269 C75 249 68 228 69 208 C70 188 80 166 82 151 C84 136 73 125 55 112 Z" fill="#FFFFFF"/>
+    <path d="M124 104 C138 91 159 91 172 104 C185 118 182 140 174 160 C166 180 164 199 171 218 C177 233 187 247 201 263 L172 272 C152 254 141 233 138 213 C135 192 144 171 146 155 C148 139 141 122 124 104 Z" fill="#F5B91B"/>
+    <path d="M89 120 C108 105 132 103 151 116" fill="none" stroke="#FFFFFF" stroke-width="13"/>
+    <path d="M151 116 C139 133 120 140 101 134" fill="none" stroke="#F5B91B" stroke-width="11"/>
+  </g>
+  <text x="236" y="215" font-family="URW Bookman, Bookman Old Style, Georgia, serif" font-size="136" font-weight="700" letter-spacing="1" fill="#FFFFFF">CAFASSO</text>
+</svg>
