@@ -69,12 +69,13 @@
     document.querySelectorAll('.avatar').forEach(el=>{
       if(photo){
         el.classList.add('cafasso-photo');
-        el.style.backgroundImage=`url("${photo.replace(/"/g,'%22')}")`;
-        el.textContent='';
+        const bg=`url("${photo.replace(/"/g,'%22')}")`;
+        if(el.style.backgroundImage!==bg)el.style.backgroundImage=bg;
+        if(el.textContent!=='')el.textContent='';
       }else{
         el.classList.remove('cafasso-photo');
-        el.style.backgroundImage='';
-        el.textContent=fallback;
+        if(el.style.backgroundImage)el.style.backgroundImage='';
+        if(el.textContent!==fallback)el.textContent=fallback;
       }
     });
   }
@@ -222,7 +223,5 @@
   function refreshProfileEnhancements(){applyBranding();addProfileStyles();decorateAvatars();addProfileLinks();injectProfilePhotoCard();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refreshProfileEnhancements,{once:true});else refreshProfileEnhancements();
   window.addEventListener('hashchange',()=>setTimeout(refreshProfileEnhancements,0));
-  const observer=new MutationObserver(()=>refreshProfileEnhancements());
-  observer.observe(document.documentElement,{childList:true,subtree:true});
 })();
-// CAFASSO deploy marker: profile-photo-and-branding
+// CAFASSO deploy marker: profile-photo-freeze-fix
