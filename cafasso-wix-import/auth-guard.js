@@ -28,7 +28,8 @@
       if(payload?.action!=='saveUser')return;
       if(!result?.temporaryPassword)return;
       const user=payload?.user||{};
-      if(String(user.role||'Animador')!=='Animador')return;
+      const newRole=String(user.role||'Animador');
+      if(!['Animador','Formador'].includes(newRole))return;
       const name=String(user.name||'').trim();
       const email=String(user.email||'').trim().toLowerCase();
       if(!name||!email)return;
@@ -71,4 +72,4 @@
     return res;
   };
 })();
-// CAFASSO deploy marker: welcome-email-on-new-animator
+// CAFASSO deploy marker: welcome-email-on-new-animator-and-formador
