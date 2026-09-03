@@ -1,0 +1,19 @@
+name: CAFASSO admin mobile finish
+on:
+  push:
+    paths:
+      - '.github/workflows/admin-mobile-finish.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python scripts/patch_admin_mobile_finish.py
+      - run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add cafasso-wix-import/entregas.html cafasso-wix-import/reportes.html
+          git diff --cached --quiet || git commit -m "Adapt deliveries and reports for mobile"
+          git push
