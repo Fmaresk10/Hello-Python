@@ -119,4 +119,13 @@
     s.dataset.cafassoTemplates='1';
     document.body.appendChild(s);
   }
+
+  // Load visual status explanations and course completeness checks.
+  if(!document.querySelector('script[data-cafasso-status-guide]')){
+    const s=document.createElement('script');
+    s.src='./course-editor-status.js?v=20260904-1';
+    s.defer=true;
+    s.dataset.cafassoStatusGuide='1';
+    document.body.appendChild(s);
+  }
 })();
