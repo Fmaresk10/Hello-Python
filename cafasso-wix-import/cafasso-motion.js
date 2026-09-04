@@ -67,7 +67,7 @@
 
   function enhance(root=document){
     const selector='.card,.stat,.panel,.group-card,.course-card,.module-card,.submission-card,.animator-card,.report-card,.cafasso-daily-word';
-    root.querySelectorAll?.(selector).forEach((el,i)=>{
+    root.querySelectorAll?.(selector).forEach(el=>{
       if(seen.has(el))return;
       seen.add(el);
       if(reduce||!observer)return;
@@ -91,11 +91,25 @@
     });
   }
 
+  function installAnimatorHome(){
+    const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
+    if(page!=='index.html'||document.getElementById('cafassoAnimatorHomeLoader'))return;
+    const role=String(document.documentElement.dataset.cafassoRole||'').toLowerCase();
+    const preview=String(document.documentElement.dataset.cafassoPreviewRole||'').toLowerCase();
+    if(role!=='animador'&&preview!=='animador')return;
+    const s=document.createElement('script');
+    s.id='cafassoAnimatorHomeLoader';
+    s.src='./animator-home.js?v=20260904-1';
+    s.defer=true;
+    document.head.appendChild(s);
+  }
+
   function boot(){
     installStyles();
     prepareObserver();
     enhance(document);
     brand();
+    installAnimatorHome();
     const mo=new MutationObserver(mutations=>{
       for(const m of mutations){
         for(const node of m.addedNodes){if(node&&node.nodeType===1){enhance(node);brand();}}
