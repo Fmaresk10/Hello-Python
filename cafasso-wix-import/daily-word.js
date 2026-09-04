@@ -52,24 +52,15 @@
     const style=document.createElement('style');
     style.id=STYLE_ID;
     style.textContent=`
-      .cafasso-daily-word{margin-top:14px;background:#FFFDF9;border:1px solid #E8DCCB;border-radius:18px;padding:16px 18px;box-shadow:0 5px 16px rgba(15,45,77,.045)}
-      .cafasso-dw-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
-      .cafasso-dw-kicker{font-size:9px;letter-spacing:.14em;font-weight:850;color:#9A6B16;text-transform:uppercase}
-      .cafasso-dw-head h3{margin:2px 0 1px;color:#0F2D4D;font:22px/1.08 Georgia,serif;font-weight:400}
-      .cafasso-dw-date{font-size:11px;color:#7A8492;text-transform:capitalize}
-      .cafasso-dw-symbol{width:34px;height:34px;border-radius:11px;background:#FAF7F1;color:#0F2D4D;display:grid;place-items:center;font-size:18px;line-height:1;flex:0 0 auto;border:1px solid #E8DCCB}
-      .cafasso-dw-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(220px,.92fr);gap:10px}
-      .cafasso-dw-gospel{background:#F4F0E8;border:1px solid #E9DECB;color:#0F2D4D;border-radius:14px;padding:14px 15px}
-      .cafasso-dw-gospel small,.cafasso-dw-item small{display:block;font-size:9px;letter-spacing:.11em;font-weight:850;text-transform:uppercase;margin-bottom:4px}
-      .cafasso-dw-gospel small{color:#9A6B16}.cafasso-dw-gospel strong{font:20px/1.15 Georgia,serif;font-weight:400;display:block}
-      .cafasso-dw-gospel p{font-size:12px;color:#66717F;line-height:1.45;margin:7px 0 0;max-width:58ch}
-      .cafasso-dw-list{display:grid;gap:7px}
-      .cafasso-dw-item{background:#FAF7F1;border:1px solid #EEE5D8;border-radius:11px;padding:9px 11px}.cafasso-dw-item small{color:#8B93A0}.cafasso-dw-item strong{color:#0F2D4D;font-size:12.5px;font-weight:750}
-      .cafasso-dw-foot{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:11px;flex-wrap:wrap}
-      .cafasso-dw-season{font-size:11px;color:#7A8492;font-weight:650}
-      .cafasso-dw-link{display:inline-flex;align-items:center;justify-content:center;background:transparent;color:#0F2D4D;text-decoration:none;font-weight:800;border:1px solid #D8C9AF;border-radius:10px;padding:7px 10px;min-height:34px;font-size:11px}
-      .cafasso-dw-link:hover{background:#FFF7D7;border-color:#E1CB74}
-      @media(max-width:680px){.cafasso-daily-word{padding:14px;border-radius:16px;margin-top:12px}.cafasso-dw-head{margin-bottom:10px}.cafasso-dw-head h3{font-size:20px}.cafasso-dw-symbol{width:31px;height:31px;font-size:16px}.cafasso-dw-grid{grid-template-columns:1fr}.cafasso-dw-gospel{padding:13px 14px}.cafasso-dw-gospel strong{font-size:19px}.cafasso-dw-gospel p{font-size:11.5px}.cafasso-dw-foot{display:grid;grid-template-columns:1fr}.cafasso-dw-link{width:100%;min-height:36px}}
+      .cafasso-daily-word{margin-top:14px;background:#FFFDF9;border:1px solid #E8DCCB;border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(15,45,77,.045)}
+      .cafasso-dw-shell{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center}
+      .cafasso-dw-symbol{width:36px;height:36px;border-radius:50%;background:#F7F1E8;border:1px solid #E8DCCB;color:#0F2D4D;display:grid;place-items:center;font-size:18px;line-height:1;flex:0 0 auto}
+      .cafasso-dw-copy{min-width:0}.cafasso-dw-kicker{font-size:9px;letter-spacing:.14em;font-weight:850;color:#9A6B16;text-transform:uppercase;margin-bottom:3px}
+      .cafasso-dw-main{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.cafasso-dw-main strong{font:22px/1.08 Georgia,serif;font-weight:400;color:#0F2D4D}.cafasso-dw-main span{font-size:11px;color:#7A8492;text-transform:capitalize}
+      .cafasso-dw-readings{display:flex;gap:8px 14px;flex-wrap:wrap;margin-top:7px;color:#687386;font-size:11.5px}.cafasso-dw-readings b{color:#0F2D4D;font-weight:750}.cafasso-dw-readings em{font-style:normal;color:#9A6B16;font-weight:800}
+      .cafasso-dw-action{display:flex;align-items:center;gap:10px}.cafasso-dw-season{font-size:10.5px;color:#7A8492;white-space:nowrap}.cafasso-dw-link{display:inline-flex;align-items:center;justify-content:center;background:#F2C94C;color:#0F2D4D;text-decoration:none;font-weight:850;border-radius:10px;padding:8px 11px;min-height:34px;font-size:11px;white-space:nowrap}.cafasso-dw-link:hover{filter:brightness(.985)}
+      @media(max-width:760px){.cafasso-daily-word{padding:15px 16px}.cafasso-dw-shell{grid-template-columns:auto 1fr;gap:12px}.cafasso-dw-action{grid-column:1/-1;justify-content:space-between;padding-top:10px;border-top:1px solid #EEE5D8}.cafasso-dw-main strong{font-size:20px}.cafasso-dw-readings{font-size:11px}}
+      @media(max-width:520px){.cafasso-dw-action{display:grid;grid-template-columns:1fr}.cafasso-dw-link{width:100%}.cafasso-dw-season{white-space:normal}.cafasso-dw-symbol{width:32px;height:32px;font-size:16px}}
     `;
     document.head.appendChild(style);
   }
@@ -83,7 +74,7 @@
     const el=document.createElement('section');
     el.id=WIDGET_ID;
     el.className='cafasso-daily-word';
-    el.innerHTML=`<div class="cafasso-dw-head"><div><div class="cafasso-dw-kicker">Palabra del día</div><h3>Evangelio de hoy</h3><div class="cafasso-dw-date">Cargando las lecturas…</div></div><div class="cafasso-dw-symbol" aria-label="Cruz cristiana">✝</div></div>`;
+    el.innerHTML=`<div class="cafasso-dw-shell"><div class="cafasso-dw-symbol" aria-label="Cruz cristiana">✝</div><div class="cafasso-dw-copy"><div class="cafasso-dw-kicker">Palabra del día</div><div class="cafasso-dw-main"><strong>Evangelio de hoy</strong><span>Cargando…</span></div></div></div>`;
     return el;
   }
 
@@ -126,10 +117,7 @@
   function renderFallback(el){
     const x=localDate();
     const label=x.d.toLocaleDateString('es-UY',{weekday:'long',day:'numeric',month:'long'});
-    el.innerHTML=`
-      <div class="cafasso-dw-head"><div><div class="cafasso-dw-kicker">Palabra del día</div><h3>Evangelio de hoy</h3><div class="cafasso-dw-date">${label}</div></div><div class="cafasso-dw-symbol" aria-label="Cruz cristiana">✝</div></div>
-      <div class="cafasso-dw-gospel"><small>Para tu jornada</small><strong>Hacé un espacio para la Palabra</strong><p>La referencia del día no pudo cargarse ahora, pero podés abrir directamente las lecturas y el Evangelio de hoy.</p></div>
-      <div class="cafasso-dw-foot"><span class="cafasso-dw-season">Lecturas de la liturgia del día</span><a class="cafasso-dw-link" href="${vaticanUrl()}" target="_blank" rel="noopener">Leer la Palabra completa →</a></div>`;
+    el.innerHTML=`<div class="cafasso-dw-shell"><div class="cafasso-dw-symbol" aria-label="Cruz cristiana">✝</div><div class="cafasso-dw-copy"><div class="cafasso-dw-kicker">Palabra del día</div><div class="cafasso-dw-main"><strong>Evangelio de hoy</strong><span>${label}</span></div><div class="cafasso-dw-readings"><span>Hoy no pudimos cargar las referencias.</span></div></div><div class="cafasso-dw-action"><span class="cafasso-dw-season">Liturgia del día</span><a class="cafasso-dw-link" href="${vaticanUrl()}" target="_blank" rel="noopener">Leer →</a></div></div>`;
   }
 
   function renderData(el,data){
@@ -141,15 +129,12 @@
     const psalm=translateRef(r.psalm||'');
     const second=translateRef(r.secondReading||'');
     const season=seasons[data.season]||data.season||'Liturgia del día';
-    const items=[
-      first&&`<div class="cafasso-dw-item"><small>Primera lectura</small><strong>${first}</strong></div>`,
-      psalm&&`<div class="cafasso-dw-item"><small>Salmo</small><strong>${psalm}</strong></div>`,
-      second&&`<div class="cafasso-dw-item"><small>Segunda lectura</small><strong>${second}</strong></div>`
+    const readings=[
+      first&&`<span><em>1ª lectura</em> <b>${first}</b></span>`,
+      psalm&&`<span><em>Salmo</em> <b>${psalm}</b></span>`,
+      second&&`<span><em>2ª lectura</em> <b>${second}</b></span>`
     ].filter(Boolean).join('');
-    el.innerHTML=`
-      <div class="cafasso-dw-head"><div><div class="cafasso-dw-kicker">Palabra del día</div><h3>Evangelio de hoy</h3><div class="cafasso-dw-date">${label}</div></div><div class="cafasso-dw-symbol" aria-label="Cruz cristiana">✝</div></div>
-      <div class="cafasso-dw-grid"><div class="cafasso-dw-gospel"><small>Evangelio</small><strong>${gospel||'Lecturas del día'}</strong><p>Una pausa para leer, escuchar y dejar que la Palabra acompañe tu jornada.</p></div><div class="cafasso-dw-list">${items}</div></div>
-      <div class="cafasso-dw-foot"><span class="cafasso-dw-season">${season}</span><a class="cafasso-dw-link" href="${vaticanUrl()}" target="_blank" rel="noopener">Leer la Palabra completa →</a></div>`;
+    el.innerHTML=`<div class="cafasso-dw-shell"><div class="cafasso-dw-symbol" aria-label="Cruz cristiana">✝</div><div class="cafasso-dw-copy"><div class="cafasso-dw-kicker">Palabra del día</div><div class="cafasso-dw-main"><strong>${gospel||'Evangelio de hoy'}</strong><span>${label}</span></div><div class="cafasso-dw-readings">${readings}</div></div><div class="cafasso-dw-action"><span class="cafasso-dw-season">${season}</span><a class="cafasso-dw-link" href="${vaticanUrl()}" target="_blank" rel="noopener">Leer →</a></div></div>`;
   }
 
   async function inject(){
