@@ -46,3 +46,4 @@ jobs:
           git add cafasso-wix-import/daily-word.js
           git diff --cached --quiet || git commit -m "Restore balanced CAFASSO daily word design"
           git push
+# trigger
