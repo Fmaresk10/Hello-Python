@@ -163,3 +163,44 @@
     if(document.getElementById(WIDGET_ID)||tries>24)clearInterval(boot);
   },250);
 })();
+
+(()=>{
+  const STYLE_ID='cafassoLearnerCourseUiStyles';
+  function ensureStyles(){
+    if(document.getElementById(STYLE_ID))return;
+    const style=document.createElement('style');
+    style.id=STYLE_ID;
+    style.textContent=`
+      .block-type,.optional{display:none!important}
+      .cafasso-eval-badge{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;background:#0F2D4D;color:#fff;font-size:11px;font-weight:900;letter-spacing:.035em;box-shadow:0 2px 8px rgba(15,45,77,.12)}
+      .block-meta{gap:8px}
+      .block-meta:empty{display:none}
+      @media(max-width:680px){.cafasso-eval-badge{padding:6px 9px;font-size:10.5px}}
+    `;
+    document.head.appendChild(style);
+  }
+  function simplifyCourseBlocks(){
+    ensureStyles();
+    document.querySelectorAll('.block').forEach(card=>{
+      const typeEl=card.querySelector('.block-type');
+      if(!typeEl)return;
+      const type=String(typeEl.textContent||'').trim().toLowerCase();
+      if((type==='entrega'||type==='evaluación')&&!card.querySelector('.cafasso-eval-badge')){
+        const meta=card.querySelector('.block-meta');
+        if(meta){
+          const badge=document.createElement('span');
+          badge.className='cafasso-eval-badge';
+          badge.textContent='A EVALUAR';
+          meta.insertBefore(badge,meta.firstChild);
+        }
+      }
+    });
+  }
+  const observer=new MutationObserver(()=>simplifyCourseBlocks());
+  function start(){
+    simplifyCourseBlocks();
+    const root=document.getElementById('app')||document.body;
+    observer.observe(root,{subtree:true,childList:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
