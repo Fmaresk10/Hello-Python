@@ -88,7 +88,6 @@
     if(e.key==='Enter'){e.preventDefault();$e('previewBtn')?.click()}
   });
 
-  // New course: keep the editor truly blank and never inherit the legacy sample course.
   const query=new URLSearchParams(location.search);
   const creatingNew=!query.get('id');
   if(creatingNew){
@@ -111,30 +110,16 @@
     setTimeout(()=>{if(!settled){settled=true;clearInterval(timer);blankCourse()}},1400);
   }
 
-  // Load the optional course-template picker.
   if(!document.querySelector('script[data-cafasso-templates]')){
-    const s=document.createElement('script');
-    s.src='./course-templates.js?v=20260904-2';
-    s.defer=true;
-    s.dataset.cafassoTemplates='1';
-    document.body.appendChild(s);
+    const s=document.createElement('script');s.src='./course-templates.js?v=20260904-2';s.defer=true;s.dataset.cafassoTemplates='1';document.body.appendChild(s);
   }
-
-  // Load visual status explanations and course completeness checks.
   if(!document.querySelector('script[data-cafasso-status-guide]')){
-    const s=document.createElement('script');
-    s.src='./course-editor-status.js?v=20260904-1';
-    s.defer=true;
-    s.dataset.cafassoStatusGuide='1';
-    document.body.appendChild(s);
+    const s=document.createElement('script');s.src='./course-editor-status.js?v=20260904-1';s.defer=true;s.dataset.cafassoStatusGuide='1';document.body.appendChild(s);
   }
-
-  // Load type-specific block editing and inline previews.
   if(!document.querySelector('script[data-cafasso-typed-blocks]')){
-    const s=document.createElement('script');
-    s.src='./course-block-editor.js?v=20260904-1';
-    s.defer=true;
-    s.dataset.cafassoTypedBlocks='1';
-    document.body.appendChild(s);
+    const s=document.createElement('script');s.src='./course-block-editor.js?v=20260904-1';s.defer=true;s.dataset.cafassoTypedBlocks='1';document.body.appendChild(s);
+  }
+  if(!document.querySelector('script[data-cafasso-block-transfer]')){
+    const s=document.createElement('script');s.src='./course-block-transfer.js?v=20260904-1';s.defer=true;s.dataset.cafassoBlockTransfer='1';document.body.appendChild(s);
   }
 })();
