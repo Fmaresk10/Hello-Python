@@ -1,12 +1,13 @@
 (()=>{
   const SITE_API=/^https:\/\/federicomaresca\.wixstudio\.com\/my-site-1\/_functions\/([A-Za-z0-9_]+)(\?.*)?$/;
   const ADMIN_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoAdmin';
+  const ME_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoMe';
   const MAIL_APP='https://script.google.com/macros/s/AKfycbwwFIjRoNrptAA1_hjgE-gkX3lxxY1yjv6AzNpohH5Csx37VbAR-sjCLm9apnyAha0/exec';
   const LEGACY_CREST='47bf07_3bf4fe6421f34a05990caa87c98fffc2';
   const BRAND_MARK='./cafasso-mark.svg';
   const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
   const params0=new URLSearchParams(location.search);
-  const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[c]));
+  const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const json=(storage,key)=>{try{return JSON.parse(storage.getItem(key)||'null')}catch(e){return null}};
 
   function applyBranding(){
@@ -93,7 +94,11 @@
     }
     const headers=new Headers(init.headers||(input instanceof Request?input.headers:undefined));
     headers.set('Authorization','Bearer '+current.sessionToken);
-    const res=await nativeFetch(input,{...init,headers});
+    let fetchInput=input;
+    if(page==='index.html'&&method==='GET'&&/\/_functions\/cafassoAdmin(?:\?|$)/.test(raw)&&((!isAdmin&&!isFormador)||exactUser)){
+      fetchInput=ME_API+(exactUser?'?previewUser='+encodeURIComponent(exactUser._id):'');
+    }
+    const res=await nativeFetch(fetchInput,{...init,headers});
     if(res.status===401){location.replace('./login.html');throw new Error('Tu sesión venció. Volvé a ingresar.');}
     if(page==='animadores.html'&&/\/_functions\/cafassoAdmin(?:\?|$)/.test(raw)&&method==='POST'){
       try{
