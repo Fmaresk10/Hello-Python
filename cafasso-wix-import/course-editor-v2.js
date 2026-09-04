@@ -225,4 +225,8 @@
   render();
   markSaved();
   console.info('CAFASSO',VERSION);
+
+  if(!document.getElementById('cafassoCourseEditorV3Loader')){
+    const s=document.createElement('script');s.id='cafassoCourseEditorV3Loader';s.src='./course-editor-v3.js?v=20260904-1';s.defer=true;document.body.appendChild(s);
+  }
 })();
