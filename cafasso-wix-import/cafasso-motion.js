@@ -99,7 +99,7 @@
     if(role!=='animador'&&preview!=='animador')return;
     const s=document.createElement('script');
     s.id='cafassoAnimatorHomeLoader';
-    s.src='./animator-home.js?v=20260904-2';
+    s.src='./animator-home.js?v=20260904-1';
     s.defer=true;
     document.head.appendChild(s);
   }
