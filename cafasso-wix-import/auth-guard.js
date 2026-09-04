@@ -26,6 +26,17 @@
   const role=String(realSession.user.role||'Animador').toLowerCase();
   const isAdmin=role.includes('admin');
   const isFormador=role.includes('formador');
+  const requestedPreviewRole=String(params0.get('previewRole')||'').toLowerCase();
+  const requestedPreviewUser=String(params0.get('previewUser')||'').trim();
+  const staffAnimatorPreview=(isAdmin||isFormador)&&requestedPreviewRole==='animador';
+  const exactAnimatorPreview=isAdmin&&!!requestedPreviewUser;
+
+  // Cada rol tiene su propia casa. Admin/Formador solo ven la home de Animador mediante "Ver como…".
+  if(page==='index.html'&&!staffAnimatorPreview&&!exactAnimatorPreview){
+    if(isAdmin){location.replace('./admin.html');return;}
+    if(isFormador){location.replace('./formador.html');return;}
+  }
+
   const adminOnly=new Set(['admin.html','animadores.html','grupos.html','grupo.html','asignaciones.html','importar-usuarios.html','animador.html']);
   const courseStaff=new Set(['formador.html','curso-editor.html','entregas.html','reportes.html']);
   if(adminOnly.has(page)&&!isAdmin){location.replace(isFormador?'./formador.html':'./');return;}
