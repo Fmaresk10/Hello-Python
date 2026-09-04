@@ -52,23 +52,24 @@
     const style=document.createElement('style');
     style.id=STYLE_ID;
     style.textContent=`
-      .cafasso-daily-word{margin-top:18px;background:linear-gradient(135deg,#FFFDF9 0%,#FFF8E3 100%);border:1px solid #E8DCCB;border-radius:24px;padding:22px;box-shadow:0 8px 24px rgba(15,45,77,.06)}
-      .cafasso-dw-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:17px}
-      .cafasso-dw-kicker{font-size:11px;letter-spacing:.12em;font-weight:900;color:#A66E00;text-transform:uppercase}
-      .cafasso-dw-head h3{margin:5px 0 3px;color:#0F2D4D;font:30px Georgia,serif}
-      .cafasso-dw-date{font-size:12px;color:#687386;text-transform:capitalize}
-      .cafasso-dw-symbol{width:48px;height:48px;border-radius:15px;background:#0F2D4D;color:#F2C94C;display:grid;place-items:center;font-size:24px;flex:0 0 auto}
-      .cafasso-dw-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(250px,.8fr);gap:14px}
-      .cafasso-dw-gospel{background:#0F2D4D;color:white;border-radius:18px;padding:18px}
-      .cafasso-dw-gospel small,.cafasso-dw-item small{display:block;font-size:10px;letter-spacing:.1em;font-weight:900;text-transform:uppercase;margin-bottom:6px}
-      .cafasso-dw-gospel small{color:#F2C94C}.cafasso-dw-gospel strong{font:28px Georgia,serif;display:block;line-height:1.15}
-      .cafasso-dw-gospel p{font-size:13px;color:#E5EBF1;line-height:1.55;margin:10px 0 0}
-      .cafasso-dw-list{display:grid;gap:9px}
-      .cafasso-dw-item{background:#F7F1E8;border-radius:14px;padding:12px 14px}.cafasso-dw-item small{color:#687386}.cafasso-dw-item strong{color:#0F2D4D;font-size:14px}
-      .cafasso-dw-foot{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:15px;flex-wrap:wrap}
-      .cafasso-dw-season{font-size:12px;color:#687386;font-weight:700}
-      .cafasso-dw-link{display:inline-flex;align-items:center;justify-content:center;background:#F2C94C;color:#0F2D4D;text-decoration:none;font-weight:900;border-radius:12px;padding:11px 14px;min-height:42px}
-      @media(max-width:680px){.cafasso-daily-word{padding:17px;border-radius:19px;margin-top:14px}.cafasso-dw-head h3{font-size:25px}.cafasso-dw-grid{grid-template-columns:1fr}.cafasso-dw-gospel strong{font-size:24px}.cafasso-dw-foot{display:grid;grid-template-columns:1fr}.cafasso-dw-link{width:100%}}
+      .cafasso-daily-word{margin-top:14px;background:#FFFDF9;border:1px solid #E8DCCB;border-radius:18px;padding:16px 18px;box-shadow:0 5px 16px rgba(15,45,77,.045)}
+      .cafasso-dw-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
+      .cafasso-dw-kicker{font-size:9px;letter-spacing:.14em;font-weight:850;color:#9A6B16;text-transform:uppercase}
+      .cafasso-dw-head h3{margin:2px 0 1px;color:#0F2D4D;font:22px/1.08 Georgia,serif;font-weight:400}
+      .cafasso-dw-date{font-size:11px;color:#7A8492;text-transform:capitalize}
+      .cafasso-dw-symbol{width:34px;height:34px;border-radius:11px;background:#F7EFD9;color:#A66E00;display:grid;place-items:center;font-size:17px;flex:0 0 auto}
+      .cafasso-dw-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(220px,.92fr);gap:10px;align-items:stretch}
+      .cafasso-dw-gospel{background:#F4F0E8;border:1px solid #E9DECB;color:#0F2D4D;border-radius:14px;padding:14px 15px}
+      .cafasso-dw-gospel small,.cafasso-dw-item small{display:block;font-size:9px;letter-spacing:.11em;font-weight:850;text-transform:uppercase;margin-bottom:4px}
+      .cafasso-dw-gospel small{color:#9A6B16}.cafasso-dw-gospel strong{font:20px/1.15 Georgia,serif;font-weight:400;display:block}
+      .cafasso-dw-gospel p{font-size:12px;color:#66717F;line-height:1.45;margin:7px 0 0;max-width:58ch}
+      .cafasso-dw-list{display:grid;gap:7px}
+      .cafasso-dw-item{background:#FAF7F1;border:1px solid #EEE5D8;border-radius:11px;padding:9px 11px}.cafasso-dw-item small{color:#8B93A0}.cafasso-dw-item strong{color:#0F2D4D;font-size:12.5px;font-weight:750}
+      .cafasso-dw-foot{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:11px;flex-wrap:wrap}
+      .cafasso-dw-season{font-size:11px;color:#7A8492;font-weight:650}
+      .cafasso-dw-link{display:inline-flex;align-items:center;justify-content:center;background:transparent;color:#0F2D4D;text-decoration:none;font-weight:800;border:1px solid #D8C9AF;border-radius:10px;padding:7px 10px;min-height:34px;font-size:11px}
+      .cafasso-dw-link:hover{background:#FFF7D7;border-color:#E1CB74}
+      @media(max-width:680px){.cafasso-daily-word{padding:14px;border-radius:16px;margin-top:12px}.cafasso-dw-head{margin-bottom:10px}.cafasso-dw-head h3{font-size:20px}.cafasso-dw-symbol{width:31px;height:31px;font-size:15px}.cafasso-dw-grid{grid-template-columns:1fr}.cafasso-dw-gospel{padding:13px 14px}.cafasso-dw-gospel strong{font-size:19px}.cafasso-dw-gospel p{font-size:11.5px}.cafasso-dw-foot{display:grid;grid-template-columns:1fr}.cafasso-dw-link{width:100%;min-height:36px}}
     `;
     document.head.appendChild(style);
   }
