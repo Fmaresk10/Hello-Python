@@ -52,14 +52,14 @@
     const style=document.createElement('style');
     style.id=STYLE_ID;
     style.textContent=`
-      .cafasso-daily-word{margin-top:14px;background:#0F2D4D;border:1px solid #173E66;border-radius:18px;padding:18px 20px;box-shadow:0 8px 22px rgba(15,45,77,.16)}
+      .cafasso-daily-word{margin-top:14px;background:#0F2D4D;border:1px solid #173E66;border-radius:18px;padding:18px 20px;box-shadow:0 8px 22px rgba(15,45,77,.16);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
       .cafasso-dw-shell{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center}
       .cafasso-dw-symbol{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.20);color:#F2C94C;display:grid;place-items:center;font-size:18px;line-height:1;flex:0 0 auto}
       .cafasso-dw-copy{min-width:0}.cafasso-dw-kicker{font-size:9px;letter-spacing:.14em;font-weight:850;color:#F2C94C;text-transform:uppercase;margin-bottom:3px}
-      .cafasso-dw-main{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.cafasso-dw-main strong{font:22px/1.08 Georgia,serif;font-weight:400;color:#FFFFFF}.cafasso-dw-main span{font-size:11px;color:#D5DFE8;text-transform:capitalize}
+      .cafasso-dw-main{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.cafasso-dw-main strong{font-family:inherit;font-size:21px;line-height:1.12;font-weight:750;letter-spacing:-.01em;color:#FFFFFF}.cafasso-dw-main span{font-size:11px;color:#D5DFE8;text-transform:capitalize}
       .cafasso-dw-readings{display:flex;gap:8px 14px;flex-wrap:wrap;margin-top:7px;color:#D5DFE8;font-size:11.5px}.cafasso-dw-readings b{color:#FFFFFF;font-weight:750}.cafasso-dw-readings em{font-style:normal;color:#F2C94C;font-weight:800}
       .cafasso-dw-action{display:flex;align-items:center;gap:10px}.cafasso-dw-season{font-size:10.5px;color:#D5DFE8;white-space:nowrap}.cafasso-dw-link{display:inline-flex;align-items:center;justify-content:center;background:#F2C94C;color:#0F2D4D;text-decoration:none;font-weight:850;border-radius:10px;padding:8px 11px;min-height:34px;font-size:11px;white-space:nowrap}.cafasso-dw-link:hover{filter:brightness(.985)}
-      @media(max-width:760px){.cafasso-daily-word{padding:15px 16px}.cafasso-dw-shell{grid-template-columns:auto 1fr;gap:12px}.cafasso-dw-action{grid-column:1/-1;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,.16)}.cafasso-dw-main strong{font-size:20px}.cafasso-dw-readings{font-size:11px}}
+      @media(max-width:760px){.cafasso-daily-word{padding:15px 16px}.cafasso-dw-shell{grid-template-columns:auto 1fr;gap:12px}.cafasso-dw-action{grid-column:1/-1;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,.16)}.cafasso-dw-main strong{font-size:19px}.cafasso-dw-readings{font-size:11px}}
       @media(max-width:520px){.cafasso-dw-action{display:grid;grid-template-columns:1fr}.cafasso-dw-link{width:100%}.cafasso-dw-season{white-space:normal}.cafasso-dw-symbol{width:32px;height:32px;font-size:16px}}
     `;
     document.head.appendChild(style);
