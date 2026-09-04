@@ -93,6 +93,15 @@
     return res;
   };
 
+  function installMotion(){
+    if(document.getElementById('cafassoMotionLoader'))return;
+    const s=document.createElement('script');
+    s.id='cafassoMotionLoader';
+    s.src='./cafasso-motion.js?v=20260904-1';
+    s.defer=true;
+    document.head.appendChild(s);
+  }
+
   function installReadOnly(){
     if(!exactUser)return;
     const style=document.createElement('style');
@@ -190,6 +199,8 @@
     s.defer=true;
     document.body.appendChild(s);
   }
+
+  installMotion();
 
   if(document.readyState==='loading'){
     document.addEventListener('DOMContentLoaded',installReadOnly,{once:true});
