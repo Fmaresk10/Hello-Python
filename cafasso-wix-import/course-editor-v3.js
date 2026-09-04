@@ -128,4 +128,13 @@
     s.dataset.cafassoStatusGuide='1';
     document.body.appendChild(s);
   }
+
+  // Load type-specific block editing and inline previews.
+  if(!document.querySelector('script[data-cafasso-typed-blocks]')){
+    const s=document.createElement('script');
+    s.src='./course-block-editor.js?v=20260904-1';
+    s.defer=true;
+    s.dataset.cafassoTypedBlocks='1';
+    document.body.appendChild(s);
+  }
 })();
