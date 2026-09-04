@@ -87,4 +87,36 @@
     if(e.key.toLowerCase()==='s'){e.preventDefault();saveToWix(false)}
     if(e.key==='Enter'){e.preventDefault();$e('previewBtn')?.click()}
   });
+
+  // New course: keep the editor truly blank and never inherit the legacy sample course.
+  const query=new URLSearchParams(location.search);
+  const creatingNew=!query.get('id');
+  if(creatingNew){
+    const blankCourse=()=>{
+      data={course:{title:'',description:'',subtitle:'',status:'Borrador',version:1,certificateEnabled:false},modules:[{_id:'local-'+crypto.randomUUID(),title:'',desc:'',status:'Borrador',required:true,unlockAfterPrevious:false,estimatedMinutes:20,settings:{},contents:[]}]};
+      active=0;activeBlock=-1;
+      try{localStorage.removeItem(cacheKey)}catch(e){}
+      render();
+      const title=$e('courseTitle');if(title)title.textContent='Nuevo curso';
+      const sync=$e('syncStatus');if(sync){sync.textContent='Nuevo curso · todavía no guardado';sync.classList.add('warn')}
+      const state=$e('editorSaveState');if(state){state.classList.add('dirty');state.textContent='● Nuevo curso · falta guardar en Wix'}
+    };
+    let settled=false;
+    const timer=setInterval(()=>{
+      const sync=$e('syncStatus');
+      if(!sync||!String(sync.textContent||'').includes('Conectando')){
+        clearInterval(timer);if(!settled){settled=true;blankCourse();}
+      }
+    },120);
+    setTimeout(()=>{if(!settled){settled=true;clearInterval(timer);blankCourse()}},1400);
+  }
+
+  // Load the optional course-template picker.
+  if(!document.querySelector('script[data-cafasso-templates]')){
+    const s=document.createElement('script');
+    s.src='./course-templates.js?v=20260904-2';
+    s.defer=true;
+    s.dataset.cafassoTemplates='1';
+    document.body.appendChild(s);
+  }
 })();
