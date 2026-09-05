@@ -206,69 +206,76 @@
 })();
 
 (()=>{
-  const STYLE_ID='cafassoDrivePreviewStyles';
-  function addStyles(){
+  const STYLE_ID='cafassoDrivePreviewStylesV2';
+  function ensureStyles(){
     if(document.getElementById(STYLE_ID))return;
     const style=document.createElement('style');
     style.id=STYLE_ID;
     style.textContent=`
       .cafasso-drive-preview{margin-top:14px;border:1px solid #E8DCCB;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 4px 14px rgba(15,45,77,.06)}
-      .cafasso-drive-preview iframe{display:block;width:100%;height:520px;border:0;background:#fff}
-      .cafasso-drive-actions{display:flex;justify-content:flex-end;padding:10px 12px;border-top:1px solid #E8DCCB;background:#FFFDF9}
+      .cafasso-drive-preview iframe{display:block;width:100%;height:560px;border:0;background:#fff}
+      .cafasso-drive-actions{display:flex;justify-content:flex-end;gap:10px;padding:10px 12px;border-top:1px solid #E8DCCB;background:#FFFDF9}
       .cafasso-drive-actions a{font-size:12px;font-weight:800;color:#0F2D4D;text-decoration:none}
-      @media(max-width:680px){.cafasso-drive-preview iframe{height:430px}}
+      @media(max-width:680px){.cafasso-drive-preview iframe{height:440px}}
       @media(max-width:420px){.cafasso-drive-preview iframe{height:360px}}
     `;
     document.head.appendChild(style);
   }
-  function parseGoogleUrl(raw){
+  function googlePreview(raw){
     let u;
-    try{u=new URL(raw);}catch(e){return null;}
-    const host=u.hostname.toLowerCase();
+    try{u=new URL(String(raw||'').trim());}catch(e){return null;}
+    const host=u.hostname.toLowerCase().replace(/^www\./,'');
     let m,id,preview='';
-    if(host==='docs.google.com'){
-      m=u.pathname.match(/^\/document\/d\/([^/]+)/);if(m){id=m[1];preview='https://docs.google.com/document/d/'+id+'/preview';}
-      if(!preview){m=u.pathname.match(/^\/presentation\/d\/([^/]+)/);if(m){id=m[1];preview='https://docs.google.com/presentation/d/'+id+'/embed?start=false&loop=false&delayms=3000';}}
-      if(!preview){m=u.pathname.match(/^\/spreadsheets\/d\/([^/]+)/);if(m){id=m[1];preview='https://docs.google.com/spreadsheets/d/'+id+'/preview';}}
-    }
     if(host==='drive.google.com'){
-      m=u.pathname.match(/^\/file\/d\/([^/]+)/);id=m&&m[1]||u.searchParams.get('id')||'';
+      m=u.pathname.match(/\/file\/d\/([^/]+)/);
+      id=(m&&m[1])||u.searchParams.get('id')||'';
       if(id)preview='https://drive.google.com/file/d/'+id+'/preview';
+    }else if(host==='docs.google.com'){
+      m=u.pathname.match(/\/document\/d\/([^/]+)/);
+      if(m)preview='https://docs.google.com/document/d/'+m[1]+'/preview';
+      if(!preview){m=u.pathname.match(/\/presentation\/d\/([^/]+)/);if(m)preview='https://docs.google.com/presentation/d/'+m[1]+'/embed?start=false&loop=false&delayms=3000';}
+      if(!preview){m=u.pathname.match(/\/spreadsheets\/d\/([^/]+)/);if(m)preview='https://docs.google.com/spreadsheets/d/'+m[1]+'/preview';}
     }
-    return preview?{preview:preview,original:u.href}:null;
+    return preview?{preview,original:u.href}:null;
+  }
+  function mount(card,raw,anchor){
+    if(!card||card.querySelector('.cafasso-drive-preview'))return false;
+    const info=googlePreview(raw);
+    if(!info)return false;
+    const wrap=document.createElement('div');
+    wrap.className='cafasso-drive-preview';
+    wrap.innerHTML=`<iframe src="${info.preview}" title="Material de Google Drive" loading="lazy" allow="autoplay; fullscreen"></iframe><div class="cafasso-drive-actions"><a href="${info.original}" target="_blank" rel="noopener">Abrir en Drive ↗</a></div>`;
+    if(anchor)anchor.insertAdjacentElement('beforebegin',wrap);else card.appendChild(wrap);
+    if(anchor)anchor.style.display='none';
+    return true;
   }
   function enhance(){
-    addStyles();
-    document.querySelectorAll('.block a.resource-link[href]').forEach(link=>{
-      if(link.dataset.driveEnhanced==='1')return;
-      const info=parseGoogleUrl(link.href);
-      if(!info)return;
-      link.dataset.driveEnhanced='1';
-      const wrap=document.createElement('div');
-      wrap.className='cafasso-drive-preview';
-      const frame=document.createElement('iframe');
-      frame.src=info.preview;
-      frame.title='Material de Google Drive';
-      frame.loading='lazy';
-      frame.allow='autoplay; fullscreen';
-      const actions=document.createElement('div');
-      actions.className='cafasso-drive-actions';
-      const open=document.createElement('a');
-      open.href=info.original;
-      open.target='_blank';
-      open.rel='noopener';
-      open.textContent='Abrir en Drive ↗';
-      actions.appendChild(open);
-      wrap.appendChild(frame);
-      wrap.appendChild(actions);
-      link.insertAdjacentElement('beforebegin',wrap);
-      link.style.display='none';
+    ensureStyles();
+    document.querySelectorAll('.block').forEach(card=>{
+      if(card.querySelector('.cafasso-drive-preview'))return;
+      const link=card.querySelector('a.resource-link[href]');
+      if(link&&mount(card,link.href,link))return;
+      const candidates=Array.from(card.querySelectorAll('a[href]'));
+      for(const a of candidates){if(mount(card,a.href,a))return;}
+      const text=card.textContent||'';
+      const m=text.match(/https?:\/\/(?:drive|docs)\.google\.com\/[^\s<]+/i);
+      if(m)mount(card,m[0],null);
     });
   }
-  const observer=new MutationObserver(()=>enhance());
+  let scheduled=false;
+  function schedule(){
+    if(scheduled)return;
+    scheduled=true;
+    requestAnimationFrame(()=>{scheduled=false;enhance();});
+  }
   function start(){
     enhance();
-    observer.observe(document.getElementById('app')||document.body,{subtree:true,childList:true});
+    const root=document.getElementById('app')||document.body;
+    new MutationObserver(schedule).observe(root,{subtree:true,childList:true});
+    [150,400,900,1800,3500].forEach(ms=>setTimeout(enhance,ms));
+    window.addEventListener('hashchange',()=>setTimeout(enhance,50));
+    window.addEventListener('popstate',()=>setTimeout(enhance,50));
+    document.addEventListener('click',()=>setTimeout(enhance,80),true);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
