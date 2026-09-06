@@ -1,7 +1,7 @@
 (()=>{
   if(typeof data==='undefined'||typeof render!=='function')return;
 
-  const VERSION='course-editor-v2-20260903';
+  const VERSION='course-editor-v2-20260906';
   const $e=id=>document.getElementById(id);
   let dirty=false;
   let localTimer=null;
@@ -24,6 +24,8 @@
     .module.drag-over,.content.drag-over{outline:2px dashed #D8B23A;outline-offset:2px}
     .drag-hint{font-size:11px;color:var(--muted);margin:7px 0 2px;line-height:1.4}
     .block-help{margin:-5px 0 14px;padding:11px 12px;border-radius:12px;background:#F7F1E8;color:#59697A;font-size:12px;line-height:1.5}
+    .block-help .embed-ok{display:block;margin-top:8px;padding:8px 10px;border-radius:10px;background:#EDF5F1;color:#245F48;font-weight:800}
+    .block-help .embed-note{display:block;margin-top:6px;color:#6C5500}
     .editor-preview-wrap{position:fixed;inset:0;background:rgba(10,25,45,.52);display:none;place-items:center;z-index:170;padding:18px}
     .editor-preview-wrap.show{display:grid}
     .editor-preview{width:min(960px,100%);max-height:90vh;overflow:auto;background:#F6EFE4;border-radius:26px;border:1px solid var(--line);box-shadow:0 26px 80px rgba(10,25,45,.3)}
@@ -117,17 +119,29 @@
 
   function typeHelp(){
     const type=$e('blockType')?.value||'Texto';
+    const value=String($e('blockBody')?.value||'').trim();
+    const isGoogle=/^https?:\/\/(?:drive|docs)\.google\.com\//i.test(value);
+    const isYoutube=/^https?:\/\/(?:www\.)?(?:youtube\.com|youtu\.be)\//i.test(value);
     const map={
       Texto:['Escribí el contenido formativo que va a leer el animador.','Escribí acá el texto del bloque…','Contenido'],
-      Video:['Pegá un enlace de YouTube. CAFASSO lo mostrará integrado dentro del módulo.','https://www.youtube.com/watch?v=…','URL del video'],
+      Video:['Pegá un enlace de YouTube o un video de Google Drive. CAFASSO lo mostrará integrado dentro del módulo.','https://www.youtube.com/watch?v=… o enlace de Drive','URL del video'],
       Imagen:['Pegá la URL pública de una imagen.','https://…','URL de la imagen'],
-      Documento:['Pegá un enlace al PDF, documento o recurso que querés que abra el animador.','https://…','Enlace al documento'],
+      Documento:['Pegá un enlace de Google Drive, Docs, Slides, Sheets o un PDF. CAFASSO intentará mostrarlo dentro del curso automáticamente.','https://drive.google.com/…','Enlace al material'],
       'Reflexión':['Escribí una pregunta o consigna personal. La respuesta se guarda y puede recibir devolución.','¿Qué te resuena de lo trabajado?','Consigna de reflexión'],
       Entrega:['Planteá la tarea que el animador debe entregar. Quedará pendiente de revisión.','Describí qué tiene que entregar…','Consigna de entrega'],
       'Evaluación':['Escribí la consigna de evaluación. Por ahora funciona como respuesta escrita revisable.','Escribí la consigna de evaluación…','Consigna de evaluación']
     };
     const cfg=map[type]||map.Texto;
-    const help=$e('blockTypeHelpV2');if(help)help.innerHTML='<strong>'+cfg[2]+':</strong> '+cfg[0];
+    const help=$e('blockTypeHelpV2');
+    if(help){
+      let extra='';
+      if((type==='Documento'||type==='Video')&&isGoogle){
+        extra='<span class="embed-ok">✓ Enlace de Google detectado · se verá integrado en la vista del animador.</span><span class="embed-note">Importante: asegurate de que el archivo tenga permiso de lectura para las personas que harán el curso.</span>';
+      }else if(type==='Video'&&isYoutube){
+        extra='<span class="embed-ok">✓ Enlace de YouTube detectado · se reproducirá dentro del módulo.</span>';
+      }
+      help.innerHTML='<strong>'+cfg[2]+':</strong> '+cfg[0]+extra;
+    }
     const body=$e('blockBody');if(body)body.placeholder=cfg[1];
     const settings=$e('blockSettings');if(settings)settings.placeholder=type==='Evaluación'?'Ej.: puntaje mínimo 70%':'Notas internas opcionales';
   }
@@ -205,8 +219,8 @@
   };
 
   document.querySelectorAll('input,textarea,select').forEach(el=>{
-    el.addEventListener('input',markDirty);
-    el.addEventListener('change',()=>{markDirty();if(el.id==='blockType')typeHelp()});
+    el.addEventListener('input',()=>{markDirty();if(el.id==='blockBody')typeHelp();});
+    el.addEventListener('change',()=>{markDirty();if(el.id==='blockType'||el.id==='blockBody')typeHelp()});
   });
   document.querySelectorAll('[data-type],#addModule,#deleteModule,#moduleUp,#moduleDown,#blockUp,#blockDown').forEach(el=>el?.addEventListener('click',()=>setTimeout(markDirty,0)));
 
