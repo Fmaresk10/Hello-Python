@@ -5,6 +5,26 @@
   const block=(type,title,body='',required=false)=>({_id:uid(),type,title,required,content:{body},settings:{notes:''}});
   const module=(title,desc,contents,minutes=20)=>({_id:uid(),title,desc,status:'Borrador',required:true,unlockAfterPrevious:false,estimatedMinutes:minutes,settings:{},contents});
   const templates={
+    model:{name:'Curso modelo CAFASSO',icon:'🧭',desc:'Recorrido completo con bienvenida, texto, video, material, reflexión, oración, entrega y evaluación.',modules:[
+      module('1 · Bienvenida y sentido','Abrimos el recorrido, presentamos el propósito y ubicamos al animador en la experiencia.',[
+        block('Texto','Bienvenida','Bienvenido/a a este recorrido de formación. En este módulo vas a encontrar una breve introducción al tema, un recurso para mirar o leer y una primera invitación a conectar lo trabajado con tu propia experiencia.',true),
+        block('Texto','¿Para qué hacemos este curso?','Explicá acá, en pocas líneas, qué queremos que el animador comprenda, viva o pueda llevar a su tarea después de completar este recorrido.'),
+        block('Video','Video de apertura','Pegá acá un enlace de YouTube o de un video en Google Drive.',true)
+      ],25),
+      module('2 · Profundizamos','Desarrollamos el contenido central combinando lectura, material de apoyo y reflexión personal.',[
+        block('Texto','Idea central','Desarrollá acá el núcleo de la formación. Conviene usar párrafos breves, ejemplos concretos y lenguaje cercano.'),
+        block('Documento','Material para profundizar','Pegá acá un enlace a PDF, Google Docs, Slides o cualquier archivo compartido de Drive.',true),
+        block('Reflexión','Para pensar','¿Qué aspecto de lo trabajado te interpela más en tu manera de acompañar a otros? ¿Por qué?',true)
+      ],35),
+      module('3 · Oración y apropiación','Hacemos lugar al silencio, la oración y la síntesis personal.',[
+        block('Texto','Momento de oración','Buscá un lugar tranquilo. Hacé unos minutos de silencio. Podés comenzar con una invocación sencilla: “Señor, ayudame a mirar mi tarea con tus ojos y a acompañar con un corazón disponible”. Después releé aquello que más te resonó del curso.'),
+        block('Reflexión','Palabra que me queda','Escribí una palabra, frase o intuición que quieras llevarte de este recorrido.',true)
+      ],20),
+      module('4 · Llevarlo a la práctica','Cerramos el recorrido con una producción concreta y una evaluación breve.',[
+        block('Entrega','Compromiso de acción','Pensá una situación concreta de tu tarea como animador/a. Escribí qué gesto o acción vas a intentar poner en práctica a partir de lo trabajado.',true),
+        block('Evaluación','Cierre del recorrido','En pocas líneas: ¿qué aprendiste, qué te resultó más significativo y qué te gustaría seguir profundizando?',true)
+      ],25)
+    ]},
     short:{name:'Curso breve',icon:'⚡',desc:'Un solo módulo para una formación corta y directa.',modules:[module('Módulo único','Presentación y desarrollo del tema.',[block('Texto','Introducción','Escribí acá una breve introducción.'),block('Texto','Contenido principal','Desarrollá acá el contenido central.')],25)]},
     modules:{name:'Curso por módulos',icon:'📚',desc:'Tres módulos para desarrollar un recorrido progresivo.',modules:[module('1 · Introducción','Presentación del tema y objetivos.',[block('Texto','Bienvenida','Presentá el propósito de este recorrido.')],20),module('2 · Profundización','Desarrollo del contenido central.',[block('Texto','Contenido principal','Desarrollá acá el núcleo de la formación.')],30),module('3 · Cierre','Síntesis y cierre del recorrido.',[block('Texto','Síntesis','Recuperá las ideas principales del curso.')],20)]},
     reflection:{name:'Con reflexión final',icon:'💭',desc:'Contenido formativo y una pregunta personal para cerrar.',modules:[module('1 · Para comenzar','Introducción al tema.',[block('Texto','Introducción','Presentá el tema y por qué es importante.')],20),module('2 · Para profundizar','Desarrollo y reflexión personal.',[block('Texto','Contenido principal','Desarrollá acá el contenido formativo.'),block('Reflexión','Para pensar','¿Qué te resuena personalmente de lo trabajado?',true)],30)]},
