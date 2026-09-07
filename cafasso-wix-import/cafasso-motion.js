@@ -104,16 +104,31 @@
     document.head.appendChild(s);
   }
 
+  function fixAdminHomeLinks(){
+    const role=String(document.documentElement.dataset.cafassoRole||'').toLowerCase();
+    if(role!=='admin')return;
+    document.querySelectorAll('a,button').forEach(el=>{
+      const text=String(el.textContent||'').trim().toLowerCase();
+      const aria=String(el.getAttribute('aria-label')||'').trim().toLowerCase();
+      if(text.includes('volver a cafasso')||aria==='volver a cafasso'||aria==='inicio cafasso'){
+        if(el.tagName==='A')el.setAttribute('href','./admin.html#resumen');
+        else el.onclick=()=>{location.href='./admin.html#resumen';};
+      }
+    });
+  }
+
   function boot(){
     installStyles();
     prepareObserver();
     enhance(document);
     brand();
     installAnimatorHome();
+    fixAdminHomeLinks();
     const mo=new MutationObserver(mutations=>{
       for(const m of mutations){
         for(const node of m.addedNodes){if(node&&node.nodeType===1){enhance(node);brand();}}
       }
+      fixAdminHomeLinks();
     });
     mo.observe(document.body,{childList:true,subtree:true});
   }
