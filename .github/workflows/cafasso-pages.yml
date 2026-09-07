@@ -37,9 +37,12 @@ jobs:
 
           editor = Path('cafasso-wix-import/curso-editor.html')
           es = editor.read_text(encoding='utf-8')
-          emarker = 'course-cover-editor.js?v=20260907-1'
-          if emarker not in es:
-              es = es.replace('</body>', '<script src="./course-cover-editor.js?v=20260907-1"></script>\n</body>')
+          old = 'course-cover-editor.js?v=20260907-1'
+          new = 'course-cover-editor.js?v=20260907-2'
+          if old in es:
+              es = es.replace(old,new)
+          elif new not in es:
+              es = es.replace('</body>', '<script src="./course-cover-editor.js?v=20260907-2"></script>\n</body>')
           editor.write_text(es, encoding='utf-8')
           PY
       - name: Configure Pages
