@@ -9,6 +9,7 @@
     if(document.getElementById(STYLE_ID))return;
     const style=document.createElement('style');
     style.id=STYLE_ID;
+    style.sText='';
     style.textContent=`
       :root{--cafasso-ease:cubic-bezier(.2,.7,.25,1)}
       .card,.stat,.panel,.group-card,.course-card,.module-card,.submission-card,.animator-card,.report-card,.cafasso-daily-word{transition:transform .18s var(--cafasso-ease),box-shadow .18s var(--cafasso-ease),border-color .18s var(--cafasso-ease),background-color .18s var(--cafasso-ease)}
@@ -19,26 +20,20 @@
       button,.btn,a.btn,.nav button,.mobile-nav button{transition:transform .12s ease,filter .16s ease,background-color .16s ease,border-color .16s ease,box-shadow .16s ease}
       button:active,.btn:active,a.btn:active{transform:translateY(1px) scale(.99)}
       @media (hover:hover) and (pointer:fine){.btn:hover,button:hover{filter:brightness(.985)}}
-
       .cafasso-motion-enter{opacity:0;transform:translateY(7px)}
       .cafasso-motion-enter.cafasso-motion-visible{opacity:1;transform:none;transition:opacity .28s var(--cafasso-ease),transform .28s var(--cafasso-ease)}
       .cafasso-motion-enter.cafasso-motion-visible:nth-child(2){transition-delay:.025s}.cafasso-motion-enter.cafasso-motion-visible:nth-child(3){transition-delay:.05s}
-
       .bar span,.mini span,[class*="progress"] span{transform-origin:left center}
       .cafasso-progress-animate{animation:cafassoProgressIn .48s var(--cafasso-ease) both}
       @keyframes cafassoProgressIn{from{transform:scaleX(.06);opacity:.65}to{transform:scaleX(1);opacity:1}}
-
       .hero{position:relative;overflow:hidden}
       .hero:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-72px;top:-82px;background:rgba(242,201,76,.055);pointer-events:none}
       .hero>*{position:relative;z-index:1}
-
       .brand img,.mobile-brand img{transform-origin:center bottom}
       .cafasso-brand-arrive{animation:cafassoBrandArrive .5s var(--cafasso-ease) both}
       @keyframes cafassoBrandArrive{0%{opacity:.78;transform:translateX(-4px) rotate(-1deg)}100%{opacity:1;transform:none}}
-
       .section h3,.head h1,.top h1{position:relative}
       .section h3:after{content:"";display:block;width:30px;height:2px;border-radius:99px;background:#F2C94C;margin-top:7px;opacity:.9}
-
       @media(max-width:680px){
         .cafasso-motion-enter{transform:translateY(5px)}
         .card:hover,.stat:hover,.group-card:hover,.course-card:hover,.module-card:hover,.submission-card:hover,.animator-card:hover,.report-card:hover{transform:none;box-shadow:inherit}
@@ -74,7 +69,6 @@
       el.classList.add('cafasso-motion-enter');
       observer.observe(el);
     });
-
     root.querySelectorAll?.('.bar span,.mini span').forEach(el=>{
       if(el.dataset.cafassoProgressAnimated)return;
       el.dataset.cafassoProgressAnimated='1';
@@ -96,10 +90,13 @@
     if(page!=='index.html'||document.getElementById('cafassoAnimatorHomeLoader'))return;
     const role=String(document.documentElement.dataset.cafassoRole||'').toLowerCase();
     const preview=String(document.documentElement.dataset.cafassoPreviewRole||'').toLowerCase();
-    if(role!=='animador'&&preview!=='animador')return;
+    const params=new URLSearchParams(location.search);
+    const previewFromUrl=String(params.get('previewRole')||'').toLowerCase();
+    const previewUser=String(params.get('previewUser')||'').trim();
+    if(role!=='animador'&&preview!=='animador'&&previewFromUrl!=='animador'&&!previewUser)return;
     const s=document.createElement('script');
     s.id='cafassoAnimatorHomeLoader';
-    s.src='./animator-home.js?v=20260907-2';
+    s.src='./animator-home.js?v=20260907-3';
     s.defer=true;
     document.head.appendChild(s);
   }
