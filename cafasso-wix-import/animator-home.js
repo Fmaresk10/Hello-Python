@@ -198,6 +198,18 @@
   }
 
   function schedule(){clearTimeout(timer);timer=setTimeout(()=>{renderHome();moveDailyWord();},90);}
-  function boot(){styles();schedule();const main=document.getElementById('main');if(main)new MutationObserver(muts=>{if(muts.some(m=>m.addedNodes.length))schedule();}).observe(main,{childList:true,subtree:false});window.addEventListener('hashchange',schedule);document.addEventListener('click',e=>{if(e.target.closest('[data-view="inicio"]'))schedule();});}
+  function boot(){
+    styles();
+    schedule();
+    const app=document.getElementById('app')||document.body;
+    const mo=new MutationObserver(()=>{
+      const main=document.getElementById('main');
+      if(main&&isHome()&&!main.querySelector('.cafasso-home-v2')&&main.querySelector('.course.card,.card.course'))schedule();
+      if(main&&main.querySelector('.cafasso-home-v2'))moveDailyWord();
+    });
+    mo.observe(app,{childList:true,subtree:true});
+    window.addEventListener('hashchange',schedule);
+    document.addEventListener('click',e=>{if(e.target.closest('[data-view="inicio"]'))schedule();});
+  }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
