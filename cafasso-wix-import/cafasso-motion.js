@@ -107,13 +107,43 @@
   function fixAdminHomeLinks(){
     const role=String(document.documentElement.dataset.cafassoRole||'').toLowerCase();
     if(role!=='admin')return;
+    const home='./admin.html#resumen';
     document.querySelectorAll('a,button').forEach(el=>{
       const text=String(el.textContent||'').trim().toLowerCase();
       const aria=String(el.getAttribute('aria-label')||'').trim().toLowerCase();
-      if(text.includes('volver a cafasso')||aria==='volver a cafasso'||aria==='inicio cafasso'){
-        if(el.tagName==='A')el.setAttribute('href','./admin.html#resumen');
-        else el.onclick=()=>{location.href='./admin.html#resumen';};
+      if(text.includes('volver a cafasso')||text.includes('ir a cafasso')||aria==='volver a cafasso'||aria==='inicio cafasso'||aria==='volver al inicio'){
+        if(el.tagName==='A')el.setAttribute('href',home);
+        else el.onclick=()=>{location.href=home;};
       }
+    });
+    document.querySelectorAll('.side .brand a,.admin-mobile-brand').forEach(a=>a.setAttribute('href',home));
+    document.querySelectorAll('.admin-mobile-home').forEach(b=>b.onclick=()=>{location.href=home;});
+  }
+
+  function polishAdminSidebar(){
+    const page=(location.pathname.split('/').pop()||'').toLowerCase();
+    const role=String(document.documentElement.dataset.cafassoRole||'').toLowerCase();
+    if(page!=='admin.html'||role!=='admin')return;
+
+    const menu=document.querySelector('.side .menu');
+    if(menu){
+      menu.querySelectorAll('button').forEach(btn=>{
+        const text=String(btn.textContent||'').toLowerCase();
+        if(text.includes('grupos')||text.includes('asignaciones')||text.includes('reportes'))btn.style.display='none';
+        if(btn.dataset.tab==='resumen'){
+          const span=btn.querySelector('span');
+          if(span)span.textContent='⌂   Inicio';
+        }
+      });
+      menu.querySelectorAll('.cafasso-admin-preview-entry').forEach(el=>el.remove());
+    }
+
+    const back=document.querySelector('.side-foot .back');
+    if(back){back.textContent='⌂ Inicio';back.setAttribute('href','./admin.html#resumen');}
+
+    document.querySelectorAll('.admin-mobile-sheet a').forEach(a=>{
+      const t=String(a.textContent||'').toLowerCase();
+      if(t.includes('volver a cafasso')||t.includes('ir a cafasso')){a.textContent='⌂ Inicio';a.setAttribute('href','./admin.html#resumen');}
     });
   }
 
@@ -124,11 +154,13 @@
     brand();
     installAnimatorHome();
     fixAdminHomeLinks();
+    polishAdminSidebar();
     const mo=new MutationObserver(mutations=>{
       for(const m of mutations){
         for(const node of m.addedNodes){if(node&&node.nodeType===1){enhance(node);brand();}}
       }
       fixAdminHomeLinks();
+      polishAdminSidebar();
     });
     mo.observe(document.body,{childList:true,subtree:true});
   }
