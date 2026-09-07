@@ -13,6 +13,9 @@
     .editor-step.editor-step-button:focus-visible{outline:3px solid rgba(242,201,76,.35);outline-offset:2px}
     .editor-step.editor-step-button.active{background:#FFF7D7}
     .cafasso-nav-target{scroll-margin-top:24px}
+    .cafasso-course-toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 18px;align-items:center}
+    .cafasso-course-toolbar .cafasso-back-courses{background:#fff;border:1px solid var(--line);color:var(--navy);text-decoration:none;border-radius:12px;padding:10px 13px;font-weight:800}
+    .cafasso-course-toolbar .cafasso-new-course{background:var(--gold);color:var(--navy);text-decoration:none;border-radius:12px;padding:10px 13px;font-weight:850}
 
     html[data-course-editor-screen="course"] .layout{grid-template-columns:minmax(0,860px)!important;justify-content:center}
     html[data-course-editor-screen="course"] .outline{display:none!important}
@@ -44,20 +47,38 @@
     .cafasso-review-panel h2{font-family:Georgia,serif;color:var(--navy);font-size:30px;margin:0 0 8px}
     .cafasso-review-panel p{color:var(--muted);line-height:1.55;margin:0 0 18px}
     .cafasso-review-actions{display:flex;gap:10px;flex-wrap:wrap}
-    @media(max-width:700px){html[data-course-editor-screen="course"] .layout{display:block}.cafasso-course-summary{grid-template-columns:1fr}.cafasso-review-actions{display:grid;grid-template-columns:1fr}.cafasso-review-actions .btn{width:100%}}
+    @media(max-width:700px){html[data-course-editor-screen="course"] .layout{display:block}.cafasso-course-summary{grid-template-columns:1fr}.cafasso-review-actions{display:grid;grid-template-columns:1fr}.cafasso-review-actions .btn{width:100%}.cafasso-course-toolbar{display:grid;grid-template-columns:1fr}.cafasso-course-toolbar a{text-align:center}}
   `;
   document.head.appendChild(style);
 
   function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+  function sessionUser(){
+    try{return JSON.parse(localStorage.getItem('cafassoSession')||'null')?.user||{};}catch(e){return {};}
+  }
   function sessionUserName(){
-    try{
-      const s=JSON.parse(localStorage.getItem('cafassoSession')||'null');
-      return String(s?.user?.name||s?.user?.displayName||'Formador/a').trim()||'Formador/a';
-    }catch(e){return 'Formador/a';}
+    const u=sessionUser();
+    return String(u?.name||u?.displayName||'Formador/a').trim()||'Formador/a';
+  }
+  function coursesHome(){
+    const role=String(sessionUser()?.role||'').toLowerCase();
+    return role.includes('formador')&&!role.includes('admin')?'./formador.html':'./admin.html#cursos';
   }
   function moduleCount(){
     try{return Array.isArray(data?.modules)?data.modules.length:document.querySelectorAll('#moduleList .module').length;}
     catch(e){return document.querySelectorAll('#moduleList .module').length;}
+  }
+  function ensureToolbar(){
+    if(document.getElementById('cafassoCourseToolbar'))return;
+    const main=document.querySelector('main');
+    const top=document.querySelector('main .top');
+    if(!main||!top)return;
+    const bar=document.createElement('div');
+    bar.id='cafassoCourseToolbar';
+    bar.className='cafasso-course-toolbar';
+    bar.innerHTML=`<a class="cafasso-back-courses" href="${coursesHome()}">← Volver a todos los cursos</a><a class="cafasso-new-course" href="./curso-editor.html?curso=Nuevo%20curso">＋ Nuevo curso</a>`;
+    top.insertAdjacentElement('afterend',bar);
+    const oldBack=document.querySelector('.side .back');
+    if(oldBack){oldBack.href=coursesHome();oldBack.textContent='← Volver a todos los cursos';}
   }
   function ensureCourseSummary(){
     const first=document.querySelector('.editor .section:first-of-type');
@@ -70,9 +91,8 @@
       const heading=first.querySelector('h3');
       if(heading)heading.insertAdjacentElement('afterend',box);else first.prepend(box);
     }
-    box.innerHTML=`
-      <div class="cafasso-course-summary-card"><span>Módulos del curso</span><strong>${moduleCount()}</strong></div>
-      <div class="cafasso-course-summary-card"><span>Formador a cargo</span><strong>${esc(sessionUserName())}</strong></div>`;
+    const next=`<div class="cafasso-course-summary-card"><span>Módulos del curso</span><strong>${moduleCount()}</strong></div><div class="cafasso-course-summary-card"><span>Formador a cargo</span><strong>${esc(sessionUserName())}</strong></div>`;
+    if(box.innerHTML!==next)box.innerHTML=next;
     return box;
   }
 
@@ -120,6 +140,7 @@
   function install(){
     const flow=document.querySelector('.editor-flow');
     if(!flow)return false;
+    ensureToolbar();
     [...flow.querySelectorAll('.editor-step')].forEach(old=>{
       if(old.tagName==='BUTTON'){
         old.classList.add('editor-step-button');
@@ -144,9 +165,6 @@
   document.addEventListener('click',e=>{
     if(e.target.closest('#addModule,#deleteModule,#duplicateModuleV2'))setTimeout(ensureCourseSummary,80);
   });
-  new MutationObserver(()=>{
-    if(root.dataset.courseEditorScreen==='course')ensureCourseSummary();
-  }).observe(document.body,{childList:true,subtree:true});
 
   let tries=0;
   const tick=()=>{if(install())return;if(tries++<40)setTimeout(tick,120);};
