@@ -26,12 +26,30 @@
   document.head.appendChild(style);
 
   function normalizeTitle(v){return String(v||'').trim().replace(/\s+/g,' ').toLowerCase();}
+  function googleDriveId(raw){
+    try{
+      const u=new URL(raw);
+      if(!/(^|\.)drive\.google\.com$/i.test(u.hostname))return '';
+      const filePath=u.pathname.match(/\/file\/d\/([^/]+)/i);
+      if(filePath?.[1])return filePath[1];
+      const dPath=u.pathname.match(/\/d\/([^/]+)/i);
+      if(dPath?.[1])return dPath[1];
+      return u.searchParams.get('id')||'';
+    }catch(e){return '';}
+  }
+  function usableImageUrl(raw){
+    const url=String(raw||'').trim();
+    if(!url)return '';
+    const id=googleDriveId(url);
+    if(id)return 'https://drive.google.com/thumbnail?id='+encodeURIComponent(id)+'&sz=w1600';
+    return url;
+  }
   function coverFromCourse(course){
     const direct=String(course?.coverImage||'').trim();
-    if(/^https?:\/\//i.test(direct))return direct;
+    if(/^https?:\/\//i.test(direct))return usableImageUrl(direct);
     for(const m of (course?.modules||[])){
       const u=String(m?.settings?.courseCoverImage||'').trim();
-      if(/^https?:\/\//i.test(u))return u;
+      if(/^https?:\/\//i.test(u))return usableImageUrl(u);
     }
     return '';
   }
