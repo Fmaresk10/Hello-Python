@@ -8,7 +8,9 @@
   const preview=String(root.dataset.cafassoPreviewRole||params.get('previewRole')||'').toLowerCase();
   if(role!=='animador'&&preview!=='animador'&&!params.get('previewUser'))return;
 
+  const COURSE_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
   const covers=new Map();
+  const pending=new Set();
   const style=document.createElement('style');
   style.id='cafassoCourseCoverHomeStyles';
   style.textContent=`
@@ -24,12 +26,32 @@
   document.head.appendChild(style);
 
   function normalizeTitle(v){return String(v||'').trim().replace(/\s+/g,' ').toLowerCase();}
-  function collect(){
-    document.querySelectorAll('.course.card[data-course-cover],.card.course[data-course-cover]').forEach(card=>{
-      const title=card.querySelector('h4,h3,strong')?.textContent||'';
-      const url=card.getAttribute('data-course-cover')||card.querySelector('.course-cover-source img')?.src||'';
-      if(title&&/^https?:\/\//i.test(url))covers.set(normalizeTitle(title),url);
-    });
+  function coverFromCourse(course){
+    const direct=String(course?.coverImage||'').trim();
+    if(/^https?:\/\//i.test(direct))return direct;
+    for(const m of (course?.modules||[])){
+      const u=String(m?.settings?.courseCoverImage||'').trim();
+      if(/^https?:\/\//i.test(u))return u;
+    }
+    return '';
+  }
+  async function loadCover(title){
+    const key=normalizeTitle(title);
+    if(!key||covers.has(key)||pending.has(key))return;
+    pending.add(key);
+    try{
+      const r=await fetch(COURSE_API+'?title='+encodeURIComponent(title),{cache:'no-store'});
+      const j=await r.json();
+      if(r.ok&&j.ok&&j.course)covers.set(key,coverFromCourse(j.course));
+    }catch(e){covers.set(key,'');}
+    finally{pending.delete(key);apply();}
+  }
+  function titlesOnScreen(){
+    const titles=[];
+    const selected=document.querySelector('.cafasso-home-course-name')?.textContent||'';
+    if(selected)titles.push(selected);
+    document.querySelectorAll('.cafasso-home-course h4').forEach(h=>titles.push(h.textContent||''));
+    return [...new Set(titles.map(x=>String(x).trim()).filter(Boolean))];
   }
   function apply(){
     if(root.dataset.cafassoHomeV2!=='1')return;
@@ -45,13 +67,18 @@
       const url=covers.get(normalizeTitle(title));
       const cover=card.querySelector('.cafasso-home-cover');
       if(cover&&url&&!cover.querySelector('.cafasso-home-cover-image')){
-        cover.innerHTML='<img class="cafasso-home-cover-image" src="'+url.replace(/"/g,'&quot;')+'" alt="">';
-        cover.classList.add('has-course-cover');
+        const img=document.createElement('img');img.className='cafasso-home-cover-image';img.src=url;img.alt=title||'Imagen del curso';
+        cover.innerHTML='';cover.appendChild(img);cover.classList.add('has-course-cover');
       }
     });
   }
-  function cycle(){collect();apply();}
+  function cycle(){
+    if(root.dataset.cafassoHomeV2!=='1')return;
+    titlesOnScreen().forEach(loadCover);
+    apply();
+  }
   cycle();
   const target=document.getElementById('app')||document.body;
   new MutationObserver(cycle).observe(target,{childList:true,subtree:true});
+  window.addEventListener('hashchange',()=>setTimeout(cycle,120));
 })();
