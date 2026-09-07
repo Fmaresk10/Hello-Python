@@ -9,13 +9,18 @@
 
   function esc(v){
     return String(v==null?'':v).replace(/[&<>"']/g,c=>({
-      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'
     })[c]);
   }
 
   function initials(name){
     const p=String(name||'').trim().split(/\s+/);
     return ((p[0]?.[0]||'A')+(p[1]?.[0]||'')).toUpperCase();
+  }
+
+  function isAdmin(){
+    const s=readSession();
+    return !!(s?.user&&String(s.user.role||'').toLowerCase().includes('admin'));
   }
 
   function ensureStyles(){
@@ -30,11 +35,23 @@
       .cafasso-profile-photo-preview img{width:100%;height:100%;object-fit:cover;display:block}
       .cafasso-profile-photo-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
       .cafasso-profile-photo-help{font-size:12px;line-height:1.45;color:#687386;margin-top:8px}
+      .cafasso-mobile-preview-card{margin-top:16px;max-width:680px;padding:20px}
+      .cafasso-mobile-preview-card h2{font-family:Georgia,serif;color:#0F2D4D;margin:0 0 8px}
+      .cafasso-mobile-preview-card p{color:#687386;line-height:1.5;margin:0 0 14px}
+      .cafasso-device-wrap{position:fixed;inset:0;z-index:120;background:rgba(8,23,40,.68);display:none;align-items:center;justify-content:center;padding:18px}
+      .cafasso-device-wrap.show{display:flex}
+      .cafasso-device-dialog{width:min(520px,100%);max-height:96vh;display:flex;flex-direction:column;align-items:center;gap:12px}
+      .cafasso-device-toolbar{width:min(430px,100%);display:flex;align-items:center;justify-content:space-between;gap:10px;background:#FFFDF9;border:1px solid #E8DCCB;border-radius:16px;padding:10px 12px;box-shadow:0 8px 24px rgba(0,0,0,.16)}
+      .cafasso-device-toolbar strong{color:#0F2D4D}.cafasso-device-toolbar small{display:block;color:#687386;margin-top:2px}
+      .cafasso-device-toolbar-actions{display:flex;gap:8px}.cafasso-device-toolbar button{border:1px solid #E8DCCB;background:#fff;color:#0F2D4D;border-radius:10px;padding:8px 10px;font-weight:800;cursor:pointer}
+      .cafasso-device-phone{width:390px;max-width:calc(100vw - 36px);height:min(844px,calc(100vh - 118px));background:#111;border:10px solid #111;border-radius:34px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.35)}
+      .cafasso-device-phone iframe{display:block;width:100%;height:100%;border:0;background:#F6EFE4}
       @media(max-width:680px){
         .cafasso-profile-photo-row{align-items:flex-start}
         .cafasso-profile-photo-preview{width:96px;height:96px}
         .cafasso-profile-photo-actions{display:grid;grid-template-columns:1fr;width:100%}
         .cafasso-profile-photo-actions .btn{width:100%;min-height:44px}
+        .cafasso-mobile-preview-card{display:none!important}
       }
     `;
     document.head.appendChild(style);
@@ -126,10 +143,53 @@
     }
   }
 
+  function openMobilePreview(){
+    let wrap=document.getElementById('cafassoMobilePreviewWrap');
+    if(!wrap){
+      wrap=document.createElement('div');
+      wrap.id='cafassoMobilePreviewWrap';
+      wrap.className='cafasso-device-wrap';
+      const src=location.pathname+location.search+'#inicio';
+      wrap.innerHTML=`
+        <div class="cafasso-device-dialog" role="dialog" aria-modal="true" aria-label="Vista móvil de CAFASSO">
+          <div class="cafasso-device-toolbar">
+            <div><strong>Vista móvil</strong><small>390 × 844 px</small></div>
+            <div class="cafasso-device-toolbar-actions">
+              <button type="button" id="cafassoReloadMobilePreview">↻</button>
+              <button type="button" id="cafassoCloseMobilePreview">Cerrar</button>
+            </div>
+          </div>
+          <div class="cafasso-device-phone"><iframe id="cafassoMobilePreviewFrame" src="${src}" title="CAFASSO en vista móvil"></iframe></div>
+        </div>`;
+      document.body.appendChild(wrap);
+      document.getElementById('cafassoCloseMobilePreview').onclick=()=>wrap.classList.remove('show');
+      document.getElementById('cafassoReloadMobilePreview').onclick=()=>{
+        const frame=document.getElementById('cafassoMobilePreviewFrame');
+        if(frame)frame.src=frame.src;
+      };
+      wrap.onclick=e=>{if(e.target===wrap)wrap.classList.remove('show');};
+      document.addEventListener('keydown',e=>{if(e.key==='Escape')wrap.classList.remove('show');});
+    }
+    wrap.classList.add('show');
+  }
+
+  function mountAdminMobilePreview(firstCard){
+    if(!isAdmin()||document.getElementById('cafassoMobilePreviewCard'))return;
+    const card=document.createElement('div');
+    card.id='cafassoMobilePreviewCard';
+    card.className='card cafasso-mobile-preview-card';
+    card.innerHTML=`
+      <h2>Vista móvil</h2>
+      <p>Probá CAFASSO en un teléfono simulado sin salir de tu sesión de administrador.</p>
+      <button type="button" class="btn" id="cafassoOpenMobilePreview">📱 Ver como celular</button>`;
+    const photoCard=document.getElementById('cafassoProfilePhotoCard');
+    (photoCard||firstCard).insertAdjacentElement('afterend',card);
+    document.getElementById('cafassoOpenMobilePreview').onclick=openMobilePreview;
+  }
+
   function mountProfilePhoto(){
     decorateAvatars();
     if(location.hash!=='#perfil')return false;
-    if(document.getElementById('cafassoProfilePhotoCard'))return true;
 
     const main=document.getElementById('main');
     if(!main)return false;
@@ -139,8 +199,13 @@
     const s=readSession();
     if(!s?.user)return false;
     const user=s.user;
-    const photo=String(user.avatarData||'');
 
+    if(document.getElementById('cafassoProfilePhotoCard')){
+      mountAdminMobilePreview(firstCard);
+      return true;
+    }
+
+    const photo=String(user.avatarData||'');
     const card=document.createElement('div');
     card.id='cafassoProfilePhotoCard';
     card.className='card cafasso-profile-photo-card';
@@ -216,6 +281,7 @@
       }
     };
 
+    mountAdminMobilePreview(firstCard);
     return true;
   }
 
