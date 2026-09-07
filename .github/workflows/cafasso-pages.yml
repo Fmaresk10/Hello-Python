@@ -31,18 +31,17 @@ jobs:
           s = p.read_text(encoding='utf-8')
           marker = '<script id="cafasso-home-v2-direct">'
           if marker not in s:
-              inject = '''<script id="cafasso-home-v2-direct">if(new URLSearchParams(location.search).get('previewRole')==='animador'||new URLSearchParams(location.search).get('previewUser'))document.documentElement.dataset.cafassoPreviewRole='animador';</script>\n<script src="./course-cover-home.js?v=20260907-2"></script>\n<script src="./animator-home.js?v=20260907-5"></script>\n<script src="./animator-home-tweaks.js?v=20260907-3"></script>\n<script src="./animator-home-refine.js?v=20260907-2"></script>\n'''
+              inject = '''<script id="cafasso-home-v2-direct">if(new URLSearchParams(location.search).get('previewRole')==='animador'||new URLSearchParams(location.search).get('previewUser'))document.documentElement.dataset.cafassoPreviewRole='animador';</script>\n<script src="./course-cover-home.js?v=20260907-3"></script>\n<script src="./animator-home.js?v=20260907-5"></script>\n<script src="./animator-home-tweaks.js?v=20260907-3"></script>\n<script src="./animator-home-refine.js?v=20260907-2"></script>\n'''
               s = s.replace('</body>', inject + '</body>')
           p.write_text(s, encoding='utf-8')
 
           editor = Path('cafasso-wix-import/curso-editor.html')
           es = editor.read_text(encoding='utf-8')
-          old = 'course-cover-editor.js?v=20260907-1'
-          new = 'course-cover-editor.js?v=20260907-2'
-          if old in es:
-              es = es.replace(old,new)
-          elif new not in es:
-              es = es.replace('</body>', '<script src="./course-cover-editor.js?v=20260907-2"></script>\n</body>')
+          for old in ['course-cover-editor.js?v=20260907-1','course-cover-editor.js?v=20260907-2']:
+              if old in es:
+                  es = es.replace(old,'course-cover-editor.js?v=20260907-3')
+          if 'course-cover-editor.js?v=20260907-3' not in es:
+              es = es.replace('</body>', '<script src="./course-cover-editor.js?v=20260907-3"></script>\n</body>')
           editor.write_text(es, encoding='utf-8')
           PY
       - name: Configure Pages
