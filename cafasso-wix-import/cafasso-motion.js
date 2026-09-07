@@ -107,17 +107,15 @@
   function fixAdminHomeLinks(){
     const role=String(document.documentElement.dataset.cafassoRole||'').toLowerCase();
     if(role!=='admin')return;
-    const home='./admin.html#resumen';
+    const animatorHome='./?previewRole=animador';
     document.querySelectorAll('a,button').forEach(el=>{
       const text=String(el.textContent||'').trim().toLowerCase();
       const aria=String(el.getAttribute('aria-label')||'').trim().toLowerCase();
       if(text.includes('volver a cafasso')||text.includes('ir a cafasso')||aria==='volver a cafasso'||aria==='inicio cafasso'||aria==='volver al inicio'){
-        if(el.tagName==='A')el.setAttribute('href',home);
-        else el.onclick=()=>{location.href=home;};
+        if(el.tagName==='A')el.setAttribute('href',animatorHome);
+        else el.onclick=()=>{location.href=animatorHome;};
       }
     });
-    document.querySelectorAll('.side .brand a,.admin-mobile-brand').forEach(a=>a.setAttribute('href',home));
-    document.querySelectorAll('.admin-mobile-home').forEach(b=>b.onclick=()=>{location.href=home;});
   }
 
   function polishAdminSidebar(){
@@ -139,11 +137,13 @@
     }
 
     const back=document.querySelector('.side-foot .back');
-    if(back){back.textContent='⌂ Inicio';back.setAttribute('href','./admin.html#resumen');}
+    if(back){back.textContent='← Ir a CAFASSO';back.setAttribute('href','./?previewRole=animador');}
 
     document.querySelectorAll('.admin-mobile-sheet a').forEach(a=>{
       const t=String(a.textContent||'').toLowerCase();
-      if(t.includes('volver a cafasso')||t.includes('ir a cafasso')){a.textContent='⌂ Inicio';a.setAttribute('href','./admin.html#resumen');}
+      if(t.includes('volver a cafasso')||t.includes('ir a cafasso')||t==='⌂ inicio'){
+        a.textContent='← Ir a CAFASSO';a.setAttribute('href','./?previewRole=animador');
+      }
     });
   }
 
