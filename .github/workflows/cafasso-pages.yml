@@ -46,6 +46,8 @@ jobs:
                   es = es.replace(old,'course-cover-editor.js?v=20260907-3')
           if 'course-cover-editor.js?v=20260907-3' not in es:
               es = es.replace('</body>', '<script src="./course-cover-editor.js?v=20260907-3"></script>\n</body>')
+          es = re.sub(r'<script src="\./course-editor-nav\.js\?v=[^"]+"></script>\s*', '', es)
+          es = es.replace('</body>', '<script src="./course-editor-nav.js?v=20260907-1"></script>\n</body>')
           editor.write_text(es, encoding='utf-8')
           PY
       - name: Configure Pages
