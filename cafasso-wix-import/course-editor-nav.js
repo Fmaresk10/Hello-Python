@@ -32,14 +32,49 @@
     html[data-course-editor-screen="publish"] .outline{display:none!important}
     html[data-course-editor-screen="publish"] .editor{display:none!important}
 
+    .cafasso-course-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:2px 0 20px}
+    .cafasso-course-summary-card{border:1px solid var(--line);background:#F7F1E8;border-radius:14px;padding:13px 14px}
+    .cafasso-course-summary-card span{display:block;font-size:10px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;color:#8A7A63;margin-bottom:5px}
+    .cafasso-course-summary-card strong{display:block;color:var(--navy);font-size:14px;line-height:1.3}
+    html[data-course-editor-screen="course"] .course-cover-field{margin-top:22px!important;padding-top:18px!important;border-top:1px solid var(--line)!important}
+    html[data-course-editor-screen="course"] .course-cover-field>label:first-child{font-size:13px!important}
+
     .cafasso-review-panel{display:none;background:#FFFDF9;border:1px solid var(--line);border-radius:22px;padding:26px;max-width:860px;margin:0 auto;box-shadow:0 9px 24px rgba(25,37,54,.06)}
     html[data-course-editor-screen="publish"] .cafasso-review-panel{display:block}
     .cafasso-review-panel h2{font-family:Georgia,serif;color:var(--navy);font-size:30px;margin:0 0 8px}
     .cafasso-review-panel p{color:var(--muted);line-height:1.55;margin:0 0 18px}
     .cafasso-review-actions{display:flex;gap:10px;flex-wrap:wrap}
-    @media(max-width:700px){html[data-course-editor-screen="course"] .layout{display:block}.cafasso-review-actions{display:grid;grid-template-columns:1fr}.cafasso-review-actions .btn{width:100%}}
+    @media(max-width:700px){html[data-course-editor-screen="course"] .layout{display:block}.cafasso-course-summary{grid-template-columns:1fr}.cafasso-review-actions{display:grid;grid-template-columns:1fr}.cafasso-review-actions .btn{width:100%}}
   `;
   document.head.appendChild(style);
+
+  function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+  function sessionUserName(){
+    try{
+      const s=JSON.parse(localStorage.getItem('cafassoSession')||'null');
+      return String(s?.user?.name||s?.user?.displayName||'Formador/a').trim()||'Formador/a';
+    }catch(e){return 'Formador/a';}
+  }
+  function moduleCount(){
+    try{return Array.isArray(data?.modules)?data.modules.length:document.querySelectorAll('#moduleList .module').length;}
+    catch(e){return document.querySelectorAll('#moduleList .module').length;}
+  }
+  function ensureCourseSummary(){
+    const first=document.querySelector('.editor .section:first-of-type');
+    if(!first)return null;
+    let box=document.getElementById('cafassoCourseSummary');
+    if(!box){
+      box=document.createElement('div');
+      box.id='cafassoCourseSummary';
+      box.className='cafasso-course-summary';
+      const heading=first.querySelector('h3');
+      if(heading)heading.insertAdjacentElement('afterend',box);else first.prepend(box);
+    }
+    box.innerHTML=`
+      <div class="cafasso-course-summary-card"><span>Módulos del curso</span><strong>${moduleCount()}</strong></div>
+      <div class="cafasso-course-summary-card"><span>Formador a cargo</span><strong>${esc(sessionUserName())}</strong></div>`;
+    return box;
+  }
 
   function activate(step){
     document.querySelectorAll('.editor-step').forEach(el=>el.classList.toggle('active',el.dataset.step===step));
@@ -73,6 +108,7 @@
   function go(step,{smooth=true}={}){
     if(!['course','modules','contents','publish'].includes(step))step='course';
     root.dataset.courseEditorScreen=step;
+    if(step==='course')ensureCourseSummary();
     activate(step);
     const target=targetFor(step);
     if(target){
@@ -99,10 +135,18 @@
       btn.addEventListener('click',()=>go(btn.dataset.step));
       old.replaceWith(btn);
     });
+    ensureCourseSummary();
     ensureReviewPanel();
     if(!root.dataset.courseEditorScreen)go('course',{smooth:false});
     return true;
   }
+
+  document.addEventListener('click',e=>{
+    if(e.target.closest('#addModule,#deleteModule,#duplicateModuleV2'))setTimeout(ensureCourseSummary,80);
+  });
+  new MutationObserver(()=>{
+    if(root.dataset.courseEditorScreen==='course')ensureCourseSummary();
+  }).observe(document.body,{childList:true,subtree:true});
 
   let tries=0;
   const tick=()=>{if(install())return;if(tries++<40)setTimeout(tick,120);};
