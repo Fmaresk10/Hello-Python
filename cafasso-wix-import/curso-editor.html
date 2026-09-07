@@ -37,7 +37,72 @@ function renderContents(){const m=data.modules[active],box=$('contentList');box.
 function renderBlock(){const b=data.modules[active]?.contents?.[activeBlock];$('blockEmpty').style.display=b?'none':'block';$('blockFields').style.display=b?'block':'none';if(!b)return;$('blockType').value=b.type;$('blockTitle').value=b.title||'';$('blockBody').value=b.content?.body||'';$('blockRequired').checked=b.required!==false;$('blockSettings').value=b.settings?.notes||''}
 function escapeHtml(v=''){return String(v).replace(/[&<>\"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[s]))}
 function cache(){saveAllFields();localStorage.setItem(cacheKey,JSON.stringify(data))}
-async function saveToWix(publish=false){if(busy)return;saveAllFields();if(publish)data.course.status='Publicado';setBusy(true);syncStatus('Guardando en Wix CMS…');try{const payload={course:{...data.course,modules:data.modules}};const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const json=await res.json();if(!res.ok||!json.ok)throw new Error(json.error||'No se pudo guardar');data=normalizeCourse(json.course);localStorage.setItem(cacheKey,JSON.stringify(data));render();syncStatus('Guardado en Wix CMS',true);toast(publish?'Curso publicado y guardado':'Borrador guardado en Wix')}catch(err){cache();syncStatus('No se pudo llegar a Wix · quedó una copia local');toast('Guardado localmente por ahora');console.error(err)}finally{setBusy(false)}}
+const SAVE_ATTEMPTS=3,SAVE_RETRY_DELAYS=[0,900,1800];
+const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+function stableValue(value){
+  if(Array.isArray(value))return value.map(stableValue);
+  if(value&&typeof value==='object')return Object.keys(value).filter(key=>!key.startsWith('_')&&!['courseId','moduleId','order'].includes(key)).sort().reduce((out,key)=>{if(value[key]!==undefined)out[key]=stableValue(value[key]);return out;},{});
+  return value;
+}
+function comparableCourse(course={}){
+  return stableValue({
+    title:String(course.title||'').trim(),description:course.description||'',subtitle:course.subtitle||'',status:course.status||'Borrador',certificateEnabled:course.certificateEnabled!==false,version:Number(course.version||1),
+    modules:(course.modules||[]).map((module,index)=>({
+      title:module.title||`Módulo ${index+1}`,desc:module.desc||module.description||'',status:module.status||'Borrador',required:module.required!==false,unlockAfterPrevious:module.unlockAfterPrevious!==false,estimatedMinutes:Number(module.estimatedMinutes||20),settings:module.settings||{},
+      contents:(module.contents||[]).map((block,blockIndex)=>({type:block.type||'Texto',title:block.title||block.type||`Contenido ${blockIndex+1}`,required:block.required!==false,content:block.content||{},settings:block.settings||{}}))
+    }))
+  });
+}
+function sameCourse(expected,remote){return JSON.stringify(comparableCourse(expected))===JSON.stringify(comparableCourse(remote))}
+async function parseWixResponse(res){
+  try{return await res.json()}catch(error){const err=new Error(`Wix respondió con un formato inesperado (${res.status||'sin estado'}).`);err.status=res.status;throw err}
+}
+async function postCourseToWix(course){
+  const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({course})});
+  const json=await parseWixResponse(res);
+  if(!res.ok||!json.ok){const err=new Error(json.error||`Wix rechazó el guardado (${res.status}).`);err.status=res.status;throw err}
+  return json.course;
+}
+async function verifyCourseInWix(expected){
+  try{
+    const query=expected._id?`id=${encodeURIComponent(expected._id)}`:`title=${encodeURIComponent(expected.title)}`;
+    const res=await fetch(`${API}?${query}&verify=${Date.now()}`,{method:'GET',cache:'no-store'});
+    const json=await parseWixResponse(res);
+    if(!res.ok||!json.ok||!json.course)return null;
+    return sameCourse(expected,json.course)?json.course:null;
+  }catch(error){return null}
+}
+function retryableSaveError(error){const status=Number(error?.status||0),message=String(error?.message||'');return error instanceof TypeError||status>=500||/failed to fetch|networkerror|load failed|formato inesperado/i.test(message)}
+function saveErrorMessage(error){
+  const status=Number(error?.status||0),message=String(error?.message||'');
+  if(/sesión|iniciar sesión/i.test(message))return message;
+  if(status===403)return 'Tu usuario no tiene permiso para guardar este curso.';
+  if(status>=500)return 'Wix no pudo completar el guardado. Tus cambios siguen disponibles en este navegador.';
+  if(error instanceof TypeError||/failed to fetch|networkerror|load failed/i.test(message))return 'No hubo conexión con Wix después de 3 intentos. Tus cambios siguen disponibles en este navegador.';
+  return message||'No se pudo guardar el curso en Wix.';
+}
+async function saveToWix(publish=false){
+  if(busy)return false;
+  saveAllFields();if(publish)data.course.status='Publicado';
+  const expected=JSON.parse(JSON.stringify({...data.course,modules:data.modules}));
+  setBusy(true);syncStatus('Guardando en Wix CMS…');
+  try{
+    for(let attempt=0;attempt<SAVE_ATTEMPTS;attempt++){
+      if(attempt>0){syncStatus(`Wix no respondió · reintentando (${attempt+1}/${SAVE_ATTEMPTS})…`);await wait(SAVE_RETRY_DELAYS[attempt])}
+      try{
+        const saved=await postCourseToWix(expected);
+        data=normalizeCourse(saved);localStorage.setItem(cacheKey,JSON.stringify(data));render();syncStatus('Guardado en Wix CMS',true);toast(publish?'Curso publicado y guardado':'Borrador guardado en Wix');return true;
+      }catch(error){
+        if(!retryableSaveError(error))throw error;
+        syncStatus('Comprobando si Wix alcanzó a guardar…');await wait(600);
+        const verified=await verifyCourseInWix(expected);
+        if(verified){data=normalizeCourse(verified);localStorage.setItem(cacheKey,JSON.stringify(data));render();syncStatus('Guardado confirmado en Wix CMS',true);toast('Guardado confirmado en Wix');return true}
+        if(attempt===SAVE_ATTEMPTS-1)throw error;
+      }
+    }
+  }catch(error){cache();const message=saveErrorMessage(error);syncStatus(message);toast(message);console.error('CAFASSO save failed',error);return false}
+  finally{setBusy(false)}
+}
 async function deleteCourse(){if(busy||!data.course._id)return;saveCourseFields();const title=data.course.title||'Curso';if(!confirm(`¿Eliminar completamente “${title}”?\n\nSe borrarán también sus módulos, contenidos, asignaciones, avances y entregas. Esta acción no se puede deshacer.`))return;const typed=prompt(`Para confirmar la eliminación definitiva, escribí exactamente:\n${title}`);if(typed!==title){toast('El nombre no coincide. No se eliminó nada.');return;}setBusy(true);syncStatus('Eliminando curso y datos relacionados…');try{const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'deleteCourse',courseId:data.course._id})});const json=await res.json();if(!res.ok||!json.ok)throw new Error(json.error||'No se pudo eliminar el curso');localStorage.removeItem(cacheKey);toast('Curso eliminado completamente');setTimeout(()=>location.href='./admin.html#cursos',700)}catch(err){syncStatus('No se pudo eliminar el curso');toast(err.message||'Error al eliminar');console.error(err);setBusy(false)}}
 document.querySelectorAll('[data-type]').forEach(btn=>btn.onclick=()=>{saveAllFields();const b=newBlock(btn.dataset.type);data.modules[active].contents.push(b);activeBlock=data.modules[active].contents.length-1;render();cache()});
 $('addModule').onclick=()=>{saveAllFields();data.modules.push(newModule());active=data.modules.length-1;activeBlock=-1;render();cache()};
