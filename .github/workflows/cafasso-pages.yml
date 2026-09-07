@@ -27,6 +27,8 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
+
           p = Path('cafasso-wix-import/index.html')
           s = p.read_text(encoding='utf-8')
           marker = '<script id="cafasso-home-v2-direct">'
@@ -34,7 +36,6 @@ jobs:
               inject = '''<script id="cafasso-home-v2-direct">if(new URLSearchParams(location.search).get('previewRole')==='animador'||new URLSearchParams(location.search).get('previewUser'))document.documentElement.dataset.cafassoPreviewRole='animador';</script>\n<script src="./course-cover-home.js?v=20260907-4"></script>\n<script src="./animator-home.js?v=20260907-5"></script>\n<script src="./animator-home-tweaks.js?v=20260907-3"></script>\n<script src="./animator-home-refine.js?v=20260907-2"></script>\n'''
               s = s.replace('</body>', inject + '</body>')
           profile_script = '<script src="./animator-profile-chip.js?v=20260907-2"></script>'
-          import re
           s = re.sub(r'<script src="\./animator-profile-chip\.js\?v=[^"]+"></script>\s*', '', s)
           s = s.replace('</body>', profile_script + '\n</body>')
           p.write_text(s, encoding='utf-8')
@@ -49,6 +50,18 @@ jobs:
           es = re.sub(r'<script src="\./course-editor-nav\.js\?v=[^"]+"></script>\s*', '', es)
           es = es.replace('</body>', '<script src="./course-editor-nav.js?v=20260907-3"></script>\n</body>')
           editor.write_text(es, encoding='utf-8')
+
+          login = Path('cafasso-wix-import/login.html')
+          ls = login.read_text(encoding='utf-8')
+          ls = re.sub(r'<script src="\./login-redesign\.js\?v=[^"]+"></script>\s*', '', ls)
+          ls = ls.replace('</body>', '<script src="./login-redesign.js?v=20260907-1"></script>\n</body>')
+          login.write_text(ls, encoding='utf-8')
+
+          admin = Path('cafasso-wix-import/admin.html')
+          ads = admin.read_text(encoding='utf-8')
+          ads = re.sub(r'<script src="\./admin-login-image\.js\?v=[^"]+"></script>\s*', '', ads)
+          ads = ads.replace('</body>', '<script src="./admin-login-image.js?v=20260907-1"></script>\n</body>')
+          admin.write_text(ads, encoding='utf-8')
           PY
       - name: Configure Pages
         uses: actions/configure-pages@v5
