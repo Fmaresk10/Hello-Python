@@ -1,7 +1,7 @@
 (()=>{
   if(typeof data==='undefined'||typeof render!=='function')return;
 
-  const VERSION='course-editor-v2-20260906';
+  const VERSION='course-editor-v2-20260907';
   const $e=id=>document.getElementById(id);
   let dirty=false;
   let localTimer=null;
@@ -11,6 +11,10 @@
   const style=document.createElement('style');
   style.id='cafassoCourseEditorV2Styles';
   style.textContent=`
+    .side h4,.side-tools{display:none!important}
+    .editor .section:first-of-type{background:#FFFDF9;border:1px solid var(--line);border-radius:18px;padding:20px 20px 18px;margin:0 0 30px;box-shadow:0 8px 22px rgba(25,37,54,.045)}
+    .editor .section:first-of-type h3{margin-bottom:18px}
+    .editor .section:nth-of-type(2){padding-top:2px}
     .editor-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 18px}
     .editor-step{background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 12px;color:var(--muted);font-size:12px;font-weight:800;display:flex;align-items:center;gap:8px}
     .editor-step b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#F7F1E8;color:var(--navy);font-size:11px}
