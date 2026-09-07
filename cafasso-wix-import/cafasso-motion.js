@@ -19,26 +19,20 @@
       button,.btn,a.btn,.nav button,.mobile-nav button{transition:transform .12s ease,filter .16s ease,background-color .16s ease,border-color .16s ease,box-shadow .16s ease}
       button:active,.btn:active,a.btn:active{transform:translateY(1px) scale(.99)}
       @media (hover:hover) and (pointer:fine){.btn:hover,button:hover{filter:brightness(.985)}}
-
       .cafasso-motion-enter{opacity:0;transform:translateY(7px)}
       .cafasso-motion-enter.cafasso-motion-visible{opacity:1;transform:none;transition:opacity .28s var(--cafasso-ease),transform .28s var(--cafasso-ease)}
       .cafasso-motion-enter.cafasso-motion-visible:nth-child(2){transition-delay:.025s}.cafasso-motion-enter.cafasso-motion-visible:nth-child(3){transition-delay:.05s}
-
       .bar span,.mini span,[class*="progress"] span{transform-origin:left center}
       .cafasso-progress-animate{animation:cafassoProgressIn .48s var(--cafasso-ease) both}
       @keyframes cafassoProgressIn{from{transform:scaleX(.06);opacity:.65}to{transform:scaleX(1);opacity:1}}
-
       .hero{position:relative;overflow:hidden}
       .hero:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-72px;top:-82px;background:rgba(242,201,76,.055);pointer-events:none}
       .hero>*{position:relative;z-index:1}
-
       .brand img,.mobile-brand img{transform-origin:center bottom}
       .cafasso-brand-arrive{animation:cafassoBrandArrive .5s var(--cafasso-ease) both}
       @keyframes cafassoBrandArrive{0%{opacity:.78;transform:translateX(-4px) rotate(-1deg)}100%{opacity:1;transform:none}}
-
       .section h3,.head h1,.top h1{position:relative}
       .section h3:after{content:"";display:block;width:30px;height:2px;border-radius:99px;background:#F2C94C;margin-top:7px;opacity:.9}
-
       @media(max-width:680px){
         .cafasso-motion-enter{transform:translateY(5px)}
         .card:hover,.stat:hover,.group-card:hover,.course-card:hover,.module-card:hover,.submission-card:hover,.animator-card:hover,.report-card:hover{transform:none;box-shadow:inherit}
@@ -74,7 +68,6 @@
       el.classList.add('cafasso-motion-enter');
       observer.observe(el);
     });
-
     root.querySelectorAll?.('.bar span,.mini span').forEach(el=>{
       if(el.dataset.cafassoProgressAnimated)return;
       el.dataset.cafassoProgressAnimated='1';
@@ -112,8 +105,12 @@
       const text=String(el.textContent||'').trim().toLowerCase();
       const aria=String(el.getAttribute('aria-label')||'').trim().toLowerCase();
       if(text.includes('volver a cafasso')||text.includes('ir a cafasso')||aria==='volver a cafasso'||aria==='inicio cafasso'||aria==='volver al inicio'){
-        if(el.tagName==='A')el.setAttribute('href',animatorHome);
-        else el.onclick=()=>{location.href=animatorHome;};
+        if(el.tagName==='A'){
+          if(el.getAttribute('href')!==animatorHome)el.setAttribute('href',animatorHome);
+        }else if(el.dataset.cafassoAnimatorHome!=='1'){
+          el.dataset.cafassoAnimatorHome='1';
+          el.onclick=()=>{location.href=animatorHome;};
+        }
       }
     });
   }
@@ -122,27 +119,28 @@
     const page=(location.pathname.split('/').pop()||'').toLowerCase();
     const role=String(document.documentElement.dataset.cafassoRole||'').toLowerCase();
     if(page!=='admin.html'||role!=='admin')return;
-
     const menu=document.querySelector('.side .menu');
     if(menu){
       menu.querySelectorAll('button').forEach(btn=>{
         const text=String(btn.textContent||'').toLowerCase();
-        if(text.includes('grupos')||text.includes('asignaciones')||text.includes('reportes'))btn.style.display='none';
+        if((text.includes('grupos')||text.includes('asignaciones')||text.includes('reportes'))&&btn.style.display!=='none')btn.style.display='none';
         if(btn.dataset.tab==='resumen'){
           const span=btn.querySelector('span');
-          if(span)span.textContent='⌂   Inicio';
+          if(span&&span.textContent!=='⌂   Inicio')span.textContent='⌂   Inicio';
         }
       });
       menu.querySelectorAll('.cafasso-admin-preview-entry').forEach(el=>el.remove());
     }
-
     const back=document.querySelector('.side-foot .back');
-    if(back){back.textContent='← Ir a CAFASSO';back.setAttribute('href','./?previewRole=animador');}
-
+    if(back){
+      if(back.textContent!=='← Ir a CAFASSO')back.textContent='← Ir a CAFASSO';
+      if(back.getAttribute('href')!=='./?previewRole=animador')back.setAttribute('href','./?previewRole=animador');
+    }
     document.querySelectorAll('.admin-mobile-sheet a').forEach(a=>{
       const t=String(a.textContent||'').toLowerCase();
       if(t.includes('volver a cafasso')||t.includes('ir a cafasso')||t==='⌂ inicio'){
-        a.textContent='← Ir a CAFASSO';a.setAttribute('href','./?previewRole=animador');
+        if(a.textContent!=='← Ir a CAFASSO')a.textContent='← Ir a CAFASSO';
+        if(a.getAttribute('href')!=='./?previewRole=animador')a.setAttribute('href','./?previewRole=animador');
       }
     });
   }
@@ -156,11 +154,11 @@
     fixAdminHomeLinks();
     polishAdminSidebar();
     const mo=new MutationObserver(mutations=>{
+      let added=false;
       for(const m of mutations){
-        for(const node of m.addedNodes){if(node&&node.nodeType===1){enhance(node);brand();}}
+        for(const node of m.addedNodes){if(node&&node.nodeType===1){added=true;enhance(node);brand();}}
       }
-      fixAdminHomeLinks();
-      polishAdminSidebar();
+      if(added){fixAdminHomeLinks();polishAdminSidebar();}
     });
     mo.observe(document.body,{childList:true,subtree:true});
   }
