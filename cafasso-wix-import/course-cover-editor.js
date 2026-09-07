@@ -16,16 +16,24 @@
   `;
   document.head.appendChild(style);
 
+  function googleDriveId(u){
+    const filePath=u.pathname.match(/\/file\/d\/([^/]+)/i);
+    if(filePath?.[1])return filePath[1];
+    const dPath=u.pathname.match(/\/d\/([^/]+)/i);
+    if(dPath?.[1])return dPath[1];
+    return u.searchParams.get('id')||'';
+  }
+
   function directImageUrl(raw){
     let url=String(raw||'').trim();
     if(!url)return '';
     try{
       const u=new URL(url);
       if(/(^|\.)drive\.google\.com$/i.test(u.hostname)){
-        const m=u.pathname.match(/\/file\/d\/([^/]+)/i);
-        const id=m?.[1]||u.searchParams.get('id');
-        if(id)return 'https://drive.google.com/uc?export=view&id='+encodeURIComponent(id);
+        const id=googleDriveId(u);
+        if(id)return 'https://drive.google.com/thumbnail?id='+encodeURIComponent(id)+'&sz=w1600';
       }
+      if(/(^|\.)googleusercontent\.com$/i.test(u.hostname))return url;
       if(/(^|\.)dropbox\.com$/i.test(u.hostname)){
         u.searchParams.set('raw','1');
         u.searchParams.delete('dl');
@@ -68,7 +76,7 @@
     const img=document.createElement('img');
     img.src=url;img.alt='Vista previa de la imagen del curso';
     img.onload=()=>{box.classList.remove('bad');};
-    img.onerror=()=>{box.innerHTML='';box.classList.add('bad');box.textContent='Ese enlace no entrega una imagen directamente. Probá con una imagen pública o un enlace compartido de Google Drive.';};
+    img.onerror=()=>{box.innerHTML='';box.classList.add('bad');box.textContent='No pude mostrar esa imagen. Si está en Google Drive, verificá que el archivo pueda ser visto por cualquier persona con el enlace.';};
     box.appendChild(img);
   }
 
