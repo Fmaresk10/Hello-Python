@@ -11,7 +11,7 @@
     style.id=STYLE_ID;
     style.textContent=`
       :root{--cafasso-ease:cubic-bezier(.2,.7,.25,1)}
-      .card,.stat,.panel,.box,.group-card,.course-card,.module-card,.submission-card,.animator-card,.report-card,.cafasso-daily-word{transition:transform .18s var(--cafasso-ease),box-shadow .18s var(--cafasso-ease),border-color .18s var(--cafasso-ease),background-color .18s var(--cafasso-ease)}
+      .card,.stat,.panel,.group-card,.course-card,.module-card,.submission-card,.animator-card,.report-card,.cafasso-daily-word{transition:transform .18s var(--cafasso-ease),box-shadow .18s var(--cafasso-ease),border-color .18s var(--cafasso-ease),background-color .18s var(--cafasso-ease)}
       @media (hover:hover) and (pointer:fine){
         .card:hover,.group-card:hover,.course-card:hover,.module-card:hover,.submission-card:hover,.animator-card:hover,.report-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(15,45,77,.09);border-color:#DDCFBB}
         .stat:hover{transform:translateY(-2px);box-shadow:0 7px 18px rgba(15,45,77,.06)}
@@ -66,7 +66,7 @@
   }
 
   function enhance(root=document){
-    const selector='.card,.stat,.panel,.box,.group-card,.course-card,.module-card,.submission-card,.animator-card,.report-card,.cafasso-daily-word';
+    const selector='.card,.stat,.panel,.group-card,.course-card,.module-card,.submission-card,.animator-card,.report-card,.cafasso-daily-word';
     root.querySelectorAll?.(selector).forEach(el=>{
       if(seen.has(el))return;
       seen.add(el);
@@ -104,23 +104,12 @@
     document.head.appendChild(s);
   }
 
-  function installAdminCleanup(){
-    const page=(location.pathname.split('/').pop()||'').toLowerCase();
-    if(page!=='admin.html'||document.getElementById('cafassoAdminCleanupLoader'))return;
-    const s=document.createElement('script');
-    s.id='cafassoAdminCleanupLoader';
-    s.src='./admin-cleanup.js?v=20260906-1';
-    s.defer=true;
-    document.head.appendChild(s);
-  }
-
   function boot(){
     installStyles();
     prepareObserver();
     enhance(document);
     brand();
     installAnimatorHome();
-    installAdminCleanup();
     const mo=new MutationObserver(mutations=>{
       for(const m of mutations){
         for(const node of m.addedNodes){if(node&&node.nodeType===1){enhance(node);brand();}}
