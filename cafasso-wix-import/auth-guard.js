@@ -30,6 +30,7 @@
   const requestedPreviewUser=String(params0.get('previewUser')||'').trim();
   const staffAnimatorPreview=(isAdmin||isFormador)&&requestedPreviewRole==='animador';
   const exactAnimatorPreview=isAdmin&&!!requestedPreviewUser;
+  if(staffAnimatorPreview)document.documentElement.dataset.cafassoPreviewRole='animador';
 
   // Cada rol tiene su propia casa. Admin/Formador solo ven la home de Animador mediante "Ver como…".
   if(page==='index.html'&&!staffAnimatorPreview&&!exactAnimatorPreview){
