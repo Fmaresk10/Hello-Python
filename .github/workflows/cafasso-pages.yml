@@ -72,6 +72,8 @@ jobs:
           ads = ads.replace('</body>', '<script src="./admin-login-image.js?v=20260907-1"></script>\n</body>')
           admin.write_text(ads, encoding='utf-8')
           PY
+      - name: Aplicar modelo Personas
+        run: python scripts/patch_people_semantics.py
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
