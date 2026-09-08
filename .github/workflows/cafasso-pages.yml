@@ -29,6 +29,15 @@ jobs:
           from pathlib import Path
           import re
 
+          root = Path('cafasso-wix-import')
+          favicon = '<link rel="icon" type="image/svg+xml" href="./favicon.svg?v=20260908-1">'
+          for page in root.glob('*.html'):
+              html = page.read_text(encoding='utf-8')
+              html = re.sub(r'<link\s+[^>]*rel=["\'](?:shortcut\s+)?icon["\'][^>]*>\s*', '', html, flags=re.I)
+              if favicon not in html:
+                  html = html.replace('</head>', favicon + '\n</head>')
+              page.write_text(html, encoding='utf-8')
+
           p = Path('cafasso-wix-import/index.html')
           s = p.read_text(encoding='utf-8')
           marker = '<script id="cafasso-home-v2-direct">'
