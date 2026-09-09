@@ -73,6 +73,7 @@
       .cafasso-home-word-placeholder{height:100%;min-height:355px;border-radius:22px;background:linear-gradient(180deg,#173954,#112E47);padding:27px;color:#fff;display:flex;flex-direction:column;justify-content:space-between}.cafasso-home-word-placeholder span{color:#E7C15F;font-size:24px}.cafasso-home-word-placeholder h3{font:400 28px/1.1 Georgia,serif;margin:18px 0 8px}.cafasso-home-word-placeholder p{color:#C8D3DD;font-size:12px;line-height:1.55}
 
       .cafasso-home-lower{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(260px,.72fr);gap:20px;margin-top:31px;align-items:start}
+      .cafasso-home-almitas{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:18px;padding:16px 18px;border-radius:17px;background:linear-gradient(110deg,#FFF7D7,#F7E8AD);border:1px solid rgba(200,155,49,.25);color:var(--home-navy)}.cafasso-home-almitas-main{display:flex;align-items:center;gap:12px}.cafasso-home-almitas-icon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#D4AA3B;color:#fff;font-size:20px;box-shadow:0 4px 12px rgba(145,105,15,.16)}.cafasso-home-almitas-label{font:800 10px/1.2 Inter,system-ui;letter-spacing:.12em;text-transform:uppercase;color:#8D6A1F}.cafasso-home-almitas-total{font:400 30px/1 Georgia,serif;color:var(--home-navy)}.cafasso-home-almitas-note{font-size:11px;line-height:1.45;color:#77653A;text-align:right;max-width:235px}.cafasso-home-almitas-note strong{display:block;color:#6C5500;margin-bottom:3px}@media(max-width:680px){.cafasso-home-almitas{align-items:flex-start;flex-direction:column}.cafasso-home-almitas-note{text-align:left;max-width:none}}
       .cafasso-home-section-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:14px}.cafasso-home-section-head h3{font:400 29px/1.1 Georgia,serif;color:var(--home-navy);margin:0}.cafasso-home-link{appearance:none;border:0;background:none;padding:0;color:#7A6A50;font:800 11px Inter,system-ui;cursor:pointer}
       .cafasso-home-courses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
       .cafasso-home-course{background:var(--home-card);border:1px solid var(--home-line);border-radius:17px;overflow:hidden;min-width:0}
@@ -119,10 +120,36 @@
     return (document.querySelector(selector)?.textContent||fallback).trim();
   }
 
+  function rewardSummary(){
+    const state=window.CafassoAnimatorState||{};
+    const userId=state.session?.user?._id;
+    const rows=(state.data?.progress||[]).filter(row=>!userId||row.userId===userId);
+    const approved=rows.reduce((sum,row)=>sum+Number(row.almitasApproved||0),0);
+    const submissions=(state.data?.submissions||[]).filter(row=>!userId||row.userId===userId);
+    const pending=submissions.filter(row=>['Pendiente','En revisión'].includes(row.status)).reduce((sum,row)=>sum+Number(row.rewardAlmitas||0),0);
+    const pendingCount=submissions.filter(row=>['Pendiente','En revisión'].includes(row.status)).length;
+    return {approved,pending,pendingCount};
+  }
+
+  function refreshRewards(){
+    const root=document.querySelector('.cafasso-home-v2');
+    if(!root)return;
+    const summary=rewardSummary();
+    const total=root.querySelector('[data-almitas-total]');
+    const note=root.querySelector('[data-almitas-note]');
+    if(total)total.textContent=String(summary.approved);
+    if(note){
+      note.innerHTML=summary.pendingCount
+        ? `<strong>${summary.pendingCount} desafío${summary.pendingCount===1?'':'s'} en revisión</strong>${summary.pending} almitas esperan la mirada de un formador.`
+        : '<strong>Tu próxima recompensa empieza con un desafío.</strong>Entregá una acción concreta y hacé crecer tu camino.';
+    }
+  }
+
   function renderHome(){
     if(!isHome()){root.dataset.cafassoHomeV2='0';return;}
     const main=document.getElementById('main');
-    if(!main||main.querySelector('.cafasso-home-v2')){moveDailyWord();return;}
+    if(!main){return;}
+    if(main.querySelector('.cafasso-home-v2')){refreshRewards();moveDailyWord();return;}
     const cards=collectCards(main);
     if(!cards.length)return;
 
@@ -136,6 +163,7 @@
     const list=cards.slice(0,3);
     const desc=selected?.desc||'Seguí creciendo en tu camino de formación y acompañamiento salesiano.';
     const nextCourse=cards.find(x=>x!==selected&&x.pct<100);
+    const rewards=rewardSummary();
 
     main.innerHTML=`<div class="cafasso-home-v2">
       <header class="cafasso-home-head">
@@ -156,6 +184,11 @@
           <div class="cafasso-home-visual"><img class="cafasso-home-visual-mark" src="./cafasso-mark.svg" alt=""><div class="cafasso-home-visual-quote">“Buenos cristianos y honestos ciudadanos”<small>Don Bosco</small></div></div>
         </article>
         <aside class="cafasso-home-word-slot" id="cafassoHomeWordSlot"><div class="cafasso-home-word-placeholder"><div><span>✝</span><h3>Palabra del día</h3><p>Una palabra para iluminar el camino de hoy.</p></div><small>Cargando liturgia…</small></div></aside>
+      </section>
+
+      <section class="cafasso-home-almitas" aria-label="Almitas">
+        <div class="cafasso-home-almitas-main"><span class="cafasso-home-almitas-icon">✦</span><div><div class="cafasso-home-almitas-label">Almitas acreditadas</div><div class="cafasso-home-almitas-total" data-almitas-total>${rewards.approved}</div></div></div>
+        <div class="cafasso-home-almitas-note" data-almitas-note>${rewards.pendingCount?`<strong>${rewards.pendingCount} desafío${rewards.pendingCount===1?'':'s'} en revisión</strong>${rewards.pending} almitas esperan la mirada de un formador.`:'<strong>Tu próxima recompensa empieza con un desafío.</strong>Entregá una acción concreta y hacé crecer tu camino.'}</div>
       </section>
 
       <section class="cafasso-home-lower">
@@ -209,6 +242,7 @@
     });
     mo.observe(app,{childList:true,subtree:true});
     window.addEventListener('hashchange',schedule);
+    window.addEventListener('cafasso:state-ready',schedule);
     document.addEventListener('click',e=>{if(e.target.closest('[data-view="inicio"]'))schedule();});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();

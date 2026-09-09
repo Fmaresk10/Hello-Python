@@ -1,7 +1,7 @@
 (()=>{
   if(typeof data==='undefined'||typeof render!=='function')return;
 
-  const VERSION='course-editor-v2-20260907';
+  const VERSION='course-editor-v2-20260909-almitas';
   const $e=id=>document.getElementById(id);
   let dirty=false;
   let localTimer=null;
@@ -30,6 +30,8 @@
     .block-help{margin:-5px 0 14px;padding:11px 12px;border-radius:12px;background:#F7F1E8;color:#59697A;font-size:12px;line-height:1.5}
     .block-help .embed-ok{display:block;margin-top:8px;padding:8px 10px;border-radius:10px;background:#EDF5F1;color:#245F48;font-weight:800}
     .block-help .embed-note{display:block;margin-top:6px;color:#6C5500}
+    .challenge-config{display:none;margin:0 0 14px;padding:14px;border:1px solid #E7CF73;border-radius:14px;background:#FFF8DD;color:#5E4B00}
+    .challenge-config.show{display:block}.challenge-config h4{margin:0 0 5px;color:var(--navy);font-size:14px}.challenge-config p{margin:0 0 12px;font-size:12px;line-height:1.45}.challenge-config-grid{display:grid;grid-template-columns:minmax(130px,.42fr) minmax(0,1fr);gap:10px}.challenge-config label{display:grid;gap:5px;font-size:11px;font-weight:800;color:#6C5500}.challenge-config input,.challenge-config textarea{width:100%;border:1px solid #E7CF73;background:#fff;border-radius:10px;padding:9px 10px;font:inherit;color:var(--ink)}.challenge-config textarea{min-height:70px;resize:vertical}@media(max-width:700px){.challenge-config-grid{grid-template-columns:1fr}}
     .editor-preview-wrap{position:fixed;inset:0;background:rgba(10,25,45,.52);display:none;place-items:center;z-index:170;padding:18px}
     .editor-preview-wrap.show{display:grid}
     .editor-preview{width:min(960px,100%);max-height:90vh;overflow:auto;background:#F6EFE4;border-radius:26px;border:1px solid var(--line);box-shadow:0 26px 80px rgba(10,25,45,.3)}
@@ -95,6 +97,11 @@
     help.id='blockTypeHelpV2';
     help.className='block-help';
     blockFields.insertAdjacentElement('afterbegin',help);
+    const challenge=document.createElement('div');
+    challenge.id='challengeConfigV2';
+    challenge.className='challenge-config';
+    challenge.innerHTML='<h4>Recompensa y revisión</h4><p>El desafío se acredita únicamente cuando un formador aprueba la entrega. Las almitas se suman una sola vez.</p><div class="challenge-config-grid"><label>Almitas a otorgar<input id="challengeRewardV2" type="number" min="0" max="10000" step="1" value="10"></label><label>Criterio para el formador<textarea id="challengeCriteriaV2" placeholder="¿Qué debe observar el formador para aprobarlo?"></textarea></label></div>';
+    blockFields.insertAdjacentElement('afterbegin',challenge);
   }
 
   const validation=document.createElement('div');
@@ -133,6 +140,7 @@
       Documento:['Pegá un enlace de Google Drive, Docs, Slides, Sheets o un PDF. CAFASSO intentará mostrarlo dentro del curso automáticamente.','https://drive.google.com/…','Enlace al material'],
       'Reflexión':['Escribí una pregunta o consigna personal. La respuesta se guarda y puede recibir devolución.','¿Qué te resuena de lo trabajado?','Consigna de reflexión'],
       Entrega:['Planteá la tarea que el animador debe entregar. Quedará pendiente de revisión.','Describí qué tiene que entregar…','Consigna de entrega'],
+      'Desafío':['Proponé una acción concreta que el animador debe realizar y entregar. Un formador deberá aprobarla antes de acreditar las almitas.','Describí el desafío y qué debe entregar…','Consigna del desafío'],
       'Evaluación':['Escribí la consigna de evaluación. Por ahora funciona como respuesta escrita revisable.','Escribí la consigna de evaluación…','Consigna de evaluación']
     };
     const cfg=map[type]||map.Texto;
@@ -147,8 +155,28 @@
       help.innerHTML='<strong>'+cfg[2]+':</strong> '+cfg[0]+extra;
     }
     const body=$e('blockBody');if(body)body.placeholder=cfg[1];
-    const settings=$e('blockSettings');if(settings)settings.placeholder=type==='Evaluación'?'Ej.: puntaje mínimo 70%':'Notas internas opcionales';
+    const settings=$e('blockSettings');if(settings)settings.placeholder=type==='Evaluación'?'Ej.: puntaje mínimo 70%':type==='Desafío'?'Notas internas opcionales · la recompensa se configura arriba':'Notas internas opcionales';
   }
+
+  function currentBlock(){return data.modules?.[active]?.contents?.[activeBlock]||null;}
+  function syncChallengeFields(){
+    const panel=$e('challengeConfigV2'),block=currentBlock(),isChallenge=String($e('blockType')?.value||block?.type||'')==='Desafío';
+    if(!panel)return;
+    panel.classList.toggle('show',isChallenge);
+    if(!isChallenge||!block)return;
+    const settings=block.settings||{};
+    const reward=$e('challengeRewardV2'),criteria=$e('challengeCriteriaV2');
+    if(reward&&document.activeElement!==reward)reward.value=Number.isFinite(Number(settings.rewardAlmitas))?Math.max(0,Number(settings.rewardAlmitas)):10;
+    if(criteria&&document.activeElement!==criteria)criteria.value=String(settings.reviewCriteria||'');
+  }
+  const originalSaveBlockFields=saveBlockFields;
+  saveBlockFields=function(){
+    originalSaveBlockFields();
+    const block=currentBlock();
+    if(!block||block.type!=='Desafío')return;
+    const reward=Math.max(0,Math.min(10000,Math.round(Number($e('challengeRewardV2')?.value||0))));
+    block.settings={...(block.settings||{}),rewardAlmitas:reward,requiresReview:true,reviewCriteria:String($e('challengeCriteriaV2')?.value||'').trim()};
+  };
 
   function validateForPublish(){
     saveAllFields();
@@ -162,6 +190,7 @@
       (m.contents||[]).forEach((b,j)=>{
         if(!String(b.title||'').trim())problems.push(`Hay un bloque sin título en “${m.title||'Módulo'}”.`);
         if(!String(b.content?.body||'').trim())problems.push(`“${b.title||'Bloque '+(j+1)}” está vacío.`);
+        if(String(b.type||'')==='Desafío'&&Number(b.settings?.rewardAlmitas||0)<=0)problems.push(`El desafío “${b.title||'Bloque '+(j+1)}” necesita una recompensa de al menos 1 almita.`);
       });
     });
     const box=$e('editorValidationV2');
@@ -182,7 +211,7 @@
   function escPreview(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
   function previewBlock(b){
     const type=String(b.type||'Texto'),content=String(b.content?.body||'');
-    const interactive=['Reflexión','Entrega','Evaluación'].includes(type);
+    const interactive=['Reflexión','Entrega','Desafío','Evaluación'].includes(type);
     return `<div class="preview-block"><small>${escPreview(type)}${b.required?' · OBLIGATORIO':''}</small><strong>${escPreview(b.title||type)}</strong>${interactive?`<p>${escPreview(content)}</p><div class="preview-consigna">Así verá el animador el espacio para responder.</div>`:`<p>${escPreview(content)}</p>`}</div>`;
   }
 
@@ -210,7 +239,13 @@
   const originalRenderContents=renderContents;
   renderContents=function(){originalRenderContents();enhanceRows();};
   const originalRenderBlock=renderBlock;
-  renderBlock=function(){originalRenderBlock();typeHelp();};
+  renderBlock=function(){originalRenderBlock();typeHelp();syncChallengeFields();};
+
+  ['challengeRewardV2','challengeCriteriaV2'].forEach(id=>{
+    $e(id)?.addEventListener('input',()=>{markDirty();saveBlockFields();});
+    $e(id)?.addEventListener('change',()=>{markDirty();saveBlockFields();});
+  });
+  $e('blockType')?.addEventListener('change',()=>setTimeout(syncChallengeFields,0));
 
   $e('duplicateModuleV2').onclick=()=>{
     saveAllFields();const source=data.modules[active];if(!source)return;
@@ -241,10 +276,11 @@
 
   window.addEventListener('beforeunload',e=>{if(!dirty)return;e.preventDefault();e.returnValue='';});
   render();
+  syncChallengeFields();
   markSaved();
   console.info('CAFASSO',VERSION);
 
   if(!document.getElementById('cafassoCourseEditorV3Loader')){
-    const s=document.createElement('script');s.id='cafassoCourseEditorV3Loader';s.src='./course-editor-v3.js?v=20260904-1';s.defer=true;document.body.appendChild(s);
+    const s=document.createElement('script');s.id='cafassoCourseEditorV3Loader';s.src='./course-editor-v3.js?v=20260909-1';s.defer=true;document.body.appendChild(s);
   }
 })();

@@ -42,7 +42,7 @@ jobs:
           s = p.read_text(encoding='utf-8')
           marker = '<script id="cafasso-home-v2-direct">'
           if marker not in s:
-              inject = '''<script id="cafasso-home-v2-direct">if(new URLSearchParams(location.search).get('previewRole')==='animador'||new URLSearchParams(location.search).get('previewUser'))document.documentElement.dataset.cafassoPreviewRole='animador';</script>\n<script src="./course-cover-home.js?v=20260907-4"></script>\n<script src="./animator-home.js?v=20260907-5"></script>\n<script src="./animator-home-tweaks.js?v=20260907-3"></script>\n<script src="./animator-home-refine.js?v=20260907-2"></script>\n'''
+              inject = '''<script id="cafasso-home-v2-direct">if(new URLSearchParams(location.search).get('previewRole')==='animador'||new URLSearchParams(location.search).get('previewUser'))document.documentElement.dataset.cafassoPreviewRole='animador';</script>\n<script src="./course-cover-home.js?v=20260907-4"></script>\n<script src="./animator-home.js?v=20260909-1"></script>\n<script src="./animator-home-tweaks.js?v=20260907-3"></script>\n<script src="./animator-home-refine.js?v=20260907-2"></script>\n'''
               s = s.replace('</body>', inject + '</body>')
           profile_script = '<script src="./animator-profile-chip.js?v=20260907-2"></script>'
           s = re.sub(r'<script src="\./animator-profile-chip\.js\?v=[^"]+"></script>\s*', '', s)
@@ -71,6 +71,12 @@ jobs:
           ads = re.sub(r'<script src="\./admin-login-image\.js\?v=[^"]+"></script>\s*', '', ads)
           ads = ads.replace('</body>', '<script src="./admin-login-image.js?v=20260907-1"></script>\n</body>')
           admin.write_text(ads, encoding='utf-8')
+
+          deliveries = Path('cafasso-wix-import/entregas.html')
+          ds = deliveries.read_text(encoding='utf-8')
+          ds = re.sub(r'<script src="\./entregas-manager\.js\?v=[^"]+"></script>\s*', '', ds)
+          ds = ds.replace('</body>', '<script src="./entregas-manager.js?v=20260909-1"></script>\n</body>')
+          deliveries.write_text(ds, encoding='utf-8')
           PY
       - name: Aplicar modelo Personas
         run: python scripts/patch_people_semantics.py

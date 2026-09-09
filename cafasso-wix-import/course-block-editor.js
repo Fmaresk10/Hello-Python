@@ -28,6 +28,7 @@
     Documento:{label:'Enlace al documento',help:'Pegá el enlace al PDF, Drive o recurso que querés que abra el animador.',placeholder:'https://…'},
     'Reflexión':{label:'Pregunta o consigna de reflexión',help:'Escribí una pregunta personal. La respuesta del animador se guarda para seguimiento.',placeholder:'¿Qué te resuena de lo trabajado?'},
     Entrega:{label:'Consigna de la entrega',help:'Explicá claramente qué debe producir y entregar el animador.',placeholder:'Describí qué tiene que realizar y entregar…'},
+    'Desafío':{label:'Consigna del desafío',help:'Proponé una acción concreta y explicá qué debe entregar el animador. La aprobación del formador acredita las almitas configuradas en el editor.',placeholder:'Describí el desafío, la entrega esperada y cuándo realizarla…'},
     'Evaluación':{label:'Consigna de evaluación',help:'Escribí la consigna que deberá responder el animador. Por ahora funciona como respuesta escrita revisable.',placeholder:'Escribí la consigna de evaluación…'}
   };
   function refresh(){
@@ -43,7 +44,7 @@
       preview.classList.add('show');preview.innerHTML=`<strong>Vista previa</strong><img src="${esc(val)}" alt="Vista previa" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'prompt-box',textContent:'No se pudo cargar esta imagen.'}))">`;
     } else if(type==='Documento'){
       preview.classList.add('show');preview.innerHTML=`<strong>Recurso enlazado</strong><a href="${esc(val)}" target="_blank" rel="noopener">📄 Abrir documento</a>`;
-    } else if(['Reflexión','Entrega','Evaluación'].includes(type)){
+    } else if(['Reflexión','Entrega','Desafío','Evaluación'].includes(type)){
       preview.classList.add('show');preview.innerHTML=`<strong>Así se verá la consigna</strong><div class="prompt-box">${esc(val)}</div>`;
     }
   }
