@@ -126,8 +126,9 @@
     const rows=(state.data?.progress||[]).filter(row=>!userId||row.userId===userId);
     const approved=rows.reduce((sum,row)=>sum+Number(row.almitasApproved||0),0);
     const submissions=(state.data?.submissions||[]).filter(row=>!userId||row.userId===userId);
-    const pending=submissions.filter(row=>['Pendiente','En revisión'].includes(row.status)).reduce((sum,row)=>sum+Number(row.rewardAlmitas||0),0);
-    const pendingCount=submissions.filter(row=>['Pendiente','En revisión'].includes(row.status)).length;
+    const pendingRows=submissions.filter(row=>['Pendiente','En revisión'].includes(row.status)&&Number(row.rewardAlmitas||0)>0);
+    const pending=pendingRows.reduce((sum,row)=>sum+Number(row.rewardAlmitas||0),0);
+    const pendingCount=pendingRows.length;
     return {approved,pending,pendingCount};
   }
 
