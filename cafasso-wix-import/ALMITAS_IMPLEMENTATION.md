@@ -2,7 +2,7 @@
 
 ## Estado
 
-La primera iteración queda preparada en la rama `feat/cafasso-almitas`. No se publica automáticamente.
+La primera iteración fue publicada el 9 de septiembre de 2026. El backend activo corresponde a CAFASSO v14 y el frontend se despliega desde `main` mediante GitHub Pages.
 
 ## Flujo
 
@@ -26,6 +26,12 @@ Los bloques guardan la configuración en `CafassoBlocks.settings`:
 
 Las entregas agregan `rewardAlmitas`, `requiresReview`, `almitasAwarded`, `almitasAwardedAt`, `reviewedBy` y `reviewedAt`. La acreditación es idempotente: una entrega aprobada no puede volver a acreditar la misma recompensa.
 
+Los cursos, progresos y entregas anteriores no necesitan migración: cuando estos campos no existen, CAFASSO los interpreta con recompensa `0` y sin acreditación previa.
+
+## Privacidad y alcance
+
+La portada del animador carga únicamente sus datos mediante `cafassoMe`. Ese endpoint deriva la identidad de la sesión autenticada, no acepta elegir otro usuario y excluye las notas internas del equipo formador. La consulta de un animador particular continúa reservada al personal autorizado mediante `cafassoAnimatorProfile`.
+
 ## Archivos modificados
 
 - `curso-editor.html`, `course-editor-v2.js`, `course-editor-v3.js`, `course-block-editor.js`: creación y configuración de desafíos.
@@ -34,6 +40,9 @@ Las entregas agregan `rewardAlmitas`, `requiresReview`, `almitasAwarded`, `almit
 - `entregas-manager.js`: recompensa visible para el formador.
 - `../../cafasso-backend-audit/src/backend/http-functions.js`: persistencia, revisión y acreditación.
 
-## Publicación pendiente
+## Verificación de publicación
 
-El endpoint publicado todavía responde con la versión 12. Para activar el circuito completo hay que publicar el backend Wix actualizado y luego desplegar la rama de Pages. Hasta entonces, los cursos y entregas existentes no se modifican.
+- `cafassoPing` responde con la versión `14`.
+- `cafassoMe` rechaza solicitudes sin sesión con HTTP `401`.
+- El flujo automatizado ejecuta lint y las pruebas de acreditación antes de publicar en Wix.
+- Las pruebas cubren entrega pendiente, aprobación única, protección de notas internas y validación de pertenencia del desafío al curso.
