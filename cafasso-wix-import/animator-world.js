@@ -125,13 +125,13 @@
     button.className = 'cafasso-sound-toggle';
     button.type = 'button';
     button.dataset.cafassoSound = '1';
-    const update = () => { button.textContent = soundEnabled ? '♫ Sonido' : '♪ Silencio'; button.setAttribute('aria-pressed', String(soundEnabled)); };
+    const update = () => { button.textContent = soundEnabled ? '✦ Efectos' : '♪ Silencio'; button.setAttribute('aria-pressed', String(soundEnabled)); };
     update();
     button.addEventListener('click', event => {
       event.stopPropagation();
       soundEnabled = !soundEnabled;
       try { localStorage.setItem('cafassoSoundEnabled', soundEnabled ? '1' : '0'); } catch (error) {}
-      if (soundEnabled) startAmbient(); else stopAmbient();
+      if (!soundEnabled) stopAmbient();
       update();
     });
     world.querySelector('.cafasso-world-hud')?.appendChild(button);
@@ -252,7 +252,6 @@
     old.innerHTML = `<div class="cafasso-world"><header class="cafasso-world-hud"><div><div class="cafasso-world-kicker">Tu mundo CAFASSO</div><h1 class="cafasso-world-title">${esc(stats.title)}</h1><p class="cafasso-world-sub">Elegí un lugar y seguí caminando.</p></div><div class="cafasso-world-stats"><button class="cafasso-world-stat" data-world-stat="almitas">✦ <b data-almitas-total>${esc(stats.almitas)}</b> almitas</button><button class="cafasso-world-stat" data-world-stat="ruah">RUAH · <b>${esc(stats.ruah)}</b></button></div></header><div class="cafasso-world-map"><button class="cafasso-world-zone" data-zone="casa"><span class="cafasso-world-zone-label"><i>⌂</i> Casa</span><span class="cafasso-world-zone-copy">Un lugar para volver, descansar y reconocer lo que llevás dentro.</span></button><button class="cafasso-world-zone" data-zone="patio"><span class="cafasso-world-zone-label"><i>✦</i> Patio</span><span class="cafasso-world-zone-copy">El corazón del encuentro, el juego y la comunidad.</span></button><button class="cafasso-world-zone" data-zone="escuela"><span class="cafasso-world-zone-label"><i>◇</i> Escuela</span><span class="cafasso-world-zone-copy">Tus cursos, misiones y próximos pasos.</span></button><button class="cafasso-world-zone" data-zone="parroquia"><span class="cafasso-world-zone-label"><i>✝</i> Parroquia</span><span class="cafasso-world-zone-copy">La Palabra, la oración y el sentido del camino.</span></button></div><section class="cafasso-world-panel" aria-live="polite"><button class="close" aria-label="Cerrar">×</button><div class="cafasso-world-panel-content"></div></section></div>`;
     const world = old.querySelector('.cafasso-world');
     installSoundControl(world);
-    world.addEventListener('click', () => { if (soundEnabled) startAmbient(); }, { once: true });
     const panel = old.querySelector('.cafasso-world-panel');
     const content = old.querySelector('.cafasso-world-panel-content');
     const state = window.CafassoAnimatorState || {};
