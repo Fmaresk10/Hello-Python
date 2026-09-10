@@ -488,10 +488,9 @@
   window.addEventListener('cafasso:block-completed', () => { pendingBlockCompletion = true; setTimeout(refresh, 60); });
   window.addEventListener('hashchange', () => setTimeout(refresh, 40));
   setInterval(refresh, 1000);
-  setInterval(() => {
-    const state = experience();
-    if (state?.view === 'module' && typeof window.CafassoReloadCourseSubmissions === 'function') window.CafassoReloadCourseSubmissions();
-  }, 12000);
+  // No reconstruir la misión automáticamente: volver a crear sus bloques
+  // reinicia los iframes de video y provoca pestañeos mientras el animador
+  // está leyendo o mirando un contenido.
   setTimeout(refresh, 250);
 })();
 
