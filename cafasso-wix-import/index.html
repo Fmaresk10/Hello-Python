@@ -3,7 +3,7 @@
 <head><script src="./auth-guard.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<script>document.documentElement.dataset.cafassoBoot='animator';if(location.hash==='#cursos')document.documentElement.dataset.cafassoCoursesBoot='1';</script>
+<script>document.documentElement.dataset.cafassoBoot='animator';if(location.hash==='#cursos')document.documentElement.dataset.cafassoCoursesBoot='1';if(!location.hash||location.hash==='#inicio')document.documentElement.dataset.cafassoHomeV2='1';</script>
 <title>CAFASSO · Formación de Animadores</title>
 <style>
 :root{--navy:#0F2D4D;--cream:#F6EFE4;--gold:#F2C94C;--green:#2E7D59;--muted:#687386;--card:#FFFDF9;--line:#E8DCCB;--ink:#11233A;--red:#A64747}
@@ -206,7 +206,9 @@ input,textarea,select,button{touch-action:manipulation}input[type=password],inpu
       var view=(location.hash||'#inicio').slice(1);
       if((view==='curso'||view==='modulo')&&!selectedCourse)view='inicio';
       render(view);
-      if(view!=='cursos')document.getElementById('app').classList.add('cafasso-boot-ready');
+      // La pantalla de inicio se revela desde animator-world, cuando ya
+      // están aplicados el fondo y el mapa. Así F5 no muestra la vista vieja.
+      if(view!=='cursos'&&view!=='inicio')document.getElementById('app').classList.add('cafasso-boot-ready');
     }).catch(function(e){if(timedOut)return;clearTimeout(timer);fail(e.message||'Error al conectar con CAFASSO.');});
   }
   window.addEventListener('popstate',function(){if(!data||!session)return;var view=(location.hash||'#inicio').slice(1);if(view==='curso'&&!selectedCourse)view='cursos';if(view==='modulo'&&(!selectedCourse||!selectedModule))view='cursos';render(view);});init();
