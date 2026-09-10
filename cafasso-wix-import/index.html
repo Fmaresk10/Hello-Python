@@ -119,8 +119,8 @@ input,textarea,select,button{touch-action:manipulation}input[type=password],inpu
   function completedModules(courseId){var p=progressRecord(courseId);return p&&Array.isArray(p.completedModules)?p.completedModules:[];}
   function assignedCourses(){var uid=session.user._id,gid=session.user.groupId,ids={};(data.assignments||[]).forEach(function(a){if(a.active===false)return;if(a.targetType==='user'&&a.targetId===uid)ids[a.courseId]=true;if(a.targetType==='group'&&gid&&a.targetId===gid)ids[a.courseId]=true;});return (data.courses||[]).filter(function(c){return ids[c._id]&&(c.status==='Publicado'||isAdmin());}).map(function(c){var copy={};for(var k in c)copy[k]=c[k];copy.myProgress=getProgress(c._id);return copy;});}
   function moduleStoreKey(){return 'cafasso-module-work-'+session.user._id+'-'+selectedCourse._id+'-'+selectedModule._id;}
-  function readModuleWork(){try{return JSON.parse(localStorage.getItem(moduleStoreKey())||'{"done":{},"answers":{}}');}catch(e){return {done:{},answers:{}};}}
-  function saveModuleWork(work){localStorage.setItem(moduleStoreKey(),JSON.stringify(work));}
+  function readModuleWork(){var local={done:{},answers:{}};try{local=JSON.parse(localStorage.getItem(moduleStoreKey())||'{"done":{},"answers":{}}');}catch(e){}var p=progressRecord(selectedCourse&&selectedCourse._id),done=Object.assign({},local.done||{}),answers=Object.assign({},local.answers||{});(p&&p.completedBlocks||[]).forEach(function(id){done[id]=true;});Object.assign(answers,(p&&p.blockAnswers)||{});return {done:done,answers:answers};}
+  function saveModuleWork(work){localStorage.setItem(moduleStoreKey(),JSON.stringify(work));var blockAnswers=work.answers||{},completedBlocks=Object.keys(work.done||{}).filter(function(id){return work.done[id];});fetch(PROGRESS_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:session.user._id,courseId:selectedCourse._id,moduleId:selectedModule._id,completedBlocks:completedBlocks,blockAnswers:blockAnswers})}).then(function(r){return r.json();}).then(function(j){if(j&&j.ok&&j.progress){var list=data.progress||[],found=false;for(var i=0;i<list.length;i++){if(list[i].userId===j.progress.userId&&list[i].courseId===j.progress.courseId){list[i]=Object.assign(list[i],j.progress);found=true;break;}}if(!found)list.push(j.progress);data.progress=list;publishAnimatorState();}}).catch(function(e){console.warn('No se pudo sincronizar el avance de contenidos.',e);});}
   function submissionFor(blockId){return courseSubmissions.filter(function(s){return s.activityId===blockId;})[0]||null;}
   function activityAnswer(blockId,work){var s=submissionFor(blockId);return s&&s.content!=null?s.content:((work.answers||{})[blockId]||'');}
   function requiredBlocks(){return (selectedModule.contents||[]).filter(function(b){return b.required!==false;});}
@@ -236,6 +236,6 @@ input,textarea,select,button{touch-action:manipulation}input[type=password],inpu
 </script>
 <script src="./profile-photo.js"></script>
 <script src="./daily-word.js?v=20260910-6"></script>
-<script src="./gamified-course.js?v=20260910-31"></script>
+<script src="./gamified-course.js?v=20260910-32"></script>
 </body>
 </html>
