@@ -117,13 +117,24 @@
 
   function missionDone(mission, module, state) {
     const required = blocksOf(module, mission.id).filter(block => block.required !== false);
-    return required.length === 0 || required.every(block => doneBlock(block, state));
+    const work = state?.work || storedModuleWork(module);
+    return required.length === 0 || required.every(block => doneBlock(block, { ...state, work }));
   }
 
   function missionKey(module) {
     const user = window.CafassoAnimatorState?.session?.user?._id || 'local';
     const course = experience()?.course?._id || 'course';
     return `cafasso-mission-${user}-${course}-${module?._id || 'module'}`;
+  }
+
+  function storedModuleWork(module) {
+    const user = window.CafassoAnimatorState?.session?.user?._id || 'local';
+    const course = experience()?.course?._id || 'course';
+    try {
+      return JSON.parse(localStorage.getItem(`cafasso-module-work-${user}-${course}-${module?._id || 'module'}`) || '{"done":{},"answers":{}}');
+    } catch (error) {
+      return { done: {}, answers: {} };
+    }
   }
 
   function storedMission(module) {
