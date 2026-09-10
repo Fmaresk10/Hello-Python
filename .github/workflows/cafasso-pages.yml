@@ -42,7 +42,7 @@ jobs:
           s = p.read_text(encoding='utf-8')
           marker = '<script id="cafasso-home-v2-direct">'
           if marker not in s:
-              inject = '''<script id="cafasso-home-v2-direct">if(new URLSearchParams(location.search).get('previewRole')==='animador'||new URLSearchParams(location.search).get('previewUser'))document.documentElement.dataset.cafassoPreviewRole='animador';</script>\n<script src="./course-cover-home.js?v=20260907-4"></script>\n<script src="./animator-home.js?v=20260909-2"></script>\n<script src="./animator-home-tweaks.js?v=20260907-3"></script>\n<script src="./animator-home-refine.js?v=20260910-1"></script>\n<script src="./animator-world.js?v=20260910-17"></script>\n'''
+              inject = '''<script id="cafasso-home-v2-direct">if(new URLSearchParams(location.search).get('previewRole')==='animador'||new URLSearchParams(location.search).get('previewUser'))document.documentElement.dataset.cafassoPreviewRole='animador';</script>\n<script src="./course-cover-home.js?v=20260907-4"></script>\n<script src="./animator-home.js?v=20260909-2"></script>\n<script src="./animator-home-tweaks.js?v=20260907-3"></script>\n<script src="./animator-home-refine.js?v=20260910-1"></script>\n<script src="./animator-world.js?v=20260910-18"></script>\n'''
           s = s.replace('</body>', inject + '</body>')
           profile_script = '<script src="./animator-profile-chip.js?v=20260907-2"></script>'
           s = re.sub(r'<script src="\./animator-profile-chip\.js\?v=[^"]+"></script>\s*', '', s)
