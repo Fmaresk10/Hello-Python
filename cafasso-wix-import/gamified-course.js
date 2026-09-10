@@ -67,11 +67,15 @@
       .cafasso-home-ruah-main{display:flex;align-items:center;gap:11px}.cafasso-home-ruah-icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#2E7D59;color:#fff;font:700 18px Georgia,serif}.cafasso-home-ruah-label{font:850 10px/1.2 Inter,system-ui;letter-spacing:.12em;text-transform:uppercase;color:#2E7D59}.cafasso-home-ruah-total{font:400 24px/1 Georgia,serif;color:#173954;margin-top:3px}.cafasso-home-ruah-note{font-size:11px;line-height:1.4;color:#527064;text-align:right;max-width:250px}.cafasso-home-ruah-note strong{display:block;color:#245F48;margin-bottom:3px}@media(max-width:680px){.cafasso-mission-head{display:block}.cafasso-mission-time{display:block;margin-top:8px}.cafasso-mission-nav{grid-template-columns:repeat(5,minmax(54px,1fr));overflow-x:auto;padding-bottom:4px}.cafasso-mission-node{font-size:9px}.cafasso-home-ruah{align-items:flex-start;flex-direction:column}.cafasso-home-ruah-note{text-align:left;max-width:none}}
       /* Modo escena: la misión ocupa el paisaje y el contenido se integra como un objeto del camino. */
       body.cafasso-mission-mode{background:#102F35 url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png') center/cover fixed no-repeat!important}
+      body.cafasso-mission-mode{padding-top:0!important}
+      body.cafasso-mission-mode #cafasso-role-preview-bar,body.cafasso-mission-mode .side,body.cafasso-mission-mode .mobilebar,body.cafasso-mission-mode .mobile-nav,body.cafasso-mission-mode .mobile-head,body.cafasso-mission-mode main>.top,body.cafasso-mission-mode .backline,body.cafasso-mission-mode #cafassoWorldReturn{display:none!important}
       body.cafasso-mission-mode .module-detail{padding:0 5vw 70px;max-width:none!important}
       body.cafasso-mission-mode .module-progress{display:none!important}
       body.cafasso-mission-mode .module-progress{position:relative;z-index:12;max-width:720px;margin:16px auto 0!important;background:rgba(8,35,39,.72);backdrop-filter:blur(12px);border-radius:999px;padding:9px 14px!important;font-size:11px}
       body.cafasso-mission-mode .cafasso-mission-shell{min-height:calc(100vh - 20px);margin:0 -5vw 24px;padding:38px 8vw 56px;border:0;border-radius:0;background:linear-gradient(180deg,rgba(5,27,32,.22),rgba(5,27,32,.68)),url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png') center/cover fixed;box-shadow:none}
       body.cafasso-mission-mode .cafasso-mission-head{max-width:820px;margin:0 auto 22px;align-items:end}
+      .cafasso-scene-back{display:inline-flex;align-items:center;gap:7px;margin:0 0 24px;border:1px solid rgba(244,216,137,.52);border-radius:999px;background:rgba(8,35,39,.64);backdrop-filter:blur(10px);color:#FFF9E8;padding:9px 13px;font:850 11px Inter,system-ui;cursor:pointer;box-shadow:0 5px 15px rgba(0,0,0,.22)}
+      .cafasso-scene-back:hover{background:#F1C85B;color:#17302F}
       body.cafasso-mission-mode .cafasso-mission-title{font-size:clamp(31px,4vw,52px);text-shadow:0 3px 18px rgba(0,0,0,.42)}
       body.cafasso-mission-mode .cafasso-mission-objective{max-width:620px;font-size:14px}
       body.cafasso-mission-mode .cafasso-mission-prompt{max-width:720px;margin:18px auto 22px;background:rgba(7,33,40,.58);backdrop-filter:blur(10px);font-size:13px}
@@ -301,7 +305,7 @@
     shell.dataset.activeMission = active.id;
     const moduleSettings = settingsOf(module);
     const badge = moduleSettings.badge || {};
-    shell.innerHTML = `<div class="cafasso-mission-head"><div><div class="cafasso-mission-kicker">${esc(moduleSettings.stageLabel || 'El camino')} · Parada ${missions.indexOf(active) + 1} de ${missions.length}</div><h3 class="cafasso-mission-title">${esc(activeView.title)}</h3><p class="cafasso-mission-objective">${esc(activeView.objective || 'Avanzá un paso en tu recorrido.')}</p></div><span class="cafasso-mission-time">${Number(active.minutes || 5)} min</span></div>${activeView.prompt ? `<div class="cafasso-mission-prompt"><strong>Tu misión ahora</strong>${esc(activeView.prompt)}</div>` : ''}<div class="cafasso-mission-nav">${missions.map((mission, index) => {
+    shell.innerHTML = `<button type="button" class="cafasso-scene-back">← Volver al camino</button><div class="cafasso-mission-head"><div><div class="cafasso-mission-kicker">${esc(moduleSettings.stageLabel || 'El camino')} · Parada ${missions.indexOf(active) + 1} de ${missions.length}</div><h3 class="cafasso-mission-title">${esc(activeView.title)}</h3><p class="cafasso-mission-objective">${esc(activeView.objective || 'Avanzá un paso en tu recorrido.')}</p></div><span class="cafasso-mission-time">${Number(active.minutes || 5)} min</span></div>${activeView.prompt ? `<div class="cafasso-mission-prompt"><strong>Tu misión ahora</strong>${esc(activeView.prompt)}</div>` : ''}<div class="cafasso-mission-nav">${missions.map((mission, index) => {
       const view = presentationOf(module, mission);
       const done = doneIds.has(mission.id);
       const previousDone = index === 0 || doneIds.has(missions[index - 1].id);
@@ -312,6 +316,10 @@
     stage.className = 'cafasso-mission-stage';
     stage.innerHTML = `<div class="cafasso-scene-marker"><span>${esc(activeView.icon || '✦')}</span><small>${esc(activeView.sceneLabel || 'Escena de la misión')}</small></div>`;
     shell.appendChild(stage);
+    shell.querySelector('.cafasso-scene-back')?.addEventListener('click', () => {
+      if (typeof window.CafassoNavigate === 'function') window.CafassoNavigate('curso');
+      else document.querySelector('[data-view="curso"]')?.click();
+    });
     allBlocks.forEach(card => {
       const record = activeBlockRecords.find(block => block._id === card.dataset.blockCard);
       if (!record) return;
