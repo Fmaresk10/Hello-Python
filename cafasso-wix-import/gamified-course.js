@@ -26,6 +26,8 @@
       .cafasso-mission-kicker{font-size:9px;font-weight:850;letter-spacing:.14em;text-transform:uppercase;color:#9B7622;margin-bottom:5px}
       .cafasso-mission-title{font:400 25px/1.1 Georgia,serif;color:#173954;margin:0}
       .cafasso-mission-objective{margin:6px 0 0;color:#74664D;font-size:12px;line-height:1.45}
+      .cafasso-mission-prompt{margin:12px 0 15px;padding:11px 13px;border-radius:13px;background:rgba(255,255,255,.62);border:1px solid rgba(46,125,89,.16);color:#527064;font-size:11px;line-height:1.45}
+      .cafasso-mission-prompt strong{display:block;color:#245F48;margin-bottom:3px;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
       .cafasso-mission-time{white-space:nowrap;color:#806823;font-size:11px;font-weight:800}
       .cafasso-mission-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;position:relative}
       .cafasso-mission-nav:before{content:'';position:absolute;left:7%;right:7%;top:20px;height:2px;background:rgba(200,155,49,.3);z-index:0}
@@ -59,11 +61,11 @@
   }
 
   const introNarrative = {
-    m1: { title: 'Entrá al patio', objective: 'Conocé a Juanito y empezá a mirar la historia desde los jóvenes.', icon: '🚪' },
-    m2: { title: 'Descubrí sus raíces', objective: 'Reconocé las personas y experiencias que fueron formando su corazón.', icon: '🌱' },
-    m3: { title: 'Abrí el sueño', objective: 'Escuchá el sueño de los nueve años y encontrá su primera pista.', icon: '✨' },
-    m4: { title: 'Elegí cómo acercarte', objective: 'Probá una respuesta salesiana frente a una situación concreta.', icon: '🧭' },
-    m5: { title: 'Salí al encuentro', objective: 'Realizá un gesto concreto con un joven y compartilo con tu formador.', icon: '🤝' }
+    m1: { title: 'Entrá al patio', objective: 'Conocé a Juanito y empezá a mirar la historia desde los jóvenes.', prompt: 'Mirá el video de bienvenida y encontrá una primera pregunta que te acompañe.', icon: '🚪' },
+    m2: { title: 'Descubrí sus raíces', objective: 'Reconocé las personas y experiencias que fueron formando su corazón.', prompt: 'Armá el mapa de las raíces: una persona, una dificultad y un don.', icon: '🌱' },
+    m3: { title: 'Abrí el sueño', objective: 'Escuchá el sueño de los nueve años y encontrá su primera pista.', prompt: 'Leé el sueño y elegí la palabra que más ilumina tu manera de animar.', icon: '✨' },
+    m4: { title: 'Elegí cómo acercarte', objective: 'Probá una respuesta salesiana frente a una situación concreta.', prompt: 'Tomá una decisión: ¿cómo te acercarías a este joven con razón, religión y amor?', icon: '🧭' },
+    m5: { title: 'Salí al encuentro', objective: 'Realizá un gesto concreto con un joven y compartilo con tu formador.', prompt: 'Hacé el desafío, entregá tu evidencia y esperá la confirmación de tus almitas.', icon: '🤝' }
   };
 
   function presentationOf(module, mission) {
@@ -169,7 +171,7 @@
     shell.dataset.activeMission = active.id;
     const moduleSettings = settingsOf(module);
     const badge = moduleSettings.badge || {};
-    shell.innerHTML = `<div class="cafasso-mission-head"><div><div class="cafasso-mission-kicker">${esc(moduleSettings.stageLabel || 'El camino')} · Parada ${missions.indexOf(active) + 1} de ${missions.length}</div><h3 class="cafasso-mission-title">${esc(activeView.title)}</h3><p class="cafasso-mission-objective">${esc(activeView.objective || 'Avanzá un paso en tu recorrido.')}</p></div><span class="cafasso-mission-time">${Number(active.minutes || 5)} min</span></div><div class="cafasso-mission-nav">${missions.map((mission, index) => {
+    shell.innerHTML = `<div class="cafasso-mission-head"><div><div class="cafasso-mission-kicker">${esc(moduleSettings.stageLabel || 'El camino')} · Parada ${missions.indexOf(active) + 1} de ${missions.length}</div><h3 class="cafasso-mission-title">${esc(activeView.title)}</h3><p class="cafasso-mission-objective">${esc(activeView.objective || 'Avanzá un paso en tu recorrido.')}</p></div><span class="cafasso-mission-time">${Number(active.minutes || 5)} min</span></div>${activeView.prompt ? `<div class="cafasso-mission-prompt"><strong>Tu misión ahora</strong>${esc(activeView.prompt)}</div>` : ''}<div class="cafasso-mission-nav">${missions.map((mission, index) => {
       const view = presentationOf(module, mission);
       const done = doneIds.has(mission.id);
       const previousDone = index === 0 || doneIds.has(missions[index - 1].id);
