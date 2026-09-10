@@ -65,6 +65,35 @@
       @media(max-width:680px){body.cafasso-journey-mode main,body.cafasso-mission-mode main{padding:0}body.cafasso-journey-mode .side .nav button:not([data-view="inicio"]),body.cafasso-mission-mode .side .nav button:not([data-view="inicio"]),body.cafasso-journey-mode .mobilebar button:not([data-view="inicio"]),body.cafasso-mission-mode .mobilebar button:not([data-view="inicio"]),body.cafasso-journey-mode .mobile-nav button:not([data-view="inicio"]),body.cafasso-mission-mode .mobile-nav button:not([data-view="inicio"]){display:none!important}body.cafasso-journey-mode .mobilebar,body.cafasso-mission-mode .mobilebar,body.cafasso-journey-mode .mobile-nav,body.cafasso-mission-mode .mobile-nav{grid-template-columns:1fr!important}body.cafasso-journey-mode .cafasso-course-map{min-height:100svh;padding:24px 14px 20px}body.cafasso-journey-mode .cafasso-course-map-head{padding-left:0;display:block}.cafasso-course-map-title{font-size:29px}.cafasso-course-map-copy{font-size:12px;max-width:300px}.cafasso-course-map-badge{margin-top:12px}.cafasso-map-station{width:132px;min-height:64px;padding:8px;font-size:10px}.cafasso-map-station:nth-child(1){left:22%;top:75%}.cafasso-map-station:nth-child(2){left:42%;top:64%}.cafasso-map-station:nth-child(3){left:59%;top:42%}.cafasso-map-station:nth-child(4){left:73%;top:58%}.cafasso-map-station:nth-child(5){left:84%;top:30%}body.cafasso-mission-mode .module-detail{padding:18px 14px 34px}body.cafasso-mission-mode .cafasso-mission-shell{border-radius:18px;padding:18px 14px}body.cafasso-mission-mode article.block{padding:16px 14px}}
       .cafasso-home-ruah{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px;padding:14px 17px;border-radius:17px;background:linear-gradient(110deg,#E8F2ED,#F7F5E9);border:1px solid rgba(46,125,89,.18);color:#173954}
       .cafasso-home-ruah-main{display:flex;align-items:center;gap:11px}.cafasso-home-ruah-icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#2E7D59;color:#fff;font:700 18px Georgia,serif}.cafasso-home-ruah-label{font:850 10px/1.2 Inter,system-ui;letter-spacing:.12em;text-transform:uppercase;color:#2E7D59}.cafasso-home-ruah-total{font:400 24px/1 Georgia,serif;color:#173954;margin-top:3px}.cafasso-home-ruah-note{font-size:11px;line-height:1.4;color:#527064;text-align:right;max-width:250px}.cafasso-home-ruah-note strong{display:block;color:#245F48;margin-bottom:3px}@media(max-width:680px){.cafasso-mission-head{display:block}.cafasso-mission-time{display:block;margin-top:8px}.cafasso-mission-nav{grid-template-columns:repeat(5,minmax(54px,1fr));overflow-x:auto;padding-bottom:4px}.cafasso-mission-node{font-size:9px}.cafasso-home-ruah{align-items:flex-start;flex-direction:column}.cafasso-home-ruah-note{text-align:left;max-width:none}}
+      /* Modo escena: la misión ocupa el paisaje y el contenido se integra como un objeto del camino. */
+      body.cafasso-mission-mode{background:#102F35 url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png') center/cover fixed no-repeat!important}
+      body.cafasso-mission-mode .module-detail{padding:0 5vw 70px;max-width:none!important}
+      body.cafasso-mission-mode .module-progress{position:relative;z-index:12;max-width:720px;margin:16px auto 0!important;background:rgba(8,35,39,.72);backdrop-filter:blur(12px);border-radius:999px;padding:9px 14px!important;font-size:11px}
+      body.cafasso-mission-mode .cafasso-mission-shell{min-height:calc(100vh - 20px);margin:0 -5vw 24px;padding:38px 8vw 56px;border:0;border-radius:0;background:linear-gradient(180deg,rgba(5,27,32,.22),rgba(5,27,32,.68)),url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png') center/cover fixed;box-shadow:none}
+      body.cafasso-mission-mode .cafasso-mission-head{max-width:820px;margin:0 auto 22px;align-items:end}
+      body.cafasso-mission-mode .cafasso-mission-title{font-size:clamp(31px,4vw,52px);text-shadow:0 3px 18px rgba(0,0,0,.42)}
+      body.cafasso-mission-mode .cafasso-mission-objective{max-width:620px;font-size:14px}
+      body.cafasso-mission-mode .cafasso-mission-prompt{max-width:720px;margin:18px auto 22px;background:rgba(7,33,40,.58);backdrop-filter:blur(10px);font-size:13px}
+      body.cafasso-mission-mode .cafasso-mission-nav{max-width:820px;margin:0 auto;grid-template-columns:repeat(5,minmax(58px,1fr));gap:14px}
+      body.cafasso-mission-mode .cafasso-mission-nav:before{top:17px;left:8%;right:8%;height:2px}
+      body.cafasso-mission-mode .cafasso-mission-node{min-height:42px;padding:4px;border:0;background:transparent;box-shadow:none;border-radius:50%;font-size:0}
+      body.cafasso-mission-mode .cafasso-mission-node i{width:32px;height:32px;display:grid;place-items:center;border-radius:50%;background:rgba(8,35,39,.82);border:1px solid rgba(244,216,137,.64);font-size:15px;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+      body.cafasso-mission-mode .cafasso-mission-node span{display:block;margin-top:2px;color:#FFF9E8;font-size:10px;line-height:1.1;text-shadow:0 1px 7px rgba(0,0,0,.8)}
+      body.cafasso-mission-mode .cafasso-mission-node.active i{background:#F1C85B;color:#17302F;box-shadow:0 0 0 5px rgba(244,216,137,.22),0 5px 15px rgba(0,0,0,.34)}
+      body.cafasso-mission-mode .cafasso-mission-node.done i{background:#2E7D59;border-color:#B9DEC8}
+      .cafasso-mission-stage{max-width:820px;margin:27px auto 0;position:relative;z-index:2}
+      .cafasso-scene-marker{display:flex;align-items:center;gap:9px;width:max-content;margin:0 auto 9px;color:#FFF9E8;text-shadow:0 1px 8px rgba(0,0,0,.6);font:850 10px Inter,system-ui;letter-spacing:.12em;text-transform:uppercase}
+      .cafasso-scene-marker span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#F1C85B;color:#17302F;font-size:16px;box-shadow:0 3px 10px rgba(0,0,0,.3)}
+      body.cafasso-mission-mode .cafasso-mission-stage article.block{margin:0 auto 20px;max-width:760px;background:linear-gradient(145deg,rgba(255,249,232,.96),rgba(235,219,183,.94));border:1px solid rgba(244,216,137,.72);border-radius:16px;box-shadow:0 16px 35px rgba(10,28,30,.36),inset 0 1px rgba(255,255,255,.8);padding:25px 28px}
+      body.cafasso-mission-mode .cafasso-mission-stage article.block:before{content:'';display:block;width:42px;height:4px;margin:-9px auto 16px;border-radius:99px;background:#C99D3A;opacity:.72}
+      body.cafasso-mission-mode .cafasso-mission-stage article.block h4{font-size:25px;margin-bottom:10px}
+      body.cafasso-mission-mode .cafasso-mission-stage article.block .block-text{font-size:15px;line-height:1.65}
+      body.cafasso-mission-mode .cafasso-mission-stage article.block .activity{border-radius:13px;background:rgba(255,255,255,.52);border:1px solid rgba(115,77,39,.18)}
+      body.cafasso-mission-mode .cafasso-mission-stage article.block[data-scene-kind="video"]{background:linear-gradient(145deg,rgba(25,52,57,.97),rgba(17,39,48,.96));color:#FFF9E8}
+      body.cafasso-mission-mode .cafasso-mission-stage article.block[data-scene-kind="video"] h4,body.cafasso-mission-mode .cafasso-mission-stage article.block[data-scene-kind="video"] .block-text{color:#FFF9E8}
+      body.cafasso-mission-mode .cafasso-mission-stage article.block[data-scene-kind="oracion"]{background:linear-gradient(145deg,rgba(48,73,64,.97),rgba(20,45,46,.96));color:#FFF9E8}
+      body.cafasso-mission-mode .cafasso-mission-stage article.block[data-scene-kind="oracion"] h4,body.cafasso-mission-mode .cafasso-mission-stage article.block[data-scene-kind="oracion"] .block-text{color:#FFF9E8}
+      @media(max-width:680px){body.cafasso-mission-mode .module-detail{padding:0 14px 34px}body.cafasso-mission-mode .cafasso-mission-shell{margin:0 -14px 18px;padding:24px 14px 42px;min-height:100svh}body.cafasso-mission-mode .cafasso-mission-head{display:block}.cafasso-mission-stage{margin-top:22px}body.cafasso-mission-mode .cafasso-mission-stage article.block{padding:19px 16px}.cafasso-scene-marker{font-size:9px}}
     `;
     document.head.appendChild(style);
   }
@@ -104,6 +133,16 @@
       const settings = block.settings || {};
       return settings.missionId === missionId;
     });
+  }
+
+  function sceneKindOf(block) {
+    const type = String(block?.type || '').toLowerCase();
+    if (type.includes('video')) return 'video';
+    if (type.includes('oración') || type.includes('oracion')) return 'oracion';
+    if (type.includes('reflex')) return 'reflexion';
+    if (type.includes('entrega') || type.includes('desaf')) return 'desafio';
+    if (type.includes('lectura') || type.includes('document')) return 'lectura';
+    return 'texto';
   }
 
   function doneBlock(block, state) {
@@ -250,7 +289,8 @@
     const existingShell = root.querySelector('.cafasso-mission-shell');
     if (existingShell && existingShell.dataset.activeMission === activeId) return;
     const doneIds = new Set(missions.filter(item => missionDone(item, module, state)).map(item => item.id));
-    const activeBlocks = new Set(blocksOf(module, active.id).map(block => block._id));
+    const activeBlockRecords = blocksOf(module, active.id);
+    const activeBlocks = new Set(activeBlockRecords.map(block => block._id));
     allBlocks.forEach(card => {
       card.style.display = activeBlocks.has(card.dataset.blockCard) ? '' : 'none';
     });
@@ -267,6 +307,16 @@
       const locked = !previousDone && !done;
       return `<button class="cafasso-mission-node ${mission.id === active.id ? 'active' : ''} ${done ? 'done' : ''} ${locked ? 'locked' : ''}" data-mission-id="${esc(mission.id)}" ${locked ? 'disabled' : ''}><i>${esc(view.icon || '•')}</i><span>${esc(view.title)}</span></button>`;
     }).join('')}</div>${active.rewardAlmitas ? `<div class="cafasso-ruah-inline"><span>✦</span><span>Recompensa de esta parada: <b>${Number(active.rewardAlmitas)} almitas</b></span></div>` : ''}${badge.name ? `<div class="cafasso-ruah-inline"><span>🏅</span><span>Logro del camino: <b>${esc(badge.name)}</b></span></div>` : ''}`;
+    const stage = document.createElement('div');
+    stage.className = 'cafasso-mission-stage';
+    stage.innerHTML = `<div class="cafasso-scene-marker"><span>${esc(activeView.icon || '✦')}</span><small>${esc(activeView.sceneLabel || 'Escena de la misión')}</small></div>`;
+    shell.appendChild(stage);
+    allBlocks.forEach(card => {
+      const record = activeBlockRecords.find(block => block._id === card.dataset.blockCard);
+      if (!record) return;
+      card.dataset.sceneKind = sceneKindOf(record);
+      stage.appendChild(card);
+    });
     const progress = root.querySelector('.module-progress');
     if (progress) progress.insertAdjacentElement('afterend', shell);
     else root.prepend(shell);
@@ -425,3 +475,4 @@
   }, 12000);
   setTimeout(refresh, 250);
 })();
+
