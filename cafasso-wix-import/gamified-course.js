@@ -56,7 +56,7 @@
       body.cafasso-mission-mode .complete-box{display:none}
       .cafasso-celebration{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:rgba(5,25,30,.34);pointer-events:none;animation:cafassoCelebrationIn .2s ease-out both}
       .cafasso-celebration-card{padding:24px 30px;text-align:center;border:1px solid rgba(255,235,165,.8);border-radius:22px;background:linear-gradient(145deg,#123C43,#22634F);color:#FFF9E8;box-shadow:0 18px 60px rgba(0,0,0,.35);animation:cafassoCelebrationPop .45s cubic-bezier(.2,.8,.2,1) both}
-      .cafasso-celebration-card strong{display:block;font:400 30px/1.1 Georgia,serif;color:#FFE39A}.cafasso-celebration-card span{display:block;margin-top:8px;color:#E1F0E2;font-size:13px;font-weight:800}
+      .cafasso-celebration-card strong{display:block;font:400 30px/1.1 Georgia,serif;color:#FFE39A}.cafasso-celebration-card span{display:block;margin-top:8px;color:#E1F0E2;font-size:13px;font-weight:800}.cafasso-celebration-card .cafasso-unlock-title{margin-top:17px;font:850 18px/1.2 Inter,system-ui;color:#FFF4B0}.cafasso-celebration-card .cafasso-unlock-copy{font-size:11px;color:#D5E9D8}
       .cafasso-confetti{position:fixed;left:50%;top:46%;width:10px;height:16px;border-radius:2px;transform:translate(-50%,-50%);animation:cafassoConfetti 1.9s cubic-bezier(.12,.72,.25,1) forwards;animation-delay:var(--delay);background:var(--color);opacity:0}
       .cafasso-world-return{position:fixed;z-index:100;left:auto;right:24px;top:20px;appearance:none;border:1px solid rgba(244,216,137,.55);background:rgba(8,35,39,.82);backdrop-filter:blur(10px);color:#FFF9E8;border-radius:999px;padding:10px 15px;font:850 11px Inter,system-ui;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.24)}.cafasso-world-return:hover{background:#F1C85B;color:#17302F}.cafasso-journey-mode .cafasso-course-map{background-image:url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png')!important}.cafasso-mission-mode{background-image:url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png')!important}
       body.cafasso-courses-mode{background:#102F35 url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png') center/cover fixed no-repeat!important;overflow-x:hidden}body.cafasso-courses-mode .shell{display:block;min-height:100vh}body.cafasso-courses-mode main{max-width:none;width:100%;min-height:100vh;padding:38px 7vw 58px;background:linear-gradient(180deg,rgba(5,27,32,.12),rgba(5,27,32,.36))}body.cafasso-courses-mode .side,body.cafasso-courses-mode .mobilebar,body.cafasso-courses-mode .mobile-nav,body.cafasso-courses-mode .mobile-head{display:none!important}body.cafasso-courses-mode .top{max-width:1100px;margin:0 auto 18px;color:#FFF9E8}body.cafasso-courses-mode .top h1{font:400 42px/1 Georgia,serif;color:#FFF9E8;text-shadow:0 2px 12px rgba(0,0,0,.45)}body.cafasso-courses-mode .top p{color:#DDE9DF}body.cafasso-courses-mode .top .pill{background:rgba(8,35,39,.7);border-color:rgba(244,216,137,.42);color:#FFF9E8}body.cafasso-courses-mode .courses{max-width:1100px;margin:0 auto;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}body.cafasso-courses-mode .card.course{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(250,238,210,.97),rgba(220,194,148,.96));border:1px solid rgba(115,77,39,.5);border-radius:10px 10px 5px 5px;box-shadow:0 12px 26px rgba(47,29,15,.3),inset 0 1px rgba(255,255,255,.6);color:#3B2B1E}body.cafasso-courses-mode .card.course:before{content:'◇  ESCUELA';display:block;color:#876020;font:850 9px Inter,system-ui;letter-spacing:.14em;margin-bottom:14px}body.cafasso-courses-mode .card.course h4{color:#3B2B1E;font:400 23px/1.1 Georgia,serif}body.cafasso-courses-mode .card.course p,body.cafasso-courses-mode .card.course small{color:#6B5137}body.cafasso-courses-mode .card.course .mini{background:rgba(107,81,55,.18)}body.cafasso-courses-mode .card.course .mini span{background:#2E7D59}body.cafasso-courses-mode .card.course .btn{background:#17302F;color:#FFF9E8;border-radius:999px}body.cafasso-courses-mode .card.course .badge{background:#2E7D59;color:#fff}body.cafasso-courses-mode .card.empty{max-width:1100px;margin:auto;background:rgba(8,35,39,.82);border-color:rgba(244,216,137,.42);color:#FFF9E8}
@@ -403,6 +403,9 @@
     const state = experience();
     const missions = missionsOf(module);
     const moduleReady = missions.length > 0 && missions.every(item => missionDone(item, module, state));
+    const courseModules = Array.isArray(state?.course?.modules) ? state.course.modules : [];
+    const moduleIndex = courseModules.findIndex(item => item && item._id === module?._id);
+    const nextModule = moduleIndex >= 0 ? courseModules[moduleIndex + 1] : null;
     if (moduleReady) {
       document.getElementById('completeModule')?.click();
     }
@@ -410,7 +413,10 @@
     const overlay = document.createElement('div');
     overlay.className = 'cafasso-celebration';
     const reward = Number(mission.rewardAlmitas || 0);
-    overlay.innerHTML = `<div class="cafasso-celebration-card"><strong>¡Misión completada!</strong><span>${reward > 0 ? `✦ +${reward} almitas` : 'Un paso más en tu camino'}</span></div>`;
+    const unlockNotice = moduleReady && nextModule
+      ? `<strong class="cafasso-unlock-title">🔓 ¡${esc(nextModule.title || 'Nuevo módulo')} desbloqueado!</strong><span class="cafasso-unlock-copy">Ya podés continuar tu camino de formación.</span>`
+      : '';
+    overlay.innerHTML = `<div class="cafasso-celebration-card"><strong>¡Misión completada!</strong><span>${reward > 0 ? `✦ +${reward} almitas` : 'Un paso más en tu camino'}</span>${unlockNotice}</div>`;
     const colors = ['#F4D889', '#F28B67', '#8FD0A2', '#A5C9E8', '#FFF9E8'];
     for (let index = 0; index < 72; index += 1) {
       const piece = document.createElement('i');
