@@ -80,6 +80,15 @@
 
   function placeWidget(){
     if(!isHome())return null;
+    const parish=document.querySelector('.cafasso-world-panel.show.near-parroquia .cafasso-world-panel-content');
+    if(parish){
+      const existing=parish.querySelector(`#${WIDGET_ID}`);
+      if(existing)return existing;
+      addStyles();
+      const el=makeShell();
+      parish.appendChild(el);
+      return el;
+    }
     const main=document.getElementById('main');
     if(!main)return null;
     const existing=document.getElementById(WIDGET_ID);
@@ -153,6 +162,7 @@
 
   function schedule(){setTimeout(inject,30);setTimeout(inject,250);}
   document.addEventListener('click',e=>{if(e.target.closest('[data-view="inicio"]'))schedule();});
+  document.addEventListener('cafasso:parish-open',schedule);
   window.addEventListener('popstate',schedule);
   window.addEventListener('load',schedule);
 
