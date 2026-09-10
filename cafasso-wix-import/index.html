@@ -145,6 +145,7 @@ input,textarea,select,button{touch-action:manipulation}input[type=password],inpu
       document.body.classList.remove('cafasso-journey-mode','cafasso-mission-mode','cafasso-courses-mode');
       if(view==='inicio'){
         document.documentElement.dataset.cafassoHomeV2='1';
+        document.body.style.background='#102F35 url("https://static.wixstatic.com/media/47bf07_2465a68b3ac64824b43bc20531ce6fd4~mv2.png") center/cover fixed no-repeat';
         // Ocultamos la vista anterior hasta que animator-world haya
         // reconstruido el mundo y aplicado su fondo.
         document.getElementById('app')?.classList.remove('cafasso-boot-ready');
