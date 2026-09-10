@@ -348,6 +348,10 @@
   window.addEventListener('cafasso:block-completed', () => { pendingBlockCompletion = true; setTimeout(refresh, 60); });
   window.addEventListener('hashchange', () => setTimeout(refresh, 40));
   setInterval(refresh, 1000);
+  setInterval(() => {
+    const state = experience();
+    if (state?.view === 'module' && typeof window.CafassoReloadCourseSubmissions === 'function') window.CafassoReloadCourseSubmissions();
+  }, 12000);
   setTimeout(refresh, 250);
 })();
 
