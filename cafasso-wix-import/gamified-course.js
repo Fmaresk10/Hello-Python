@@ -21,6 +21,13 @@
       .cafasso-stage-path .cafasso-stage-kicker{font-size:10px;font-weight:850;letter-spacing:.14em;text-transform:uppercase;color:#A37C27;margin-bottom:2px}
       .cafasso-stage-path .cafasso-stage-badge{display:inline-flex;align-items:center;gap:8px;width:max-content;background:#FFF7D7;border:1px solid rgba(200,155,49,.3);border-radius:999px;padding:7px 11px;color:#6D5200;font-size:11px;font-weight:850}
       .cafasso-stage-path .cafasso-stage-badge span{font-size:16px}
+      .cafasso-course-map{position:relative;min-height:calc(100vh - 205px);margin:0 -4px 24px;padding:28px;border-radius:28px;overflow:hidden;background:#173B3B center/cover no-repeat;box-shadow:0 22px 55px rgba(10,36,45,.23);border:1px solid rgba(244,216,137,.58)}
+      .cafasso-course-map:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,28,35,.08),rgba(6,28,35,.18) 55%,rgba(6,28,35,.38));pointer-events:none}
+      .cafasso-course-map-head{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:flex-start;gap:18px;color:#FFF9E8;text-shadow:0 2px 12px rgba(0,0,0,.4)}
+      .cafasso-course-map-kicker{font-size:10px;font-weight:850;letter-spacing:.16em;text-transform:uppercase;color:#F4D889;margin-bottom:6px}
+      .cafasso-course-map-title{font:400 35px/1.05 Georgia,serif;margin:0}.cafasso-course-map-copy{max-width:460px;margin:8px 0 0;color:#F0F5EC;font-size:13px;line-height:1.45}
+      .cafasso-course-map-badge{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;background:rgba(10,34,39,.65);border:1px solid rgba(244,216,137,.56);border-radius:999px;color:#FFF9E8;font-size:11px;font-weight:850;white-space:nowrap}
+      .cafasso-map-stations{position:absolute;inset:0;z-index:3}.cafasso-map-station{position:absolute;transform:translate(-50%,-50%);width:155px;min-height:72px;border:1px solid rgba(255,243,194,.68);background:rgba(11,39,43,.82);border-radius:12px;padding:10px 9px 9px;color:#FFF9E8;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.24);text-align:left}.cafasso-map-station:hover{transform:translate(-50%,-53%);border-color:#FFE49A}.cafasso-map-station i{display:grid;place-items:center;width:30px;height:30px;margin:-25px 0 5px;border-radius:50%;background:#234E4C;border:2px solid #F4D889;font-style:normal;font-size:15px}.cafasso-map-station strong{display:block;font:800 11px/1.15 Inter,system-ui}.cafasso-map-station small{display:block;margin-top:4px;color:#D5E4D8;font-size:9px;line-height:1.25}.cafasso-map-station.active{background:#F1C85B;border-color:#FFF0B4;color:#17302F;box-shadow:0 0 0 5px rgba(244,216,137,.25),0 12px 28px rgba(0,0,0,.3)}.cafasso-map-station.active i{background:#17302F;color:#FFF9E8}.cafasso-map-station.active small{color:#365247}.cafasso-map-station.done{background:#2E7D59;border-color:#D3F0DB}.cafasso-map-station.locked{opacity:.72;filter:saturate(.55);cursor:not-allowed}.cafasso-map-station:nth-child(1){left:18%;top:76%}.cafasso-map-station:nth-child(2){left:40%;top:63%}.cafasso-map-station:nth-child(3){left:57%;top:39%}.cafasso-map-station:nth-child(4){left:72%;top:58%}.cafasso-map-station:nth-child(5){left:86%;top:31%}
       .cafasso-mission-shell{position:relative;overflow:hidden;margin:0 0 18px;padding:22px;border-radius:24px;background:radial-gradient(circle at 78% 12%,rgba(255,210,105,.24),transparent 22%),linear-gradient(145deg,#0D2A37 0%,#163F43 48%,#245A4B 100%);border:1px solid rgba(230,194,101,.5);box-shadow:0 18px 42px rgba(10,36,45,.2)}
       .cafasso-mission-shell:after{content:'';position:absolute;inset:auto -10% -56% 20%;height:70%;border-radius:50%;background:rgba(228,190,89,.08);transform:rotate(-9deg);pointer-events:none}
       .cafasso-mission-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:15px}
@@ -128,22 +135,33 @@
     const course = state?.course;
     if (!course || !document.querySelector('.section')) return;
     const cards = [...document.querySelectorAll('.card.module')];
-    if (!cards.length || document.querySelector('.cafasso-stage-path')) return;
-    cards.forEach((card, index) => {
+    if (!cards.length || document.querySelector('.cafasso-course-map')) return;
+    const gamifiedCard = cards.find(card => {
       const moduleId = card.querySelector('[data-module]')?.getAttribute('data-module');
-      const module = (course.modules || []).find(item => item && item._id === moduleId) || (course.modules || [])[index];
-      const settings = settingsOf(module);
-      if (!settings.gamified) return;
-      const badge = settings.badge || {};
-      const title = card.querySelector('strong');
-      if (title && !title.querySelector('.cafasso-stage-kicker')) {
-        title.innerHTML = `<span class="cafasso-stage-kicker">${esc(settings.stageLabel || `Etapa ${index + 1}`)}</span>${esc(module.title || '')}`;
-      }
-      const actions = card.querySelector('.module-actions');
-      if (actions && badge.name && !actions.querySelector('.cafasso-stage-badge')) {
-        actions.insertAdjacentHTML('afterbegin', `<span class="cafasso-stage-badge"><span>${esc(badge.icon || '✦')}</span>${esc(badge.name)}</span>`);
-      }
+      const module = (course.modules || []).find(item => item && item._id === moduleId);
+      return missionsOf(module).length > 0;
     });
+    const moduleId = gamifiedCard?.querySelector('[data-module]')?.getAttribute('data-module');
+    const module = (course.modules || []).find(item => item && item._id === moduleId);
+    if (!module) return;
+    const settings = settingsOf(module);
+    const missions = missionsOf(module);
+    const stateNow = experience();
+    const doneIds = new Set(missions.filter(item => missionDone(item, module, stateNow)).map(item => item.id));
+    const activeId = currentMission(module, missions, stateNow);
+    const originalButtons = new Map(cards.map(card => [card.querySelector('[data-module]')?.getAttribute('data-module'), card.querySelector('[data-module]')]));
+    const section = gamifiedCard.closest('.section');
+    if (!section) return;
+    const badge = settings.badge || {};
+    const map = document.createElement('section');
+    map.className = 'cafasso-course-map';
+    map.style.backgroundImage = "url('https://static.wixstatic.com/media/47bf07_7598a21e0dbc420a8d4c30ffb6e52332~mv2.png')";
+    map.innerHTML = `<div class="cafasso-course-map-head"><div><div class="cafasso-course-map-kicker">${esc(settings.stageLabel || 'Tu camino')} · ${missions.length} paradas</div><h2 class="cafasso-course-map-title">El camino de Juanito</h2><p class="cafasso-course-map-copy">Avanzá por la historia de Don Bosco. Cada parada se abre con una experiencia, una decisión y un gesto concreto.</p></div>${badge.name ? `<span class="cafasso-course-map-badge"><span>${esc(badge.icon || '✦')}</span>${esc(badge.name)}</span>` : ''}</div><div class="cafasso-map-stations">${missions.map((mission,index) => { const view=presentationOf(module,mission); const done=doneIds.has(mission.id); const previousDone=index===0||doneIds.has(missions[index-1].id); const locked=!previousDone&&!done; return `<button class="cafasso-map-station ${mission.id===activeId?'active':''} ${done?'done':''} ${locked?'locked':''}" data-map-mission="${esc(mission.id)}" ${locked?'disabled':''}><i>${esc(view.icon || '•')}</i><strong>${index+1}. ${esc(view.title)}</strong><small>${esc(view.objective || 'Una nueva parada del camino.')}</small></button>`; }).join('')}</div>`;
+    section.replaceWith(map);
+    map.querySelectorAll('[data-map-mission]').forEach(button => button.addEventListener('click', () => {
+      const target = originalButtons.get(moduleId);
+      if (target) { setStoredMission(module, button.dataset.mapMission); target.click(); }
+    }));
   }
 
   function decorateModule() {
