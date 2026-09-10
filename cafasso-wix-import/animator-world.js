@@ -11,6 +11,8 @@
   let ruahTouched = false;
   let soundContext = null;
   let ambientNodes = [];
+  let ambientTimer = null;
+  let ambientStep = 0;
   let soundEnabled = true;
 
   try { soundEnabled = localStorage.getItem('cafassoSoundEnabled') !== '0'; } catch (error) { /* storage unavailable */ }
@@ -39,26 +41,34 @@
     if (!soundEnabled || ambientNodes.length) return;
     const context = audioContext();
     if (!context) return;
-    const master = context.createGain();
-    master.gain.value = 0.018;
-    master.connect(context.destination);
-    [196, 246.94].forEach((frequency, index) => {
+    const melody = [261.63, 329.63, 392, 523.25, 392, 329.63];
+    const playNote = () => {
+      if (!soundEnabled || !soundContext) return;
       const oscillator = context.createOscillator();
-      oscillator.type = index ? 'triangle' : 'sine';
-      oscillator.frequency.value = frequency;
-      oscillator.detune.value = index ? 3 : -2;
-      oscillator.connect(master);
-      oscillator.start();
+      const gain = context.createGain();
+      const now = context.currentTime;
+      oscillator.type = 'sine';
+      oscillator.frequency.value = melody[ambientStep % melody.length];
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.035, now + 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.05);
+      oscillator.connect(gain).connect(context.destination);
+      oscillator.start(now);
+      oscillator.stop(now + 1.1);
       ambientNodes.push(oscillator);
-    });
-    ambientNodes.push(master);
+      ambientStep += 1;
+    };
+    playNote();
+    ambientTimer = window.setInterval(playNote, 1400);
   }
 
   function stopAmbient() {
+    if (ambientTimer) { window.clearInterval(ambientTimer); ambientTimer = null; }
     ambientNodes.forEach(node => { try { node.stop?.(); node.disconnect?.(); } catch (error) {} });
     ambientNodes = [];
   }
 
+  /* Keep this separate from the ambient melody: it is used for the RUAH reward. */
   function playRuahSound() {
     if (!soundEnabled) return;
     const context = audioContext();
@@ -66,9 +76,9 @@
     const now = context.currentTime;
     [392, 523.25, 659.25, 783.99].forEach((frequency, index) => {
       const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      oscillator.type = 'sine';
+      oscillator.type = index ? 'triangle' : 'sine';
       oscillator.frequency.value = frequency;
+      const gain = context.createGain();
       gain.gain.setValueAtTime(0.0001, now + index * 0.1);
       gain.gain.exponentialRampToValueAtTime(0.12, now + index * 0.1 + 0.025);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.1 + 0.3);
