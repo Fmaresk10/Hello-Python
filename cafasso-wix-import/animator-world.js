@@ -37,6 +37,28 @@
     return soundContext;
   }
 
+  const REAL_ZONE_AUDIO = {
+    casa: './audio/casa-door.mp3',
+    parroquia: './audio/parroquia-bells.mp3',
+    patio: './audio/patio-murmur.mp3',
+    escuela: './audio/escuela-ambience.mp3'
+  };
+  const zoneAudio = {};
+
+  function playZoneSound(zone) {
+    if (!soundEnabled) return;
+    const source = REAL_ZONE_AUDIO[zone];
+    if (!source) return;
+    try {
+      const audio = zoneAudio[zone] || (zoneAudio[zone] = new Audio(source));
+      audio.volume = zone === 'parroquia' ? 0.7 : 0.8;
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    } catch (error) { /* Audio may be unavailable in this browser. */ }
+  }
+
+  // Legacy synthesized prototype retained only for reference; zone clicks use
+  // the real recordings above.
   function noiseBurst(context, now, duration, filterType, frequency, gainLevel) {
     const sampleRate = context.sampleRate;
     const buffer = context.createBuffer(1, Math.ceil(sampleRate * duration), sampleRate);
@@ -57,7 +79,7 @@
     source.stop(now + duration + 0.02);
   }
 
-  function playZoneSound(zone) {
+  function playZoneSoundGenerated(zone) {
     if (!soundEnabled) return;
     const context = audioContext();
     if (!context) return;
@@ -419,3 +441,4 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true }); else boot();
 })();
+
