@@ -26,6 +26,7 @@
       .cafasso-stage-path .cafasso-stage-badge span{font-size:16px}
       .cafasso-course-map{position:relative;min-height:calc(100vh - 205px);margin:0 -4px 24px;padding:28px;border-radius:28px;overflow:hidden;background:#173B3B center/cover no-repeat;box-shadow:0 22px 55px rgba(10,36,45,.23);border:1px solid rgba(244,216,137,.58)}
       .cafasso-course-map:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,28,35,.08),rgba(6,28,35,.18) 55%,rgba(6,28,35,.38));pointer-events:none}
+      .cafasso-next-module{position:relative;z-index:4;display:block;margin:18px auto 0;padding:12px 18px;border:1px solid #F4D889;border-radius:999px;background:#F1C85B;color:#17302F;font:850 12px Inter,system-ui;cursor:pointer;box-shadow:0 8px 18px rgba(20,30,20,.28)}.cafasso-next-module:hover{background:#FFF0B4;transform:translateY(-1px)}
       .cafasso-course-map-head{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:flex-start;gap:18px;color:#FFF9E8;text-shadow:0 2px 12px rgba(0,0,0,.4)}
       .cafasso-course-map-kicker{font-size:10px;font-weight:850;letter-spacing:.16em;text-transform:uppercase;color:#F4D889;margin-bottom:6px}
       .cafasso-course-map-title{font:400 35px/1.05 Georgia,serif;margin:0}.cafasso-course-map-copy{max-width:460px;margin:8px 0 0;color:#F0F5EC;font-size:13px;line-height:1.45}
@@ -292,12 +293,15 @@
     const section = gamifiedCard.closest('.section');
     if (!section) return;
     const badge = settings.badge || {};
+    const moduleIndex = (course.modules || []).findIndex(item => item && item._id === module._id);
+    const nextModule = moduleIndex >= 0 ? (course.modules || [])[moduleIndex + 1] : null;
+    const nextModuleButton = nextModule ? `<button type="button" class="cafasso-next-module" data-next-module="${esc(nextModule._id)}">Seguir al ${esc(nextModule.title || 'módulo siguiente')} →</button>` : '';
     const map = document.createElement('section');
     map.className = 'cafasso-course-map';
     // El mundo inicial tiene su propio paisaje. El mapa del curso usa el fondo
     // de estaciones/piedras para que el recorrido se distinga visualmente.
     map.style.backgroundImage = "url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png')";
-    map.innerHTML = `<div class="cafasso-course-map-head"><div><div class="cafasso-course-map-kicker">${esc(settings.stageLabel || 'Tu camino')} · ${missions.length} paradas</div><h2 class="cafasso-course-map-title">El camino de Juanito</h2><p class="cafasso-course-map-copy">Avanzá por la historia de Don Bosco. Cada parada se abre con una experiencia, una decisión y un gesto concreto.</p></div>${badge.name ? `<span class="cafasso-course-map-badge"><span>${esc(badge.icon || '✦')}</span>${esc(badge.name)}</span>` : ''}</div><div class="cafasso-map-stations">${missions.map((mission,index) => { const view=presentationOf(module,mission); const done=doneIds.has(mission.id); const previousDone=index===0||doneIds.has(missions[index-1].id); const locked=!previousDone&&!done; return `<button class="cafasso-map-station ${mission.id===activeId?'active':''} ${done?'done':''} ${locked?'locked':''}" data-map-mission="${esc(mission.id)}" ${locked?'disabled':''}><i>${locked?'🔒':esc(view.icon || '•')}</i><strong>${index+1}. ${esc(view.title)}</strong><small>${esc(view.objective || 'Una nueva parada del camino.')}</small></button>`; }).join('')}</div>`;
+    map.innerHTML = `<div class="cafasso-course-map-head"><div><div class="cafasso-course-map-kicker">${esc(settings.stageLabel || 'Tu camino')} · ${missions.length} paradas</div><h2 class="cafasso-course-map-title">El camino de Juanito</h2><p class="cafasso-course-map-copy">Avanzá por la historia de Don Bosco. Cada parada se abre con una experiencia, una decisión y un gesto concreto.</p></div>${badge.name ? `<span class="cafasso-course-map-badge"><span>${esc(badge.icon || '✦')}</span>${esc(badge.name)}</span>` : ''}</div>${nextModuleButton}<div class="cafasso-map-stations">${missions.map((mission,index) => { const view=presentationOf(module,mission); const done=doneIds.has(mission.id); const previousDone=index===0||doneIds.has(missions[index-1].id); const locked=!previousDone&&!done; return `<button class="cafasso-map-station ${mission.id===activeId?'active':''} ${done?'done':''} ${locked?'locked':''}" data-map-mission="${esc(mission.id)}" ${locked?'disabled':''}><i>${locked?'🔒':esc(view.icon || '•')}</i><strong>${index+1}. ${esc(view.title)}</strong><small>${esc(view.objective || 'Una nueva parada del camino.')}</small></button>`; }).join('')}</div>`;
     document.body.classList.add('cafasso-journey-mode');
     prepareWorldReturnButton();
     const trackingCard = section.parentElement?.querySelector('.hero');
@@ -307,6 +311,10 @@
       const target = originalButtons.get(moduleId);
       if (target) { setStoredMission(module, button.dataset.mapMission); target.click(); }
     }));
+    map.querySelector('[data-next-module]')?.addEventListener('click', () => {
+      const target = originalButtons.get(nextModule?._id);
+      if (target) { target.disabled = false; target.click(); }
+    });
   }
 
   function decorateModule() {
