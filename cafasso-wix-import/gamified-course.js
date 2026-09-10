@@ -160,7 +160,13 @@
       returnButton.className = 'cafasso-world-return';
       returnButton.type = 'button';
       returnButton.textContent = '← Volver al mundo';
-      returnButton.addEventListener('click', () => document.querySelector('[data-view="inicio"]')?.click());
+      returnButton.addEventListener('click', () => {
+        if (typeof window.CafassoNavigate === 'function') {
+          window.CafassoNavigate('inicio');
+          return;
+        }
+        document.querySelector('[data-view="inicio"]')?.click();
+      });
       document.body.appendChild(returnButton);
     }
     returnButton.hidden = false;
