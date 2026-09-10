@@ -161,6 +161,7 @@
     const settings = block.settings || {};
     const submission = (state.submissions || []).find(item => item.activityId === block._id);
     const type = String(block.type || '').toLowerCase();
+    if (submission?.status === 'Aprobada') return true;
     if (type === 'desafío' || type === 'desafio') return submission?.status === 'Aprobada';
     if (['reflexión', 'entrega', 'evaluación'].includes(type)) {
       return Boolean(String(submission?.content || state.work?.answers?.[block._id] || '').trim());
