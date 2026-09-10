@@ -143,6 +143,8 @@ input,textarea,select,button{touch-action:manipulation}input[type=password],inpu
       selectedModule=null;
       window.CafassoCourseExperience={view:view,course:null,module:null,submissions:[],work:null};
       document.body.classList.remove('cafasso-journey-mode','cafasso-mission-mode','cafasso-courses-mode');
+      if(view==='inicio')document.documentElement.dataset.cafassoHomeV2='1';
+      else document.documentElement.removeAttribute('data-cafasso-home-v2');
       document.getElementById('cafassoWorldReturn')?.remove();
       try{window.dispatchEvent(new CustomEvent('cafasso:course-experience-ready'));}catch(e){}
     }
