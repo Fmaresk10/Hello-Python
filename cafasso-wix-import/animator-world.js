@@ -110,7 +110,14 @@
   }
 
   function buildWorld() {
-    if (!isHome() || profileView) return;
+    if (!isHome()) {
+      root.removeAttribute('data-cafasso-home-v2');
+      return;
+    }
+    // La pantalla inicial debe reactivar siempre el mundo y su fondo,
+    // incluso cuando se llega desde un curso mediante history.pushState.
+    root.dataset.cafassoHomeV2 = '1';
+    if (profileView) return;
     const old = home();
     if (!old || old.querySelector('.cafasso-world')) return;
     styles();
