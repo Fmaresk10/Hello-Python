@@ -107,6 +107,10 @@
     return window.CafassoCourseExperience || null;
   }
 
+  function revealMission() {
+    document.getElementById('app')?.classList.add('cafasso-boot-ready');
+  }
+
   function settingsOf(module) {
     return module && module.settings && typeof module.settings === 'object' ? module.settings : {};
   }
@@ -292,7 +296,10 @@
       return;
     }
     const existingShell = root.querySelector('.cafasso-mission-shell');
-    if (existingShell && existingShell.dataset.activeMission === activeId) return;
+    if (existingShell && existingShell.dataset.activeMission === activeId) {
+      revealMission();
+      return;
+    }
     const doneIds = new Set(missions.filter(item => missionDone(item, module, state)).map(item => item.id));
     const activeBlockRecords = blocksOf(module, active.id);
     const activeBlocks = new Set(activeBlockRecords.map(block => block._id));
@@ -344,6 +351,7 @@
       if (complete) complete.insertAdjacentElement('beforebegin', box);
       else root.appendChild(box);
     }
+    revealMission();
   }
 
   function playMissionSound() {
