@@ -7,6 +7,8 @@
 
   const STYLE_ID = 'cafassoGamifiedCourseStyles';
   const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+  let pendingBlockCompletion = false;
+  let celebrationRunning = false;
 
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
@@ -51,6 +53,12 @@
       .cafasso-mission-next strong{display:block;margin-bottom:3px}
       .cafasso-ruah-inline{display:flex;align-items:center;gap:9px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(244,216,137,.26);color:#F4D889;font-size:11px;position:relative;z-index:1}
       .cafasso-ruah-inline b{font-size:12px;color:#FFF9E8}
+      body.cafasso-mission-mode .complete-box{display:none}
+      .cafasso-celebration{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:rgba(5,25,30,.34);pointer-events:none;animation:cafassoCelebrationIn .2s ease-out both}
+      .cafasso-celebration-card{padding:24px 30px;text-align:center;border:1px solid rgba(255,235,165,.8);border-radius:22px;background:linear-gradient(145deg,#123C43,#22634F);color:#FFF9E8;box-shadow:0 18px 60px rgba(0,0,0,.35);animation:cafassoCelebrationPop .45s cubic-bezier(.2,.8,.2,1) both}
+      .cafasso-celebration-card strong{display:block;font:400 30px/1.1 Georgia,serif;color:#FFE39A}.cafasso-celebration-card span{display:block;margin-top:8px;color:#E1F0E2;font-size:13px;font-weight:800}
+      .cafasso-confetti{position:fixed;left:50%;top:46%;width:10px;height:16px;border-radius:2px;transform:translate(-50%,-50%);animation:cafassoConfetti 1.9s cubic-bezier(.12,.72,.25,1) forwards;animation-delay:var(--delay);background:var(--color);opacity:0}
+      @keyframes cafassoCelebrationIn{from{opacity:0}to{opacity:1}}@keyframes cafassoCelebrationPop{from{transform:scale(.72) translateY(12px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}@keyframes cafassoConfetti{0%{opacity:1;transform:translate(-50%,-50%) rotate(0deg)}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(var(--r))}}
       @media(max-width:680px){body.cafasso-journey-mode main,body.cafasso-mission-mode main{padding:0}body.cafasso-journey-mode .cafasso-course-map{min-height:100svh;padding:24px 14px 20px}body.cafasso-journey-mode .cafasso-course-map-head{padding-left:0;display:block}.cafasso-course-map-title{font-size:29px}.cafasso-course-map-copy{font-size:12px;max-width:300px}.cafasso-course-map-badge{margin-top:12px}.cafasso-map-station{width:132px;min-height:64px;padding:8px;font-size:10px}.cafasso-map-station:nth-child(1){left:22%;top:75%}.cafasso-map-station:nth-child(2){left:42%;top:64%}.cafasso-map-station:nth-child(3){left:59%;top:42%}.cafasso-map-station:nth-child(4){left:73%;top:58%}.cafasso-map-station:nth-child(5){left:84%;top:30%}body.cafasso-mission-mode .module-detail{padding:18px 14px 34px}body.cafasso-mission-mode .cafasso-mission-shell{border-radius:18px;padding:18px 14px}body.cafasso-mission-mode article.block{padding:16px 14px}}
       .cafasso-home-ruah{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px;padding:14px 17px;border-radius:17px;background:linear-gradient(110deg,#E8F2ED,#F7F5E9);border:1px solid rgba(46,125,89,.18);color:#173954}
       .cafasso-home-ruah-main{display:flex;align-items:center;gap:11px}.cafasso-home-ruah-icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#2E7D59;color:#fff;font:700 18px Georgia,serif}.cafasso-home-ruah-label{font:850 10px/1.2 Inter,system-ui;letter-spacing:.12em;text-transform:uppercase;color:#2E7D59}.cafasso-home-ruah-total{font:400 24px/1 Georgia,serif;color:#173954;margin-top:3px}.cafasso-home-ruah-note{font-size:11px;line-height:1.4;color:#527064;text-align:right;max-width:250px}.cafasso-home-ruah-note strong{display:block;color:#245F48;margin-bottom:3px}@media(max-width:680px){.cafasso-mission-head{display:block}.cafasso-mission-time{display:block;margin-top:8px}.cafasso-mission-nav{grid-template-columns:repeat(5,minmax(54px,1fr));overflow-x:auto;padding-bottom:4px}.cafasso-mission-node{font-size:9px}.cafasso-home-ruah{align-items:flex-start;flex-direction:column}.cafasso-home-ruah-note{text-align:left;max-width:none}}
@@ -183,10 +191,16 @@
     const allBlocks = [...root.querySelectorAll('article.block[data-block-card]')];
     if (!allBlocks.length) return;
     const activeId = currentMission(module, missions, state);
-    const existingShell = root.querySelector('.cafasso-mission-shell');
-    if (existingShell && existingShell.dataset.activeMission === activeId) return;
     const active = missions.find(item => item.id === activeId) || missions[0];
     const activeView = presentationOf(module, active);
+    const activeDone = missionDone(active, module, state);
+    if (pendingBlockCompletion && activeDone) {
+      pendingBlockCompletion = false;
+      celebrateMission(active, module);
+      return;
+    }
+    const existingShell = root.querySelector('.cafasso-mission-shell');
+    if (existingShell && existingShell.dataset.activeMission === activeId) return;
     const doneIds = new Set(missions.filter(item => missionDone(item, module, state)).map(item => item.id));
     const activeBlocks = new Set(blocksOf(module, active.id).map(block => block._id));
     allBlocks.forEach(card => {
@@ -214,7 +228,6 @@
         decorateModule();
       });
     });
-    const activeDone = missionDone(active, module, state);
     const next = missions[missions.indexOf(active) + 1];
     if (activeDone && next) {
       const box = document.createElement('div');
@@ -224,6 +237,56 @@
       if (complete) complete.insertAdjacentElement('beforebegin', box);
       else root.appendChild(box);
     }
+  }
+
+  function playMissionSound() {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const context = new AudioContext();
+      const now = context.currentTime;
+      [523.25, 659.25, 783.99].forEach((frequency, index) => {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.value = frequency;
+        gain.gain.setValueAtTime(0.0001, now + index * 0.09);
+        gain.gain.exponentialRampToValueAtTime(0.16, now + index * 0.09 + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.09 + 0.22);
+        oscillator.connect(gain).connect(context.destination);
+        oscillator.start(now + index * 0.09);
+        oscillator.stop(now + index * 0.09 + 0.24);
+      });
+      setTimeout(() => context.close().catch(() => {}), 900);
+    } catch (error) { /* Audio may be blocked until a user gesture. */ }
+  }
+
+  function celebrateMission(mission, module) {
+    if (celebrationRunning) return;
+    celebrationRunning = true;
+    playMissionSound();
+    const overlay = document.createElement('div');
+    overlay.className = 'cafasso-celebration';
+    const reward = Number(mission.rewardAlmitas || 0);
+    overlay.innerHTML = `<div class="cafasso-celebration-card"><strong>¡Misión completada!</strong><span>${reward > 0 ? `✦ +${reward} almitas` : 'Un paso más en tu camino'}</span></div>`;
+    const colors = ['#F4D889', '#F28B67', '#8FD0A2', '#A5C9E8', '#FFF9E8'];
+    for (let index = 0; index < 72; index += 1) {
+      const piece = document.createElement('i');
+      piece.className = 'cafasso-confetti';
+      piece.style.setProperty('--color', colors[index % colors.length]);
+      piece.style.setProperty('--x', `${Math.round((Math.random() - 0.5) * 100)}vw`);
+      piece.style.setProperty('--y', `${Math.round(35 + Math.random() * 58)}vh`);
+      piece.style.setProperty('--r', `${Math.round((Math.random() - 0.5) * 1100)}deg`);
+      piece.style.setProperty('--delay', `${Math.round(Math.random() * 180)}ms`);
+      overlay.appendChild(piece);
+    }
+    document.body.appendChild(overlay);
+    setTimeout(() => {
+      overlay.remove();
+      celebrationRunning = false;
+      if (typeof window.CafassoNavigate === 'function') window.CafassoNavigate('curso');
+      else { history.pushState({ view: 'curso' }, '', `${location.pathname}${location.search}#curso`); window.dispatchEvent(new PopStateEvent('popstate')); }
+    }, 2200);
   }
 
   function isoWeekKey(value) {
@@ -282,6 +345,7 @@
 
   window.addEventListener('cafasso:course-experience-ready', refresh);
   window.addEventListener('cafasso:state-ready', refresh);
+  window.addEventListener('cafasso:block-completed', () => { pendingBlockCompletion = true; setTimeout(refresh, 60); });
   window.addEventListener('hashchange', () => setTimeout(refresh, 40));
   setInterval(refresh, 1000);
   setTimeout(refresh, 250);
