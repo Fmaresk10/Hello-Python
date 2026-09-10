@@ -10,6 +10,7 @@
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[char]));
   const home = () => document.querySelector('.cafasso-home-v2');
   const isHome = () => (location.hash || '#inicio').replace(/^#/, '') === 'inicio';
+  const reveal = () => document.getElementById('app')?.classList.add('cafasso-boot-ready');
 
   function styles() {
     if (document.getElementById(STYLE_ID)) return;
@@ -89,6 +90,7 @@
       if (zone === 'casa') document.querySelector('[data-view="perfil"]')?.click();
       if (zone === 'parroquia') document.getElementById('cafassoDailyWord')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
+    reveal();
   }
 
   function boot() {
@@ -101,9 +103,9 @@
     });
     observer.observe(document.getElementById('app') || document.body, { childList: true, subtree: true });
     window.addEventListener('hashchange', () => setTimeout(buildWorld, 80));
+    if (!isHome()) reveal();
     buildWorld();
     setTimeout(buildWorld, 220);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true }); else boot();
 })();
-
