@@ -68,6 +68,7 @@
       /* Modo escena: la misión ocupa el paisaje y el contenido se integra como un objeto del camino. */
       body.cafasso-mission-mode{background:#102F35 url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png') center/cover fixed no-repeat!important}
       body.cafasso-mission-mode .module-detail{padding:0 5vw 70px;max-width:none!important}
+      body.cafasso-mission-mode .module-progress{display:none!important}
       body.cafasso-mission-mode .module-progress{position:relative;z-index:12;max-width:720px;margin:16px auto 0!important;background:rgba(8,35,39,.72);backdrop-filter:blur(12px);border-radius:999px;padding:9px 14px!important;font-size:11px}
       body.cafasso-mission-mode .cafasso-mission-shell{min-height:calc(100vh - 20px);margin:0 -5vw 24px;padding:38px 8vw 56px;border:0;border-radius:0;background:linear-gradient(180deg,rgba(5,27,32,.22),rgba(5,27,32,.68)),url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png') center/cover fixed;box-shadow:none}
       body.cafasso-mission-mode .cafasso-mission-head{max-width:820px;margin:0 auto 22px;align-items:end}
