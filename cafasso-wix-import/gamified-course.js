@@ -252,6 +252,12 @@
     if (!cards.length || document.querySelector('.cafasso-course-map')) return;
     const progressRecord = (state.data?.progress || []).find(item => item.courseId === course._id);
     const completedModuleIds = new Set(progressRecord?.completedModules || []);
+    // El estado local de las misiones también sirve como respaldo inmediato
+    // mientras la respuesta de progreso termina de sincronizarse.
+    (course.modules || []).forEach(item => {
+      const moduleMissions = missionsOf(item);
+      if (moduleMissions.length && moduleMissions.every(mission => missionDone(mission, item, state))) completedModuleIds.add(item._id);
+    });
     const nextGamifiedModule = (course.modules || []).find((item, index, modules) => {
       if (!item || !missionsOf(item).length || completedModuleIds.has(item._id)) return false;
       return index === 0 || completedModuleIds.has(modules[index - 1]?._id);
