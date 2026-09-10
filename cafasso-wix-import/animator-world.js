@@ -138,7 +138,7 @@
     });
     observer.observe(document.getElementById('app') || document.body, { childList: true, subtree: true });
     window.addEventListener('hashchange', () => setTimeout(buildWorld, 80));
-    if (!isHome()) reveal();
+    if (!isHome() && location.hash !== '#cursos') reveal();
     buildWorld();
     setTimeout(buildWorld, 220);
   }
