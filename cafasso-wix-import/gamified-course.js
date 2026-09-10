@@ -70,6 +70,8 @@
       body.cafasso-mission-mode{padding-top:0!important}
       body.cafasso-mission-mode #cafasso-role-preview-bar,body.cafasso-mission-mode .side,body.cafasso-mission-mode .mobilebar,body.cafasso-mission-mode .mobile-nav,body.cafasso-mission-mode .mobile-head,body.cafasso-mission-mode .top,body.cafasso-mission-mode .backline,body.cafasso-mission-mode #cafassoWorldReturn,body.cafasso-mission-mode .module-detail>section.card{display:none!important}
       body.cafasso-mission-mode .module-detail{padding:0 5vw 70px;max-width:none!important}
+      body.cafasso-mission-mode .module-detail>article.block,body.cafasso-mission-mode .module-detail>.complete-box{visibility:hidden!important}
+      body.cafasso-mission-mode .module-detail>.cafasso-mission-shell,body.cafasso-mission-mode .cafasso-mission-stage article.block{visibility:visible!important}
       body.cafasso-mission-mode .module-progress{display:none!important}
       body.cafasso-mission-mode .module-progress{position:relative;z-index:12;max-width:720px;margin:16px auto 0!important;background:rgba(8,35,39,.72);backdrop-filter:blur(12px);border-radius:999px;padding:9px 14px!important;font-size:11px}
       body.cafasso-mission-mode .cafasso-mission-shell{min-height:calc(100vh - 20px);margin:0 -5vw 24px;padding:38px 8vw 56px;border:0;border-radius:0;background:linear-gradient(180deg,rgba(5,27,32,.22),rgba(5,27,32,.68)),url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png') center/cover fixed;box-shadow:none}
