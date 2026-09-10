@@ -250,7 +250,17 @@
     document.documentElement.dataset.cafassoHomeV2 = '0';
     const cards = [...document.querySelectorAll('.card.module')];
     if (!cards.length || document.querySelector('.cafasso-course-map')) return;
+    const progressRecord = (state.data?.progress || []).find(item => item.courseId === course._id);
+    const completedModuleIds = new Set(progressRecord?.completedModules || []);
+    const nextGamifiedModule = (course.modules || []).find((item, index, modules) => {
+      if (!item || !missionsOf(item).length || completedModuleIds.has(item._id)) return false;
+      return index === 0 || completedModuleIds.has(modules[index - 1]?._id);
+    });
     const gamifiedCard = cards.find(card => {
+      const moduleId = card.querySelector('[data-module]')?.getAttribute('data-module');
+      const module = (course.modules || []).find(item => item && item._id === moduleId);
+      return module?._id === (nextGamifiedModule?._id || module?._id) && missionsOf(module).length > 0;
+    }) || cards.find(card => {
       const moduleId = card.querySelector('[data-module]')?.getAttribute('data-module');
       const module = (course.modules || []).find(item => item && item._id === moduleId);
       return missionsOf(module).length > 0;
