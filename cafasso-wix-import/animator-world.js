@@ -44,16 +44,32 @@
     escuela: './audio/escuela-ambience.mp3'
   };
   const zoneAudio = {};
+  let hoveredZone = null;
+
+  function stopZoneSound(zone) {
+    const audio = zoneAudio[zone];
+    if (!audio) return;
+    audio.pause();
+    try { audio.currentTime = 0; } catch (error) { /* audio may not be seekable yet */ }
+  }
+
+  function stopAllZoneSounds() {
+    Object.keys(zoneAudio).forEach(stopZoneSound);
+    hoveredZone = null;
+  }
 
   function playZoneSound(zone) {
     if (!soundEnabled) return;
     const source = REAL_ZONE_AUDIO[zone];
     if (!source) return;
     try {
+      stopAllZoneSounds();
       const audio = zoneAudio[zone] || (zoneAudio[zone] = new Audio(source));
       audio.volume = zone === 'parroquia' ? 0.7 : 0.8;
+      audio.loop = false;
       audio.currentTime = 0;
-      audio.play().catch(() => {});
+      hoveredZone = zone;
+      audio.play().catch(() => { if (hoveredZone === zone) hoveredZone = null; });
     } catch (error) { /* Audio may be unavailable in this browser. */ }
   }
 
@@ -381,7 +397,6 @@
     old.querySelector('[data-world-stat="almitas"]').addEventListener('click', () => openLedger('almitas'));
     old.querySelector('[data-world-stat="ruah"]').addEventListener('click', () => openLedger('ruah'));
     const openPanel = zone => {
-      playZoneSound(zone);
       const copy = {
         casa: ['Casa', 'Acá podés revisar tus almitas, tu RUAH y tu identidad como animador.', 'Ver mi perfil'],
         patio: ['Patio', 'El lugar de la cercanía: pequeños gestos, comunidad y vida compartida.', 'Continuar recorrido'],
@@ -404,7 +419,15 @@
         try { document.dispatchEvent(new CustomEvent('cafasso:parish-open')); } catch (error) { /* custom events may be unavailable */ }
       }
     };
-    old.querySelectorAll('[data-zone]').forEach(zone => zone.addEventListener('click', () => openPanel(zone.dataset.zone)));
+    old.querySelectorAll('[data-zone]').forEach(zoneButton => {
+      const zone = zoneButton.dataset.zone;
+      zoneButton.addEventListener('mouseenter', () => playZoneSound(zone));
+      zoneButton.addEventListener('mouseleave', () => {
+        if (hoveredZone === zone) stopZoneSound(zone);
+        if (hoveredZone === zone) hoveredZone = null;
+      });
+      zoneButton.addEventListener('click', () => openPanel(zone));
+    });
     panel.querySelector('.close').addEventListener('click', () => panel.classList.remove('show'));
     panel.addEventListener('click', event => {
       const action = event.target.closest('[data-world-action]');
