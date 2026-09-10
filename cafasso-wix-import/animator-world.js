@@ -109,7 +109,10 @@
         const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'A';
         content.innerHTML = `<h3>Casa</h3><div class="cafasso-world-profile"><div class="cafasso-world-profile-avatar">${photo ? `<img src="${esc(photo)}" alt="Foto de ${esc(name)}">` : initials}</div><div><strong>${esc(name)}</strong><small>${esc(user.groupName || user.role || 'Animador/a')}</small></div></div><p>Tu lugar personal dentro de CAFASSO. Acá se reúne todo lo que vas construyendo.</p><div class="cafasso-world-profile-grid"><div class="cafasso-world-profile-stat"><b>${esc(stats.almitas)}</b><span>Almitas</span></div><div class="cafasso-world-profile-stat"><b>${esc(stats.ruah)}</b><span>RUAH</span></div></div><button data-world-action="casa">Abrir perfil completo →</button>`;
       } else content.innerHTML = `<h3>${copy[0]}</h3><p>${copy[1]}</p><button data-world-action="${zone}">${copy[2]} →</button>`;
-      if (zone === 'parroquia' && dailyWord) { dailyWord.remove(); content.appendChild(dailyWord); }
+      if (zone === 'parroquia') {
+        if (dailyWord && dailyWord.parentNode) dailyWord.remove();
+        try { document.dispatchEvent(new CustomEvent('cafasso:parish-open')); } catch (error) { /* custom events may be unavailable */ }
+      }
     };
     old.querySelectorAll('[data-zone]').forEach(zone => zone.addEventListener('click', () => openPanel(zone.dataset.zone)));
     panel.querySelector('.close').addEventListener('click', () => panel.classList.remove('show'));
