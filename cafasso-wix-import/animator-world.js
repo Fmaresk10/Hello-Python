@@ -37,6 +37,94 @@
     return soundContext;
   }
 
+  function noiseBurst(context, now, duration, filterType, frequency, gainLevel) {
+    const sampleRate = context.sampleRate;
+    const buffer = context.createBuffer(1, Math.ceil(sampleRate * duration), sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let index = 0; index < data.length; index += 1) data[index] = (Math.random() * 2 - 1) * 0.7;
+    const source = context.createBufferSource();
+    const filter = context.createBiquadFilter();
+    const gain = context.createGain();
+    source.buffer = buffer;
+    filter.type = filterType;
+    filter.frequency.value = frequency;
+    filter.Q.value = 0.7;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(gainLevel, now + 0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    source.connect(filter).connect(gain).connect(context.destination);
+    source.start(now);
+    source.stop(now + duration + 0.02);
+  }
+
+  function playZoneSound(zone) {
+    if (!soundEnabled) return;
+    const context = audioContext();
+    if (!context) return;
+    const now = context.currentTime;
+    try {
+      if (zone === 'casa') {
+        noiseBurst(context, now, 0.34, 'lowpass', 900, 0.055);
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.type = 'sawtooth';
+        oscillator.frequency.setValueAtTime(145, now);
+        oscillator.frequency.exponentialRampToValueAtTime(72, now + 0.3);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.07, now + 0.035);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
+        oscillator.connect(gain).connect(context.destination);
+        oscillator.start(now);
+        oscillator.stop(now + 0.36);
+      } else if (zone === 'parroquia') {
+        [392, 523.25, 659.25].forEach((frequency, index) => {
+          const start = now + index * 0.18;
+          [1, 2.01, 3.02].forEach((partial, partialIndex) => {
+            const oscillator = context.createOscillator();
+            const gain = context.createGain();
+            oscillator.type = partialIndex === 0 ? 'sine' : 'triangle';
+            oscillator.frequency.value = frequency * partial;
+            gain.gain.setValueAtTime(0.0001, start);
+            gain.gain.exponentialRampToValueAtTime(partialIndex === 0 ? 0.1 : 0.025, start + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.95);
+            oscillator.connect(gain).connect(context.destination);
+            oscillator.start(start);
+            oscillator.stop(start + 1.02);
+          });
+        });
+      } else if (zone === 'patio') {
+        noiseBurst(context, now, 0.62, 'bandpass', 720, 0.035);
+        [165, 208].forEach((frequency, index) => {
+          const oscillator = context.createOscillator();
+          const gain = context.createGain();
+          oscillator.type = 'triangle';
+          oscillator.frequency.value = frequency;
+          gain.gain.setValueAtTime(0.0001, now + index * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.018, now + index * 0.08 + 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.62);
+          oscillator.connect(gain).connect(context.destination);
+          oscillator.start(now + index * 0.08);
+          oscillator.stop(now + 0.68);
+        });
+      } else if (zone === 'escuela') {
+        noiseBurst(context, now, 0.28, 'highpass', 2400, 0.04);
+        [659.25, 783.99].forEach((frequency, index) => {
+          const start = now + index * 0.11;
+          const oscillator = context.createOscillator();
+          const gain = context.createGain();
+          oscillator.type = 'triangle';
+          oscillator.frequency.value = frequency;
+          gain.gain.setValueAtTime(0.0001, start);
+          gain.gain.exponentialRampToValueAtTime(0.055, start + 0.025);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.38);
+          oscillator.connect(gain).connect(context.destination);
+          oscillator.start(start);
+          oscillator.stop(start + 0.42);
+        });
+      }
+    } catch (error) { /* Audio may be blocked until a user gesture. */ }
+  }
+
   function startAmbient() {
     if (!soundEnabled || ambientNodes.length) return;
     const context = audioContext();
@@ -271,6 +359,7 @@
     old.querySelector('[data-world-stat="almitas"]').addEventListener('click', () => openLedger('almitas'));
     old.querySelector('[data-world-stat="ruah"]').addEventListener('click', () => openLedger('ruah'));
     const openPanel = zone => {
+      playZoneSound(zone);
       const copy = {
         casa: ['Casa', 'Acá podés revisar tus almitas, tu RUAH y tu identidad como animador.', 'Ver mi perfil'],
         patio: ['Patio', 'El lugar de la cercanía: pequeños gestos, comunidad y vida compartida.', 'Continuar recorrido'],
