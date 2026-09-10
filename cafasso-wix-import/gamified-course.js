@@ -394,6 +394,16 @@
   function celebrateMission(mission, module) {
     if (celebrationRunning) return;
     celebrationRunning = true;
+    // Cuando la última misión queda realmente completa, reutilizamos el
+    // guardado nativo del módulo. Así se mantiene la validación existente:
+    // los desafíos solo cuentan si el formador los aprobó y el siguiente
+    // módulo se desbloquea desde el progreso central de CAFASSO.
+    const state = experience();
+    const missions = missionsOf(module);
+    const moduleReady = missions.length > 0 && missions.every(item => missionDone(item, module, state));
+    if (moduleReady) {
+      document.getElementById('completeModule')?.click();
+    }
     playMissionSound();
     const overlay = document.createElement('div');
     overlay.className = 'cafasso-celebration';
@@ -505,4 +515,3 @@
   // está leyendo o mirando un contenido.
   setTimeout(refresh, 250);
 })();
-
