@@ -295,7 +295,8 @@
     const badge = settings.badge || {};
     const moduleIndex = (course.modules || []).findIndex(item => item && item._id === module._id);
     const nextModule = moduleIndex >= 0 ? (course.modules || [])[moduleIndex + 1] : null;
-    const nextModuleButton = nextModule ? `<button type="button" class="cafasso-next-module" data-next-module="${esc(nextModule._id)}">Seguir al ${esc(nextModule.title || 'módulo siguiente')} →</button>` : '';
+    const moduleReadyForNext = missions.length > 0 && doneIds.size === missions.length;
+    const nextModuleButton = nextModule && moduleReadyForNext ? `<button type="button" class="cafasso-next-module" data-next-module="${esc(nextModule._id)}">Seguir al ${esc(nextModule.title || 'módulo siguiente')} →</button>` : '';
     const map = document.createElement('section');
     map.className = 'cafasso-course-map';
     // El mundo inicial tiene su propio paisaje. El mapa del curso usa el fondo
