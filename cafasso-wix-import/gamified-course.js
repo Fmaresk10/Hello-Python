@@ -58,6 +58,7 @@
       .cafasso-celebration-card{padding:24px 30px;text-align:center;border:1px solid rgba(255,235,165,.8);border-radius:22px;background:linear-gradient(145deg,#123C43,#22634F);color:#FFF9E8;box-shadow:0 18px 60px rgba(0,0,0,.35);animation:cafassoCelebrationPop .45s cubic-bezier(.2,.8,.2,1) both}
       .cafasso-celebration-card strong{display:block;font:400 30px/1.1 Georgia,serif;color:#FFE39A}.cafasso-celebration-card span{display:block;margin-top:8px;color:#E1F0E2;font-size:13px;font-weight:800}
       .cafasso-confetti{position:fixed;left:50%;top:46%;width:10px;height:16px;border-radius:2px;transform:translate(-50%,-50%);animation:cafassoConfetti 1.9s cubic-bezier(.12,.72,.25,1) forwards;animation-delay:var(--delay);background:var(--color);opacity:0}
+      .cafasso-world-return{position:fixed;z-index:100;left:24px;top:20px;appearance:none;border:1px solid rgba(244,216,137,.55);background:rgba(8,35,39,.82);backdrop-filter:blur(10px);color:#FFF9E8;border-radius:999px;padding:10px 15px;font:850 11px Inter,system-ui;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.24)}.cafasso-world-return:hover{background:#F1C85B;color:#17302F}.cafasso-journey-mode .cafasso-course-map{background-image:url('https://static.wixstatic.com/media/47bf07_2465a68b3ac64824b43bc20531ce6fd4~mv2.png')!important}.cafasso-mission-mode{background-image:url('https://static.wixstatic.com/media/47bf07_2465a68b3ac64824b43bc20531ce6fd4~mv2.png')!important}
       @keyframes cafassoCelebrationIn{from{opacity:0}to{opacity:1}}@keyframes cafassoCelebrationPop{from{transform:scale(.72) translateY(12px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}@keyframes cafassoConfetti{0%{opacity:1;transform:translate(-50%,-50%) rotate(0deg)}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(var(--r))}}
       @media(max-width:680px){body.cafasso-journey-mode main,body.cafasso-mission-mode main{padding:0}body.cafasso-journey-mode .side .nav button:not([data-view="inicio"]),body.cafasso-mission-mode .side .nav button:not([data-view="inicio"]),body.cafasso-journey-mode .mobilebar button:not([data-view="inicio"]),body.cafasso-mission-mode .mobilebar button:not([data-view="inicio"]),body.cafasso-journey-mode .mobile-nav button:not([data-view="inicio"]),body.cafasso-mission-mode .mobile-nav button:not([data-view="inicio"]){display:none!important}body.cafasso-journey-mode .mobilebar,body.cafasso-mission-mode .mobilebar,body.cafasso-journey-mode .mobile-nav,body.cafasso-mission-mode .mobile-nav{grid-template-columns:1fr!important}body.cafasso-journey-mode .cafasso-course-map{min-height:100svh;padding:24px 14px 20px}body.cafasso-journey-mode .cafasso-course-map-head{padding-left:0;display:block}.cafasso-course-map-title{font-size:29px}.cafasso-course-map-copy{font-size:12px;max-width:300px}.cafasso-course-map-badge{margin-top:12px}.cafasso-map-station{width:132px;min-height:64px;padding:8px;font-size:10px}.cafasso-map-station:nth-child(1){left:22%;top:75%}.cafasso-map-station:nth-child(2){left:42%;top:64%}.cafasso-map-station:nth-child(3){left:59%;top:42%}.cafasso-map-station:nth-child(4){left:73%;top:58%}.cafasso-map-station:nth-child(5){left:84%;top:30%}body.cafasso-mission-mode .module-detail{padding:18px 14px 34px}body.cafasso-mission-mode .cafasso-mission-shell{border-radius:18px;padding:18px 14px}body.cafasso-mission-mode article.block{padding:16px 14px}}
       .cafasso-home-ruah{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px;padding:14px 17px;border-radius:17px;background:linear-gradient(110deg,#E8F2ED,#F7F5E9);border:1px solid rgba(46,125,89,.18);color:#173954}
@@ -150,6 +151,21 @@
       const label = button.querySelector('span:last-child') || button;
       label.textContent = 'Volver al mundo';
     });
+    let returnButton = document.getElementById('cafassoWorldReturn');
+    if (!returnButton) {
+      returnButton = document.createElement('button');
+      returnButton.id = 'cafassoWorldReturn';
+      returnButton.className = 'cafasso-world-return';
+      returnButton.type = 'button';
+      returnButton.textContent = '← Volver al mundo';
+      returnButton.addEventListener('click', () => document.querySelector('[data-view="inicio"]')?.click());
+      document.body.appendChild(returnButton);
+    }
+    returnButton.hidden = false;
+  }
+
+  function clearWorldReturnButton() {
+    document.getElementById('cafassoWorldReturn')?.remove();
   }
 
   function currentMission(module, missions, state) {
@@ -163,6 +179,7 @@
     const state = experience();
     const course = state?.course;
     if (!course || !document.querySelector('.section')) return;
+    document.documentElement.dataset.cafassoHomeV2 = '0';
     const cards = [...document.querySelectorAll('.card.module')];
     if (!cards.length || document.querySelector('.cafasso-course-map')) return;
     const gamifiedCard = cards.find(card => {
@@ -202,6 +219,7 @@
     const module = state?.module;
     const missions = missionsOf(module);
     if (!module || !missions.length) return;
+    document.documentElement.dataset.cafassoHomeV2 = '0';
     const root = document.querySelector('.module-detail');
     if (!root) return;
     styles();
@@ -356,8 +374,11 @@
   function refresh() {
     styles();
     const state = experience();
+    if (state?.view === 'course' || state?.view === 'module') document.documentElement.dataset.cafassoHomeV2 = '0';
     if (state?.view === 'module') decorateModule();
     if (state?.view === 'course') decorateStagePath();
+    if (state?.view === 'course' || state?.view === 'module') prepareWorldReturnButton();
+    else clearWorldReturnButton();
     if (state?.view !== 'course') document.body.classList.remove('cafasso-journey-mode');
     if (state?.view !== 'module') document.body.classList.remove('cafasso-mission-mode');
     decorateHome();
