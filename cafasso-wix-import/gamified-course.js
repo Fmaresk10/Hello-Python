@@ -168,6 +168,16 @@
     return Boolean(state.work?.done?.[block._id]);
   }
 
+  function missionStep(module, mission, state) {
+    const records = blocksOf(module, mission.id);
+    const work = state?.work || storedModuleWork(module);
+    const firstOpen = records.findIndex(block => !doneBlock(block, { ...state, work }));
+    return {
+      records,
+      index: firstOpen >= 0 ? firstOpen : Math.max(records.length - 1, 0)
+    };
+  }
+
   function missionDone(mission, module, state) {
     const required = blocksOf(module, mission.id).filter(block => block.required !== false);
     const work = state?.work || storedModuleWork(module);
@@ -303,8 +313,10 @@
       return;
     }
     const doneIds = new Set(missions.filter(item => missionDone(item, module, state)).map(item => item.id));
-    const activeBlockRecords = blocksOf(module, active.id);
-    const activeBlocks = new Set(activeBlockRecords.map(block => block._id));
+    const step = missionStep(module, active, state);
+    const activeBlockRecords = step.records;
+    const visibleBlock = activeBlockRecords[step.index] || null;
+    const activeBlocks = new Set(visibleBlock ? [visibleBlock._id] : []);
     allBlocks.forEach(card => {
       card.style.display = activeBlocks.has(card.dataset.blockCard) ? '' : 'none';
     });
@@ -323,7 +335,7 @@
     }).join('')}</div>${active.rewardAlmitas ? `<div class="cafasso-ruah-inline"><span>✦</span><span>Recompensa de esta parada: <b>${Number(active.rewardAlmitas)} almitas</b></span></div>` : ''}${badge.name ? `<div class="cafasso-ruah-inline"><span>🏅</span><span>Logro del camino: <b>${esc(badge.name)}</b></span></div>` : ''}`;
     const stage = document.createElement('div');
     stage.className = 'cafasso-mission-stage';
-    stage.innerHTML = `<div class="cafasso-scene-marker"><span>${esc(activeView.icon || '✦')}</span><small>${esc(activeView.sceneLabel || 'Escena de la misión')}</small></div>`;
+    stage.innerHTML = `<div class="cafasso-scene-marker"><span>${esc(activeView.icon || '✦')}</span><small>${esc(activeView.sceneLabel || 'Escena de la misión')} · Paso ${activeBlockRecords.length ? step.index + 1 : 0} de ${activeBlockRecords.length}</small></div>`;
     shell.appendChild(stage);
     shell.querySelector('.cafasso-scene-back')?.addEventListener('click', () => {
       if (typeof window.CafassoNavigate === 'function') window.CafassoNavigate('curso');
@@ -331,7 +343,7 @@
     });
     allBlocks.forEach(card => {
       const record = activeBlockRecords.find(block => block._id === card.dataset.blockCard);
-      if (!record) return;
+      if (!record || record._id !== visibleBlock?._id) return;
       card.dataset.sceneKind = sceneKindOf(record);
       stage.appendChild(card);
     });
