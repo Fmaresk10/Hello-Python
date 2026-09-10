@@ -13,7 +13,13 @@
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[char]));
   const home = () => document.querySelector('.cafasso-home-v2');
   const isHome = () => (location.hash || '#inicio').replace(/^#/, '') === 'inicio';
-  const reveal = () => document.getElementById('app')?.classList.add('cafasso-boot-ready');
+  const reveal = () => {
+    const app = document.getElementById('app');
+    if (!app) return;
+    app.style.transition = 'none';
+    app.classList.add('cafasso-boot-ready');
+    requestAnimationFrame(() => app.style.removeProperty('transition'));
+  };
 
   function applyRuah(ruah) {
     const state = window.CafassoAnimatorState;
