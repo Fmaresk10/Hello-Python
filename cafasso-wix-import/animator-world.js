@@ -5,6 +5,7 @@
   const root = document.documentElement;
   const BG = 'https://static.wixstatic.com/media/47bf07_fdaf845ac90049d89227e663e627cd4e~mv2.jpg';
   const STYLE_ID = 'cafassoAnimatorWorldStyles';
+  let dailyWordRef = null;
 
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[char]));
   const home = () => document.querySelector('.cafasso-home-v2');
@@ -53,7 +54,8 @@
     styles();
     const stats = readStats();
     const courseButton = old.querySelector('#cafassoHomeContinue');
-    const dailyWord = document.getElementById('cafassoDailyWord');
+    const dailyWord = dailyWordRef || document.getElementById('cafassoDailyWord');
+    if (dailyWord) dailyWordRef = dailyWord;
     document.querySelectorAll('.cafasso-daily-word').forEach(node => node.remove());
     old.innerHTML = `<div class="cafasso-world"><header class="cafasso-world-hud"><div><div class="cafasso-world-kicker">Tu mundo CAFASSO</div><h1 class="cafasso-world-title">${esc(stats.title)}</h1><p class="cafasso-world-sub">Elegí un lugar y seguí caminando.</p></div><div class="cafasso-world-stats"><span class="cafasso-world-stat">✦ <b data-almitas-total>${esc(stats.almitas)}</b> almitas</span><span class="cafasso-world-stat">RUAH · <b>${esc(stats.ruah)}</b></span></div></header><div class="cafasso-world-map"><button class="cafasso-world-zone" data-zone="casa"><span class="cafasso-world-zone-label"><i>⌂</i> Casa</span><span class="cafasso-world-zone-copy">Un lugar para volver, descansar y reconocer lo que llevás dentro.</span></button><button class="cafasso-world-zone" data-zone="patio"><span class="cafasso-world-zone-label"><i>✦</i> Patio</span><span class="cafasso-world-zone-copy">El corazón del encuentro, el juego y la comunidad.</span></button><button class="cafasso-world-zone" data-zone="escuela"><span class="cafasso-world-zone-label"><i>◇</i> Escuela</span><span class="cafasso-world-zone-copy">Tus cursos, misiones y próximos pasos.</span></button><button class="cafasso-world-zone" data-zone="parroquia"><span class="cafasso-world-zone-label"><i>✝</i> Parroquia</span><span class="cafasso-world-zone-copy">La Palabra, la oración y el sentido del camino.</span></button></div><section class="cafasso-world-panel" aria-live="polite"><button class="close" aria-label="Cerrar">×</button><div class="cafasso-world-panel-content"></div></section></div>`;
     const panel = old.querySelector('.cafasso-world-panel');
@@ -90,7 +92,13 @@
   }
 
   function boot() {
-    const observer = new MutationObserver(() => { if (isHome()) buildWorld(); });
+    const observer = new MutationObserver(() => {
+      document.querySelectorAll('.cafasso-daily-word').forEach(node => {
+        dailyWordRef = node;
+        if (!node.closest('.cafasso-world-panel')) node.remove();
+      });
+      if (isHome()) buildWorld();
+    });
     observer.observe(document.getElementById('app') || document.body, { childList: true, subtree: true });
     window.addEventListener('hashchange', () => setTimeout(buildWorld, 80));
     buildWorld();
