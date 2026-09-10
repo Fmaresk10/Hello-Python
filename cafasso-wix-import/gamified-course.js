@@ -9,6 +9,7 @@
   const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
   let pendingBlockCompletion = false;
   let celebrationRunning = false;
+  let autoCompletingModule = '';
 
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
@@ -279,6 +280,13 @@
     const missions = missionsOf(module);
     const stateNow = experience();
     const doneIds = new Set(missions.filter(item => missionDone(item, module, stateNow)).map(item => item.id));
+    if (missions.length && doneIds.size === missions.length && !completedModuleIds.has(module._id) && autoCompletingModule !== module._id && typeof window.CafassoCompleteModule === 'function') {
+      autoCompletingModule = module._id;
+      window.CafassoCompleteModule(module._id).then(() => {
+        autoCompletingModule = '';
+        if (typeof window.CafassoNavigate === 'function') window.CafassoNavigate('curso');
+      }).catch(() => { autoCompletingModule = ''; });
+    }
     const activeId = currentMission(module, missions, stateNow);
     const originalButtons = new Map(cards.map(card => [card.querySelector('[data-module]')?.getAttribute('data-module'), card.querySelector('[data-module]')]));
     const section = gamifiedCard.closest('.section');
