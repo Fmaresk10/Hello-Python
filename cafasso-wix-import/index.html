@@ -163,6 +163,11 @@ input,textarea,select,button{touch-action:manipulation}input[type=password],inpu
       try{window.dispatchEvent(new CustomEvent('cafasso:course-experience-ready'));}catch(e){}
     }
     render(view);
+    // Al volver desde una misión, actualizar las aprobaciones del formador
+    // antes de que el mapa calcule qué módulo queda disponible.
+    if(view==='curso'&&selectedCourse){
+      loadCourseSubmissions(selectedCourse._id).then(function(){publishExperience('course');render('curso');});
+    }
     if(view!=='modulo'&&view!=='inicio') document.getElementById('app')?.classList.add('cafasso-boot-ready');
   }
   window.CafassoNavigate=navigate;
@@ -231,6 +236,6 @@ input,textarea,select,button{touch-action:manipulation}input[type=password],inpu
 </script>
 <script src="./profile-photo.js"></script>
 <script src="./daily-word.js?v=20260910-6"></script>
-<script src="./gamified-course.js?v=20260910-28"></script>
+<script src="./gamified-course.js?v=20260910-29"></script>
 </body>
 </html>
