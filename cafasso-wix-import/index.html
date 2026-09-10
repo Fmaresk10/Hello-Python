@@ -204,7 +204,12 @@ input,textarea,select,button{touch-action:manipulation}input[type=password],inpu
       publishAnimatorState();
       layout();
       var view=(location.hash||'#inicio').slice(1);
-      if((view==='curso'||view==='modulo')&&!selectedCourse)view='inicio';
+      if((view==='curso'||view==='modulo')&&!selectedCourse){
+        // selectedCourse vive en memoria. Al recargar dentro de un curso se
+        // pierde; volver al inicio evita dejar la pantalla de arranque azul.
+        view='inicio';
+        history.replaceState({view:'inicio'},'',location.pathname+location.search+'#inicio');
+      }
       render(view);
       // La pantalla de inicio se revela desde animator-world, cuando ya
       // están aplicados el fondo y el mapa. Así F5 no muestra la vista vieja.
@@ -216,6 +221,6 @@ input,textarea,select,button{touch-action:manipulation}input[type=password],inpu
 </script>
 <script src="./profile-photo.js"></script>
 <script src="./daily-word.js?v=20260910-6"></script>
-<script src="./gamified-course.js?v=20260910-16"></script>
+<script src="./gamified-course.js?v=20260910-17"></script>
 </body>
 </html>
