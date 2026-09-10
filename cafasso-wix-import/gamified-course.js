@@ -21,26 +21,27 @@
       .cafasso-stage-path .cafasso-stage-kicker{font-size:10px;font-weight:850;letter-spacing:.14em;text-transform:uppercase;color:#A37C27;margin-bottom:2px}
       .cafasso-stage-path .cafasso-stage-badge{display:inline-flex;align-items:center;gap:8px;width:max-content;background:#FFF7D7;border:1px solid rgba(200,155,49,.3);border-radius:999px;padding:7px 11px;color:#6D5200;font-size:11px;font-weight:850}
       .cafasso-stage-path .cafasso-stage-badge span{font-size:16px}
-      .cafasso-mission-shell{margin:0 0 18px;padding:18px;border-radius:19px;background:linear-gradient(135deg,#FFF9E8,#F8F0DA);border:1px solid rgba(200,155,49,.25)}
+      .cafasso-mission-shell{position:relative;overflow:hidden;margin:0 0 18px;padding:22px;border-radius:24px;background:radial-gradient(circle at 78% 12%,rgba(255,210,105,.24),transparent 22%),linear-gradient(145deg,#0D2A37 0%,#163F43 48%,#245A4B 100%);border:1px solid rgba(230,194,101,.5);box-shadow:0 18px 42px rgba(10,36,45,.2)}
+      .cafasso-mission-shell:after{content:'';position:absolute;inset:auto -10% -56% 20%;height:70%;border-radius:50%;background:rgba(228,190,89,.08);transform:rotate(-9deg);pointer-events:none}
       .cafasso-mission-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:15px}
-      .cafasso-mission-kicker{font-size:9px;font-weight:850;letter-spacing:.14em;text-transform:uppercase;color:#9B7622;margin-bottom:5px}
-      .cafasso-mission-title{font:400 25px/1.1 Georgia,serif;color:#173954;margin:0}
-      .cafasso-mission-objective{margin:6px 0 0;color:#74664D;font-size:12px;line-height:1.45}
-      .cafasso-mission-prompt{margin:12px 0 15px;padding:11px 13px;border-radius:13px;background:rgba(255,255,255,.62);border:1px solid rgba(46,125,89,.16);color:#527064;font-size:11px;line-height:1.45}
-      .cafasso-mission-prompt strong{display:block;color:#245F48;margin-bottom:3px;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
-      .cafasso-mission-time{white-space:nowrap;color:#806823;font-size:11px;font-weight:800}
+      .cafasso-mission-kicker{font-size:9px;font-weight:850;letter-spacing:.14em;text-transform:uppercase;color:#F4D889;margin-bottom:5px}
+      .cafasso-mission-title{font:400 27px/1.1 Georgia,serif;color:#FFF9E8;margin:0}
+      .cafasso-mission-objective{margin:6px 0 0;color:#DDE9DF;font-size:12px;line-height:1.45}
+      .cafasso-mission-prompt{margin:14px 0 17px;padding:12px 14px;border-radius:13px;background:rgba(4,26,32,.34);border:1px solid rgba(235,209,132,.28);color:#E8F0E6;font-size:11px;line-height:1.45}
+      .cafasso-mission-prompt strong{display:block;color:#F4D889;margin-bottom:3px;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+      .cafasso-mission-time{white-space:nowrap;color:#F4D889;font-size:11px;font-weight:800}
       .cafasso-mission-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;position:relative}
-      .cafasso-mission-nav:before{content:'';position:absolute;left:7%;right:7%;top:20px;height:2px;background:rgba(200,155,49,.3);z-index:0}
-      .cafasso-mission-node{position:relative;z-index:1;display:grid;justify-items:center;gap:5px;border:1px solid rgba(23,57,84,.14);background:#FFFDF9;border-radius:15px;padding:9px 5px;color:#516173;font:800 10px/1.15 Inter,system-ui;cursor:pointer;min-height:66px}
-      .cafasso-mission-node:hover{border-color:#D0A83B;color:#173954}
-      .cafasso-mission-node.active{background:#173954;border-color:#173954;color:#fff}
-      .cafasso-mission-node.done{background:#EDF5F1;border-color:#CDE2D8;color:#2E7D59}
-      .cafasso-mission-node.locked{opacity:.48;cursor:not-allowed}
+      .cafasso-mission-nav:before{content:'';position:absolute;left:7%;right:7%;top:20px;height:3px;background:linear-gradient(90deg,rgba(244,216,137,.85),rgba(244,216,137,.18));z-index:0;border-radius:99px;box-shadow:0 0 12px rgba(244,216,137,.25)}
+      .cafasso-mission-node{position:relative;z-index:1;display:grid;justify-items:center;gap:5px;border:1px solid rgba(244,216,137,.36);background:rgba(7,33,40,.64);border-radius:15px;padding:9px 5px;color:#E7EFE5;font:800 10px/1.15 Inter,system-ui;cursor:pointer;min-height:70px;box-shadow:0 6px 15px rgba(0,0,0,.12)}
+      .cafasso-mission-node:hover{border-color:#F4D889;color:#FFF9E8;transform:translateY(-2px)}
+      .cafasso-mission-node.active{background:#F1C85B;border-color:#FFE5A1;color:#17302F;box-shadow:0 0 0 4px rgba(244,216,137,.18),0 8px 18px rgba(0,0,0,.2)}
+      .cafasso-mission-node.done{background:#2E7D59;border-color:#B9DEC8;color:#fff}
+      .cafasso-mission-node.locked{opacity:.52;cursor:not-allowed}
       .cafasso-mission-node i{font-style:normal;font-size:19px;line-height:1}
       .cafasso-mission-next{margin:0 0 18px;padding:13px 15px;border:1px solid #D9E7DE;border-radius:14px;background:#F3FAF5;color:#245F48;font-size:12px;line-height:1.45}
       .cafasso-mission-next strong{display:block;margin-bottom:3px}
-      .cafasso-ruah-inline{display:flex;align-items:center;gap:9px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(200,155,49,.2);color:#6D5200;font-size:11px}
-      .cafasso-ruah-inline b{font-size:12px;color:#173954}
+      .cafasso-ruah-inline{display:flex;align-items:center;gap:9px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(244,216,137,.26);color:#F4D889;font-size:11px;position:relative;z-index:1}
+      .cafasso-ruah-inline b{font-size:12px;color:#FFF9E8}
       .cafasso-home-ruah{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px;padding:14px 17px;border-radius:17px;background:linear-gradient(110deg,#E8F2ED,#F7F5E9);border:1px solid rgba(46,125,89,.18);color:#173954}
       .cafasso-home-ruah-main{display:flex;align-items:center;gap:11px}.cafasso-home-ruah-icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#2E7D59;color:#fff;font:700 18px Georgia,serif}.cafasso-home-ruah-label{font:850 10px/1.2 Inter,system-ui;letter-spacing:.12em;text-transform:uppercase;color:#2E7D59}.cafasso-home-ruah-total{font:400 24px/1 Georgia,serif;color:#173954;margin-top:3px}.cafasso-home-ruah-note{font-size:11px;line-height:1.4;color:#527064;text-align:right;max-width:250px}.cafasso-home-ruah-note strong{display:block;color:#245F48;margin-bottom:3px}@media(max-width:680px){.cafasso-mission-head{display:block}.cafasso-mission-time{display:block;margin-top:8px}.cafasso-mission-nav{grid-template-columns:repeat(5,minmax(54px,1fr));overflow-x:auto;padding-bottom:4px}.cafasso-mission-node{font-size:9px}.cafasso-home-ruah{align-items:flex-start;flex-direction:column}.cafasso-home-ruah-note{text-align:left;max-width:none}}
     `;
