@@ -41,25 +41,48 @@
     if (!soundEnabled || ambientNodes.length) return;
     const context = audioContext();
     if (!context) return;
-    const melody = [261.63, 329.63, 392, 523.25, 392, 329.63];
+    // Motivo breve, saltarín y pentatónico: evoca juego, equilibrio y aventura
+    // sin reproducir la canción de referencia.
+    const melody = [
+      { frequency: 523.25, duration: 0.34 },
+      { frequency: 659.25, duration: 0.22 },
+      { frequency: 783.99, duration: 0.34 },
+      { frequency: 659.25, duration: 0.22 },
+      { frequency: 587.33, duration: 0.34 },
+      { frequency: 523.25, duration: 0.48 },
+      { frequency: 392, duration: 0.34 },
+      { frequency: 523.25, duration: 0.62 }
+    ];
     const playNote = () => {
       if (!soundEnabled || !soundContext) return;
       const oscillator = context.createOscillator();
+      const shimmer = context.createOscillator();
       const gain = context.createGain();
+      const shimmerGain = context.createGain();
       const now = context.currentTime;
-      oscillator.type = 'sine';
-      oscillator.frequency.value = melody[ambientStep % melody.length];
+      const note = melody[ambientStep % melody.length];
+      oscillator.type = 'triangle';
+      oscillator.frequency.value = note.frequency;
+      shimmer.type = 'sine';
+      shimmer.frequency.value = note.frequency * 2;
       gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.035, now + 0.08);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.05);
+      gain.gain.exponentialRampToValueAtTime(0.045, now + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + note.duration);
+      shimmerGain.gain.setValueAtTime(0.0001, now);
+      shimmerGain.gain.exponentialRampToValueAtTime(0.012, now + 0.018);
+      shimmerGain.gain.exponentialRampToValueAtTime(0.0001, now + note.duration * 0.8);
       oscillator.connect(gain).connect(context.destination);
+      shimmer.connect(shimmerGain).connect(context.destination);
       oscillator.start(now);
-      oscillator.stop(now + 1.1);
+      shimmer.start(now);
+      oscillator.stop(now + note.duration + 0.04);
+      shimmer.stop(now + note.duration + 0.04);
       ambientNodes.push(oscillator);
+      ambientNodes.push(shimmer);
       ambientStep += 1;
     };
     playNote();
-    ambientTimer = window.setInterval(playNote, 1400);
+    ambientTimer = window.setInterval(playNote, 520);
   }
 
   function stopAmbient() {
