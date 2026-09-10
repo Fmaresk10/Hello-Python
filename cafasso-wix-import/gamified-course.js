@@ -376,7 +376,10 @@
   function decorateCourses() {
     const isCourses = (location.hash || '#inicio') === '#cursos';
     document.body.classList.toggle('cafasso-courses-mode', isCourses);
-    if (!isCourses) return;
+    if (!isCourses) {
+      document.documentElement.removeAttribute('data-cafasso-courses-boot');
+      return;
+    }
     document.documentElement.dataset.cafassoHomeV2 = '0';
     const main = document.getElementById('main');
     if (!main || !main.querySelector('.courses')) return;
@@ -384,6 +387,7 @@
     const subtitle = main.querySelector('.top p');
     if (heading) heading.textContent = 'Escuela';
     if (subtitle) subtitle.textContent = 'Elegí un recorrido y continuá tu camino de formación.';
+    document.documentElement.removeAttribute('data-cafasso-courses-boot');
     document.getElementById('app')?.classList.add('cafasso-boot-ready');
   }
 
