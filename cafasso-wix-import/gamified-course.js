@@ -27,19 +27,20 @@
       .cafasso-mission-title{font:400 25px/1.1 Georgia,serif;color:#173954;margin:0}
       .cafasso-mission-objective{margin:6px 0 0;color:#74664D;font-size:12px;line-height:1.45}
       .cafasso-mission-time{white-space:nowrap;color:#806823;font-size:11px;font-weight:800}
-      .cafasso-mission-nav{display:flex;gap:8px;flex-wrap:wrap}
-      .cafasso-mission-node{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(23,57,84,.14);background:rgba(255,255,255,.58);border-radius:999px;padding:8px 10px;color:#516173;font:800 11px Inter,system-ui;cursor:pointer}
+      .cafasso-mission-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;position:relative}
+      .cafasso-mission-nav:before{content:'';position:absolute;left:7%;right:7%;top:20px;height:2px;background:rgba(200,155,49,.3);z-index:0}
+      .cafasso-mission-node{position:relative;z-index:1;display:grid;justify-items:center;gap:5px;border:1px solid rgba(23,57,84,.14);background:#FFFDF9;border-radius:15px;padding:9px 5px;color:#516173;font:800 10px/1.15 Inter,system-ui;cursor:pointer;min-height:66px}
       .cafasso-mission-node:hover{border-color:#D0A83B;color:#173954}
       .cafasso-mission-node.active{background:#173954;border-color:#173954;color:#fff}
       .cafasso-mission-node.done{background:#EDF5F1;border-color:#CDE2D8;color:#2E7D59}
       .cafasso-mission-node.locked{opacity:.48;cursor:not-allowed}
-      .cafasso-mission-node i{font-style:normal;font-size:14px}
+      .cafasso-mission-node i{font-style:normal;font-size:19px;line-height:1}
       .cafasso-mission-next{margin:0 0 18px;padding:13px 15px;border:1px solid #D9E7DE;border-radius:14px;background:#F3FAF5;color:#245F48;font-size:12px;line-height:1.45}
       .cafasso-mission-next strong{display:block;margin-bottom:3px}
       .cafasso-ruah-inline{display:flex;align-items:center;gap:9px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(200,155,49,.2);color:#6D5200;font-size:11px}
       .cafasso-ruah-inline b{font-size:12px;color:#173954}
       .cafasso-home-ruah{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px;padding:14px 17px;border-radius:17px;background:linear-gradient(110deg,#E8F2ED,#F7F5E9);border:1px solid rgba(46,125,89,.18);color:#173954}
-      .cafasso-home-ruah-main{display:flex;align-items:center;gap:11px}.cafasso-home-ruah-icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#2E7D59;color:#fff;font:700 18px Georgia,serif}.cafasso-home-ruah-label{font:850 10px/1.2 Inter,system-ui;letter-spacing:.12em;text-transform:uppercase;color:#2E7D59}.cafasso-home-ruah-total{font:400 24px/1 Georgia,serif;color:#173954;margin-top:3px}.cafasso-home-ruah-note{font-size:11px;line-height:1.4;color:#527064;text-align:right;max-width:250px}.cafasso-home-ruah-note strong{display:block;color:#245F48;margin-bottom:3px}@media(max-width:680px){.cafasso-mission-head{display:block}.cafasso-mission-time{display:block;margin-top:8px}.cafasso-home-ruah{align-items:flex-start;flex-direction:column}.cafasso-home-ruah-note{text-align:left;max-width:none}}
+      .cafasso-home-ruah-main{display:flex;align-items:center;gap:11px}.cafasso-home-ruah-icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#2E7D59;color:#fff;font:700 18px Georgia,serif}.cafasso-home-ruah-label{font:850 10px/1.2 Inter,system-ui;letter-spacing:.12em;text-transform:uppercase;color:#2E7D59}.cafasso-home-ruah-total{font:400 24px/1 Georgia,serif;color:#173954;margin-top:3px}.cafasso-home-ruah-note{font-size:11px;line-height:1.4;color:#527064;text-align:right;max-width:250px}.cafasso-home-ruah-note strong{display:block;color:#245F48;margin-bottom:3px}@media(max-width:680px){.cafasso-mission-head{display:block}.cafasso-mission-time{display:block;margin-top:8px}.cafasso-mission-nav{grid-template-columns:repeat(5,minmax(54px,1fr));overflow-x:auto;padding-bottom:4px}.cafasso-mission-node{font-size:9px}.cafasso-home-ruah{align-items:flex-start;flex-direction:column}.cafasso-home-ruah-note{text-align:left;max-width:none}}
     `;
     document.head.appendChild(style);
   }
@@ -55,6 +56,23 @@
   function missionsOf(module) {
     const missions = settingsOf(module).missions;
     return Array.isArray(missions) ? missions.filter(item => item && item.id) : [];
+  }
+
+  const introNarrative = {
+    m1: { title: 'Entrá al patio', objective: 'Conocé a Juanito y empezá a mirar la historia desde los jóvenes.', icon: '🚪' },
+    m2: { title: 'Descubrí sus raíces', objective: 'Reconocé las personas y experiencias que fueron formando su corazón.', icon: '🌱' },
+    m3: { title: 'Abrí el sueño', objective: 'Escuchá el sueño de los nueve años y encontrá su primera pista.', icon: '✨' },
+    m4: { title: 'Elegí cómo acercarte', objective: 'Probá una respuesta salesiana frente a una situación concreta.', icon: '🧭' },
+    m5: { title: 'Salí al encuentro', objective: 'Realizá un gesto concreto con un joven y compartilo con tu formador.', icon: '🤝' }
+  };
+
+  function presentationOf(module, mission) {
+    const custom = settingsOf(module).narrativeMissions;
+    if (custom && custom[mission.id]) return { ...mission, ...custom[mission.id] };
+    if (String(module?.title || '').toLowerCase().includes('juanito') && introNarrative[mission.id]) {
+      return { ...mission, ...introNarrative[mission.id] };
+    }
+    return mission;
   }
 
   function blocksOf(module, missionId) {
@@ -139,6 +157,7 @@
     const existingShell = root.querySelector('.cafasso-mission-shell');
     if (existingShell && existingShell.dataset.activeMission === activeId) return;
     const active = missions.find(item => item.id === activeId) || missions[0];
+    const activeView = presentationOf(module, active);
     const doneIds = new Set(missions.filter(item => missionDone(item, module, state)).map(item => item.id));
     const activeBlocks = new Set(blocksOf(module, active.id).map(block => block._id));
     allBlocks.forEach(card => {
@@ -150,12 +169,13 @@
     shell.dataset.activeMission = active.id;
     const moduleSettings = settingsOf(module);
     const badge = moduleSettings.badge || {};
-    shell.innerHTML = `<div class="cafasso-mission-head"><div><div class="cafasso-mission-kicker">${esc(moduleSettings.stageLabel || 'Etapa')} · Misión ${missions.indexOf(active) + 1} de ${missions.length}</div><h3 class="cafasso-mission-title">${esc(active.title)}</h3><p class="cafasso-mission-objective">${esc(active.objective || 'Avanzá un paso en tu recorrido.')}</p></div><span class="cafasso-mission-time">${Number(active.minutes || 5)} min</span></div><div class="cafasso-mission-nav">${missions.map((mission, index) => {
+    shell.innerHTML = `<div class="cafasso-mission-head"><div><div class="cafasso-mission-kicker">${esc(moduleSettings.stageLabel || 'El camino')} · Parada ${missions.indexOf(active) + 1} de ${missions.length}</div><h3 class="cafasso-mission-title">${esc(activeView.title)}</h3><p class="cafasso-mission-objective">${esc(activeView.objective || 'Avanzá un paso en tu recorrido.')}</p></div><span class="cafasso-mission-time">${Number(active.minutes || 5)} min</span></div><div class="cafasso-mission-nav">${missions.map((mission, index) => {
+      const view = presentationOf(module, mission);
       const done = doneIds.has(mission.id);
       const previousDone = index === 0 || doneIds.has(missions[index - 1].id);
       const locked = !previousDone && !done;
-      return `<button class="cafasso-mission-node ${mission.id === active.id ? 'active' : ''} ${done ? 'done' : ''} ${locked ? 'locked' : ''}" data-mission-id="${esc(mission.id)}" ${locked ? 'disabled' : ''}><i>${esc(mission.icon || '•')}</i>${esc(mission.title)}</button>`;
-    }).join('')}</div>${badge.name ? `<div class="cafasso-ruah-inline"><span>✦</span><span>Insignia de etapa: <b>${esc(badge.name)}</b></span></div>` : ''}`;
+      return `<button class="cafasso-mission-node ${mission.id === active.id ? 'active' : ''} ${done ? 'done' : ''} ${locked ? 'locked' : ''}" data-mission-id="${esc(mission.id)}" ${locked ? 'disabled' : ''}><i>${esc(view.icon || '•')}</i><span>${esc(view.title)}</span></button>`;
+    }).join('')}</div>${active.rewardAlmitas ? `<div class="cafasso-ruah-inline"><span>✦</span><span>Recompensa de esta parada: <b>${Number(active.rewardAlmitas)} almitas</b></span></div>` : ''}${badge.name ? `<div class="cafasso-ruah-inline"><span>🏅</span><span>Logro del camino: <b>${esc(badge.name)}</b></span></div>` : ''}`;
     const progress = root.querySelector('.module-progress');
     if (progress) progress.insertAdjacentElement('afterend', shell);
     else root.prepend(shell);
@@ -170,7 +190,7 @@
     if (activeDone && next) {
       const box = document.createElement('div');
       box.className = 'cafasso-mission-next';
-      box.innerHTML = `<strong>✓ Misión completada</strong>Podés continuar con <b>${esc(next.title)}</b>.`;
+      box.innerHTML = `<strong>✓ Parada completada</strong>Podés continuar con <b>${esc(presentationOf(module, next).title)}</b>.`;
       const complete = root.querySelector('.complete-box');
       if (complete) complete.insertAdjacentElement('beforebegin', box);
       else root.appendChild(box);
@@ -235,3 +255,4 @@
   setInterval(refresh, 1000);
   setTimeout(refresh, 250);
 })();
+
