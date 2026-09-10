@@ -41,48 +41,56 @@
     if (!soundEnabled || ambientNodes.length) return;
     const context = audioContext();
     if (!context) return;
-    // Motivo breve, saltarín y pentatónico: evoca juego, equilibrio y aventura
-    // sin reproducir la canción de referencia.
-    const melody = [
-      { frequency: 523.25, duration: 0.34 },
-      { frequency: 659.25, duration: 0.22 },
-      { frequency: 783.99, duration: 0.34 },
-      { frequency: 659.25, duration: 0.22 },
-      { frequency: 587.33, duration: 0.34 },
-      { frequency: 523.25, duration: 0.48 },
-      { frequency: 392, duration: 0.34 },
-      { frequency: 523.25, duration: 0.62 }
+    // Base mayor en 6/8: más cercana a una canción acústica que a un
+    // xilófono. Los acordes se arpegian como una guitarra/ukelele suave.
+    const chords = [
+      [261.63, 329.63, 392],   // C
+      [196.00, 246.94, 293.66],// G
+      [220.00, 261.63, 329.63],// Am
+      [174.61, 220.00, 261.63] // F
     ];
+    const lead = [523.25, 587.33, 659.25, 783.99, 659.25, 587.33, 523.25, 659.25];
+    let chordStep = 0;
     const playNote = () => {
       if (!soundEnabled || !soundContext) return;
-      const oscillator = context.createOscillator();
-      const shimmer = context.createOscillator();
-      const gain = context.createGain();
-      const shimmerGain = context.createGain();
       const now = context.currentTime;
-      const note = melody[ambientStep % melody.length];
-      oscillator.type = 'triangle';
-      oscillator.frequency.value = note.frequency;
-      shimmer.type = 'sine';
-      shimmer.frequency.value = note.frequency * 2;
+      const chord = chords[Math.floor(chordStep / 8) % chords.length];
+      const frequency = lead[chordStep % lead.length];
+      const filter = context.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 1800;
+      filter.Q.value = 0.7;
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = 'sawtooth';
+      oscillator.frequency.value = frequency;
       gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.045, now + 0.025);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + note.duration);
-      shimmerGain.gain.setValueAtTime(0.0001, now);
-      shimmerGain.gain.exponentialRampToValueAtTime(0.012, now + 0.018);
-      shimmerGain.gain.exponentialRampToValueAtTime(0.0001, now + note.duration * 0.8);
-      oscillator.connect(gain).connect(context.destination);
-      shimmer.connect(shimmerGain).connect(context.destination);
+      gain.gain.exponentialRampToValueAtTime(0.028, now + 0.018);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+      oscillator.connect(filter).connect(gain).connect(context.destination);
       oscillator.start(now);
-      shimmer.start(now);
-      oscillator.stop(now + note.duration + 0.04);
-      shimmer.stop(now + note.duration + 0.04);
+      oscillator.stop(now + 0.32);
       ambientNodes.push(oscillator);
-      ambientNodes.push(shimmer);
+
+      // Dos notas de acompañamiento por pulso, como un rasgueo muy leve.
+      [chord[chordStep % 3], chord[(chordStep + 1) % 3]].forEach((tone, index) => {
+        const bass = context.createOscillator();
+        const bassGain = context.createGain();
+        bass.type = 'triangle';
+        bass.frequency.value = tone / 2;
+        bassGain.gain.setValueAtTime(0.0001, now + index * 0.055);
+        bassGain.gain.exponentialRampToValueAtTime(0.018, now + index * 0.055 + 0.015);
+        bassGain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.055 + 0.34);
+        bass.connect(bassGain).connect(context.destination);
+        bass.start(now + index * 0.055);
+        bass.stop(now + index * 0.055 + 0.38);
+        ambientNodes.push(bass);
+      });
       ambientStep += 1;
+      chordStep += 1;
     };
     playNote();
-    ambientTimer = window.setInterval(playNote, 520);
+    ambientTimer = window.setInterval(playNote, 360);
   }
 
   function stopAmbient() {
