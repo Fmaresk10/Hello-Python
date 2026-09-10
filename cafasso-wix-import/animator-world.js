@@ -3,9 +3,6 @@
   window.__cafassoAnimatorWorldInstalled = true;
 
   const root = document.documentElement;
-  const params = new URLSearchParams(location.search);
-  const role = String(root.dataset.cafassoRole || root.dataset.cafassoPreviewRole || params.get('previewRole') || '').toLowerCase();
-  if (role !== 'animador' && !params.get('previewUser')) return;
   const BG = 'https://static.wixstatic.com/media/47bf07_fdaf845ac90049d89227e663e627cd4e~mv2.jpg';
   const STYLE_ID = 'cafassoAnimatorWorldStyles';
 
@@ -85,6 +82,7 @@
     const observer = new MutationObserver(() => { if (isHome()) buildWorld(); });
     observer.observe(document.getElementById('app') || document.body, { childList: true, subtree: true });
     window.addEventListener('hashchange', () => setTimeout(buildWorld, 80));
+    buildWorld();
     setTimeout(buildWorld, 220);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true }); else boot();
