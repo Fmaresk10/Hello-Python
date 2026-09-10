@@ -9,6 +9,12 @@
   let dailyWordRef = null;
   let profileView = false;
   let ruahTouched = false;
+  let soundContext = null;
+  let ambientNodes = [];
+  let soundEnabled = true;
+
+  try { soundEnabled = localStorage.getItem('cafassoSoundEnabled') !== '0'; } catch (error) { /* storage unavailable */ }
+  window.CafassoSoundEnabled = () => soundEnabled;
 
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[char]));
   const home = () => document.querySelector('.cafasso-home-v2');
@@ -20,6 +26,75 @@
     app.classList.add('cafasso-boot-ready');
     requestAnimationFrame(() => app.style.removeProperty('transition'));
   };
+
+  function audioContext() {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return null;
+    if (!soundContext) soundContext = new AudioContext();
+    if (soundContext.state === 'suspended') soundContext.resume().catch(() => {});
+    return soundContext;
+  }
+
+  function startAmbient() {
+    if (!soundEnabled || ambientNodes.length) return;
+    const context = audioContext();
+    if (!context) return;
+    const master = context.createGain();
+    master.gain.value = 0.018;
+    master.connect(context.destination);
+    [196, 246.94].forEach((frequency, index) => {
+      const oscillator = context.createOscillator();
+      oscillator.type = index ? 'triangle' : 'sine';
+      oscillator.frequency.value = frequency;
+      oscillator.detune.value = index ? 3 : -2;
+      oscillator.connect(master);
+      oscillator.start();
+      ambientNodes.push(oscillator);
+    });
+    ambientNodes.push(master);
+  }
+
+  function stopAmbient() {
+    ambientNodes.forEach(node => { try { node.stop?.(); node.disconnect?.(); } catch (error) {} });
+    ambientNodes = [];
+  }
+
+  function playRuahSound() {
+    if (!soundEnabled) return;
+    const context = audioContext();
+    if (!context) return;
+    const now = context.currentTime;
+    [392, 523.25, 659.25, 783.99].forEach((frequency, index) => {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = 'sine';
+      oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(0.0001, now + index * 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.12, now + index * 0.1 + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.1 + 0.3);
+      oscillator.connect(gain).connect(context.destination);
+      oscillator.start(now + index * 0.1);
+      oscillator.stop(now + index * 0.1 + 0.32);
+    });
+  }
+
+  function installSoundControl(world) {
+    if (world.querySelector('[data-cafasso-sound]')) return;
+    const button = document.createElement('button');
+    button.className = 'cafasso-sound-toggle';
+    button.type = 'button';
+    button.dataset.cafassoSound = '1';
+    const update = () => { button.textContent = soundEnabled ? '♫ Sonido' : '♪ Silencio'; button.setAttribute('aria-pressed', String(soundEnabled)); };
+    update();
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      soundEnabled = !soundEnabled;
+      try { localStorage.setItem('cafassoSoundEnabled', soundEnabled ? '1' : '0'); } catch (error) {}
+      if (soundEnabled) startAmbient(); else stopAmbient();
+      update();
+    });
+    world.querySelector('.cafasso-world-hud')?.appendChild(button);
+  }
 
   function applyRuah(ruah) {
     const state = window.CafassoAnimatorState;
@@ -43,7 +118,7 @@
     try {
       const response = await fetch(RUAH_API, { method: 'POST', cache: 'no-store' });
       const payload = await response.json();
-      if (response.ok && payload.ok) { applyRuah(payload.ruah); window.dispatchEvent(new CustomEvent('cafasso:state-ready')); }
+      if (response.ok && payload.ok) { applyRuah(payload.ruah); if (payload.credited) playRuahSound(); window.dispatchEvent(new CustomEvent('cafasso:state-ready')); }
     } catch (error) { console.warn('CAFASSO: no se pudo actualizar RUAH.', error); }
   }
 
@@ -63,7 +138,7 @@
       .cafasso-world:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,27,32,.12),transparent 26%,rgba(5,27,32,.2));pointer-events:none}
       .cafasso-world-hud{position:relative;z-index:4;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;color:#FFF9E8;text-shadow:0 2px 12px rgba(0,0,0,.45)}
       .cafasso-world-kicker{font:850 10px/1.2 Inter,system-ui;letter-spacing:.16em;text-transform:uppercase;color:#F4D889;margin-bottom:7px}.cafasso-world-title{font:400 39px/1 Georgia,serif;margin:0}.cafasso-world-sub{font-size:12px;color:#DDE9DF;margin-top:8px}
-      .cafasso-world-stats{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}.cafasso-world-stat{display:flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid rgba(244,216,137,.4);border-radius:999px;background:rgba(8,35,39,.65);backdrop-filter:blur(8px);font:850 11px Inter,system-ui;color:#FFF9E8;cursor:pointer}.cafasso-world-stat:hover{background:rgba(244,216,137,.2);border-color:#F4D889}.cafasso-world-stat b{color:#F4D889;font-size:15px}
+      .cafasso-world-stats{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}.cafasso-world-stat{display:flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid rgba(244,216,137,.4);border-radius:999px;background:rgba(8,35,39,.65);backdrop-filter:blur(8px);font:850 11px Inter,system-ui;color:#FFF9E8;cursor:pointer}.cafasso-world-stat:hover{background:rgba(244,216,137,.2);border-color:#F4D889}.cafasso-world-stat b{color:#F4D889;font-size:15px}.cafasso-sound-toggle{position:absolute;right:0;top:54px;border:1px solid rgba(244,216,137,.42);border-radius:999px;background:rgba(8,35,39,.62);color:#FFF9E8;padding:7px 10px;font:850 10px Inter,system-ui;cursor:pointer}.cafasso-sound-toggle:hover{background:rgba(244,216,137,.2)}
       .cafasso-world-map{position:absolute;z-index:2;inset:0}.cafasso-world-zone{position:absolute;appearance:none;border:0;background:transparent;color:#FFF9E8;text-align:left;cursor:pointer;text-shadow:0 2px 8px rgba(0,0,0,.7);transition:transform .2s ease,filter .2s ease;filter:drop-shadow(0 7px 10px rgba(0,0,0,.28))}.cafasso-world-zone:hover{transform:translateY(-5px) scale(1.025);filter:drop-shadow(0 10px 15px rgba(0,0,0,.4))}.cafasso-world-zone:focus-visible{outline:3px solid #F4D889;outline-offset:5px;border-radius:16px}
       .cafasso-world-zone-label{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:999px;background:rgba(8,35,39,.75);border:1px solid rgba(244,216,137,.6);backdrop-filter:blur(7px);font:850 11px Inter,system-ui;letter-spacing:.1em;text-transform:uppercase}.cafasso-world-zone-label i{font-style:normal;font-size:16px}.cafasso-world-zone-copy{display:block;max-width:155px;margin:7px 0 0;font-size:11px;line-height:1.35;color:#F3F5E9}
       .cafasso-world-zone[data-zone="casa"]{left:8%;bottom:22%}.cafasso-world-zone[data-zone="patio"]{left:50%;top:48%;transform:translate(-50%,-50%)}.cafasso-world-zone[data-zone="patio"]:hover{transform:translate(-50%,-55%) scale(1.025)}.cafasso-world-zone[data-zone="escuela"]{right:13%;top:24%}.cafasso-world-zone[data-zone="parroquia"]{right:7%;bottom:20%}
@@ -118,6 +193,7 @@
   function buildWorld() {
     if (!isHome()) {
       root.removeAttribute('data-cafasso-home-v2');
+      stopAmbient();
       return;
     }
     // La pantalla inicial debe reactivar siempre el mundo y su fondo,
@@ -133,6 +209,9 @@
     if (dailyWord) dailyWordRef = dailyWord;
     document.querySelectorAll('.cafasso-daily-word').forEach(node => node.remove());
     old.innerHTML = `<div class="cafasso-world"><header class="cafasso-world-hud"><div><div class="cafasso-world-kicker">Tu mundo CAFASSO</div><h1 class="cafasso-world-title">${esc(stats.title)}</h1><p class="cafasso-world-sub">Elegí un lugar y seguí caminando.</p></div><div class="cafasso-world-stats"><button class="cafasso-world-stat" data-world-stat="almitas">✦ <b data-almitas-total>${esc(stats.almitas)}</b> almitas</button><button class="cafasso-world-stat" data-world-stat="ruah">RUAH · <b>${esc(stats.ruah)}</b></button></div></header><div class="cafasso-world-map"><button class="cafasso-world-zone" data-zone="casa"><span class="cafasso-world-zone-label"><i>⌂</i> Casa</span><span class="cafasso-world-zone-copy">Un lugar para volver, descansar y reconocer lo que llevás dentro.</span></button><button class="cafasso-world-zone" data-zone="patio"><span class="cafasso-world-zone-label"><i>✦</i> Patio</span><span class="cafasso-world-zone-copy">El corazón del encuentro, el juego y la comunidad.</span></button><button class="cafasso-world-zone" data-zone="escuela"><span class="cafasso-world-zone-label"><i>◇</i> Escuela</span><span class="cafasso-world-zone-copy">Tus cursos, misiones y próximos pasos.</span></button><button class="cafasso-world-zone" data-zone="parroquia"><span class="cafasso-world-zone-label"><i>✝</i> Parroquia</span><span class="cafasso-world-zone-copy">La Palabra, la oración y el sentido del camino.</span></button></div><section class="cafasso-world-panel" aria-live="polite"><button class="close" aria-label="Cerrar">×</button><div class="cafasso-world-panel-content"></div></section></div>`;
+    const world = old.querySelector('.cafasso-world');
+    installSoundControl(world);
+    world.addEventListener('click', () => { if (soundEnabled) startAmbient(); }, { once: true });
     const panel = old.querySelector('.cafasso-world-panel');
     const content = old.querySelector('.cafasso-world-panel-content');
     const state = window.CafassoAnimatorState || {};
