@@ -61,13 +61,13 @@
       .cafasso-celebration-card strong{display:block;font:400 30px/1.1 Georgia,serif;color:#FFE39A}.cafasso-celebration-card span{display:block;margin-top:8px;color:#E1F0E2;font-size:13px;font-weight:800}.cafasso-celebration-card .cafasso-unlock-title{margin-top:17px;font:850 18px/1.2 Inter,system-ui;color:#FFF4B0}.cafasso-celebration-card .cafasso-unlock-copy{font-size:11px;color:#D5E9D8}
       .cafasso-confetti{position:fixed;left:50%;top:46%;width:10px;height:16px;border-radius:2px;transform:translate(-50%,-50%);animation:cafassoConfetti 1.9s cubic-bezier(.12,.72,.25,1) forwards;animation-delay:var(--delay);background:var(--color);opacity:0}
       .cafasso-world-return{position:fixed;z-index:100;left:auto;right:24px;top:20px;appearance:none;border:1px solid rgba(244,216,137,.55);background:rgba(8,35,39,.82);backdrop-filter:blur(10px);color:#FFF9E8;border-radius:999px;padding:10px 15px;font:850 11px Inter,system-ui;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.24)}.cafasso-world-return:hover{background:#F1C85B;color:#17302F}.cafasso-journey-mode .cafasso-course-map{background-image:url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png')!important}.cafasso-mission-mode{background-image:url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png')!important}
-      body.cafasso-courses-mode{background:#102F35 url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png') center/cover fixed no-repeat!important;overflow-x:hidden}body.cafasso-courses-mode .shell{display:block;min-height:100vh}body.cafasso-courses-mode main{max-width:none;width:100%;min-height:100vh;padding:38px 7vw 58px;background:linear-gradient(180deg,rgba(5,27,32,.12),rgba(5,27,32,.36))}body.cafasso-courses-mode .side,body.cafasso-courses-mode .mobilebar,body.cafasso-courses-mode .mobile-nav,body.cafasso-courses-mode .mobile-head{display:none!important}body.cafasso-courses-mode .top{max-width:1100px;margin:0 auto 18px;color:#FFF9E8}body.cafasso-courses-mode .top h1{font:400 42px/1 Georgia,serif;color:#FFF9E8;text-shadow:0 2px 12px rgba(0,0,0,.45)}body.cafasso-courses-mode .top p{color:#DDE9DF}body.cafasso-courses-mode .top .pill{background:rgba(8,35,39,.7);border-color:rgba(244,216,137,.42);color:#FFF9E8}body.cafasso-courses-mode .courses{max-width:1100px;margin:0 auto;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}body.cafasso-courses-mode .card.course{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(250,238,210,.97),rgba(220,194,148,.96));border:1px solid rgba(115,77,39,.5);border-radius:10px 10px 5px 5px;box-shadow:0 12px 26px rgba(47,29,15,.3),inset 0 1px rgba(255,255,255,.6);color:#3B2B1E}body.cafasso-courses-mode .card.course:before{content:'â—‡  ESCUELA';display:block;color:#876020;font:850 9px Inter,system-ui;letter-spacing:.14em;margin-bottom:14px}body.cafasso-courses-mode .card.course h4{color:#3B2B1E;font:400 23px/1.1 Georgia,serif}body.cafasso-courses-mode .card.course p,body.cafasso-courses-mode .card.course small{color:#6B5137}body.cafasso-courses-mode .card.course .mini{background:rgba(107,81,55,.18)}body.cafasso-courses-mode .card.course .mini span{background:#2E7D59}body.cafasso-courses-mode .card.course .btn{background:#17302F;color:#FFF9E8;border-radius:999px}body.cafasso-courses-mode .card.course .badge{background:#2E7D59;color:#fff}body.cafasso-courses-mode .card.empty{max-width:1100px;margin:auto;background:rgba(8,35,39,.82);border-color:rgba(244,216,137,.42);color:#FFF9E8}
-      body.cafasso-journey-mode .side .brand,body.cafasso-mission-mode .side .brand{display:grid;grid-template-columns:54px minmax(0,1fr);gap:10px 12px;align-items:center;padding:0 4px}body.cafasso-journey-mode .side .brand img,body.cafasso-mission-mode .side .brand img{width:54px;height:64px;object-fit:contain}body.cafasso-journey-mode .side .brand b,body.cafasso-mission-mode .side .brand b{font-size:27px;line-height:1;color:#FFF9E8}body.cafasso-journey-mode .side .brand small,body.cafasso-mission-mode .side .brand small{display:none}body.cafasso-journey-mode .side .brand:after,body.cafasso-mission-mode .side .brand:after{content:'EDUCAR  Â·  TRANSFORMAR  Â·  ACOMPAÃ‘AR';grid-column:1/-1;color:#F4D889;font:850 8px/1.5 Inter,system-ui;letter-spacing:.11em;text-align:center;white-space:nowrap}
+      body.cafasso-courses-mode{background:#102F35 url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png') center/cover fixed no-repeat!important;overflow-x:hidden}body.cafasso-courses-mode .shell{display:block;min-height:100vh}body.cafasso-courses-mode main{max-width:none;width:100%;min-height:100vh;padding:38px 7vw 58px;background:linear-gradient(180deg,rgba(5,27,32,.12),rgba(5,27,32,.36))}body.cafasso-courses-mode .side,body.cafasso-courses-mode .mobilebar,body.cafasso-courses-mode .mobile-nav,body.cafasso-courses-mode .mobile-head{display:none!important}body.cafasso-courses-mode .top{max-width:1100px;margin:0 auto 18px;color:#FFF9E8}body.cafasso-courses-mode .top h1{font:400 42px/1 Georgia,serif;color:#FFF9E8;text-shadow:0 2px 12px rgba(0,0,0,.45)}body.cafasso-courses-mode .top p{color:#DDE9DF}body.cafasso-courses-mode .top .pill{background:rgba(8,35,39,.7);border-color:rgba(244,216,137,.42);color:#FFF9E8}body.cafasso-courses-mode .courses{max-width:1100px;margin:0 auto;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}body.cafasso-courses-mode .card.course{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(250,238,210,.97),rgba(220,194,148,.96));border:1px solid rgba(115,77,39,.5);border-radius:10px 10px 5px 5px;box-shadow:0 12px 26px rgba(47,29,15,.3),inset 0 1px rgba(255,255,255,.6);color:#3B2B1E}body.cafasso-courses-mode .card.course:before{content:'◇  ESCUELA';display:block;color:#876020;font:850 9px Inter,system-ui;letter-spacing:.14em;margin-bottom:14px}body.cafasso-courses-mode .card.course h4{color:#3B2B1E;font:400 23px/1.1 Georgia,serif}body.cafasso-courses-mode .card.course p,body.cafasso-courses-mode .card.course small{color:#6B5137}body.cafasso-courses-mode .card.course .mini{background:rgba(107,81,55,.18)}body.cafasso-courses-mode .card.course .mini span{background:#2E7D59}body.cafasso-courses-mode .card.course .btn{background:#17302F;color:#FFF9E8;border-radius:999px}body.cafasso-courses-mode .card.course .badge{background:#2E7D59;color:#fff}body.cafasso-courses-mode .card.empty{max-width:1100px;margin:auto;background:rgba(8,35,39,.82);border-color:rgba(244,216,137,.42);color:#FFF9E8}
+      body.cafasso-journey-mode .side .brand,body.cafasso-mission-mode .side .brand{display:grid;grid-template-columns:54px minmax(0,1fr);gap:10px 12px;align-items:center;padding:0 4px}body.cafasso-journey-mode .side .brand img,body.cafasso-mission-mode .side .brand img{width:54px;height:64px;object-fit:contain}body.cafasso-journey-mode .side .brand b,body.cafasso-mission-mode .side .brand b{font-size:27px;line-height:1;color:#FFF9E8}body.cafasso-journey-mode .side .brand small,body.cafasso-mission-mode .side .brand small{display:none}body.cafasso-journey-mode .side .brand:after,body.cafasso-mission-mode .side .brand:after{content:'EDUCAR  ·  TRANSFORMAR  ·  ACOMPAÑAR';grid-column:1/-1;color:#F4D889;font:850 8px/1.5 Inter,system-ui;letter-spacing:.11em;text-align:center;white-space:nowrap}
       @keyframes cafassoCelebrationIn{from{opacity:0}to{opacity:1}}@keyframes cafassoCelebrationPop{from{transform:scale(.72) translateY(12px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}@keyframes cafassoConfetti{0%{opacity:1;transform:translate(-50%,-50%) rotate(0deg)}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(var(--r))}}
       @media(max-width:680px){body.cafasso-journey-mode main,body.cafasso-mission-mode main{padding:0}body.cafasso-journey-mode .side .nav button:not([data-view="inicio"]),body.cafasso-mission-mode .side .nav button:not([data-view="inicio"]),body.cafasso-journey-mode .mobilebar button:not([data-view="inicio"]),body.cafasso-mission-mode .mobilebar button:not([data-view="inicio"]),body.cafasso-journey-mode .mobile-nav button:not([data-view="inicio"]),body.cafasso-mission-mode .mobile-nav button:not([data-view="inicio"]){display:none!important}body.cafasso-journey-mode .mobilebar,body.cafasso-mission-mode .mobilebar,body.cafasso-journey-mode .mobile-nav,body.cafasso-mission-mode .mobile-nav{grid-template-columns:1fr!important}body.cafasso-journey-mode .cafasso-course-map{min-height:100svh;padding:24px 14px 20px}body.cafasso-journey-mode .cafasso-course-map-head{padding-left:0;display:block}.cafasso-course-map-title{font-size:29px}.cafasso-course-map-copy{font-size:12px;max-width:300px}.cafasso-course-map-badge{margin-top:12px}.cafasso-map-station{width:132px;min-height:64px;padding:8px;font-size:10px}.cafasso-map-station:nth-child(1){left:22%;top:75%}.cafasso-map-station:nth-child(2){left:42%;top:64%}.cafasso-map-station:nth-child(3){left:59%;top:42%}.cafasso-map-station:nth-child(4){left:73%;top:58%}.cafasso-map-station:nth-child(5){left:84%;top:30%}body.cafasso-mission-mode .module-detail{padding:18px 14px 34px}body.cafasso-mission-mode .cafasso-mission-shell{border-radius:18px;padding:18px 14px}body.cafasso-mission-mode article.block{padding:16px 14px}}
       .cafasso-home-ruah{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px;padding:14px 17px;border-radius:17px;background:linear-gradient(110deg,#E8F2ED,#F7F5E9);border:1px solid rgba(46,125,89,.18);color:#173954}
       .cafasso-home-ruah-main{display:flex;align-items:center;gap:11px}.cafasso-home-ruah-icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#2E7D59;color:#fff;font:700 18px Georgia,serif}.cafasso-home-ruah-label{font:850 10px/1.2 Inter,system-ui;letter-spacing:.12em;text-transform:uppercase;color:#2E7D59}.cafasso-home-ruah-total{font:400 24px/1 Georgia,serif;color:#173954;margin-top:3px}.cafasso-home-ruah-note{font-size:11px;line-height:1.4;color:#527064;text-align:right;max-width:250px}.cafasso-home-ruah-note strong{display:block;color:#245F48;margin-bottom:3px}@media(max-width:680px){.cafasso-mission-head{display:block}.cafasso-mission-time{display:block;margin-top:8px}.cafasso-mission-nav{grid-template-columns:repeat(5,minmax(54px,1fr));overflow-x:auto;padding-bottom:4px}.cafasso-mission-node{font-size:9px}.cafasso-home-ruah{align-items:flex-start;flex-direction:column}.cafasso-home-ruah-note{text-align:left;max-width:none}}
-      /* Modo escena: la misiÃ³n ocupa el paisaje y el contenido se integra como un objeto del camino. */
+      /* Modo escena: la misión ocupa el paisaje y el contenido se integra como un objeto del camino. */
       body.cafasso-mission-mode{background:#102F35 url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png') center/cover fixed no-repeat!important}
       body.cafasso-mission-mode{padding-top:0!important}
       body.cafasso-mission-mode #cafasso-role-preview-bar,body.cafasso-mission-mode .side,body.cafasso-mission-mode .mobilebar,body.cafasso-mission-mode .mobile-nav,body.cafasso-mission-mode .mobile-head,body.cafasso-mission-mode .top,body.cafasso-mission-mode .backline,body.cafasso-mission-mode #cafassoWorldReturn,body.cafasso-mission-mode .module-detail>section.card{display:none!important}
@@ -125,11 +125,11 @@
   }
 
   const introNarrative = {
-    m1: { title: 'EntrÃ¡ al patio', objective: 'ConocÃ© a Juanito y empezÃ¡ a mirar la historia desde los jÃ³venes.', prompt: 'MirÃ¡ el video de bienvenida y encontrÃ¡ una primera pregunta que te acompaÃ±e.', icon: 'ðŸšª' },
-    m2: { title: 'DescubrÃ­ sus raÃ­ces', objective: 'ReconocÃ© las personas y experiencias que fueron formando su corazÃ³n.', prompt: 'ArmÃ¡ el mapa de las raÃ­ces: una persona, una dificultad y un don.', icon: 'ðŸŒ±' },
-    m3: { title: 'AbrÃ­ el sueÃ±o', objective: 'EscuchÃ¡ el sueÃ±o de los nueve aÃ±os y encontrÃ¡ su primera pista.', prompt: 'LeÃ© el sueÃ±o y elegÃ­ la palabra que mÃ¡s ilumina tu manera de animar.', icon: 'âœ¨' },
-    m4: { title: 'ElegÃ­ cÃ³mo acercarte', objective: 'ProbÃ¡ una respuesta salesiana frente a una situaciÃ³n concreta.', prompt: 'TomÃ¡ una decisiÃ³n: Â¿cÃ³mo te acercarÃ­as a este joven con razÃ³n, religiÃ³n y amor?', icon: 'ðŸ§­' },
-    m5: { title: 'SalÃ­ al encuentro', objective: 'RealizÃ¡ un gesto concreto con un joven y compartilo con tu formador.', prompt: 'HacÃ© el desafÃ­o, entregÃ¡ tu evidencia y esperÃ¡ la confirmaciÃ³n de tus almitas.', icon: 'ðŸ¤' }
+    m1: { title: 'Entrá al patio', objective: 'Conocé a Juanito y empezá a mirar la historia desde los jóvenes.', prompt: 'Mirá el video de bienvenida y encontrá una primera pregunta que te acompañe.', icon: '🚪' },
+    m2: { title: 'Descubrí sus raíces', objective: 'Reconocé las personas y experiencias que fueron formando su corazón.', prompt: 'Armá el mapa de las raíces: una persona, una dificultad y un don.', icon: '🌱' },
+    m3: { title: 'Abrí el sueño', objective: 'Escuchá el sueño de los nueve años y encontrá su primera pista.', prompt: 'Leé el sueño y elegí la palabra que más ilumina tu manera de animar.', icon: '✨' },
+    m4: { title: 'Elegí cómo acercarte', objective: 'Probá una respuesta salesiana frente a una situación concreta.', prompt: 'Tomá una decisión: ¿cómo te acercarías a este joven con razón, religión y amor?', icon: '🧭' },
+    m5: { title: 'Salí al encuentro', objective: 'Realizá un gesto concreto con un joven y compartilo con tu formador.', prompt: 'Hacé el desafío, entregá tu evidencia y esperá la confirmación de tus almitas.', icon: '🤝' }
   };
 
   function presentationOf(module, mission) {
@@ -151,7 +151,7 @@
   function sceneKindOf(block) {
     const type = String(block?.type || '').toLowerCase();
     if (type.includes('video')) return 'video';
-    if (type.includes('oraciÃ³n') || type.includes('oracion')) return 'oracion';
+    if (type.includes('oración') || type.includes('oracion')) return 'oracion';
     if (type.includes('reflex')) return 'reflexion';
     if (type.includes('entrega') || type.includes('desaf')) return 'desafio';
     if (type.includes('lectura') || type.includes('document')) return 'lectura';
@@ -164,8 +164,8 @@
     const submission = (state.submissions || []).find(item => item.activityId === block._id);
     const type = String(block.type || '').toLowerCase();
     if (/^aprobad/i.test(String(submission?.status || '').trim())) return true;
-    if (type === 'desafÃ­o' || type === 'desafio') return submission?.status === 'Aprobada';
-    if (['reflexiÃ³n', 'entrega', 'evaluaciÃ³n'].includes(type)) {
+    if (type === 'desafío' || type === 'desafio') return submission?.status === 'Aprobada';
+    if (['reflexión', 'entrega', 'evaluación'].includes(type)) {
       return Boolean(String(submission?.content || state.work?.answers?.[block._id] || '').trim());
     }
     return Boolean(state.work?.done?.[block._id]);
@@ -222,7 +222,7 @@
       returnButton.id = 'cafassoWorldReturn';
       returnButton.className = 'cafasso-world-return';
       returnButton.type = 'button';
-      returnButton.textContent = 'â† Volver al mundo';
+      returnButton.textContent = '← Volver al mundo';
       returnButton.addEventListener('click', () => {
         if (typeof window.CafassoNavigate === 'function') {
           window.CafassoNavigate('inicio');
@@ -255,7 +255,7 @@
     if (!cards.length || document.querySelector('.cafasso-course-map')) return;
     const progressRecord = (state.data?.progress || []).find(item => item.courseId === course._id);
     const completedModuleIds = new Set(progressRecord?.completedModules || []);
-    // El estado local de las misiones tambiÃ©n sirve como respaldo inmediato
+    // El estado local de las misiones también sirve como respaldo inmediato
     // mientras la respuesta de progreso termina de sincronizarse.
     (course.modules || []).forEach(item => {
       const moduleMissions = missionsOf(item);
@@ -296,13 +296,13 @@
     const moduleIndex = (course.modules || []).findIndex(item => item && item._id === module._id);
     const nextModule = moduleIndex >= 0 ? (course.modules || [])[moduleIndex + 1] : null;
     const moduleReadyForNext = missions.length > 0 && doneIds.size === missions.length;
-    const nextModuleButton = nextModule && moduleReadyForNext ? `<button type="button" class="cafasso-next-module" data-next-module="${esc(nextModule._id || nextModule.id || '')}" data-next-module-index="${moduleIndex + 1}">Seguir al ${esc(nextModule.title || 'mÃ³dulo siguiente')} â†’</button>` : '';
+    const nextModuleButton = nextModule && moduleReadyForNext ? `<button type="button" class="cafasso-next-module" data-next-module="${esc(nextModule._id || nextModule.id || '')}" data-next-module-index="${moduleIndex + 1}">Seguir al ${esc(nextModule.title || 'módulo siguiente')} →</button>` : '';
     const map = document.createElement('section');
     map.className = 'cafasso-course-map';
     // El mundo inicial tiene su propio paisaje. El mapa del curso usa el fondo
     // de estaciones/piedras para que el recorrido se distinga visualmente.
     map.style.backgroundImage = "url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png')";
-    map.innerHTML = `<div class="cafasso-course-map-head"><div><div class="cafasso-course-map-kicker">${esc(settings.stageLabel || 'Tu camino')} Â· ${missions.length} paradas</div><h2 class="cafasso-course-map-title">El camino de Juanito</h2><p class="cafasso-course-map-copy">AvanzÃ¡ por la historia de Don Bosco. Cada parada se abre con una experiencia, una decisiÃ³n y un gesto concreto.</p></div>${badge.name ? `<span class="cafasso-course-map-badge"><span>${esc(badge.icon || 'âœ¦')}</span>${esc(badge.name)}</span>` : ''}</div>${nextModuleButton}<div class="cafasso-map-stations">${missions.map((mission,index) => { const view=presentationOf(module,mission); const done=doneIds.has(mission.id); const previousDone=index===0||doneIds.has(missions[index-1].id); const locked=!previousDone&&!done; return `<button class="cafasso-map-station ${mission.id===activeId?'active':''} ${done?'done':''} ${locked?'locked':''}" data-map-mission="${esc(mission.id)}" ${locked?'disabled':''}><i>${locked?'ðŸ”’':esc(view.icon || 'â€¢')}</i><strong>${index+1}. ${esc(view.title)}</strong><small>${esc(view.objective || 'Una nueva parada del camino.')}</small></button>`; }).join('')}</div>`;
+    map.innerHTML = `<div class="cafasso-course-map-head"><div><div class="cafasso-course-map-kicker">${esc(settings.stageLabel || 'Tu camino')} · ${missions.length} paradas</div><h2 class="cafasso-course-map-title">El camino de Juanito</h2><p class="cafasso-course-map-copy">Avanzá por la historia de Don Bosco. Cada parada se abre con una experiencia, una decisión y un gesto concreto.</p></div>${badge.name ? `<span class="cafasso-course-map-badge"><span>${esc(badge.icon || '✦')}</span>${esc(badge.name)}</span>` : ''}</div>${nextModuleButton}<div class="cafasso-map-stations">${missions.map((mission,index) => { const view=presentationOf(module,mission); const done=doneIds.has(mission.id); const previousDone=index===0||doneIds.has(missions[index-1].id); const locked=!previousDone&&!done; return `<button class="cafasso-map-station ${mission.id===activeId?'active':''} ${done?'done':''} ${locked?'locked':''}" data-map-mission="${esc(mission.id)}" ${locked?'disabled':''}><i>${locked?'🔒':esc(view.icon || '•')}</i><strong>${index+1}. ${esc(view.title)}</strong><small>${esc(view.objective || 'Una nueva parada del camino.')}</small></button>`; }).join('')}</div>`;
     document.body.classList.add('cafasso-journey-mode');
     prepareWorldReturnButton();
     const trackingCard = section.parentElement?.querySelector('.hero');
@@ -365,8 +365,8 @@
     const doneIds = new Set(missions.filter(item => missionDone(item, module, state)).map(item => item.id));
     const step = missionStep(module, active, state);
     const activeBlockRecords = step.records;
-    // Mostramos todos los contenidos de la misiÃ³n juntos, respetando el
-    // orden original. La lÃ³gica de avance y aprobaciÃ³n sigue siendo la misma.
+    // Mostramos todos los contenidos de la misión juntos, respetando el
+    // orden original. La lógica de avance y aprobación sigue siendo la misma.
     const visibleBlock = activeBlockRecords[step.index] || null;
     const activeBlocks = new Set(activeBlockRecords.map(block => block._id));
     allBlocks.forEach(card => {
@@ -378,16 +378,16 @@
     shell.dataset.activeMission = active.id;
     const moduleSettings = settingsOf(module);
     const badge = moduleSettings.badge || {};
-    shell.innerHTML = `<button type="button" class="cafasso-scene-back">â† Volver al camino</button><div class="cafasso-mission-head"><div><div class="cafasso-mission-kicker">${esc(moduleSettings.stageLabel || 'El camino')} Â· Parada ${missions.indexOf(active) + 1} de ${missions.length}</div><h3 class="cafasso-mission-title">${esc(activeView.title)}</h3><p class="cafasso-mission-objective">${esc(activeView.objective || 'AvanzÃ¡ un paso en tu recorrido.')}</p></div><span class="cafasso-mission-time">${Number(active.minutes || 5)} min</span></div>${activeView.prompt ? `<div class="cafasso-mission-prompt"><strong>Tu misiÃ³n ahora</strong>${esc(activeView.prompt)}</div>` : ''}<div class="cafasso-mission-nav">${missions.map((mission, index) => {
+    shell.innerHTML = `<button type="button" class="cafasso-scene-back">← Volver al camino</button><div class="cafasso-mission-head"><div><div class="cafasso-mission-kicker">${esc(moduleSettings.stageLabel || 'El camino')} · Parada ${missions.indexOf(active) + 1} de ${missions.length}</div><h3 class="cafasso-mission-title">${esc(activeView.title)}</h3><p class="cafasso-mission-objective">${esc(activeView.objective || 'Avanzá un paso en tu recorrido.')}</p></div><span class="cafasso-mission-time">${Number(active.minutes || 5)} min</span></div>${activeView.prompt ? `<div class="cafasso-mission-prompt"><strong>Tu misión ahora</strong>${esc(activeView.prompt)}</div>` : ''}<div class="cafasso-mission-nav">${missions.map((mission, index) => {
       const view = presentationOf(module, mission);
       const done = doneIds.has(mission.id);
       const previousDone = index === 0 || doneIds.has(missions[index - 1].id);
       const locked = !previousDone && !done;
-      return `<button class="cafasso-mission-node ${mission.id === active.id ? 'active' : ''} ${done ? 'done' : ''} ${locked ? 'locked' : ''}" data-mission-id="${esc(mission.id)}" ${locked ? 'disabled' : ''}><i>${esc(view.icon || 'â€¢')}</i><span>${esc(view.title)}</span></button>`;
-    }).join('')}</div>${active.rewardAlmitas ? `<div class="cafasso-ruah-inline"><span>âœ¦</span><span>Recompensa de esta parada: <b>${Number(active.rewardAlmitas)} almitas</b></span></div>` : ''}${badge.name ? `<div class="cafasso-ruah-inline"><span>ðŸ…</span><span>Logro del camino: <b>${esc(badge.name)}</b></span></div>` : ''}`;
+      return `<button class="cafasso-mission-node ${mission.id === active.id ? 'active' : ''} ${done ? 'done' : ''} ${locked ? 'locked' : ''}" data-mission-id="${esc(mission.id)}" ${locked ? 'disabled' : ''}><i>${esc(view.icon || '•')}</i><span>${esc(view.title)}</span></button>`;
+    }).join('')}</div>${active.rewardAlmitas ? `<div class="cafasso-ruah-inline"><span>✦</span><span>Recompensa de esta parada: <b>${Number(active.rewardAlmitas)} almitas</b></span></div>` : ''}${badge.name ? `<div class="cafasso-ruah-inline"><span>🏅</span><span>Logro del camino: <b>${esc(badge.name)}</b></span></div>` : ''}`;
     const stage = document.createElement('div');
     stage.className = 'cafasso-mission-stage';
-    stage.innerHTML = `<div class="cafasso-scene-marker"><span>${esc(activeView.icon || 'âœ¦')}</span><small>${esc(activeView.sceneLabel || 'Escena de la misiÃ³n')} Â· ${activeBlockRecords.length} contenidos</small></div>`;
+    stage.innerHTML = `<div class="cafasso-scene-marker"><span>${esc(activeView.icon || '✦')}</span><small>${esc(activeView.sceneLabel || 'Escena de la misión')} · ${activeBlockRecords.length} contenidos</small></div>`;
     shell.appendChild(stage);
     shell.querySelector('.cafasso-scene-back')?.addEventListener('click', () => {
       if (typeof window.CafassoNavigate === 'function') window.CafassoNavigate('curso');
@@ -412,7 +412,7 @@
     if (activeDone && next) {
       const box = document.createElement('div');
       box.className = 'cafasso-mission-next';
-      box.innerHTML = `<strong>âœ“ Parada completada</strong>PodÃ©s continuar con <b>${esc(presentationOf(module, next).title)}</b>.`;
+      box.innerHTML = `<strong>✓ Parada completada</strong>Podés continuar con <b>${esc(presentationOf(module, next).title)}</b>.`;
       const complete = root.querySelector('.complete-box');
       if (complete) complete.insertAdjacentElement('beforebegin', box);
       else root.appendChild(box);
@@ -446,10 +446,10 @@
   function celebrateMission(mission, module) {
     if (celebrationRunning) return;
     celebrationRunning = true;
-    // Cuando la Ãºltima misiÃ³n queda realmente completa, reutilizamos el
-    // guardado nativo del mÃ³dulo. AsÃ­ se mantiene la validaciÃ³n existente:
-    // los desafÃ­os solo cuentan si el formador los aprobÃ³ y el siguiente
-    // mÃ³dulo se desbloquea desde el progreso central de CAFASSO.
+    // Cuando la última misión queda realmente completa, reutilizamos el
+    // guardado nativo del módulo. Así se mantiene la validación existente:
+    // los desafíos solo cuentan si el formador los aprobó y el siguiente
+    // módulo se desbloquea desde el progreso central de CAFASSO.
     const state = experience();
     const missions = missionsOf(module);
     const moduleReady = missions.length > 0 && missions.every(item => missionDone(item, module, state));
@@ -464,9 +464,9 @@
     overlay.className = 'cafasso-celebration';
     const reward = Number(mission.rewardAlmitas || 0);
     const unlockNotice = moduleReady && nextModule
-      ? `<strong class="cafasso-unlock-title">ðŸ”“ Â¡${esc(nextModule.title || 'Nuevo mÃ³dulo')} desbloqueado!</strong><span class="cafasso-unlock-copy">Ya podÃ©s continuar tu camino de formaciÃ³n.</span>`
+      ? `<strong class="cafasso-unlock-title">🔓 ¡${esc(nextModule.title || 'Nuevo módulo')} desbloqueado!</strong><span class="cafasso-unlock-copy">Ya podés continuar tu camino de formación.</span>`
       : '';
-    overlay.innerHTML = `<div class="cafasso-celebration-card"><strong>Â¡MisiÃ³n completada!</strong><span>${reward > 0 ? `âœ¦ +${reward} almitas` : 'Un paso mÃ¡s en tu camino'}</span>${unlockNotice}</div>`;
+    overlay.innerHTML = `<div class="cafasso-celebration-card"><strong>¡Misión completada!</strong><span>${reward > 0 ? `✦ +${reward} almitas` : 'Un paso más en tu camino'}</span>${unlockNotice}</div>`;
     const colors = ['#F4D889', '#F28B67', '#8FD0A2', '#A5C9E8', '#FFF9E8'];
     for (let index = 0; index < 72; index += 1) {
       const piece = document.createElement('i');
@@ -528,7 +528,7 @@
     const signature = `${summary.total}:${summary.active}`;
     if (card.dataset.ruahSignature === signature) return;
     card.dataset.ruahSignature = signature;
-    card.innerHTML = `<div class="cafasso-home-ruah-main"><span class="cafasso-home-ruah-icon">R</span><div><div class="cafasso-home-ruah-label">RUAH Â· constancia</div><div class="cafasso-home-ruah-total">${summary.total} semana${summary.total === 1 ? '' : 's'} con vida</div></div></div><div class="cafasso-home-ruah-note"><strong>${summary.active ? 'RUAH encendido esta semana' : 'RUAH en espera'}</strong>${summary.active ? 'SeguÃ­ caminando con una misiÃ³n breve.' : 'RealizÃ¡ una misiÃ³n esta semana para volver a encenderlo.'}</div>`;
+    card.innerHTML = `<div class="cafasso-home-ruah-main"><span class="cafasso-home-ruah-icon">R</span><div><div class="cafasso-home-ruah-label">RUAH · constancia</div><div class="cafasso-home-ruah-total">${summary.total} semana${summary.total === 1 ? '' : 's'} con vida</div></div></div><div class="cafasso-home-ruah-note"><strong>${summary.active ? 'RUAH encendido esta semana' : 'RUAH en espera'}</strong>${summary.active ? 'Seguí caminando con una misión breve.' : 'Realizá una misión esta semana para volver a encenderlo.'}</div>`;
   }
 
   function decorateCourses() {
@@ -544,7 +544,7 @@
     const heading = main.querySelector('.top h1');
     const subtitle = main.querySelector('.top p');
     if (heading) heading.textContent = 'Escuela';
-    if (subtitle) subtitle.textContent = 'ElegÃ­ un recorrido y continuÃ¡ tu camino de formaciÃ³n.';
+    if (subtitle) subtitle.textContent = 'Elegí un recorrido y continuá tu camino de formación.';
     document.documentElement.removeAttribute('data-cafasso-courses-boot');
     document.getElementById('app')?.classList.add('cafasso-boot-ready');
   }
@@ -568,9 +568,9 @@
   window.addEventListener('cafasso:block-completed', () => { pendingBlockCompletion = true; setTimeout(refresh, 60); });
   window.addEventListener('hashchange', () => setTimeout(refresh, 40));
   setInterval(refresh, 1000);
-  // No reconstruir la misiÃ³n automÃ¡ticamente: volver a crear sus bloques
-  // reinicia los iframes de video y provoca pestaÃ±eos mientras el animador
-  // estÃ¡ leyendo o mirando un contenido.
+  // No reconstruir la misión automáticamente: volver a crear sus bloques
+  // reinicia los iframes de video y provoca pestañeos mientras el animador
+  // está leyendo o mirando un contenido.
   setTimeout(refresh, 250);
 })();
 
