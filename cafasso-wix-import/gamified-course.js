@@ -5,7 +5,7 @@
   const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   if (page !== 'index.html') return;
 
-  const STYLE_ID = 'cafassoGamifiedCourseStyles';
+  const STYLE_ID = 'cafassoGamifiedCourseStylesV3';
   const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
   let pendingBlockCompletion = false;
   let celebrationRunning = false;
@@ -314,7 +314,7 @@
     }));
     map.querySelector('[data-next-module]')?.addEventListener('click', () => {
       const target = originalButtons.get(nextModule?._id);
-      if (target) { target.disabled = false; target.click(); }
+      if (target) { target.disabled = false; target.removeAttribute('disabled'); target.click(); }
     });
   }
 
