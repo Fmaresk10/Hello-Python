@@ -111,7 +111,7 @@
   }
 
   if(!document.querySelector('script[data-cafasso-templates]')){
-    const s=document.createElement('script');s.src='./course-templates.js?v=20260904-2';s.defer=true;s.dataset.cafassoTemplates='1';document.body.appendChild(s);
+    const s=document.createElement('script');s.src='./course-templates.js?v=20260911-1';s.defer=true;s.dataset.cafassoTemplates='1';document.body.appendChild(s);
   }
   if(!document.querySelector('script[data-cafasso-status-guide]')){
     const s=document.createElement('script');s.src='./course-editor-status.js?v=20260904-1';s.defer=true;s.dataset.cafassoStatusGuide='1';document.body.appendChild(s);
