@@ -296,7 +296,7 @@
     const moduleIndex = (course.modules || []).findIndex(item => item && item._id === module._id);
     const nextModule = moduleIndex >= 0 ? (course.modules || [])[moduleIndex + 1] : null;
     const moduleReadyForNext = missions.length > 0 && doneIds.size === missions.length;
-    const nextModuleButton = nextModule && moduleReadyForNext ? `<button type="button" class="cafasso-next-module" data-next-module="${esc(nextModule._id)}">Seguir al ${esc(nextModule.title || 'módulo siguiente')} →</button>` : '';
+    const nextModuleButton = nextModule && moduleReadyForNext ? `<button type="button" class="cafasso-next-module" data-next-module="${esc(nextModule._id || nextModule.id || '')}" data-next-module-index="${moduleIndex + 1}">Seguir al ${esc(nextModule.title || 'módulo siguiente')} →</button>` : '';
     const map = document.createElement('section');
     map.className = 'cafasso-course-map';
     // El mundo inicial tiene su propio paisaje. El mapa del curso usa el fondo
@@ -312,12 +312,11 @@
       const target = originalButtons.get(moduleId);
       if (target) { setStoredMission(module, button.dataset.mapMission); target.click(); }
     }));
-    map.querySelector('[data-next-module]')?.addEventListener('click', () => {
-      if (nextModule?._id && typeof window.CafassoOpenModule === 'function') {
-        window.CafassoOpenModule(nextModule._id);
-        return;
-      }
-      const target = originalButtons.get(nextModule?._id);
+    map.querySelector('[data-next-module]')?.addEventListener('click', event => {
+      const button = event.currentTarget;
+      const nextId = button.dataset.nextModule || nextModule?._id || nextModule?.id;
+      if (nextId && typeof window.CafassoOpenModule === 'function' && window.CafassoOpenModule(nextId)) return;
+      const target = originalButtons.get(nextId);
       if (target) { target.disabled = false; target.removeAttribute('disabled'); target.click(); }
     });
   }
