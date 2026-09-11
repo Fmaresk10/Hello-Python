@@ -4,7 +4,72 @@
   const uid=()=>`local-${crypto.randomUUID()}`;
   const block=(type,title,body='',required=false)=>({_id:uid(),type,title,required,content:{body},settings:{notes:''}});
   const module=(title,desc,contents,minutes=20)=>({_id:uid(),title,desc,status:'Borrador',required:true,unlockAfterPrevious:false,estimatedMinutes:minutes,settings:{},contents});
-  const templates={
+  const mission=(id,title,objective,prompt,icon)=>({id,title,objective,prompt,icon});
+  const missionBlock=(missionId,type,title,body,required=true)=>({_id:uid(),type,title,required,content:{body},settings:{notes:'',missionId}});
+  const missionModule=(title,desc,missions,blocks,minutes=25,unlockAfterPrevious=true)=>({_id:uid(),title,desc,status:'Borrador',required:true,unlockAfterPrevious,estimatedMinutes:minutes,settings:{missions},contents:blocks});
+
+  const donBoscoMissions=[
+    mission('m1','Nacer en I Becchi','Conocé la infancia, la familia y el contexto de Juan Bosco.','Ordená los primeros acontecimientos de su vida y descubrí dónde comenzó el sueño salesiano.','🌱'),
+    mission('m2','Mamá Margarita','Reconocé la influencia de Margarita Occhiena en la formación de Juan.','Elegí tres valores que Margarita transmitió a Juan y explicá cuál necesitás cultivar hoy.','🏡'),
+    mission('m3','El sueño de los nueve años','Interpretá el sueño que orientó la vocación de Don Bosco.','Leé el sueño y relacioná sus símbolos con la frase: “No con golpes, sino con mansedumbre”.','✨'),
+    mission('m4','Aprender para servir','Descubrí cómo las dificultades y el estudio prepararon su misión.','Construí una breve línea de tiempo con cuatro momentos de esfuerzo y aprendizaje.','📚'),
+    mission('m5','¿Qué sueño llevás dentro?','Relacioná el camino de Don Bosco con tu propia historia.','Entregá una insignia personal: sueño, dificultad, persona que te acompañó y compromiso concreto.','🤝')
+  ];
+  const donBoscoMissions2=[
+    mission('m1','Chieri: estudiar contra corriente','Conocé los esfuerzos de Juan para estudiar y seguir su vocación.','Identificá dos dificultades que enfrentó y una decisión que le permitió continuar.','🧭'),
+    mission('m2','La Sociedad de la Alegría','Descubrí cómo Juan Bosco educaba y animaba a sus compañeros.','Elegí las reglas de una comunidad alegre, responsable y abierta a todos.','😊'),
+    mission('m3','Un sacerdote para los jóvenes','Comprendé la opción de Don Bosco por dedicar su vida a los jóvenes.','Relacioná su ordenación sacerdotal con las necesidades de los jóvenes de su tiempo.','⛪'),
+    mission('m4','Bartolomé Garelli','Reconstruí el encuentro que dio origen al oratorio.','Escribí cómo recibirías hoy a un joven que llega solo, desconfiado o excluido.','🚪'),
+    mission('m5','Encontrar a Garelli','Aplicá el estilo de Don Bosco a una situación concreta.','Presentá una propuesta de primer encuentro para un joven que necesita sentirse esperado.','🫂')
+  ];
+  const donBoscoMissions3=[
+    mission('m1','Un oratorio en movimiento','Conocé las dificultades de los primeros oratorios.','Descubrí qué sostuvo a Don Bosco cuando parecía no tener un lugar estable.','🏃'),
+    mission('m2','La casa de Mamá Margarita','Comprendé cómo Valdocco se convirtió en una casa para los jóvenes.','Identificá tres gestos que transforman un espacio en un hogar.','🏠'),
+    mission('m3','El Sistema Preventivo','Profundizá en razón, religión y amorevolezza.','Aplicá las tres claves a una situación cotidiana de animación.','💛'),
+    mission('m4','Casa, patio, escuela y parroquia','Reconocé las cuatro dimensiones de la experiencia salesiana.','Relacioná cada dimensión con una acción concreta para tu grupo.','🎒'),
+    mission('m5','Construir un oratorio','Diseñá una experiencia salesiana para jóvenes de hoy.','Entregá una propuesta con ambiente, actividad, gesto de acompañamiento y misión.','🧱')
+  ];
+  const donBoscoMissions4=[
+    mission('m1','Los primeros salesianos','Conocé cómo Don Bosco compartió el sueño con otros jóvenes y educadores.','Reconocé qué características necesita una comunidad para sostener una misión.','👥'),
+    mission('m2','María Auxiliadora','Descubrí el lugar de María en la confianza y la misión de Don Bosco.','Escribí una oración breve de confianza para tu tarea como animador.','🌟'),
+    mission('m3','Enviados a la misión','Conocé las primeras expediciones misioneras salesianas.','Ubicá la misión salesiana más allá de Valdocco y relacionála con tu realidad.','🌎'),
+    mission('m4','Don Bosco hoy','Reconocé la presencia del carisma de Don Bosco en tu comunidad.','Encontrá tres signos de Don Bosco presentes hoy en Maturana.','🔎'),
+    mission('m5','Mi misión salesiana','Formulá un compromiso personal para continuar el sueño.','Entregá tu misión: a quién acompañarás, cómo lo harás y cuál será tu primer gesto concreto.','🔥')
+  ];
+
+  const donBosco={
+    name:'La vida de Don Bosco',icon:'🔥',desc:'Un recorrido gamificado por la vida, la misión y el estilo educativo de Don Bosco.',modules:[
+      missionModule('1 · Las semillas del sueño','Las experiencias familiares, espirituales y educativas que formaron el corazón de Juan Bosco.',donBoscoMissions,[
+        missionBlock('m1','Texto','Nacer en I Becchi','Juan Bosco nació en 1815 en I Becchi, una pequeña casa rural cercana a Castelnuovo. Allí creció en una familia sencilla, marcada por el trabajo, la fe y la confianza en Dios. Su infancia no fue fácil, pero esas experiencias fueron preparando su sensibilidad hacia quienes más necesitaban acompañamiento.'),
+        missionBlock('m2','Reflexión','Mamá Margarita','Margarita Occhiena fue una presencia decisiva en la vida de Juan. Le enseñó a rezar, trabajar, confiar y mirar a los demás con compasión. Escribí tres valores que reconocés en ella y elegí uno que quieras practicar en tu servicio.'),
+        missionBlock('m3','Texto','El sueño de los nueve años','A los nueve años, Juan tuvo un sueño que marcaría su camino. Vio una multitud de muchachos que peleaban y escuchó que no debía corregirlos con golpes, sino con mansedumbre y caridad. Ese sueño se convirtió en una brújula para toda su vida.'),
+        missionBlock('m4','Evaluación','Aprender para servir','Ordená estos momentos: trabajo en el campo, deseo de estudiar, salida de casa y encuentro con personas que lo ayudaron. Después explicá por qué las dificultades también pueden convertirse en una escuela de servicio.'),
+        missionBlock('m5','Desafío','¿Qué sueño llevás dentro?','Creá una insignia personal con cuatro elementos: mi sueño, una dificultad que debo atravesar, una persona que me acompañó y un compromiso concreto. Esta entrega será revisada por el formador.',true)
+      ],35,false),
+      missionModule('2 · El sueño toma forma','Chieri, la Sociedad de la Alegría, el sacerdocio y el encuentro con Bartolomé Garelli.',donBoscoMissions2,[
+        missionBlock('m1','Texto','Chieri: estudiar contra corriente','Para poder estudiar, Juan Bosco trabajó en distintos oficios y enfrentó dificultades económicas. En Chieri encontró nuevos amigos, aprendió con esfuerzo y fue descubriendo que su formación no era para sí mismo, sino para servir mejor.'),
+        missionBlock('m2','Reflexión','La Sociedad de la Alegría','Juan reunió a sus compañeros en la Sociedad de la Alegría. La propuesta unía alegría, responsabilidad, estudio, oración y amistad. Elegí tres reglas para una comunidad juvenil sana y explicá por qué las elegiste.'),
+        missionBlock('m3','Texto','Un sacerdote para los jóvenes','Ordenado sacerdote en 1841, Don Bosco comprendió cada vez con mayor claridad que su misión sería estar cerca de los jóvenes, especialmente de quienes estaban solos, pobres o en riesgo.'),
+        missionBlock('m4','Reflexión','Bartolomé Garelli','El 8 de diciembre de 1841 Don Bosco se encontró con Bartolomé Garelli en la sacristía de San Francisco de Asís. Antes de enseñarle catecismo, le preguntó su nombre y se acercó con respeto. Escribí cómo recibirías hoy a un joven que llega desconfiado.'),
+        missionBlock('m5','Desafío','Encontrar a Garelli','Presentá una propuesta de primer encuentro para un joven que necesita sentirse esperado, escuchado y valorado. La propuesta debe incluir un gesto de bienvenida, una actividad y una forma de acompañamiento.',true)
+      ],35,true),
+      missionModule('3 · Valdocco: casa, patio, escuela y parroquia','La experiencia de Valdocco y el Sistema Preventivo como estilo de acompañamiento.',donBoscoMissions3,[
+        missionBlock('m1','Texto','Un oratorio en movimiento','Los primeros oratorios cambiaron varias veces de lugar. Don Bosco tuvo que sostener el sueño aun cuando todo parecía inestable. La misión no dependía solamente de un edificio, sino de la presencia cercana junto a los jóvenes.'),
+        missionBlock('m2','Reflexión','La casa de Mamá Margarita','Cuando llegaron a Valdocco, muchos jóvenes encontraron una casa donde podían sentirse conocidos y queridos. Escribí tres gestos concretos que transforman un espacio del colegio o del oratorio en un hogar.'),
+        missionBlock('m3','Texto','El Sistema Preventivo','El Sistema Preventivo se apoya en la razón, la religión y la amorevolezza. No se trata solamente de controlar conductas, sino de acompañar, anticiparse a las dificultades y generar confianza.'),
+        missionBlock('m4','Evaluación','Casa, patio, escuela y parroquia','Relacioná cada dimensión con una acción concreta: recibir y cuidar, compartir la vida, ayudar a crecer y abrirse a Dios. Después elegí cuál de las cuatro necesita más atención en tu grupo.'),
+        missionBlock('m5','Desafío','Construir un oratorio','Diseñá una experiencia salesiana para jóvenes de hoy. Incluí ambiente, actividad, gesto de acompañamiento, norma sencilla y misión final. La propuesta será revisada por el formador.',true)
+      ],40,true),
+      missionModule('4 · Un sueño que continúa','La expansión del carisma y la misión personal de cada animador.',donBoscoMissions4,[
+        missionBlock('m1','Texto','Los primeros salesianos','Don Bosco comprendió que el sueño no podía sostenerlo solo. Formó una comunidad de jóvenes y educadores capaces de compartir la misión y continuarla con un mismo espíritu.'),
+        missionBlock('m2','Reflexión','María Auxiliadora','La confianza en María acompañó toda la obra de Don Bosco. Escribí una oración breve para pedir ayuda en una situación concreta de tu tarea como animador.'),
+        missionBlock('m3','Texto','Enviados a la misión','En 1875 partieron los primeros salesianos hacia la Patagonia. El carisma comenzó a cruzar fronteras y a llegar a nuevos pueblos, siempre con la misma preocupación: acompañar a los jóvenes.'),
+        missionBlock('m4','Evaluación','Don Bosco hoy','Buscá tres signos del espíritu de Don Bosco presentes hoy en Maturana: una persona, un espacio, una actividad o una forma de acompañar. Explicá brevemente cada elección.'),
+        missionBlock('m5','Desafío','Mi misión salesiana','Formulá tu misión personal: a quién querés acompañar, cómo lo vas a hacer y cuál será tu primer gesto concreto. Esta entrega final será revisada por el formador.',true)
+      ],40,true)
+    ]};
+  const templates={donbosco:donBosco,
+    
     model:{name:'Curso modelo CAFASSO',icon:'🧭',desc:'Recorrido completo con bienvenida, texto, video, material, reflexión, oración, entrega y evaluación.',modules:[
       module('1 · Bienvenida y sentido','Abrimos el recorrido, presentamos el propósito y ubicamos al animador en la experiencia.',[
         block('Texto','Bienvenida','Bienvenido/a a este recorrido de formación. En este módulo vas a encontrar una breve introducción al tema, un recurso para mirar o leer y una primera invitación a conectar lo trabajado con tu propia experiencia.',true),
