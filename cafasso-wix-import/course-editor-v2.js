@@ -249,8 +249,14 @@
 
   $e('duplicateModuleV2').onclick=()=>{
     saveAllFields();const source=data.modules[active];if(!source)return;
-    const copy=clone(source);copy._id=uid();copy.title=(source.title||'Módulo')+' · copia';copy.contents=(copy.contents||[]).map(b=>({...b,_id:uid()}));
-    data.modules.splice(active+1,0,copy);active++;activeBlock=-1;markDirty();render();toast('Módulo duplicado');
+    const copy=clone(source);
+    copy._id=uid();
+    copy.title='Módulo '+(active+2);
+    copy.status='Borrador';
+    copy.unlockAfterPrevious=true;
+    copy.contents=(copy.contents||[]).map(b=>({...b,_id:uid()}));
+    data.modules.splice(active+1,0,copy);
+    active++;activeBlock=-1;markDirty();render();toast('Módulo duplicado. Revisá y adaptá sus contenidos antes de publicarlo.');
   };
   $e('duplicateBlockV2').onclick=()=>{
     saveBlockFields();const source=data.modules[active]?.contents?.[activeBlock];if(!source){toast('Seleccioná un bloque primero');return}
