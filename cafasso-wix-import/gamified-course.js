@@ -313,6 +313,10 @@
       if (target) { setStoredMission(module, button.dataset.mapMission); target.click(); }
     }));
     map.querySelector('[data-next-module]')?.addEventListener('click', () => {
+      if (nextModule?._id && typeof window.CafassoOpenModule === 'function') {
+        window.CafassoOpenModule(nextModule._id);
+        return;
+      }
       const target = originalButtons.get(nextModule?._id);
       if (target) { target.disabled = false; target.removeAttribute('disabled'); target.click(); }
     });
