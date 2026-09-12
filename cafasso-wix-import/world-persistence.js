@@ -111,7 +111,20 @@
     });
   }
 
+  function installBootSafety() {
+    window.setTimeout(() => {
+      const app = document.getElementById('app');
+      const world = document.querySelector('.cafasso-world');
+      if (!app || world) return;
+      const hidden = getComputedStyle(app).visibility === 'hidden' || getComputedStyle(app).opacity === '0';
+      if (!hidden) return;
+      app.classList.add('cafasso-boot-ready');
+      app.innerHTML = '<div class="error"><strong>No pudimos preparar tu mundo CAFASSO.</strong><br>La sesión o la conexión con CAFASSO no respondió a tiempo. Recargá una vez la página; si vuelve a ocurrir, revisaremos la conexión de Wix.</div>';
+    }, 9000);
+  }
+
   function boot() {
+    installBootSafety();
     const state = read();
     const observer = new MutationObserver(() => {
       updateHud(state);
