@@ -79,7 +79,7 @@ jobs:
           deliveries.write_text(ds, encoding='utf-8')
           PY
       - name: Actualizar cache del mundo con hover de audio
-        run: sed -i 's/animator-world.js?v=20260910-20/animator-world.js?v=20260910-21/g' cafasso-wix-import/index.html
+        run: sed -i 's/animator-world.js?v=20260912-1/animator-world.js?v=20260910-21/g' cafasso-wix-import/index.html
       - name: Aplicar modelo Personas
         run: python scripts/patch_people_semantics.py
       - name: Configure Pages
