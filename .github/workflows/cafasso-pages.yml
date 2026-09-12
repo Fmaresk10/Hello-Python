@@ -78,8 +78,6 @@ jobs:
           ds = ds.replace('</body>', '<script src="./entregas-manager.js?v=20260909-1"></script>\n</body>')
           deliveries.write_text(ds, encoding='utf-8')
           PY
-      - name: Actualizar cache del mundo con hover de audio
-        run: sed -i 's/animator-world.js?v=20260912-1/animator-world.js?v=20260912-2/g' cafasso-wix-import/index.html
       - name: Aplicar modelo Personas
         run: python scripts/patch_people_semantics.py
       - name: Configure Pages
