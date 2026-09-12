@@ -42,7 +42,7 @@ jobs:
           s = p.read_text(encoding='utf-8')
           marker = '<script id="cafasso-home-v2-direct">'
           if marker not in s:
-              inject = '''<script id="cafasso-home-v2-direct">if(new URLSearchParams(location.search).get('previewRole')==='animador'||new URLSearchParams(location.search).get('previewUser'))document.documentElement.dataset.cafassoPreviewRole='animador';</script>\n<script src="./course-cover-home.js?v=20260907-4"></script>\n<script src="./animator-home.js?v=20260909-2"></script>\n<script src="./animator-home-tweaks.js?v=20260907-3"></script>\n<script src="./animator-home-refine.js?v=20260910-1"></script>\n<script src="./animator-world.js?v=20260910-20"></script>\n'''
+              inject = '''<script id="cafasso-home-v2-direct">if(new URLSearchParams(location.search).get('previewRole')==='animador'||new URLSearchParams(location.search).get('previewUser'))document.documentElement.dataset.cafassoPreviewRole='animador';</script>\n<script src="./course-cover-home.js?v=20260907-4"></script>\n<script src="./animator-home.js?v=20260909-2"></script>\n<script src="./animator-home-tweaks.js?v=20260907-3"></script>\n<script src="./animator-home-refine.js?v=20260910-1"></script>\n<script src="./animator-world.js?v=20260910-20"></script>\n<script src="./world-persistence.js?v=20260912-1"></script>\n'''
           s = s.replace('</body>', inject + '</body>')
           profile_script = '<script src="./animator-profile-chip.js?v=20260907-2"></script>'
           s = re.sub(r'<script src="\./animator-profile-chip\.js\?v=[^"]+"></script>\s*', '', s)
@@ -79,7 +79,7 @@ jobs:
           deliveries.write_text(ds, encoding='utf-8')
           PY
       - name: Actualizar cache del mundo con hover de audio
-        run: sed -i 's/animator-world.js?v=20260912-1/animator-world.js?v=20260910-21/g' cafasso-wix-import/index.html
+        run: sed -i 's/animator-world.js?v=20260912-1/animator-world.js?v=20260912-2/g' cafasso-wix-import/index.html
       - name: Aplicar modelo Personas
         run: python scripts/patch_people_semantics.py
       - name: Configure Pages
