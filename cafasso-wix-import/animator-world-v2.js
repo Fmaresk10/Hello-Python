@@ -2,7 +2,7 @@
   if (window.__cafassoAnimatorWorldV2) return;
   window.__cafassoAnimatorWorldV2 = true;
 
-  const KEY='cafassoWorldPrologueV2';
+  const KEY='cafassoWorldPrologueV3';
   const css=`
     body.cafasso-world-active{background:#0e3035!important}
     body.cafasso-world-active #cafassoDailyWord,
