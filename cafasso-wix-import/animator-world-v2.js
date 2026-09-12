@@ -24,7 +24,7 @@
     .world-v2__arrival-note{position:relative;max-width:270px;margin:0 0 18px;padding:14px 17px;border-left:2px solid #efc35d;background:linear-gradient(90deg,rgba(12,39,42,.68),rgba(12,39,42,.12));text-shadow:0 2px 10px rgba(0,0,0,.5)}
     .world-v2__arrival-note b{display:block;font-family:Georgia,serif;font-size:23px;font-weight:500;color:#fff8e9;margin-bottom:5px}
     .world-v2__arrival-note span{display:block;font-size:13px;line-height:1.45;color:rgba(255,248,233,.78)}
-    .world-v2__arrival-hotspot{position:absolute;left:calc(66% - 76px);top:calc(40% - 113px);border:0;background:transparent;color:#fff8e9;text-shadow:0 2px 9px #142f2e;opacity:.92}
+    .world-v2__arrival-hotspot{position:absolute;left:calc(66% - 114px);top:calc(40% - 113px);border:0;background:transparent;color:#fff8e9;text-shadow:0 2px 9px #142f2e;opacity:.92}
     .world-v2__arrival-hotspot:before{content:"";display:block;width:18px;height:18px;margin:auto;border-radius:50%;background:#efc35d;box-shadow:0 0 0 7px rgba(239,195,93,.2),0 4px 14px rgba(0,0,0,.4)}
     .world-v2__arrival-hotspot span{display:block;margin-top:10px;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
     .world-v2__arrival-hotspot:hover{transform:scale(1.05)}
