@@ -238,10 +238,11 @@ input,textarea,select,button{touch-action:manipulation}input[type=password],inpu
         history.replaceState({view:'inicio'},'',location.pathname+location.search+'#inicio');
       }
       render(view);
-      // La pantalla de inicio se revela desde animator-world, cuando ya
-      // están aplicados el fondo y el mapa. Así F5 no muestra la vista vieja.
-      if(view!=='cursos'&&view!=='inicio'&&view!=='modulo')document.getElementById('app').classList.add('cafasso-boot-ready');
-    }).catch(function(e){if(timedOut)return;clearTimeout(timer);try{var cached=JSON.parse(localStorage.getItem("cafassoBootstrapData")||"null");var cachedUser=(cached&&cached.users||[]).filter(function(u){return String(u.email||"").toLowerCase()===String(session.user.email||"").toLowerCase();})[0];if(cachedUser){data=cached;if(!Array.isArray(data.users)&&data.user)data.users=[data.user];if(!Array.isArray(data.groups))data.groups=[];publishAnimatorState();layout();render("inicio");return;}}catch(cacheError){}fail(e.message||"Error al conectar con CAFASSO.");});
+      // La vista base debe revelarse aunque la capa estética del mundo
+      // no esté disponible. El renderer gamificado puede ocultar el módulo
+      // mientras prepara la misión, pero no debe bloquear el inicio.
+      if(view!=='modulo')document.getElementById('app').classList.add('cafasso-boot-ready');
+    }).catch(function(e){if(timedOut)return;clearTimeout(timer);try{var cached=JSON.parse(localStorage.getItem("cafassoBootstrapData")||"null");var cachedUser=(cached&&cached.users||[]).filter(function(u){return String(u.email||"").toLowerCase()===String(session.user.email||"").toLowerCase();})[0];if(cachedUser){data=cached;if(!Array.isArray(data.users)&&data.user)data.users=[data.user];if(!Array.isArray(data.groups))data.groups=[];publishAnimatorState();layout();render("inicio");document.getElementById('app').classList.add('cafasso-boot-ready');return;}}catch(cacheError){}fail(e.message||"Error al conectar con CAFASSO.");});
   }
   window.addEventListener('popstate',function(){if(!data||!session)return;var view=(location.hash||'#inicio').slice(1);if(view==='curso'&&!selectedCourse)view='cursos';if(view==='modulo'&&(!selectedCourse||!selectedModule))view='cursos';render(view);});init();
 })();
