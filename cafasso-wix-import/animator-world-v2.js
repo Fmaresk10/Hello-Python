@@ -5,6 +5,9 @@
   const KEY='cafassoWorldPrologueV2';
   const css=`
     body.cafasso-world-active{background:#0e3035!important}
+    body.cafasso-world-active #cafassoDailyWord,
+    body.cafasso-world-active .cafasso-daily-word,
+    body.cafasso-world-active .cafasso-drive-preview{display:none!important}
     body.cafasso-world-active .side,
     body.cafasso-world-active .mobile-head,
     body.cafasso-world-active .mobilebar,
