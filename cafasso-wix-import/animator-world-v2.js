@@ -28,6 +28,14 @@
     .world-v2__arrival-hotspot:before{content:"";display:block;width:18px;height:18px;margin:auto;border-radius:50%;background:#efc35d;box-shadow:0 0 0 7px rgba(239,195,93,.2),0 4px 14px rgba(0,0,0,.4)}
     .world-v2__arrival-hotspot span{display:block;margin-top:10px;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
     .world-v2__arrival-hotspot:hover{transform:scale(1.05)}
+    .world-v2__resource-hotspot{position:absolute;right:14%;top:56%;border:0;background:rgba(21,39,38,.66);color:#fff8e9;padding:9px 15px;border-radius:5px 12px 12px 5px;border-left:4px solid #b7895c;box-shadow:0 5px 14px rgba(0,0,0,.3);font-family:Georgia,serif;font-size:17px;text-shadow:0 1px 4px #142f2e}
+    .world-v2__resource-hotspot:before{content:"";position:absolute;left:-9px;top:8px;bottom:8px;width:5px;background:#efc35d;border-radius:3px;opacity:.65}
+    .world-v2__resource-hotspot:hover{transform:translateY(-3px);background:rgba(21,39,38,.82)}
+    .world-v2__journal-hotspot{position:absolute;left:43%;bottom:9%;min-width:148px;height:46px;border:1px solid #4e2f22;border-radius:5px 12px 12px 5px;background:linear-gradient(135deg,#6d432f,#9b7048 48%,#533224);color:#f7e5b8;padding:9px 15px 9px 22px;box-shadow:0 8px 16px rgba(0,0,0,.38);font-family:Georgia,serif;font-size:16px;font-style:italic;transform:rotate(-4deg);text-shadow:0 1px 3px #3d241a}
+    .world-v2__journal-hotspot:before{content:"";position:absolute;left:13px;top:4px;bottom:4px;width:2px;background:#d2ae73;opacity:.75}
+    .world-v2__journal-hotspot:hover{transform:rotate(-4deg) translateY(-4px);filter:brightness(1.12)}
+    .world-v2__scene-message{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);padding:9px 15px;border-radius:999px;background:rgba(12,39,42,.78);color:#f7e5b8;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap}
+    .world-v2__scene-message.show{opacity:1}
     .cafasso-world-v2__intro{max-width:600px;padding:26px 30px 28px;border-left:3px solid #f0c665;background:linear-gradient(90deg,rgba(10,35,38,.72),rgba(10,35,38,.18),transparent);text-shadow:0 2px 14px rgba(0,0,0,.45)}
     .cafasso-world-v2__eyebrow{font-size:11px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;color:#f0c665;margin-bottom:13px}
     .cafasso-world-v2 h1,.cafasso-world-v2 h2{font-family:Georgia,serif;color:#fff8e9;font-weight:500;line-height:1;margin:0 0 18px}
@@ -72,7 +80,7 @@
   function mark(){try{localStorage.setItem(KEY,'1');}catch(e){}}
   function shell(kind){
     const intro=kind==='arrival'
-      ? '<div class="cafasso-world-v2__content"><div class="world-v2__arrival-note"><b>Estás en Casa</b><span>Tu recorrido comienza en este lugar. Mirá alrededor y seguí el camino cuando estés listo.</span></div></div><button class="world-v2__arrival-hotspot" data-world="house" aria-label="Explorar el mundo"><span>Explorar</span></button>'
+      ? '<div class="cafasso-world-v2__content"><div class="world-v2__arrival-note"><b>Estás en Casa</b><span>Tu recorrido comienza en este lugar. Mirá alrededor y seguí el camino cuando estés listo.</span></div></div><button class="world-v2__arrival-hotspot" data-world="house" aria-label="Explorar el mundo"><span>Explorar</span></button><button class="world-v2__resource-hotspot" data-world="resources" aria-label="Abrir recursos">Recursos</button><button class="world-v2__journal-hotspot" data-world="journal" aria-label="Abrir mi bitácora">Mi bitácora</button><div class="world-v2__scene-message" aria-live="polite"></div>'
       : kind==='patio'
       ? '<div class="world-v2__topbar"><button class="world-v2__back" data-world="house">← Volver a la Casa</button><span class="world-v2__label">Primera estación · Patio</span></div><div class="cafasso-world-v2__content"><div class="cafasso-world-v2__intro"><div class="cafasso-world-v2__eyebrow">Primera misión</div><h2>Entrá al Patio</h2><p>Acá comienza el encuentro. Antes de estudiar la vida de Don Bosco, vamos a aprender a mirar como él: atentos a las personas, sus historias y sus preguntas.</p><div class="cafasso-world-v2__actions"><button class="cafasso-world-v2__primary" data-world="courses">Iniciar el recorrido →</button></div></div></div>'
       : '<div class="world-v2__topbar"><button class="world-v2__back" data-world="arrival">← Volver a la llegada</button><span class="world-v2__label">Tu punto de partida · Casa</span></div><div class="cafasso-world-v2__map"><div class="cafasso-world-v2__mist"></div><div class="world-v2__path"></div><button class="world-v2__location world-v2__house" data-world="house"><span class="world-v2__building"></span><strong>Casa</strong><small>Tu identidad y tu camino</small></button><button class="world-v2__location world-v2__patio" data-world="patio"><span class="world-v2__building"></span><strong>Patio</strong><small>Primera misión disponible</small></button><div class="world-v2__location world-v2__school world-v2__locked"><span class="world-v2__building"></span><strong>Escuela</strong><small>Se abre al avanzar</small></div><div class="world-v2__location world-v2__parish world-v2__locked"><span class="world-v2__building"></span><strong>Parroquia</strong><small>Más adelante</small></div><div class="world-v2__mission"><b>Estás en la Casa</b><p>Desde acá comienza tu recorrido. El Patio está listo para recibirte.</p><button class="cafasso-world-v2__primary" data-world="patio">Explorar el Patio</button></div></div>';
@@ -81,7 +89,8 @@
   function mount(kind){
     const main=document.getElementById('main');if(!main)return false;
     style();document.body.classList.add('cafasso-world-active');main.innerHTML=shell(kind);
-    main.querySelectorAll('[data-world]').forEach(b=>b.addEventListener('click',()=>{const a=b.dataset.world;if(a==='house'){mark();mount('house');}else if(a==='arrival')mount('arrival');else if(a==='patio')mount('patio');else if(a==='courses'&&typeof window.CafassoNavigate==='function')window.CafassoNavigate('cursos');}));
+    main.querySelectorAll('[data-world]').forEach(b=>b.addEventListener('click',()=>{const a=b.dataset.world;if(a==='house'){mark();mount('house');}else if(a==='arrival')mount('arrival');else if(a==='patio')mount('patio');else if(a==='courses'&&typeof window.CafassoNavigate==='function')window.CafassoNavigate('cursos');
+      else if(a==='resources'||a==='journal'){const msg=main.querySelector('.world-v2__scene-message');if(msg){msg.textContent=a==='resources'?'Los recursos van a reunirse aquí.':'Tu bitácora empieza en esta mesa.';msg.classList.add('show');setTimeout(()=>msg.classList.remove('show'),2400);}}}));
     return true;
   }
   function sync(){
