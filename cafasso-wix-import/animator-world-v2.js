@@ -24,17 +24,17 @@
     .world-v2__arrival-note{position:relative;max-width:270px;margin:0 0 18px;padding:14px 17px;border-left:2px solid #efc35d;background:linear-gradient(90deg,rgba(12,39,42,.68),rgba(12,39,42,.12));text-shadow:0 2px 10px rgba(0,0,0,.5)}
     .world-v2__arrival-note b{display:block;font-family:Georgia,serif;font-size:23px;font-weight:500;color:#fff8e9;margin-bottom:5px}
     .world-v2__arrival-note span{display:block;font-size:13px;line-height:1.45;color:rgba(255,248,233,.78)}
-    .world-v2__arrival-hotspot{position:absolute;left:59%;top:39%;border:0;background:transparent;color:#fff8e9;text-shadow:0 2px 9px #142f2e;opacity:.92}
+    .world-v2__arrival-hotspot{position:absolute;left:66%;top:40%;border:0;background:transparent;color:#fff8e9;text-shadow:0 2px 9px #142f2e;opacity:.92}
     .world-v2__arrival-hotspot:before{content:"";display:block;width:18px;height:18px;margin:auto;border-radius:50%;background:#efc35d;box-shadow:0 0 0 7px rgba(239,195,93,.2),0 4px 14px rgba(0,0,0,.4)}
     .world-v2__arrival-hotspot span{display:block;margin-top:10px;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
     .world-v2__arrival-hotspot:hover{transform:scale(1.05)}
-    .world-v2__resource-hotspot{position:absolute;left:78%;top:57%;border:0;background:rgba(21,39,38,.66);color:#fff8e9;padding:9px 15px;border-radius:5px 12px 12px 5px;border-left:4px solid #b7895c;box-shadow:0 5px 14px rgba(0,0,0,.3);font-family:Georgia,serif;font-size:17px;text-shadow:0 1px 4px #142f2e}
+    .world-v2__resource-hotspot{position:absolute;left:74%;top:56%;border:0;background:rgba(21,39,38,.66);color:#fff8e9;padding:9px 15px;border-radius:5px 12px 12px 5px;border-left:4px solid #b7895c;box-shadow:0 5px 14px rgba(0,0,0,.3);font-family:Georgia,serif;font-size:17px;text-shadow:0 1px 4px #142f2e}
     .world-v2__resource-hotspot:before{content:"";position:absolute;left:-9px;top:8px;bottom:8px;width:5px;background:#efc35d;border-radius:3px;opacity:.65}
     .world-v2__resource-hotspot:hover{transform:translateY(-3px);background:rgba(21,39,38,.82)}
-    .world-v2__journal-hotspot{position:absolute;left:53%;bottom:14%;width:152px;height:132px;overflow:visible;border:0;background:transparent;color:#f7e5b8;padding:0;filter:drop-shadow(0 9px 8px rgba(0,0,0,.42));transform:rotate(-5deg);z-index:3}
-    .world-v2__journal-hotspot img{display:block;width:100%;height:100%;max-width:none;object-fit:contain;object-position:center;overflow:visible}
-    .world-v2__journal-hotspot span{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);font-family:Georgia,serif;font-size:13px;font-style:italic;color:#f4dfad;text-shadow:0 1px 3px #351f17;white-space:nowrap}
-    .world-v2__journal-hotspot:hover{transform:rotate(-5deg) translateY(-5px);filter:brightness(1.12) drop-shadow(0 11px 10px rgba(0,0,0,.48))}
+    .world-v2__journal-hotspot{position:absolute;left:51%;bottom:12%;width:104px;height:92px;overflow:visible;border:0;background:transparent;color:#f7e5b8;padding:0;filter:drop-shadow(0 7px 7px rgba(0,0,0,.42));transform:rotate(-5deg);z-index:3}
+    .world-v2__journal-hotspot img{display:block;width:100%;height:100%;max-width:none;object-fit:contain;object-position:center}
+    .world-v2__journal-hotspot span{position:absolute;left:50%;bottom:-19px;transform:translateX(-50%);font-family:Georgia,serif;font-size:12px;font-style:italic;color:#f4dfad;text-shadow:0 1px 3px #351f17;white-space:nowrap}
+    .world-v2__journal-hotspot:hover{transform:rotate(-5deg) translateY(-4px);filter:brightness(1.1) drop-shadow(0 9px 8px rgba(0,0,0,.48))}
     .world-v2__scene-message{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);padding:9px 15px;border-radius:999px;background:rgba(12,39,42,.78);color:#f7e5b8;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap}
     .world-v2__scene-message.show{opacity:1}
     .cafasso-world-v2__intro{max-width:600px;padding:26px 30px 28px;border-left:3px solid #f0c665;background:linear-gradient(90deg,rgba(10,35,38,.72),rgba(10,35,38,.18),transparent);text-shadow:0 2px 14px rgba(0,0,0,.45)}
