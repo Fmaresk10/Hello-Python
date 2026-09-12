@@ -11,9 +11,9 @@
     body.cafasso-world-active .mobile-nav{display:none!important}
     body.cafasso-world-active .shell{display:block!important;min-height:100vh}
     body.cafasso-world-active main{width:100%!important;max-width:none!important;padding:0!important}
-    .cafasso-world-v2{min-height:100vh;position:relative;overflow:hidden;color:#fff6e5;background:linear-gradient(180deg,#17464e 0%,#72958c 47%,#304f42 100%);isolation:isolate}
-    .cafasso-world-v2:before{content:"";position:absolute;inset:0;z-index:-3;background:radial-gradient(circle at 74% 17%,rgba(242,197,99,.95) 0 4%,rgba(242,197,99,.25) 13%,transparent 28%),linear-gradient(180deg,transparent 0 54%,rgba(16,54,49,.4) 100%)}
-    .cafasso-world-v2:after{content:"";position:absolute;left:-5%;right:-5%;bottom:-10%;height:48%;z-index:-2;background:linear-gradient(160deg,#537758,#2e5040 58%,#1d3d39);clip-path:polygon(0 30%,16% 18%,30% 32%,48% 8%,65% 27%,83% 12%,100% 26%,100% 100%,0 100%)}
+    .cafasso-world-v2{min-height:100vh;position:relative;overflow:hidden;color:#fff6e5;background:linear-gradient(90deg,rgba(8,31,35,.62),rgba(8,31,35,.08) 58%,rgba(8,31,35,.2)),url('https://static.wixstatic.com/media/47bf07_2465a68b3ac64824b43bc20531ce6fd4~mv2.png') center/cover no-repeat;isolation:isolate}
+    .cafasso-world-v2:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(9,32,37,.04),rgba(9,32,37,.18) 55%,rgba(9,32,37,.58));pointer-events:none}
+    .cafasso-world-v2:after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 50% 52%,transparent 0 26%,rgba(8,30,35,.16) 72%,rgba(8,30,35,.45) 100%);pointer-events:none}
     .cafasso-world-v2__mist{position:absolute;inset:35% -10% auto;height:28%;z-index:-1;background:linear-gradient(180deg,transparent,rgba(228,220,171,.16),transparent);filter:blur(18px)}
     .cafasso-world-v2__content{position:relative;z-index:2;min-height:100vh;padding:clamp(28px,5vw,68px);display:flex;align-items:flex-end}
     .cafasso-world-v2__intro{max-width:600px;padding:26px 30px 28px;border-left:3px solid #f0c665;background:linear-gradient(90deg,rgba(10,35,38,.72),rgba(10,35,38,.18),transparent);text-shadow:0 2px 14px rgba(0,0,0,.45)}
@@ -27,24 +27,24 @@
     .cafasso-world-v2__primary{border:0;border-radius:999px;background:#efc35d;color:#17363a;padding:13px 21px;font-weight:900;box-shadow:0 8px 24px rgba(0,0,0,.2)}
     .cafasso-world-v2__ghost{border:1px solid rgba(255,248,233,.38);border-radius:999px;background:rgba(10,35,38,.18);color:#fff8e9;padding:13px 20px;font-weight:750}
     .cafasso-world-v2__map{position:absolute;inset:0;min-height:100vh}
-    .world-v2__path{position:absolute;left:43%;top:40%;width:15%;height:75%;background:linear-gradient(90deg,transparent,#c2a875 45%,#9a855e 55%,transparent);transform:rotate(13deg);opacity:.85;filter:blur(1px);clip-path:polygon(38% 0,62% 0,100% 100%,0 100%)}
-    .world-v2__location{position:absolute;border:0;background:transparent;color:#fff8e9;text-align:center;text-shadow:0 2px 8px #142f2e;filter:drop-shadow(0 8px 10px rgba(0,0,0,.22))}
-    .world-v2__location:hover{transform:translateY(-5px);transition:.18s}
+    .world-v2__path{display:none}
+    .world-v2__location{position:absolute;border:0;background:transparent;color:#fff8e9;text-align:center;text-shadow:0 2px 8px #142f2e;filter:drop-shadow(0 8px 10px rgba(0,0,0,.22));padding:10px 14px;border-radius:14px}
+    .world-v2__location:before{content:"";display:block;width:13px;height:13px;margin:0 auto 9px;border-radius:50%;background:#efc35d;box-shadow:0 0 0 5px rgba(239,195,93,.18),0 4px 14px rgba(0,0,0,.35)}.world-v2__location:hover{transform:translateY(-5px);transition:.18s;background:rgba(14,48,53,.42);backdrop-filter:blur(5px)}
     .world-v2__location strong{display:block;font-family:Georgia,serif;font-size:24px;font-weight:500}
     .world-v2__location small{display:block;margin-top:5px;font-size:12px;color:#fff5d3}
-    .world-v2__building{display:block;width:110px;height:78px;margin:auto auto 9px;position:relative;background:#b88762;border:3px solid #5b443b;border-radius:4px 4px 8px 8px}
-    .world-v2__building:before{content:"";position:absolute;left:-14px;right:-14px;top:-39px;height:50px;background:#714c47;clip-path:polygon(50% 0,100% 100%,0 100%);border:3px solid #4e3c39}
-    .world-v2__building:after{content:"";position:absolute;width:20px;height:38px;bottom:0;left:43px;background:#5a463d;border-radius:4px 4px 0 0}
+    .world-v2__building{display:none}
+    
+    
     .world-v2__house{left:18%;top:42%}
     .world-v2__patio{left:52%;top:46%}
-    .world-v2__patio .world-v2__building{width:92px;height:52px;background:#cda86a;border-radius:50% 50% 7px 7px}
-    .world-v2__patio .world-v2__building:before{display:none}
-    .world-v2__patio .world-v2__building:after{width:58px;height:16px;left:14px;bottom:12px;background:#6d8060;border-radius:50%}
+    .world-v2__patio .world-v2__building{display:none}
+    
+    
     .world-v2__school{right:13%;top:29%}
     .world-v2__parish{right:35%;top:12%}
-    .world-v2__parish .world-v2__building{background:#d9d0b5;width:76px;height:92px}
-    .world-v2__parish .world-v2__building:before{background:#8e6659}
-    .world-v2__parish .world-v2__building:after{width:12px;height:30px;left:29px}
+    .world-v2__parish .world-v2__building{display:none}
+    
+    
     .world-v2__locked{opacity:.55;pointer-events:none}
     .world-v2__topbar{position:absolute;z-index:3;top:26px;left:clamp(24px,5vw,68px);right:clamp(24px,5vw,68px);display:flex;justify-content:space-between;align-items:center}
     .world-v2__back{border:0;background:transparent;color:#f0c665;font-weight:850;padding:7px 0}
