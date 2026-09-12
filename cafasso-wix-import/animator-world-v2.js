@@ -2,116 +2,87 @@
   if (window.__cafassoAnimatorWorldV2) return;
   window.__cafassoAnimatorWorldV2 = true;
 
-  const KEY = 'cafassoWorldPrologueV2';
-  const css = `
-    .cafasso-world-v2{min-height:calc(100vh - 32px);padding:clamp(24px,5vw,72px);display:flex;align-items:center;justify-content:center;color:#f8f1e5;background:linear-gradient(135deg,rgba(15,45,55,.96),rgba(32,76,67,.88)),url('https://static.wixstatic.com/media/47bf07_fdaf845ac90049d89227e663e627cd4e~mv2.jpg') center/cover;border-radius:28px;overflow:hidden;position:relative}
-    .cafasso-world-v2:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 15%,rgba(239,193,91,.28),transparent 28%),linear-gradient(90deg,rgba(10,30,38,.35),transparent 60%);pointer-events:none}
-    .cafasso-world-v2__inner{width:min(980px,100%);position:relative;z-index:1}
-    .cafasso-world-v2__eyebrow{letter-spacing:.18em;text-transform:uppercase;color:#f0c867;font-size:12px;font-weight:800;margin-bottom:14px}
-    .cafasso-world-v2 h1{font-family:Georgia,serif;font-size:clamp(38px,7vw,76px);line-height:.98;max-width:680px;margin:0 0 20px;color:#fff8e9}
-    .cafasso-world-v2 h2{font-family:Georgia,serif;font-size:clamp(30px,5vw,52px);margin:0 0 14px;color:#fff8e9}
-    .cafasso-world-v2 p{font-size:clamp(16px,2vw,20px);line-height:1.6;max-width:650px;color:rgba(255,248,233,.84);margin:0 0 28px}
+  const KEY='cafassoWorldPrologueV2';
+  const css=`
+    body.cafasso-world-active{background:#0e3035!important}
+    body.cafasso-world-active .side,
+    body.cafasso-world-active .mobile-head,
+    body.cafasso-world-active .mobilebar,
+    body.cafasso-world-active .mobile-nav{display:none!important}
+    body.cafasso-world-active .shell{display:block!important;min-height:100vh}
+    body.cafasso-world-active main{width:100%!important;max-width:none!important;padding:0!important}
+    .cafasso-world-v2{min-height:100vh;position:relative;overflow:hidden;color:#fff6e5;background:linear-gradient(180deg,#17464e 0%,#72958c 47%,#304f42 100%);isolation:isolate}
+    .cafasso-world-v2:before{content:"";position:absolute;inset:0;z-index:-3;background:radial-gradient(circle at 74% 17%,rgba(242,197,99,.95) 0 4%,rgba(242,197,99,.25) 13%,transparent 28%),linear-gradient(180deg,transparent 0 54%,rgba(16,54,49,.4) 100%)}
+    .cafasso-world-v2:after{content:"";position:absolute;left:-5%;right:-5%;bottom:-10%;height:48%;z-index:-2;background:linear-gradient(160deg,#537758,#2e5040 58%,#1d3d39);clip-path:polygon(0 30%,16% 18%,30% 32%,48% 8%,65% 27%,83% 12%,100% 26%,100% 100%,0 100%)}
+    .cafasso-world-v2__mist{position:absolute;inset:35% -10% auto;height:28%;z-index:-1;background:linear-gradient(180deg,transparent,rgba(228,220,171,.16),transparent);filter:blur(18px)}
+    .cafasso-world-v2__content{position:relative;z-index:2;min-height:100vh;padding:clamp(28px,5vw,68px);display:flex;align-items:flex-end}
+    .cafasso-world-v2__intro{max-width:600px;padding:26px 30px 28px;border-left:3px solid #f0c665;background:linear-gradient(90deg,rgba(10,35,38,.72),rgba(10,35,38,.18),transparent);text-shadow:0 2px 14px rgba(0,0,0,.45)}
+    .cafasso-world-v2__eyebrow{font-size:11px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;color:#f0c665;margin-bottom:13px}
+    .cafasso-world-v2 h1,.cafasso-world-v2 h2{font-family:Georgia,serif;color:#fff8e9;font-weight:500;line-height:1;margin:0 0 18px}
+    .cafasso-world-v2 h1{font-size:clamp(42px,7vw,84px);max-width:650px}
+    .cafasso-world-v2 h2{font-size:clamp(38px,6vw,70px)}
+    .cafasso-world-v2 p{font-size:clamp(16px,2vw,20px);line-height:1.55;color:rgba(255,248,233,.86);margin:0 0 25px;max-width:580px}
     .cafasso-world-v2__actions{display:flex;gap:12px;flex-wrap:wrap}
-    .cafasso-world-v2 button{font:inherit;border:0;cursor:pointer}
-    .cafasso-world-v2__primary{background:#efc35d;color:#17363a;padding:14px 22px;border-radius:999px;font-weight:850;box-shadow:0 10px 28px rgba(0,0,0,.2)}
-    .cafasso-world-v2__secondary{background:rgba(255,255,255,.1);color:#fff8e9;padding:14px 22px;border:1px solid rgba(255,255,255,.25)!important;border-radius:999px;font-weight:750}
-    .cafasso-world-v2__zones{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:30px 0}
-    .cafasso-world-v2__zone{min-height:146px;text-align:left;padding:18px;border-radius:20px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18)!important;color:#fff8e9;transition:transform .16s,background .16s}
-    .cafasso-world-v2__zone:not([disabled]):hover{transform:translateY(-4px);background:rgba(255,255,255,.17)}
-    .cafasso-world-v2__zone[disabled]{opacity:.48;cursor:not-allowed}
-    .cafasso-world-v2__zone b{display:block;font-family:Georgia,serif;font-size:23px;margin:12px 0 7px}
-    .cafasso-world-v2__zone span{font-size:13px;line-height:1.35;color:rgba(255,248,233,.75)}
-    .cafasso-world-v2__symbol{font-size:25px}
-    .cafasso-world-v2__back{background:transparent;color:#f0c867;padding:0;margin-bottom:26px;font-weight:800}
-    .cafasso-world-v2__note{border-left:3px solid #efc35d;padding:12px 16px;margin:22px 0 28px;background:rgba(0,0,0,.14);max-width:660px}
-    @media(max-width:760px){.cafasso-world-v2{padding:28px 20px;border-radius:18px;min-height:calc(100vh - 18px)}.cafasso-world-v2__zones{grid-template-columns:repeat(2,minmax(0,1fr))}.cafasso-world-v2__zone{min-height:125px;padding:14px}.cafasso-world-v2__zone b{font-size:19px}}
+    .cafasso-world-v2 button{font:inherit;cursor:pointer}
+    .cafasso-world-v2__primary{border:0;border-radius:999px;background:#efc35d;color:#17363a;padding:13px 21px;font-weight:900;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+    .cafasso-world-v2__ghost{border:1px solid rgba(255,248,233,.38);border-radius:999px;background:rgba(10,35,38,.18);color:#fff8e9;padding:13px 20px;font-weight:750}
+    .cafasso-world-v2__map{position:absolute;inset:0;min-height:100vh}
+    .world-v2__path{position:absolute;left:43%;top:40%;width:15%;height:75%;background:linear-gradient(90deg,transparent,#c2a875 45%,#9a855e 55%,transparent);transform:rotate(13deg);opacity:.85;filter:blur(1px);clip-path:polygon(38% 0,62% 0,100% 100%,0 100%)}
+    .world-v2__location{position:absolute;border:0;background:transparent;color:#fff8e9;text-align:center;text-shadow:0 2px 8px #142f2e;filter:drop-shadow(0 8px 10px rgba(0,0,0,.22))}
+    .world-v2__location:hover{transform:translateY(-5px);transition:.18s}
+    .world-v2__location strong{display:block;font-family:Georgia,serif;font-size:24px;font-weight:500}
+    .world-v2__location small{display:block;margin-top:5px;font-size:12px;color:#fff5d3}
+    .world-v2__building{display:block;width:110px;height:78px;margin:auto auto 9px;position:relative;background:#b88762;border:3px solid #5b443b;border-radius:4px 4px 8px 8px}
+    .world-v2__building:before{content:"";position:absolute;left:-14px;right:-14px;top:-39px;height:50px;background:#714c47;clip-path:polygon(50% 0,100% 100%,0 100%);border:3px solid #4e3c39}
+    .world-v2__building:after{content:"";position:absolute;width:20px;height:38px;bottom:0;left:43px;background:#5a463d;border-radius:4px 4px 0 0}
+    .world-v2__house{left:18%;top:42%}
+    .world-v2__patio{left:52%;top:46%}
+    .world-v2__patio .world-v2__building{width:92px;height:52px;background:#cda86a;border-radius:50% 50% 7px 7px}
+    .world-v2__patio .world-v2__building:before{display:none}
+    .world-v2__patio .world-v2__building:after{width:58px;height:16px;left:14px;bottom:12px;background:#6d8060;border-radius:50%}
+    .world-v2__school{right:13%;top:29%}
+    .world-v2__parish{right:35%;top:12%}
+    .world-v2__parish .world-v2__building{background:#d9d0b5;width:76px;height:92px}
+    .world-v2__parish .world-v2__building:before{background:#8e6659}
+    .world-v2__parish .world-v2__building:after{width:12px;height:30px;left:29px}
+    .world-v2__locked{opacity:.55;pointer-events:none}
+    .world-v2__topbar{position:absolute;z-index:3;top:26px;left:clamp(24px,5vw,68px);right:clamp(24px,5vw,68px);display:flex;justify-content:space-between;align-items:center}
+    .world-v2__back{border:0;background:transparent;color:#f0c665;font-weight:850;padding:7px 0}
+    .world-v2__label{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,248,233,.7)}
+    .world-v2__mission{position:absolute;z-index:3;right:clamp(24px,5vw,68px);bottom:clamp(28px,6vw,75px);max-width:320px;padding:18px 20px;border:1px solid rgba(255,248,233,.28);border-radius:18px;background:rgba(14,48,53,.72);backdrop-filter:blur(8px)}
+    .world-v2__mission b{display:block;color:#f0c665;margin-bottom:7px}
+    .world-v2__mission p{font-size:14px;line-height:1.45;margin:0 0 14px;color:rgba(255,248,233,.84)}
+    @media(max-width:760px){.cafasso-world-v2__content{padding:24px 20px 34px;align-items:flex-end}.cafasso-world-v2__intro{padding:20px 18px}.world-v2__house{left:7%;top:39%;transform:scale(.72)}.world-v2__patio{left:47%;top:45%;transform:scale(.72)}.world-v2__school{right:-6%;top:29%;transform:scale(.65)}.world-v2__parish{right:23%;top:12%;transform:scale(.55)}.world-v2__mission{left:20px;right:20px;bottom:24px;max-width:none}}
   `;
 
-  function injectStyle(){
-    if(document.getElementById('cafasso-world-v2-style')) return;
-    const s=document.createElement('style');s.id='cafasso-world-v2-style';s.textContent=css;document.head.appendChild(s);
+  function style(){if(document.getElementById('cafasso-world-v2-style'))return;const s=document.createElement('style');s.id='cafasso-world-v2-style';s.textContent=css;document.head.appendChild(s);}
+  function seen(){try{return localStorage.getItem(KEY)==='1';}catch(e){return false;}}
+  function mark(){try{localStorage.setItem(KEY,'1');}catch(e){}}
+  function shell(kind){
+    const intro=kind==='arrival'
+      ? '<div class="cafasso-world-v2__content"><div class="cafasso-world-v2__intro"><div class="cafasso-world-v2__eyebrow">Mundo CAFASSO</div><h1>Un lugar para aprender, encontrarse y acompañar.</h1><p>Tu recorrido como animador comienza acá. No entrás solamente a un curso: entrás a una historia que se construye caminando con otros.</p><div class="cafasso-world-v2__actions"><button class="cafasso-world-v2__primary" data-world="house">Llegar a la Casa →</button><button class="cafasso-world-v2__ghost" data-world="house">Explorar el mundo</button></div></div></div>'
+      : kind==='patio'
+      ? '<div class="world-v2__topbar"><button class="world-v2__back" data-world="house">← Volver a la Casa</button><span class="world-v2__label">Primera estación · Patio</span></div><div class="cafasso-world-v2__content"><div class="cafasso-world-v2__intro"><div class="cafasso-world-v2__eyebrow">Primera misión</div><h2>Entrá al Patio</h2><p>Acá comienza el encuentro. Antes de estudiar la vida de Don Bosco, vamos a aprender a mirar como él: atentos a las personas, sus historias y sus preguntas.</p><div class="cafasso-world-v2__actions"><button class="cafasso-world-v2__primary" data-world="courses">Iniciar el recorrido →</button></div></div></div>'
+      : '<div class="world-v2__topbar"><button class="world-v2__back" data-world="arrival">← Volver a la llegada</button><span class="world-v2__label">Tu punto de partida · Casa</span></div><div class="cafasso-world-v2__map"><div class="cafasso-world-v2__mist"></div><div class="world-v2__path"></div><button class="world-v2__location world-v2__house" data-world="house"><span class="world-v2__building"></span><strong>Casa</strong><small>Tu identidad y tu camino</small></button><button class="world-v2__location world-v2__patio" data-world="patio"><span class="world-v2__building"></span><strong>Patio</strong><small>Primera misión disponible</small></button><div class="world-v2__location world-v2__school world-v2__locked"><span class="world-v2__building"></span><strong>Escuela</strong><small>Se abre al avanzar</small></div><div class="world-v2__location world-v2__parish world-v2__locked"><span class="world-v2__building"></span><strong>Parroquia</strong><small>Más adelante</small></div><div class="world-v2__mission"><b>Estás en la Casa</b><p>Desde acá comienza tu recorrido. El Patio está listo para recibirte.</p><button class="cafasso-world-v2__primary" data-world="patio">Explorar el Patio</button></div></div>';
+    return '<section class="cafasso-world-v2" aria-label="Mundo CAFASSO"><div class="cafasso-world-v2__map"></div>'+intro+'</section>';
   }
-
-  function seen(){
-    try{return localStorage.getItem(KEY)==='1';}catch(e){return false;}
-  }
-  function markSeen(){
-    try{localStorage.setItem(KEY,'1');}catch(e){}
-  }
-
-  function arrival(){
-    return `<div class="cafasso-world-v2__inner">
-      <div class="cafasso-world-v2__eyebrow">Mundo CAFASSO</div>
-      <h1>Un lugar para aprender, encontrarse y acompañar.</h1>
-      <p>Tu recorrido como animador comienza acá. No entrás solamente a un curso: entrás a una historia que se construye caminando con otros.</p>
-      <div class="cafasso-world-v2__actions">
-        <button class="cafasso-world-v2__primary" data-world-action="house">Llegar a la Casa →</button>
-        <button class="cafasso-world-v2__secondary" data-world-action="skip">Explorar el mundo</button>
-      </div>
-    </div>`;
-  }
-
-  function house(){
-    return `<div class="cafasso-world-v2__inner">
-      <button class="cafasso-world-v2__back" data-world-action="arrival">← Volver a la llegada</button>
-      <div class="cafasso-world-v2__eyebrow">Tu punto de partida</div>
-      <h2>La Casa</h2>
-      <p>Este es tu lugar de identidad y descanso. Desde acá vas a poder mirar tu recorrido, encontrarte con otros espacios y descubrir nuevas misiones.</p>
-      <div class="cafasso-world-v2__zones">
-        <button class="cafasso-world-v2__zone" data-world-action="patio"><span class="cafasso-world-v2__symbol">☀</span><b>Patio</b><span>El lugar del encuentro y la primera misión.</span></button>
-        <button class="cafasso-world-v2__zone" disabled><span class="cafasso-world-v2__symbol">⌂</span><b>Casa</b><span>Tu identidad, tus almitas y tu progreso.</span></button>
-        <button class="cafasso-world-v2__zone" disabled><span class="cafasso-world-v2__symbol">▤</span><b>Escuela</b><span>Se habilita al comenzar el recorrido.</span></button>
-        <button class="cafasso-world-v2__zone" disabled><span class="cafasso-world-v2__symbol">✦</span><b>Parroquia</b><span>Un espacio para la interioridad y la Palabra.</span></button>
-      </div>
-    </div>`;
-  }
-
-  function patio(){
-    return `<div class="cafasso-world-v2__inner">
-      <button class="cafasso-world-v2__back" data-world-action="house">← Volver a la Casa</button>
-      <div class="cafasso-world-v2__eyebrow">Primera estación</div>
-      <h2>Entrá al Patio</h2>
-      <p>Acá comienza el encuentro. Antes de estudiar la vida de Don Bosco, vamos a aprender a mirar como él: atentos a las personas, a sus historias y a las preguntas que traen.</p>
-      <div class="cafasso-world-v2__note">Tu primera misión será conocer a Juanito y descubrir qué pregunta puede acompañar tu propio camino.</div>
-      <div class="cafasso-world-v2__actions">
-        <button class="cafasso-world-v2__primary" data-world-action="courses">Ir al recorrido →</button>
-      </div>
-    </div>`;
-  }
-
-  function mount(screen){
-    const main=document.getElementById('main');
-    if(!main) return false;
-    injectStyle();
-    let root=main.querySelector('.cafasso-world-v2');
-    if(!root){main.innerHTML='<section class="cafasso-world-v2" aria-label="Mundo CAFASSO"></section>';root=main.querySelector('.cafasso-world-v2');}
-    root.innerHTML=screen==='arrival'?arrival():screen==='patio'?patio():house();
-    root.querySelectorAll('[data-world-action]').forEach(btn=>btn.addEventListener('click',()=>{
-      const a=btn.dataset.worldAction;
-      if(a==='arrival') mount('arrival');
-      else if(a==='house'){markSeen();mount('house');}
-      else if(a==='skip'){markSeen();mount('house');}
-      else if(a==='patio') mount('patio');
-      else if(a==='courses'&&typeof window.CafassoNavigate==='function') window.CafassoNavigate('cursos');
-    }));
+  function mount(kind){
+    const main=document.getElementById('main');if(!main)return false;
+    style();document.body.classList.add('cafasso-world-active');main.innerHTML=shell(kind);
+    main.querySelectorAll('[data-world]').forEach(b=>b.addEventListener('click',()=>{const a=b.dataset.world;if(a==='house'){mark();mount('house');}else if(a==='arrival')mount('arrival');else if(a==='patio')mount('patio');else if(a==='courses'&&typeof window.CafassoNavigate==='function')window.CafassoNavigate('cursos');}));
     return true;
   }
-
   function sync(){
-    if((location.hash||'#inicio')!=='#inicio') return;
-    const main=document.getElementById('main');
-    if(!main) return;
+    if((location.hash||'#inicio')!=='#inicio'){document.body.classList.remove('cafasso-world-active');return;}
+    const main=document.getElementById('main');if(!main)return;
     mount(seen()?'house':'arrival');
   }
-
   function boot(){
-    if(!document.getElementById('main')) return setTimeout(boot,250);
+    if(!document.getElementById('main'))return setTimeout(boot,250);
     sync();
     const observer=new MutationObserver(()=>{if((location.hash||'#inicio')==='#inicio'&&!document.querySelector('.cafasso-world-v2'))sync();});
     observer.observe(document.getElementById('main'),{childList:true});
-    window.addEventListener('hashchange',sync);
-    window.addEventListener('popstate',()=>setTimeout(sync,30));
+    window.addEventListener('hashchange',sync);window.addEventListener('popstate',()=>setTimeout(sync,30));
   }
-
   boot();
 })();
