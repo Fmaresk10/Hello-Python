@@ -7,6 +7,7 @@
   const space = new URLSearchParams(location.search).get('space') || 'house';
   const PARROQUIA_BG = 'https://static.wixstatic.com/media/47bf07_b411bebc79644a0092920abb58a2f56d~mv2.png';
   const ESCUELA_BG = 'https://static.wixstatic.com/media/47bf07_481618e0256044f9b31ae360a03a9169~mv2.png';
+  const BITACORA_IMG = 'https://static.wixstatic.com/media/47bf07_20750dc35c6f4678b865413ce34ec1fe~mv2.png';
   const BITACORA_KEY = 'cafasso-bitacora-v1';
 
   if (space === 'patio') {
@@ -21,7 +22,7 @@
         <img class="cafasso-house__image" src="./assets/cafasso-casa-interior-v2.jpg" alt="Interior cálido de la Casa CAFASSO">
         <button class="cafasso-space-link cafasso-space-link--casa" data-space="patio" type="button">Patio</button>
         <button class="cafasso-bitacora-object" data-action="bitacora-open" type="button" aria-label="Abrir Bitácora">
-          <img src="./assets/cafasso-bitacora-v3.svg" alt="Bitácora">
+          <img src="${BITACORA_IMG}" alt="Bitácora">
         </button>
         <section class="cafasso-bitacora-panel" data-bitacora-panel hidden aria-label="Bitácora personal">
           <div class="cafasso-bitacora-book" role="dialog" aria-modal="true" aria-labelledby="cafasso-bitacora-title">
