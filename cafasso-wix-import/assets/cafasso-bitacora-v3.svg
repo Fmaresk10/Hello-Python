@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="280" viewBox="0 0 420 280">
+  <defs>
+    <linearGradient id="cover" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7e5635"/>
+      <stop offset="0.45" stop-color="#5c3c26"/>
+      <stop offset="1" stop-color="#3f281a"/>
+    </linearGradient>
+    <linearGradient id="spine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2a1a11"/>
+      <stop offset="0.55" stop-color="#4b301f"/>
+      <stop offset="1" stop-color="#6f4a30"/>
+    </linearGradient>
+    <linearGradient id="pages" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff7df"/>
+      <stop offset="1" stop-color="#d8c39e"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-50%" width="180%" height="220%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="10"/>
+      <feOffset dy="10"/>
+      <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .42 0"/>
+      <feBlend in="SourceGraphic"/>
+    </filter>
+    <filter id="grain" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="2" seed="7" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="table" tableValues="0 .12"/></feComponentTransfer>
+      <feBlend mode="soft-light" in2="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="M95 78 L320 60 L344 177 L117 202 Z" fill="url(#pages)" stroke="#b79d72" stroke-width="3"/>
+    <path d="M120 188 L340 164 L344 177 L117 202 Z" fill="#c3aa80" opacity=".85"/>
+    <path d="M118 193 L340 169" stroke="#9e8662" stroke-width="1" opacity=".6"/>
+    <path d="M118 198 L341 174" stroke="#f8e9c8" stroke-width="1.2" opacity=".8"/>
+    <path d="M82 72 L101 77 L123 203 L104 198 Q96 182 93 160 L76 83 Z" fill="url(#spine)" stroke="#2d1b12" stroke-width="3"/>
+    <path d="M81 90 L99 94" stroke="#b6844f" stroke-width="2" opacity=".65"/>
+    <path d="M101 182 L119 187" stroke="#b6844f" stroke-width="2" opacity=".65"/>
+    <path d="M80 66 Q84 58 96 57 L312 40 Q325 39 329 52 L349 160 Q351 170 340 172 L118 195 Q106 196 102 184 Z" fill="url(#cover)" stroke="#2b1a11" stroke-width="4"/>
+    <path d="M92 73 L310 56 Q318 55 320 64 L337 151 Q339 158 330 159 L124 180 Q115 181 113 172 Z" fill="none" stroke="#b78653" stroke-width="2.2" opacity=".72"/>
+    <path d="M80 66 Q84 58 96 57 L312 40 Q325 39 329 52 L349 160 Q351 170 340 172 L118 195 Q106 196 102 184 Z" fill="url(#cover)" opacity=".22" filter="url(#grain)"/>
+    <path d="M165 79 L279 69 L292 140 L178 152 Z" fill="none" stroke="#d4ad73" stroke-width="1.6" opacity=".85"/>
+    <text x="229" y="105" text-anchor="middle" fill="#e5c28d" font-family="Georgia,serif" font-size="19" letter-spacing="2" transform="rotate(-5 229 105)">BITÁCORA</text>
+    <text x="231" y="127" text-anchor="middle" fill="#cda66f" font-family="Georgia,serif" font-size="9" letter-spacing="2.2" transform="rotate(-5 231 127)">CAFASSO</text>
+    <path d="M305 47 L320 45 L341 159 L326 161 Z" fill="#3b2417" opacity=".75"/>
+    <path d="M313 45 L334 159" stroke="#b17c48" stroke-width="1.5" opacity=".5"/>
+    <path d="M96 62 L311 45" stroke="#d2a673" stroke-width="2.5" opacity=".5"/>
+    <path d="M104 184 L339 160" stroke="#28170e" stroke-width="2" opacity=".75"/>
+  </g>
+</svg>
