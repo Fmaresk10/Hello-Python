@@ -3,6 +3,7 @@
   window.__cafassoAnimatorWorldV2 = true;
 
   const KEY='cafassoWorldPrologueV3';
+  const LIBKEY='cafassoLibraryResourcesV1';
   const css=`
     body.cafasso-world-active{background:#0e3035!important}
     body.cafasso-world-active #cafassoDailyWord,
@@ -39,7 +40,7 @@
     .world-v2__resource-hotspot:hover{transform:translateY(-3px);background:rgba(21,39,38,.82)}
     .world-v2__resource-room{position:relative;min-height:100vh;background:linear-gradient(90deg,rgba(8,31,35,.58),rgba(8,31,35,.12)),url('./assets/cafasso-biblioteca-vacia-v1.png') center/cover no-repeat}
     .world-v2__book{pointer-events:auto;position:absolute;padding:18px 16px;border:0;border-radius:3px;background:#68462f;color:#fff8e9;box-shadow:0 8px 18px rgba(0,0,0,.42);cursor:pointer;transform:rotate(-2deg);font-family:Georgia,serif;z-index:4}
-    .world-v2__book small,.world-v2__book b{display:block}.world-v2__book small{margin-top:7px;color:#e8c98e}.world-v2__book:hover{transform:translateY(-5px) rotate(-2deg)}
+    .world-v2__book small,.world-v2__book b{display:block}.world-v2__book small{margin-top:7px;color:#e8c98e}.world-v2__book:hover{transform:translateY(-5px) rotate(-2deg)}.world-v2__book.is-shelved{box-shadow:0 5px 12px rgba(239,195,93,.28)}
     .world-v2__book-memorias{left:30%;top:50%}.world-v2__book-carta{left:49%;top:43%;background:#b99a67;color:#30241b;transform:rotate(3deg)}.world-v2__book-sistema{left:66%;top:53%;background:#3f5a55}.world-v2__book-domingo{left:78%;top:35%;background:#7a3f32}
     .world-v2__ambient-copy{position:absolute;left:clamp(28px,5vw,68px);bottom:clamp(24px,5vw,62px);max-width:360px;padding-left:14px;border-left:2px solid rgba(239,195,93,.78);font-family:Georgia,serif;font-size:17px;line-height:1.45;color:rgba(255,248,233,.9);text-shadow:0 2px 12px rgba(0,0,0,.65);animation:worldV2FadeIn .7s ease both}
     @keyframes worldV2FadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -49,6 +50,9 @@
   function style(){if(document.getElementById('cafasso-world-v2-style'))return;const s=document.createElement('style');s.id='cafasso-world-v2-style';s.textContent=css;document.head.appendChild(s);}
   function seen(){try{return localStorage.getItem(KEY)==='1';}catch(e){return false;}}
   function mark(){try{localStorage.setItem(KEY,'1');}catch(e){}}
+  function libraryItems(){try{return JSON.parse(localStorage.getItem(LIBKEY)||'[]');}catch(e){return[];}}
+  function addLibraryItem(name){try{const a=libraryItems();if(!a.includes(name)){a.push(name);localStorage.setItem(LIBKEY,JSON.stringify(a));}}catch(e){}}
+  function syncLibrary(){const a=libraryItems();document.querySelectorAll('[data-resource]').forEach(b=>{const on=a.includes(b.dataset.resource);b.classList.toggle('is-shelved',on);b.setAttribute('aria-pressed',on?'true':'false');});}
   function shell(kind){
     const intro=kind==='arrival'
       ? '<div class="cafasso-world-v2__content"><div class="world-v2__arrival-note"><b>Llegaste a la Casa</b><span>Acá nadie empieza solo. Mirá alrededor: hay historias, preguntas y caminos esperando ser descubiertos.</span></div></div><button class="world-v2__arrival-hotspot" data-world="patio" type="button" aria-label="Entrar al Patio"><span>Explorar</span></button><button class="world-v2__resource-hotspot" data-world="resources" type="button" aria-label="Abrir recursos">Recursos</button><div class="world-v2__scene-message" aria-live="polite"></div>'
@@ -64,6 +68,8 @@
     style();document.body.classList.add('cafasso-world-active');main.innerHTML=shell(kind);
     main.querySelectorAll('[data-world]').forEach(b=>b.addEventListener('click',()=>{const a=b.dataset.world;if(a==='house'){mark();mount('house');}else if(a==='arrival')mount('arrival');else if(a==='patio'){mark();mount('patio');}else if(a==='courses'&&typeof window.CafassoNavigate==='function')window.CafassoNavigate('cursos');
       else if(a==='resources'){mark();mount('resources');}else if(a==='journal'){const msg=main.querySelector('.world-v2__scene-message');if(msg){msg.textContent='Tu bitácora empieza en esta mesa.';msg.classList.add('show');setTimeout(()=>msg.classList.remove('show'),2400);}}}));
+    main.querySelectorAll('[data-resource]').forEach(b=>b.addEventListener('click',()=>{addLibraryItem(b.dataset.resource);b.classList.add('is-shelved');b.setAttribute('aria-pressed','true');const msg=main.querySelector('.world-v2__scene-message');if(msg){msg.textContent='Este libro ya forma parte de tu biblioteca.';msg.classList.add('show');setTimeout(()=>msg.classList.remove('show'),2400);}}));
+    syncLibrary();
     return true;
   }
   function sync(){
