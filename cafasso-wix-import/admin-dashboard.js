@@ -102,7 +102,9 @@
     const menu=document.querySelector('.menu');
     if(menu&&!menu.querySelector('[data-cafasso-resource-admin]')){
       const link=document.createElement('a');
-      link.href='./resource-admin.html';
+      link.href='https://manage.wix.com/dashboard/c6a6ef36-f36a-453a-b787-5762b698f820/wix-cms/data/cafasso-recursos';
+      link.target='_blank';
+      link.rel='noopener noreferrer';
       link.dataset.cafassoResourceAdmin='1';
       link.innerHTML='📚 <span>Recursos</span>';
       link.style.cssText='display:block;width:100%;background:transparent;color:#fff;text-align:left;padding:12px 13px;border-radius:13px;font:700 14px Inter,system-ui;text-decoration:none;cursor:pointer';
@@ -113,7 +115,9 @@
     const sheet=document.querySelector('.admin-mobile-sheet');
     if(sheet&&!sheet.querySelector('[data-cafasso-resource-admin]')){
       const link=document.createElement('a');
-      link.href='./resource-admin.html';
+      link.href='https://manage.wix.com/dashboard/c6a6ef36-f36a-453a-b787-5762b698f820/wix-cms/data/cafasso-recursos';
+      link.target='_blank';
+      link.rel='noopener noreferrer';
       link.dataset.cafassoResourceAdmin='1';
       link.innerHTML='<span>📚</span><span>Recursos</span>';
       sheet.appendChild(link);

@@ -9,7 +9,11 @@
   const ESCUELA_BG = 'https://static.wixstatic.com/media/47bf07_481618e0256044f9b31ae360a03a9169~mv2.png';
   const RECURSOS_BG = 'https://static.wixstatic.com/media/47bf07_8451eada7d72451a854df7cae47a80b6~mv2.png';
   const BITACORA_IMG = 'https://static.wixstatic.com/media/47bf07_20750dc35c6f4678b865413ce34ec1fe~mv2.png';
-  const RESOURCE_CATALOG_URL = './data/resources.json';
+  const WIX_RESOURCE_COLLECTION_ID = 'cafasso-recursos';
+  const WIX_OAUTH_CLIENT_ID = 'c4378c2e-b8fa-4e76-b0e1-7fbd7336de44';
+  const WIX_TOKEN_URL = 'https://www.wixapis.com/oauth2/token';
+  const WIX_DATA_QUERY_URL = 'https://www.wixapis.com/data/v2/items/query';
+  const WIX_TOKEN_CACHE_KEY = 'cafasso-wix-visitor-token-v1';
   const BITACORA_KEY = 'cafasso-bitacora-v1';
 
   const isAdmin = (() => {
@@ -148,17 +152,68 @@
     });
   }
 
-  async function loadResourceLibrary() {
-    if (space !== 'recursos') return;
-    try {
-      const response = await fetch(`${RESOURCE_CATALOG_URL}?v=${Date.now()}`, { cache: 'no-store' });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const resources = await response.json();
-      renderResourceLibrary(Array.isArray(resources) ? resources : []);
-    } catch (error) {
-      console.warn('CAFASSO: no se pudo cargar el catálogo de recursos.', error);
+  async function getWixVisitorToken() {
+  try {
+    const cached = JSON.parse(sessionStorage.getItem(WIX_TOKEN_CACHE_KEY) || 'null');
+    if (cached?.accessToken && Number(cached?.expiresAt || 0) > Date.now() + 60000) {
+      return cached.accessToken;
     }
+  } catch (error) {
+    // Si el caché falla, pedimos un token nuevo.
   }
+
+  const response = await fetch(WIX_TOKEN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      clientId: WIX_OAUTH_CLIENT_ID,
+      grantType: 'anonymous'
+    })
+  });
+  if (!response.ok) throw new Error(`Wix OAuth ${response.status}`);
+  const token = await response.json();
+  if (!token?.access_token) throw new Error('Wix OAuth no devolvió access_token');
+
+  try {
+    sessionStorage.setItem(WIX_TOKEN_CACHE_KEY, JSON.stringify({
+      accessToken: token.access_token,
+      expiresAt: Date.now() + (Number(token.expires_in || 3600) * 1000)
+    }));
+  } catch (error) {
+    // El acceso a sessionStorage no es obligatorio.
+  }
+  return token.access_token;
+}
+
+async function loadResourceLibrary() {
+  if (space !== 'recursos') return;
+  try {
+    const accessToken = await getWixVisitorToken();
+    const response = await fetch(WIX_DATA_QUERY_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': accessToken
+      },
+      body: JSON.stringify({
+        dataCollectionId: WIX_RESOURCE_COLLECTION_ID,
+        query: { paging: { limit: 1000, offset: 0 } }
+      })
+    });
+    if (!response.ok) throw new Error(`Wix Data ${response.status}`);
+    const payload = await response.json();
+    const resources = Array.isArray(payload?.dataItems)
+      ? payload.dataItems.map((item) => ({
+id: item.id,
+...(item.data || {}),
+url: item?.data?.url || item?.data?.archivo || ''
+        }))
+      : [];
+    renderResourceLibrary(resources);
+  } catch (error) {
+    console.warn('CAFASSO: no se pudo cargar la biblioteca desde Wix CMS.', error);
+  }
+}
 
   loadResourceLibrary();
 

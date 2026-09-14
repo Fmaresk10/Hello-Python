@@ -1,130 +1,17 @@
 <!doctype html>
 <html lang="es">
 <head>
-<script src="./auth-guard.js"></script>
-<script>(()=>{const r=String(document.documentElement.dataset.cafassoRole||'');if(r&&r!=='admin')location.replace('./');})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CAFASSO · Cargar recurso</title>
-<style>
-html,body{margin:0;min-height:100%;background:#102f33;color:#fff8e9;font-family:Georgia,serif}
-*{box-sizing:border-box}
-body{min-height:100vh;background:linear-gradient(rgba(7,25,27,.72),rgba(7,25,27,.72)),url('https://static.wixstatic.com/media/47bf07_8451eada7d72451a854df7cae47a80b6~mv2.png') center/cover fixed no-repeat;display:flex;align-items:center;justify-content:center;padding:28px}
-.panel{width:min(760px,94vw);padding:34px;border:1px solid rgba(239,195,93,.45);border-radius:18px;background:rgba(15,39,40,.92);box-shadow:0 30px 70px rgba(0,0,0,.42);backdrop-filter:blur(12px)}
-.top{display:flex;align-items:flex-start;justify-content:space-between;gap:22px;margin-bottom:24px}
-.kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#e8c77a}
-h1{margin:6px 0 8px;font-size:38px;font-weight:500}.intro{margin:0;color:#d6d0c0;line-height:1.55}
-.back{color:#fff8e9;text-decoration:none;border:1px solid rgba(239,195,93,.55);padding:9px 13px;border-radius:8px;white-space:nowrap}
-form{display:grid;grid-template-columns:1fr 1fr;gap:18px}.full{grid-column:1/-1}
-label{display:block;font-size:13px;letter-spacing:.04em;color:#f0e3c5;margin-bottom:7px}
-input,select,textarea{width:100%;border:1px solid rgba(239,195,93,.34);border-radius:9px;background:rgba(255,255,255,.07);color:#fff8e9;padding:12px 13px;font:15px/1.3 Arial,sans-serif;outline:none}
-select option{color:#1f2f2f;background:#fff}textarea{min-height:100px;resize:vertical}
-input:focus,select:focus,textarea:focus{border-color:#e7c36b;box-shadow:0 0 0 3px rgba(231,195,107,.12)}
-.checks{display:flex;gap:24px;flex-wrap:wrap}.check{display:flex;align-items:center;gap:9px;margin:0;color:#fff8e9}.check input{width:auto;accent-color:#d6aa43}
-.note{font:13px/1.5 Arial,sans-serif;color:#c8c3b7;background:rgba(255,255,255,.05);border-radius:10px;padding:12px 14px}
-.actions{display:flex;justify-content:flex-end;gap:12px;margin-top:4px}.submit{border:1px solid #e0bd62;border-radius:9px;padding:12px 20px;background:#d1a94e;color:#1c2d2d;font-weight:700;cursor:pointer}.submit:hover{filter:brightness(1.06)}
-@media(max-width:680px){body{padding:14px}.panel{padding:24px}.top{flex-direction:column}h1{font-size:32px}form{grid-template-columns:1fr}.full{grid-column:auto}.actions{justify-content:stretch}.submit{width:100%}}
-</style>
-</head>
-<body>
-<main class="panel">
-  <div class="top">
-    <div>
-      <div class="kicker">Administración CAFASSO</div>
-      <h1>Cargar recurso</h1>
-      <p class="intro">Registrá el material una sola vez. Después CAFASSO podrá mostrarlo en la Biblioteca y reutilizarlo en los cursos.</p>
-    </div>
-    <a class="back" href="./admin.html">Volver a Administración</a>
-  </div>
-
-  <form id="resourceForm">
-    <div class="full">
-      <label for="titulo">Título</label>
-      <input id="titulo" name="titulo" required maxlength="120" placeholder="Ej.: Introducción al Sistema Preventivo">
-    </div>
-
-    <div>
-      <label for="categoria">Categoría</label>
-      <select id="categoria" name="categoria" required>
-        <option value="Formación">Formación</option>
-        <option value="Oración y celebración">Oración y celebración</option>
-        <option value="Dinámicas y encuentros">Dinámicas y encuentros</option>
-        <option value="Biblia">Biblia</option>
-        <option value="Salesianidad">Salesianidad</option>
-        <option value="Otro">Otro</option>
-      </select>
-    </div>
-
-    <div>
-      <label for="tipo">Tipo</label>
-      <select id="tipo" name="tipo" required>
-        <option value="PDF">PDF</option>
-        <option value="Presentación">Presentación</option>
-        <option value="Video">Video</option>
-        <option value="Documento">Documento</option>
-        <option value="Audio">Audio</option>
-        <option value="Imagen">Imagen</option>
-        <option value="Link">Link</option>
-        <option value="Otro">Otro</option>
-      </select>
-    </div>
-
-    <div class="full">
-      <label for="url">URL del recurso</label>
-      <input id="url" name="url" required type="url" placeholder="https://...">
-    </div>
-
-    <div class="full">
-      <label for="descripcion">Descripción breve <span aria-hidden="true">·</span> opcional</label>
-      <textarea id="descripcion" name="descripcion" maxlength="500" placeholder="¿Qué es y para qué puede servir este material?"></textarea>
-    </div>
-
-    <div class="full">
-      <label for="cursos">Cursos donde se usa <span aria-hidden="true">·</span> opcional</label>
-      <input id="cursos" name="cursos" placeholder="Ej.: Sistema Preventivo, Vida de Don Bosco">
-    </div>
-
-    <div class="full checks">
-      <label class="check"><input id="biblioteca" type="checkbox" checked> Mostrar en Biblioteca</label>
-      <label class="check"><input id="curso" type="checkbox"> Disponible para cursos</label>
-    </div>
-
-    <div class="full note">Para archivos propios, guardalos primero en Wix Media Manager, dentro de la carpeta <strong>CAFASSO Recursos</strong>, y pegá aquí la URL del archivo. Al continuar se abrirá GitHub para confirmar el alta; después la automatización actualizará el catálogo y el libro aparecerá solo.</div>
-
-    <div class="full actions">
-      <button class="submit" type="submit">Continuar y crear recurso</button>
-    </div>
-  </form>
-</main>
+<title>CAFASSO · Recursos</title>
+<script src="./auth-guard.js"></script>
 <script>
-const form = document.getElementById('resourceForm');
-form.addEventListener('submit', (event) => {
-  event.preventDefault();
-  const titulo = document.getElementById('titulo').value.trim();
-  const categoria = document.getElementById('categoria').value;
-  const tipo = document.getElementById('tipo').value;
-  const url = document.getElementById('url').value.trim();
-  const descripcion = document.getElementById('descripcion').value.trim();
-  const cursos = document.getElementById('cursos').value.trim();
-  const biblioteca = document.getElementById('biblioteca').checked ? 'Sí' : 'No';
-  const curso = document.getElementById('curso').checked ? 'Sí' : 'No';
-
-  const body = [
-    '### Título', titulo,
-    '', '### Categoría', categoria,
-    '', '### Tipo', tipo,
-    '', '### URL', url,
-    '', '### Descripción', descripcion || '-',
-    '', '### Mostrar en Biblioteca', biblioteca,
-    '', '### Disponible para cursos', curso,
-    '', '### Cursos', cursos || '-'
-  ].join('\n');
-
-  const issue = new URL('https://github.com/Fmaresk10/Hello-Python/issues/new');
-  issue.searchParams.set('title', `[CAFASSO Recurso] ${titulo}`);
-  issue.searchParams.set('body', body);
-  window.location.href = issue.toString();
-});
+(() => {
+  const role = String(document.documentElement.dataset.cafassoRole || "").toLowerCase();
+  if (role && !role.includes("admin")) { location.replace("./"); return; }
+  location.replace("https://manage.wix.com/dashboard/c6a6ef36-f36a-453a-b787-5762b698f820/wix-cms/data/cafasso-recursos");
+})();
 </script>
-</body>
+</head>
+<body></body>
 </html>
