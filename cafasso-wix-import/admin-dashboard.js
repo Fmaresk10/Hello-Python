@@ -98,7 +98,30 @@
     if(preview)preview.onclick=()=>window.CafassoRolePreview?.openUserPicker?.()||window.CafassoRolePreview?.open?.();
   }
 
+  function installResourceAdminEntry(){
+    const menu=document.querySelector('.menu');
+    if(menu&&!menu.querySelector('[data-cafasso-resource-admin]')){
+      const link=document.createElement('a');
+      link.href='./resource-admin.html';
+      link.dataset.cafassoResourceAdmin='1';
+      link.innerHTML='📚 <span>Recursos</span>';
+      link.style.cssText='display:block;width:100%;background:transparent;color:#fff;text-align:left;padding:12px 13px;border-radius:13px;font:700 14px Inter,system-ui;text-decoration:none;cursor:pointer';
+      link.addEventListener('mouseenter',()=>link.style.background='rgba(255,255,255,.11)');
+      link.addEventListener('mouseleave',()=>link.style.background='transparent');
+      menu.appendChild(link);
+    }
+    const sheet=document.querySelector('.admin-mobile-sheet');
+    if(sheet&&!sheet.querySelector('[data-cafasso-resource-admin]')){
+      const link=document.createElement('a');
+      link.href='./resource-admin.html';
+      link.dataset.cafassoResourceAdmin='1';
+      link.innerHTML='<span>📚</span><span>Recursos</span>';
+      sheet.appendChild(link);
+    }
+  }
+
   async function loadDashboard(){
+    installResourceAdminEntry();
     const resumen=document.getElementById('resumen');if(!resumen||document.getElementById(ROOT_ID))return;
     ensureStyles();
     const head=document.querySelector('.head p');if(head)head.textContent='Lo que requiere tu atención hoy y el panorama general de CAFASSO.';

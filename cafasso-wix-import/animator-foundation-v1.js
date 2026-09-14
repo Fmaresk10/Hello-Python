@@ -28,7 +28,6 @@
       <main class="cafasso-recursos">
         <img class="cafasso-recursos__image" src="${RECURSOS_BG}" alt="Biblioteca de Recursos CAFASSO">
         <button class="cafasso-space-link cafasso-space-link--recursos-home" data-space="house" type="button">Casa</button>
-        <a class="cafasso-space-link" href="./resource-admin.html" aria-label="Cargar recurso" title="Cargar recurso" style="left:auto;right:4%;top:auto;bottom:5%;padding:8px 12px;border-radius:50%;text-decoration:none;font-size:22px;line-height:1">＋</a>
         <div class="cafasso-recursos__shelf" data-resource-shelf aria-label="Biblioteca de recursos"></div>
       </main>`;
   } else {

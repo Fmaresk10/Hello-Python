@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="es">
 <head>
+<script src="./auth-guard.js"></script>
+<script>(()=>{const r=String(document.documentElement.dataset.cafassoRole||'');if(r&&r!=='admin')location.replace('./');})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CAFASSO · Cargar recurso</title>
@@ -32,7 +34,7 @@ input:focus,select:focus,textarea:focus{border-color:#e7c36b;box-shadow:0 0 0 3p
       <h1>Cargar recurso</h1>
       <p class="intro">Registrá el material una sola vez. Después CAFASSO podrá mostrarlo en la Biblioteca y reutilizarlo en los cursos.</p>
     </div>
-    <a class="back" href="./?space=recursos">Volver a Recursos</a>
+    <a class="back" href="./admin.html">Volver a Administración</a>
   </div>
 
   <form id="resourceForm">
