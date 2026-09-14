@@ -16,6 +16,11 @@
     body.cafasso-world-active main{width:100%!important;max-width:none!important;padding:0!important}
     .cafasso-world-v2{min-height:100vh;position:relative;overflow:hidden;color:#fff6e5;background:linear-gradient(90deg,rgba(8,31,35,.46),rgba(8,31,35,.06) 58%,rgba(8,31,35,.18)),url('./assets/cafasso-casa-interior-v2.jpg') center/cover no-repeat;isolation:isolate}
     .cafasso-world-v2--house,.cafasso-world-v2--patio{background:linear-gradient(90deg,rgba(8,31,35,.62),rgba(8,31,35,.08) 58%,rgba(8,31,35,.2)),url('https://static.wixstatic.com/media/47bf07_2465a68b3ac64824b43bc20531ce6fd4~mv2.png') center/cover no-repeat}
+    .cafasso-world-v2--arrival:before{animation:worldV2WarmLight 13s ease-in-out infinite alternate}
+    .cafasso-world-v2--arrival:after{animation:worldV2DepthBreath 17s ease-in-out infinite alternate}
+    @keyframes worldV2WarmLight{from{opacity:.78}to{opacity:1}}
+    @keyframes worldV2DepthBreath{from{opacity:.78}to{opacity:1}}
+    @media (prefers-reduced-motion:reduce){.cafasso-world-v2--arrival:before,.cafasso-world-v2--arrival:after{animation:none!important}}
     .cafasso-world-v2:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(9,32,37,.04),rgba(9,32,37,.18) 55%,rgba(9,32,37,.58));pointer-events:none}
     .cafasso-world-v2:after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 50% 52%,transparent 0 26%,rgba(8,30,35,.16) 72%,rgba(8,30,35,.45) 100%);pointer-events:none}
     .cafasso-world-v2__mist{position:absolute;inset:35% -10% auto;height:28%;z-index:-1;background:linear-gradient(180deg,transparent,rgba(228,220,171,.16),transparent);filter:blur(18px)}
