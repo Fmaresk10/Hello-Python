@@ -6,10 +6,10 @@
   const SHELF_FILL_ORDER = [0, 1, 2, 3, 4, 5, 6, 7];
 
   // Coordenadas tomadas de la imagen real de la Biblioteca (1672 x 941).
-  // Cada fila termina exactamente sobre una tabla de madera, para que los libros
-  // se perciban apoyados en el mueble y no flotando sobre la escena.
+  // El primer estante se calibró con la captura real del usuario para que el
+  // libro quede dentro del mueble, más a la derecha y apoyado sobre la madera.
   const SHELF_LAYOUT = [
-    { left: '29.8%', top: '47.5%', width: '20%', height: '13%' },
+    { left: '16.2%', top: '68.0%', width: '21%', height: '16%' },
     { left: '52.5%', top: '47.5%', width: '24%', height: '13%' },
     { left: '29.8%', top: '33%',   width: '20%', height: '13%' },
     { left: '52.5%', top: '31.8%', width: '24%', height: '13%' },
@@ -69,6 +69,36 @@
       row.style.right = 'auto';
       row.style.bottom = 'auto';
     });
+  }
+
+  function enforcePhysicalLibraryLayout() {
+    const shelf = document.querySelector('[data-resource-shelf]');
+    if (!shelf) return;
+
+    alignShelfToLibraryImage();
+    const rows = [...shelf.querySelectorAll('.cafasso-resource-row')];
+    if (rows.length) applyPhysicalShelfLayout(rows);
+
+    [...shelf.querySelectorAll('.cafasso-resource-book')].forEach((book, index) => {
+      const seed = hashText(book.getAttribute('aria-label') || book.title || index);
+      book.style.flexBasis = `${40 + (seed % 7)}px`;
+      book.style.minHeight = '0';
+      book.style.setProperty('--book-height', `${88 + (seed % 8)}%`);
+    });
+  }
+
+  function installLayoutGuard() {
+    const shelf = document.querySelector('[data-resource-shelf]');
+    if (!shelf || shelf.dataset.cafassoLayoutGuard === 'true') return;
+    shelf.dataset.cafassoLayoutGuard = 'true';
+
+    let frame = 0;
+    const observer = new MutationObserver(() => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(enforcePhysicalLibraryLayout);
+    });
+    observer.observe(shelf, { childList: true, subtree: true });
+    enforcePhysicalLibraryLayout();
   }
 
   function hashText(value) {
@@ -150,8 +180,8 @@
     book.className = 'cafasso-resource-book';
     const seed = resource.categoria || resource.id || resource.titulo;
     book.style.setProperty('--book-color', resource.color || COLORS[hashText(seed) % COLORS.length]);
-    book.style.setProperty('--book-height', `${72 + (hashText(resource.id || resource.titulo || index) % 18)}%`);
-    book.style.flexBasis = `${22 + (hashText(resource.titulo || index) % 5)}px`;
+    book.style.setProperty('--book-height', `${88 + (hashText(resource.id || resource.titulo || index) % 8)}%`);
+    book.style.flexBasis = `${40 + (hashText(resource.titulo || index) % 7)}px`;
     book.style.minHeight = '0';
     book.setAttribute('aria-label', resource.titulo || 'Recurso');
     book.title = [resource.titulo, resource.categoria, resource.tipo].filter(Boolean).join(' · ');
@@ -180,6 +210,7 @@
     if (!shelf) return 0;
 
     alignShelfToLibraryImage();
+    installLayoutGuard();
 
     const visible = resources.filter(resource => resource && truthy(resource.mostrarEnBiblioteca));
     if (!visible.length) return 0;
@@ -201,6 +232,7 @@
       const rowIndex = SHELF_FILL_ORDER[shelfSlot];
       rows[rowIndex].appendChild(createBook(resource, index));
     });
+    enforcePhysicalLibraryLayout();
     return visible.length;
   }
 
@@ -243,6 +275,7 @@
   async function loadFallback() {
     if (new URLSearchParams(location.search).get('space') !== 'recursos') return;
     alignShelfToLibraryImage();
+    installLayoutGuard();
     const localResources = await loadStatic();
     const liveCount = await loadLive();
 
@@ -250,6 +283,7 @@
       setTimeout(() => {
         const shelf = document.querySelector('[data-resource-shelf]');
         if (!shelf?.querySelector('.cafasso-resource-book')) render(localResources, 'static-final');
+        enforcePhysicalLibraryLayout();
       }, 1200);
     }
   }
