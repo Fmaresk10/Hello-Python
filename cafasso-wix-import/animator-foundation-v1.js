@@ -9,7 +9,13 @@
   const ESCUELA_BG = 'https://static.wixstatic.com/media/47bf07_481618e0256044f9b31ae360a03a9169~mv2.png';
   const RECURSOS_BG = 'https://static.wixstatic.com/media/47bf07_8451eada7d72451a854df7cae47a80b6~mv2.png';
   const BITACORA_IMG = 'https://static.wixstatic.com/media/47bf07_20750dc35c6f4678b865413ce34ec1fe~mv2.png';
+  const RESOURCE_CATALOG_URL = './data/resources.json';
   const BITACORA_KEY = 'cafasso-bitacora-v1';
+
+  const RESOURCE_COLORS = [
+    '#744936', '#3f5e53', '#6c5a38', '#584967', '#7b3f45',
+    '#355765', '#6d513f', '#4f603f', '#734f2f', '#4f4d6f'
+  ];
 
   if (space === 'patio') {
     app.innerHTML = '<main class="cafasso-patio"><img class="cafasso-patio__image" src="https://static.wixstatic.com/media/47bf07_2465a68b3ac64824b43bc20531ce6fd4~mv2.png" alt="Patio salesiano CAFASSO"><button class="cafasso-space-link cafasso-space-link--patio-home" data-space="house" type="button">Casa</button><button class="cafasso-space-link cafasso-space-link--patio-escuela" data-space="escuela" type="button">Escuela</button><button class="cafasso-space-link cafasso-space-link--patio-parroquia" data-space="parroquia" type="button">Parroquia</button></main>';
@@ -57,6 +63,92 @@
       location.href = next.toString();
     });
   });
+
+  function hashText(value) {
+    let hash = 0;
+    const textValue = String(value || 'recurso');
+    for (let i = 0; i < textValue.length; i += 1) {
+      hash = ((hash << 5) - hash) + textValue.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash);
+  }
+
+  function resourceColor(resource) {
+    if (resource.color) return resource.color;
+    const seed = resource.categoria || resource.id || resource.titulo;
+    return RESOURCE_COLORS[hashText(seed) % RESOURCE_COLORS.length];
+  }
+
+  function resourceHeight(resource, index) {
+    const seed = hashText(resource.id || resource.titulo || index);
+    return 72 + (seed % 24);
+  }
+
+  function createResourceBook(resource, index) {
+    const book = document.createElement(resource.url ? 'a' : 'button');
+    book.className = 'cafasso-resource-book';
+    book.style.setProperty('--book-color', resourceColor(resource));
+    book.style.setProperty('--book-height', `${resourceHeight(resource, index)}%`);
+    book.setAttribute('aria-label', resource.titulo || 'Recurso');
+    book.title = [resource.titulo, resource.categoria].filter(Boolean).join(' · ');
+
+    if (resource.url) {
+      book.href = resource.url;
+      book.target = '_blank';
+      book.rel = 'noopener noreferrer';
+    } else {
+      book.type = 'button';
+      book.disabled = true;
+    }
+
+    const spine = document.createElement('span');
+    spine.className = 'cafasso-resource-book__spine';
+
+    const title = document.createElement('span');
+    title.className = 'cafasso-resource-book__title';
+    title.textContent = resource.titulo || 'Recurso';
+
+    spine.appendChild(title);
+    book.appendChild(spine);
+    return book;
+  }
+
+  function renderResourceLibrary(resources) {
+    const shelf = app.querySelector('[data-resource-shelf]');
+    if (!shelf) return;
+
+    shelf.innerHTML = '';
+    const visibleResources = resources.filter((resource) => resource && resource.mostrarEnBiblioteca === true);
+    if (!visibleResources.length) return;
+
+    const rowCount = 8;
+    const rows = Array.from({ length: rowCount }, (_, index) => {
+      const row = document.createElement('div');
+      row.className = `cafasso-resource-row cafasso-resource-row--${index + 1}`;
+      shelf.appendChild(row);
+      return row;
+    });
+
+    visibleResources.forEach((resource, index) => {
+      const rowIndex = Math.min(Math.floor(index / 7), rowCount - 1);
+      rows[rowIndex].appendChild(createResourceBook(resource, index));
+    });
+  }
+
+  async function loadResourceLibrary() {
+    if (space !== 'recursos') return;
+    try {
+      const response = await fetch(`${RESOURCE_CATALOG_URL}?v=${Date.now()}`, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const resources = await response.json();
+      renderResourceLibrary(Array.isArray(resources) ? resources : []);
+    } catch (error) {
+      console.warn('CAFASSO: no se pudo cargar el catálogo de recursos.', error);
+    }
+  }
+
+  loadResourceLibrary();
 
   const panel = app.querySelector('[data-bitacora-panel]');
   const text = app.querySelector('[data-bitacora-text]');
