@@ -3,6 +3,7 @@
   const RESOURCE_TITLE = 'CAFASSO · Recursos internos';
   const STATIC_CATALOG = './data/resources.json';
   const COLORS = ['#744936','#3f5e53','#6c5a38','#584967','#7b3f45','#355765','#6d513f','#4f603f','#734f2f','#4f4d6f'];
+  const SHELF_FILL_ORDER = [3, 7, 2, 6, 1, 5, 0, 4];
 
   function alignShelfToLibraryImage() {
     const shelf = document.querySelector('[data-resource-shelf]');
@@ -17,8 +18,6 @@
       const boxHeight = scene.clientHeight;
       if (!naturalWidth || !naturalHeight || !boxWidth || !boxHeight) return;
 
-      // La imagen usa object-fit: cover. Replicamos exactamente ese cálculo para que
-      // los libros queden pegados a las estanterías aunque cambie el tamaño de ventana.
       const scale = Math.max(boxWidth / naturalWidth, boxHeight / naturalHeight);
       const renderedWidth = naturalWidth * scale;
       const renderedHeight = naturalHeight * scale;
@@ -124,7 +123,9 @@
     book.className = 'cafasso-resource-book';
     const seed = resource.categoria || resource.id || resource.titulo;
     book.style.setProperty('--book-color', resource.color || COLORS[hashText(seed) % COLORS.length]);
-    book.style.setProperty('--book-height', `${72 + (hashText(resource.id || resource.titulo || index) % 24)}%`);
+    book.style.setProperty('--book-height', `${72 + (hashText(resource.id || resource.titulo || index) % 18)}%`);
+    book.style.flexBasis = `${22 + (hashText(resource.titulo || index) % 5)}px`;
+    book.style.minHeight = '0';
     book.setAttribute('aria-label', resource.titulo || 'Recurso');
     book.title = [resource.titulo, resource.categoria, resource.tipo].filter(Boolean).join(' · ');
 
@@ -168,7 +169,8 @@
     });
 
     visible.forEach((resource, index) => {
-      const rowIndex = Math.min(Math.floor(index / 7), rows.length - 1);
+      const shelfSlot = Math.min(Math.floor(index / 7), SHELF_FILL_ORDER.length - 1);
+      const rowIndex = SHELF_FILL_ORDER[shelfSlot];
       rows[rowIndex].appendChild(createBook(resource, index));
     });
     return visible.length;
@@ -216,9 +218,6 @@
     const localResources = await loadStatic();
     const liveCount = await loadLive();
 
-    // Si el endpoint de Wix no respondió o devolvió un catálogo vacío, el respaldo
-    // local queda como fuente visible. Repetimos una vez para ganar cualquier carrera
-    // con el cargador principal de la pantalla.
     if (!liveCount && localResources.length) {
       setTimeout(() => {
         const shelf = document.querySelector('[data-resource-shelf]');
