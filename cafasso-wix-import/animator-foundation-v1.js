@@ -12,6 +12,17 @@
   const RESOURCE_CATALOG_URL = './data/resources.json';
   const BITACORA_KEY = 'cafasso-bitacora-v1';
 
+  const isAdmin = (() => {
+    const datasetRole = String(document.documentElement.dataset.cafassoRole || '').toLowerCase();
+    if (datasetRole.includes('admin')) return true;
+    try {
+      const session = JSON.parse(localStorage.getItem('cafassoSession') || '{}');
+      return String(session?.user?.role || '').toLowerCase().includes('admin');
+    } catch (error) {
+      return false;
+    }
+  })();
+
   const RESOURCE_COLORS = [
     '#744936', '#3f5e53', '#6c5a38', '#584967', '#7b3f45',
     '#355765', '#6d513f', '#4f603f', '#734f2f', '#4f4d6f'
@@ -34,6 +45,7 @@
     app.innerHTML = `
       <main class="cafasso-house">
         <img class="cafasso-house__image" src="./assets/cafasso-casa-interior-v2.jpg" alt="Interior cálido de la Casa CAFASSO">
+        ${isAdmin ? '<a class="cafasso-admin-home-link" href="./admin.html" aria-label="Ir al perfil de administrador">⚙ Administrador</a>' : ''}
         <button class="cafasso-space-link cafasso-space-link--casa" data-space="patio" type="button">Patio</button>
         <button class="cafasso-space-link cafasso-space-link--house-recursos" data-space="recursos" type="button">Recursos</button>
         <button class="cafasso-bitacora-object" data-action="bitacora-open" type="button" aria-label="Abrir Bitácora">
