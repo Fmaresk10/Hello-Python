@@ -7,6 +7,7 @@
   const space = new URLSearchParams(location.search).get('space') || 'house';
   const PARROQUIA_BG = 'https://static.wixstatic.com/media/47bf07_b411bebc79644a0092920abb58a2f56d~mv2.png';
   const ESCUELA_BG = 'https://static.wixstatic.com/media/47bf07_481618e0256044f9b31ae360a03a9169~mv2.png';
+  const RECURSOS_BG = 'https://static.wixstatic.com/media/47bf07_8451eada7d72451a854df7cae47a80b6~mv2.png';
   const BITACORA_IMG = 'https://static.wixstatic.com/media/47bf07_20750dc35c6f4678b865413ce34ec1fe~mv2.png';
   const BITACORA_KEY = 'cafasso-bitacora-v1';
 
@@ -16,11 +17,19 @@
     app.innerHTML = `<main class="cafasso-parroquia"><img class="cafasso-parroquia__image" src="${PARROQUIA_BG}" alt="Espacio Parroquia de CAFASSO"><button class="cafasso-space-link cafasso-space-link--parroquia-patio" data-space="patio" type="button">Patio</button></main>`;
   } else if (space === 'escuela') {
     app.innerHTML = `<main class="cafasso-escuela"><img class="cafasso-escuela__image" src="${ESCUELA_BG}" alt="Espacio Escuela de CAFASSO"><button class="cafasso-space-link cafasso-space-link--escuela-patio" data-space="patio" type="button">Patio</button></main>`;
+  } else if (space === 'recursos') {
+    app.innerHTML = `
+      <main class="cafasso-recursos">
+        <img class="cafasso-recursos__image" src="${RECURSOS_BG}" alt="Biblioteca de Recursos CAFASSO">
+        <button class="cafasso-space-link cafasso-space-link--recursos-home" data-space="house" type="button">Casa</button>
+        <div class="cafasso-recursos__shelf" data-resource-shelf aria-label="Biblioteca de recursos"></div>
+      </main>`;
   } else {
     app.innerHTML = `
       <main class="cafasso-house">
         <img class="cafasso-house__image" src="./assets/cafasso-casa-interior-v2.jpg" alt="Interior cálido de la Casa CAFASSO">
         <button class="cafasso-space-link cafasso-space-link--casa" data-space="patio" type="button">Patio</button>
+        <button class="cafasso-space-link cafasso-space-link--house-recursos" data-space="recursos" type="button">Recursos</button>
         <button class="cafasso-bitacora-object" data-action="bitacora-open" type="button" aria-label="Abrir Bitácora">
           <img src="${BITACORA_IMG}" alt="Bitácora">
         </button>
