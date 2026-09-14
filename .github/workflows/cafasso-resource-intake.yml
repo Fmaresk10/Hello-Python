@@ -1,0 +1,136 @@
+name: CAFASSO Resource Intake
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: cafasso-resource-intake
+  cancel-in-progress: false
+
+jobs:
+  add-resource:
+    if: startsWith(github.event.issue.title, '[CAFASSO Recurso]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Convert issue to resource
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'cafasso-wix-import/data/resources.json';
+          const body = process.env.ISSUE_BODY || '';
+          const issueNumber = String(process.env.ISSUE_NUMBER || '0');
+
+          function readField(label) {
+            const safe = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const match = body.match(new RegExp(`### ${safe}\\s*\\n+([\\s\\S]*?)(?=\\n### |$)`, 'i'));
+            return match ? match[1].trim() : '';
+          }
+
+          function yes(value) {
+            return /^(sí|si|yes|true)$/i.test(String(value || '').trim());
+          }
+
+          function slug(value) {
+            return String(value || 'recurso')
+              .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '')
+              .slice(0, 58) || 'recurso';
+          }
+
+          const titulo = readField('Título');
+          const categoria = readField('Categoría');
+          const tipo = readField('Tipo');
+          const url = readField('URL');
+          const descripcionRaw = readField('Descripción');
+          const cursosRaw = readField('Cursos');
+
+          if (!titulo || !url) {
+            console.error('Faltan Título o URL en el formulario.');
+            process.exit(1);
+          }
+
+          let resources = [];
+          try {
+            resources = JSON.parse(fs.readFileSync(path, 'utf8'));
+            if (!Array.isArray(resources)) resources = [];
+          } catch {
+            resources = [];
+          }
+
+          const duplicate = resources.find(item => item && item.titulo === titulo && item.url === url);
+          if (duplicate) {
+            console.log('El recurso ya existe; no se agrega duplicado.');
+            fs.writeFileSync('/tmp/cafasso-resource-status.txt', 'duplicate');
+            process.exit(0);
+          }
+
+          const cursos = cursosRaw && cursosRaw !== '-'
+            ? cursosRaw.split(',').map(value => value.trim()).filter(Boolean)
+            : [];
+
+          const resource = {
+            id: `${slug(titulo)}-${issueNumber}`,
+            titulo,
+            categoria: categoria || 'Otro',
+            tipo: tipo || 'Link',
+            url,
+            descripcion: descripcionRaw && descripcionRaw !== '-' ? descripcionRaw : '',
+            mostrarEnBiblioteca: yes(readField('Mostrar en Biblioteca')),
+            disponibleParaCursos: yes(readField('Disponible para cursos')),
+            cursos,
+            fechaAlta: new Date().toISOString()
+          };
+
+          resources.push(resource);
+          fs.writeFileSync(path, JSON.stringify(resources, null, 2) + '\n');
+          fs.writeFileSync('/tmp/cafasso-resource-status.txt', 'created');
+          fs.writeFileSync('/tmp/cafasso-resource-id.txt', resource.id);
+          NODE
+
+      - name: Commit catalog change
+        id: commit
+        run: |
+          STATUS="$(cat /tmp/cafasso-resource-status.txt 2>/dev/null || echo failed)"
+          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+          if [ "$STATUS" != "created" ]; then
+            exit 0
+          fi
+          git config user.name "CAFASSO Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add cafasso-wix-import/data/resources.json
+          git commit -m "Agregar recurso CAFASSO desde cargador"
+          git pull --rebase origin main
+          git push origin main
+
+      - name: Close request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          STATUS: ${{ steps.commit.outputs.status }}
+        run: |
+          if [ "$STATUS" = "created" ]; then
+            ID="$(cat /tmp/cafasso-resource-id.txt)"
+            gh issue comment "$ISSUE_NUMBER" --body "✅ Recurso agregado al catálogo CAFASSO como \`$ID\`. Si está marcado para Biblioteca, aparecerá automáticamente como libro cuando GitHub Pages termine de publicar."
+            gh issue close "$ISSUE_NUMBER" --reason completed
+          elif [ "$STATUS" = "duplicate" ]; then
+            gh issue comment "$ISSUE_NUMBER" --body "ℹ️ Ese recurso ya estaba registrado en CAFASSO. No se creó un duplicado."
+            gh issue close "$ISSUE_NUMBER" --reason completed
+          else
+            gh issue comment "$ISSUE_NUMBER" --body "⚠️ No pude procesar el recurso. Revisá que el formulario tenga Título y URL."
+          fi
