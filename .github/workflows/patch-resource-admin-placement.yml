@@ -1,0 +1,67 @@
+name: Move CAFASSO resource loader to admin
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-resource-admin-placement.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Patch CAFASSO resource access
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path('cafasso-wix-import')
+
+          # 1) Animador: remove resource upload button from Library.
+          p = root / 'animator-foundation-v1.js'
+          s = p.read_text(encoding='utf-8')
+          old = '''        <a class="cafasso-space-link" href="./resource-admin.html" aria-label="Cargar recurso" title="Cargar recurso" style="left:auto;right:4%;top:auto;bottom:5%;padding:8px 12px;border-radius:50%;text-decoration:none;font-size:22px;line-height:1">＋</a>\n'''
+          if old not in s:
+              raise SystemExit('No encontré el botón de carga en la vista Recursos del animador.')
+          s = s.replace(old, '', 1)
+          p.write_text(s, encoding='utf-8')
+
+          # 2) Admin dashboard: add Resources entry to desktop and mobile admin menus.
+          p = root / 'admin-dashboard.js'
+          s = p.read_text(encoding='utf-8')
+          marker = '''  async function loadDashboard(){\n'''
+          if marker not in s:
+              raise SystemExit('No encontré loadDashboard en admin-dashboard.js')
+          fn = '''  function installResourceAdminEntry(){\n    const menu=document.querySelector('.menu');\n    if(menu&&!menu.querySelector('[data-cafasso-resource-admin]')){\n      const link=document.createElement('a');\n      link.href='./resource-admin.html';\n      link.dataset.cafassoResourceAdmin='1';\n      link.innerHTML='📚 <span>Recursos</span>';\n      link.style.cssText='display:block;width:100%;background:transparent;color:#fff;text-align:left;padding:12px 13px;border-radius:13px;font:700 14px Inter,system-ui;text-decoration:none;cursor:pointer';\n      link.addEventListener('mouseenter',()=>link.style.background='rgba(255,255,255,.11)');\n      link.addEventListener('mouseleave',()=>link.style.background='transparent');\n      menu.appendChild(link);\n    }\n    const sheet=document.querySelector('.admin-mobile-sheet');\n    if(sheet&&!sheet.querySelector('[data-cafasso-resource-admin]')){\n      const link=document.createElement('a');\n      link.href='./resource-admin.html';\n      link.dataset.cafassoResourceAdmin='1';\n      link.innerHTML='<span>📚</span><span>Recursos</span>';\n      sheet.appendChild(link);\n    }\n  }\n\n'''
+          s = s.replace(marker, fn + marker, 1)
+          s = s.replace('''  async function loadDashboard(){\n    const resumen=document.getElementById('resumen');''', '''  async function loadDashboard(){\n    installResourceAdminEntry();\n    const resumen=document.getElementById('resumen');''', 1)
+          p.write_text(s, encoding='utf-8')
+
+          # 3) Resource form: protect as admin-only and return to Admin.
+          p = root / 'resource-admin.html'
+          s = p.read_text(encoding='utf-8')
+          if '<script src="./auth-guard.js"></script>' not in s:
+              s = s.replace('<head>\n', '<head>\n<script src="./auth-guard.js"></script>\n<script>(()=>{const r=String(document.documentElement.dataset.cafassoRole||\'\');if(r&&r!==\'admin\')location.replace(\'./\');})();</script>\n', 1)
+          s = s.replace('<a class="back" href="./?space=recursos">Volver a Recursos</a>', '<a class="back" href="./admin.html">Volver a Administración</a>', 1)
+          p.write_text(s, encoding='utf-8')
+
+          # 4) Cache-bust the animator shell so the removed button disappears immediately.
+          p = root / 'index.html'
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('animator-foundation-v1.js?v=20260914-23', 'animator-foundation-v1.js?v=20260914-24', 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit changes
+        run: |
+          git config user.name "CAFASSO Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add cafasso-wix-import/animator-foundation-v1.js cafasso-wix-import/admin-dashboard.js cafasso-wix-import/resource-admin.html cafasso-wix-import/index.html
+          git commit -m "Mover cargador de recursos al menú administrador"
+          git push origin main
