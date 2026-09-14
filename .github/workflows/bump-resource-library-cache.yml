@@ -1,0 +1,44 @@
+name: Bump resource library cache
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Bump cache key de Recursos
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('cafasso-wix-import/index.html')
+          text = path.read_text(encoding='utf-8')
+          old = 'wix-resources-cms.js?v=20260914-1'
+          new = 'wix-resources-cms.js?v=20260914-2'
+          if old in text:
+              path.write_text(text.replace(old, new), encoding='utf-8')
+              print('Cache key actualizado')
+          else:
+              print('No había nada para actualizar')
+          PY
+      - name: Commit
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'Sin cambios'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add cafasso-wix-import/index.html
+          git commit -m 'Forzar recarga del cargador de biblioteca'
+          git push origin main
