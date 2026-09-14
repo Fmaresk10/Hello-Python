@@ -4,6 +4,47 @@
   const STATIC_CATALOG = './data/resources.json';
   const COLORS = ['#744936','#3f5e53','#6c5a38','#584967','#7b3f45','#355765','#6d513f','#4f603f','#734f2f','#4f4d6f'];
 
+  function alignShelfToLibraryImage() {
+    const shelf = document.querySelector('[data-resource-shelf]');
+    const image = document.querySelector('.cafasso-recursos__image');
+    const scene = document.querySelector('.cafasso-recursos');
+    if (!shelf || !image || !scene) return;
+
+    const apply = () => {
+      const naturalWidth = image.naturalWidth;
+      const naturalHeight = image.naturalHeight;
+      const boxWidth = scene.clientWidth;
+      const boxHeight = scene.clientHeight;
+      if (!naturalWidth || !naturalHeight || !boxWidth || !boxHeight) return;
+
+      // La imagen usa object-fit: cover. Replicamos exactamente ese cálculo para que
+      // los libros queden pegados a las estanterías aunque cambie el tamaño de ventana.
+      const scale = Math.max(boxWidth / naturalWidth, boxHeight / naturalHeight);
+      const renderedWidth = naturalWidth * scale;
+      const renderedHeight = naturalHeight * scale;
+      const offsetX = (boxWidth - renderedWidth) / 2;
+      const offsetY = (boxHeight - renderedHeight) / 2;
+
+      shelf.style.inset = 'auto';
+      shelf.style.left = '0';
+      shelf.style.top = '0';
+      shelf.style.right = 'auto';
+      shelf.style.bottom = 'auto';
+      shelf.style.width = `${naturalWidth}px`;
+      shelf.style.height = `${naturalHeight}px`;
+      shelf.style.transformOrigin = '0 0';
+      shelf.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0) scale(${scale})`;
+    };
+
+    if (image.complete && image.naturalWidth) apply();
+    else image.addEventListener('load', apply, { once: true });
+
+    if (!shelf.dataset.cafassoShelfAligned) {
+      shelf.dataset.cafassoShelfAligned = 'true';
+      window.addEventListener('resize', apply, { passive: true });
+    }
+  }
+
   function hashText(value) {
     let hash = 0;
     const text = String(value || 'recurso');
@@ -110,6 +151,8 @@
     const shelf = document.querySelector('[data-resource-shelf]');
     if (!shelf) return 0;
 
+    alignShelfToLibraryImage();
+
     const visible = resources.filter(resource => resource && truthy(resource.mostrarEnBiblioteca));
     if (!visible.length) return 0;
 
@@ -169,6 +212,7 @@
 
   async function loadFallback() {
     if (new URLSearchParams(location.search).get('space') !== 'recursos') return;
+    alignShelfToLibraryImage();
     const localResources = await loadStatic();
     const liveCount = await loadLive();
 
