@@ -3,20 +3,51 @@
   const RESOURCE_TITLE = 'CAFASSO · Recursos internos';
   const STATIC_CATALOG = './data/resources.json';
   const COLORS = ['#744936','#3f5e53','#6c5a38','#584967','#7b3f45','#355765','#6d513f','#4f603f','#734f2f','#4f4d6f'];
-  const SHELF_FILL_ORDER = [0, 1, 2, 3, 4, 5, 6, 7];
 
-  // Coordenadas tomadas de la imagen real de la Biblioteca (1672 x 941).
-  // El primer estante se calibró con la captura real del usuario para que el
-  // libro quede dentro del mueble, más a la derecha y apoyado sobre la madera.
-  const SHELF_LAYOUT = [
-    { left: '16.2%', top: '68.0%', width: '21%', height: '16%' },
-    { left: '52.5%', top: '47.5%', width: '24%', height: '13%' },
-    { left: '29.8%', top: '33%',   width: '20%', height: '13%' },
-    { left: '52.5%', top: '31.8%', width: '24%', height: '13%' },
-    { left: '18.5%', top: '47.5%', width: '9%',  height: '13%' },
-    { left: '18.5%', top: '33%',   width: '9%',  height: '13%' },
-    { left: '18.5%', top: '18.3%', width: '9%',  height: '13%' },
-    { left: '52.5%', top: '17.2%', width: '24%', height: '13%' }
+  // Sistema de coordenadas fijo sobre la imagen original de Biblioteca: 1672 x 941 px.
+  // x = borde izquierdo del libro; shelfY = línea de apoyo sobre la madera.
+  // width/height = tamaño físico del lomo en esa coordenada.
+  // Cada recurso toma una coordenada de esta tabla. Si más adelante un recurso
+  // trae bibliotecaSlot/slot (1..N), se respeta ese lugar explícito.
+  const BOOK_SLOTS = [
+    { id: 1,  x: 555,  shelfY: 623, width: 52, height: 163 },
+    { id: 2,  x: 617,  shelfY: 623, width: 47, height: 145 },
+    { id: 3,  x: 672,  shelfY: 623, width: 54, height: 158 },
+    { id: 4,  x: 734,  shelfY: 623, width: 49, height: 150 },
+    { id: 5,  x: 792,  shelfY: 623, width: 52, height: 166 },
+
+    { id: 6,  x: 555,  shelfY: 491, width: 49, height: 104 },
+    { id: 7,  x: 612,  shelfY: 491, width: 52, height: 109 },
+    { id: 8,  x: 672,  shelfY: 491, width: 47, height: 99 },
+    { id: 9,  x: 727,  shelfY: 491, width: 54, height: 106 },
+    { id: 10, x: 789,  shelfY: 491, width: 49, height: 101 },
+
+    { id: 11, x: 555,  shelfY: 368, width: 49, height: 101 },
+    { id: 12, x: 612,  shelfY: 368, width: 54, height: 109 },
+    { id: 13, x: 672,  shelfY: 368, width: 47, height: 99 },
+    { id: 14, x: 727,  shelfY: 368, width: 52, height: 106 },
+    { id: 15, x: 787,  shelfY: 368, width: 49, height: 104 },
+
+    { id: 16, x: 912,  shelfY: 630, width: 52, height: 163 },
+    { id: 17, x: 974,  shelfY: 630, width: 47, height: 145 },
+    { id: 18, x: 1030, shelfY: 630, width: 54, height: 158 },
+    { id: 19, x: 1091, shelfY: 630, width: 49, height: 150 },
+    { id: 20, x: 1153, shelfY: 630, width: 52, height: 166 },
+    { id: 21, x: 1211, shelfY: 630, width: 47, height: 154 },
+
+    { id: 22, x: 912,  shelfY: 479, width: 49, height: 106 },
+    { id: 23, x: 970,  shelfY: 479, width: 52, height: 111 },
+    { id: 24, x: 1030, shelfY: 479, width: 47, height: 101 },
+    { id: 25, x: 1085, shelfY: 479, width: 54, height: 109 },
+    { id: 26, x: 1147, shelfY: 479, width: 49, height: 104 },
+    { id: 27, x: 1202, shelfY: 479, width: 52, height: 106 },
+
+    { id: 28, x: 912,  shelfY: 348, width: 49, height: 104 },
+    { id: 29, x: 970,  shelfY: 348, width: 54, height: 109 },
+    { id: 30, x: 1030, shelfY: 348, width: 47, height: 99 },
+    { id: 31, x: 1085, shelfY: 348, width: 52, height: 106 },
+    { id: 32, x: 1147, shelfY: 348, width: 49, height: 101 },
+    { id: 33, x: 1202, shelfY: 348, width: 52, height: 104 }
   ];
 
   function alignShelfToLibraryImage() {
@@ -58,49 +89,6 @@
     }
   }
 
-  function applyPhysicalShelfLayout(rows) {
-    rows.forEach((row, index) => {
-      const slot = SHELF_LAYOUT[index];
-      if (!slot) return;
-      row.style.left = slot.left;
-      row.style.top = slot.top;
-      row.style.width = slot.width;
-      row.style.height = slot.height;
-      row.style.right = 'auto';
-      row.style.bottom = 'auto';
-    });
-  }
-
-  function enforcePhysicalLibraryLayout() {
-    const shelf = document.querySelector('[data-resource-shelf]');
-    if (!shelf) return;
-
-    alignShelfToLibraryImage();
-    const rows = [...shelf.querySelectorAll('.cafasso-resource-row')];
-    if (rows.length) applyPhysicalShelfLayout(rows);
-
-    [...shelf.querySelectorAll('.cafasso-resource-book')].forEach((book, index) => {
-      const seed = hashText(book.getAttribute('aria-label') || book.title || index);
-      book.style.flexBasis = `${40 + (seed % 7)}px`;
-      book.style.minHeight = '0';
-      book.style.setProperty('--book-height', `${88 + (seed % 8)}%`);
-    });
-  }
-
-  function installLayoutGuard() {
-    const shelf = document.querySelector('[data-resource-shelf]');
-    if (!shelf || shelf.dataset.cafassoLayoutGuard === 'true') return;
-    shelf.dataset.cafassoLayoutGuard = 'true';
-
-    let frame = 0;
-    const observer = new MutationObserver(() => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(enforcePhysicalLibraryLayout);
-    });
-    observer.observe(shelf, { childList: true, subtree: true });
-    enforcePhysicalLibraryLayout();
-  }
-
   function hashText(value) {
     let hash = 0;
     const text = String(value || 'recurso');
@@ -123,28 +111,35 @@
     return ['false','0','no','off'].includes(text);
   }
 
+  function asObject(value) {
+    if (value && typeof value === 'object') return value;
+    if (typeof value !== 'string') return {};
+    try {
+      const parsed = JSON.parse(value);
+      return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch (error) {
+      return {};
+    }
+  }
+
   function collectContents(course) {
     const blocks = [];
     const seen = new Set();
 
     function walk(value) {
-      if (!value || typeof value !== 'object') return;
-      if (seen.has(value)) return;
+      if (!value || typeof value !== 'object' || seen.has(value)) return;
       seen.add(value);
-
       if (Array.isArray(value)) {
-        value.forEach(item => walk(item));
+        value.forEach(walk);
         return;
       }
-
       if (Array.isArray(value.contents)) {
         value.contents.forEach(block => {
           if (block && typeof block === 'object') blocks.push(block);
         });
       }
-
-      Object.entries(value).forEach(([childKey, child]) => {
-        if (childKey !== 'contents' && child && typeof child === 'object') walk(child);
+      Object.entries(value).forEach(([key, child]) => {
+        if (key !== 'contents' && child && typeof child === 'object') walk(child);
       });
     }
 
@@ -153,14 +148,14 @@
   }
 
   function normalizeResource(block, index) {
-    const settings = block?.settings || block?.config || block?.metadata || {};
-    const content = block?.content || {};
+    const settings = asObject(block?.settings || block?.config || block?.metadata || {});
+    const content = asObject(block?.content || {});
     const markedAsResource = truthy(settings.cafassoResource) ||
       Object.prototype.hasOwnProperty.call(settings, 'mostrarEnBiblioteca') ||
       Object.prototype.hasOwnProperty.call(settings, 'resourceType') ||
       Object.prototype.hasOwnProperty.call(settings, 'categoria');
 
-    if (!markedAsResource && !block?.title) return null;
+    if (!markedAsResource && !block?.title && !block?.titulo) return null;
 
     const showValue = settings.mostrarEnBiblioteca ?? block.mostrarEnBiblioteca;
     return {
@@ -170,21 +165,40 @@
       tipo: settings.resourceType || block.tipo || block.type || 'Documento',
       url: content.body || content.url || block.url || block.archivo || '',
       mostrarEnBiblioteca: showValue == null ? true : !explicitlyFalse(showValue),
-      disponibleParaCursos: truthy(settings.disponibleParaCursos ?? block.disponibleParaCursos)
+      disponibleParaCursos: truthy(settings.disponibleParaCursos ?? block.disponibleParaCursos),
+      bibliotecaSlot: Number(settings.bibliotecaSlot ?? block.bibliotecaSlot ?? block.slot) || null
     };
   }
 
+  function resolveSlot(resource, index) {
+    const explicit = Number(resource.bibliotecaSlot ?? resource.slot);
+    if (Number.isInteger(explicit) && explicit >= 1 && explicit <= BOOK_SLOTS.length) {
+      return BOOK_SLOTS[explicit - 1];
+    }
+    return BOOK_SLOTS[index % BOOK_SLOTS.length];
+  }
+
   function createBook(resource, index) {
+    const slot = resolveSlot(resource, index);
     const href = resource.url;
     const book = document.createElement(href ? 'a' : 'button');
-    book.className = 'cafasso-resource-book';
     const seed = resource.categoria || resource.id || resource.titulo;
-    book.style.setProperty('--book-color', resource.color || COLORS[hashText(seed) % COLORS.length]);
-    book.style.setProperty('--book-height', `${88 + (hashText(resource.id || resource.titulo || index) % 8)}%`);
-    book.style.flexBasis = `${40 + (hashText(resource.titulo || index) % 7)}px`;
-    book.style.minHeight = '0';
+
+    book.className = 'cafasso-resource-book';
+    book.dataset.cafassoSlot = String(slot.id);
     book.setAttribute('aria-label', resource.titulo || 'Recurso');
-    book.title = [resource.titulo, resource.categoria, resource.tipo].filter(Boolean).join(' · ');
+    book.title = [resource.titulo, resource.categoria, resource.tipo, `Ubicación ${slot.id}`].filter(Boolean).join(' · ');
+
+    // Coordenadas absolutas sobre la imagen natural: la base del libro coincide con shelfY.
+    book.style.position = 'absolute';
+    book.style.left = `${slot.x}px`;
+    book.style.top = `${slot.shelfY - slot.height}px`;
+    book.style.width = `${slot.width}px`;
+    book.style.height = `${slot.height}px`;
+    book.style.flex = 'none';
+    book.style.minHeight = '0';
+    book.style.setProperty('--book-height', '100%');
+    book.style.setProperty('--book-color', resource.color || COLORS[hashText(seed) % COLORS.length]);
 
     if (href) {
       book.href = href;
@@ -210,29 +224,15 @@
     if (!shelf) return 0;
 
     alignShelfToLibraryImage();
-    installLayoutGuard();
-
     const visible = resources.filter(resource => resource && truthy(resource.mostrarEnBiblioteca));
     if (!visible.length) return 0;
 
     shelf.innerHTML = '';
+    shelf.dataset.cafassoCoordinateSystem = '1672x941';
     shelf.dataset.cafassoResourceCount = String(visible.length);
     if (source) shelf.dataset.cafassoResourceSource = source;
 
-    const rows = Array.from({ length: 8 }, (_, index) => {
-      const row = document.createElement('div');
-      row.className = `cafasso-resource-row cafasso-resource-row--${index + 1}`;
-      shelf.appendChild(row);
-      return row;
-    });
-    applyPhysicalShelfLayout(rows);
-
-    visible.forEach((resource, index) => {
-      const shelfSlot = Math.min(Math.floor(index / 7), SHELF_FILL_ORDER.length - 1);
-      const rowIndex = SHELF_FILL_ORDER[shelfSlot];
-      rows[rowIndex].appendChild(createBook(resource, index));
-    });
-    enforcePhysicalLibraryLayout();
+    visible.forEach((resource, index) => shelf.appendChild(createBook(resource, index)));
     return visible.length;
   }
 
@@ -243,7 +243,7 @@
       const resources = await response.json();
       if (!Array.isArray(resources)) throw new Error('El catálogo local no es una lista');
       const count = render(resources, 'static');
-      if (count) console.info(`CAFASSO: respaldo local de Biblioteca cargado con ${count} recurso(s).`);
+      if (count) console.info(`CAFASSO: Biblioteca por coordenadas cargada con ${count} recurso(s).`);
       return resources;
     } catch (error) {
       console.warn('CAFASSO: no se pudo cargar el respaldo local de Recursos.', error);
@@ -259,12 +259,9 @@
       const course = payload?.course || payload?.data?.course || payload?.item || payload?.data || null;
       if (!course) throw new Error('El catálogo no vino en la respuesta');
 
-      const resources = collectContents(course)
-        .map(normalizeResource)
-        .filter(Boolean);
-
+      const resources = collectContents(course).map(normalizeResource).filter(Boolean);
       const count = render(resources, 'wix-live');
-      if (count) console.info(`CAFASSO: Biblioteca en vivo cargada con ${count} recurso(s).`);
+      if (count) console.info(`CAFASSO: catálogo en vivo ubicado en ${count} coordenada(s).`);
       return count;
     } catch (error) {
       console.warn('CAFASSO: no se pudo cargar el catálogo de Recursos desde Wix.', error);
@@ -272,21 +269,17 @@
     }
   }
 
-  async function loadFallback() {
+  async function loadLibrary() {
     if (new URLSearchParams(location.search).get('space') !== 'recursos') return;
     alignShelfToLibraryImage();
-    installLayoutGuard();
     const localResources = await loadStatic();
     const liveCount = await loadLive();
 
     if (!liveCount && localResources.length) {
-      setTimeout(() => {
-        const shelf = document.querySelector('[data-resource-shelf]');
-        if (!shelf?.querySelector('.cafasso-resource-book')) render(localResources, 'static-final');
-        enforcePhysicalLibraryLayout();
-      }, 1200);
+      const shelf = document.querySelector('[data-resource-shelf]');
+      if (!shelf?.querySelector('.cafasso-resource-book')) render(localResources, 'static-final');
     }
   }
 
-  setTimeout(loadFallback, 220);
+  setTimeout(loadLibrary, 120);
 })();
