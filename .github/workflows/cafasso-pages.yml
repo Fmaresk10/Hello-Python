@@ -43,11 +43,6 @@ jobs:
           inject = '''<style id="cafasso-blank-mode">html,body{margin:0!important;padding:0!important;background:#ffffff!important;min-height:100%!important}body>*{display:none!important}</style>
 '''
           s = s.replace('</body>', inject + '</body>')
-          profile_script = '<script src="./animator-profile-chip.js?v=20260907-2"></script>'
-          s = re.sub(r'<script src="\./animator-profile-chip\.js\?v=[^"]+"></script>\s*', '', s)
-          s = s.replace('</body>', profile_script + '\n</body>')
-          p.write_text(s, encoding='utf-8')
-
           editor = Path('cafasso-wix-import/curso-editor.html')
           es = editor.read_text(encoding='utf-8')
           for old in ['course-cover-editor.js?v=20260907-1','course-cover-editor.js?v=20260907-2']:
