@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "id": "925d22a2-fa43-40bf-a748-1d526306cbcc",
+    "titulo": "Juego de Tronos",
+    "categoria": "Ocio",
+    "tipo": "Presentación",
+    "url": "https://drive.google.com/file/d/1WmtvZR4v7f5r5Rq8uGWYg_iG9CnSrZt2/view?usp=drive_link",
+    "descripcion": "",
+    "mostrarEnBiblioteca": true,
+    "disponibleParaCursos": false,
+    "cursos": []
+  }
+]
