@@ -37,7 +37,7 @@
     .world-v2__resource-hotspot{z-index:10;pointer-events:auto;position:absolute;left:calc(74% + 113px);top:calc(56% - 189px);border:0;background:rgba(21,39,38,.66);color:#fff8e9;padding:9px 15px;border-radius:5px 12px 12px 5px;border-left:4px solid #b7895c;box-shadow:0 5px 14px rgba(0,0,0,.3);font-family:Georgia,serif;font-size:17px;text-shadow:0 1px 4px #142f2e}
     .world-v2__resource-hotspot:before{content:"";position:absolute;left:-9px;top:8px;bottom:8px;width:5px;background:#efc35d;border-radius:3px;opacity:.65}
     .world-v2__resource-hotspot:hover{transform:translateY(-3px);background:rgba(21,39,38,.82)}
-    .world-v2__resource-room{position:relative;min-height:100vh;background:linear-gradient(90deg,rgba(8,31,35,.58),rgba(8,31,35,.12)),url('./assets/cafasso-biblioteca-personal-v1.png') center/cover no-repeat}
+    .world-v2__resource-room{position:relative;min-height:100vh;background:linear-gradient(90deg,rgba(8,31,35,.58),rgba(8,31,35,.12)),url('./assets/cafasso-biblioteca-vacia-v1.png') center/cover no-repeat}
     .world-v2__book{pointer-events:auto;position:absolute;padding:18px 16px;border:0;border-radius:3px;background:#68462f;color:#fff8e9;box-shadow:0 8px 18px rgba(0,0,0,.42);cursor:pointer;transform:rotate(-2deg);font-family:Georgia,serif;z-index:4}
     .world-v2__book small,.world-v2__book b{display:block}.world-v2__book small{margin-top:7px;color:#e8c98e}.world-v2__book:hover{transform:translateY(-5px) rotate(-2deg)}
     .world-v2__book-memorias{left:30%;top:50%}.world-v2__book-carta{left:49%;top:43%;background:#b99a67;color:#30241b;transform:rotate(3deg)}.world-v2__book-sistema{left:66%;top:53%;background:#3f5a55}.world-v2__book-domingo{left:78%;top:35%;background:#7a3f32}
