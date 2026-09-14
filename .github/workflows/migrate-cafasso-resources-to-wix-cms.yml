@@ -27,108 +27,87 @@ jobs:
           s = js.read_text(encoding='utf-8')
 
           old = "  const RESOURCE_CATALOG_URL = './data/resources.json';\n"
-          new = """  const WIX_RESOURCE_COLLECTION_ID = 'cafasso-recursos';
-  const WIX_OAUTH_CLIENT_ID = 'c4378c2e-b8fa-4e76-b0e1-7fbd7336de44';
-  const WIX_TOKEN_URL = 'https://www.wixapis.com/oauth2/token';
-  const WIX_DATA_QUERY_URL = 'https://www.wixapis.com/data/v2/items/query';
-  const WIX_TOKEN_CACHE_KEY = 'cafasso-wix-visitor-token-v1';
-"""
+          new = "  const WIX_RESOURCE_COLLECTION_ID = 'cafasso-recursos';\n  const WIX_OAUTH_CLIENT_ID = 'c4378c2e-b8fa-4e76-b0e1-7fbd7336de44';\n  const WIX_TOKEN_URL = 'https://www.wixapis.com/oauth2/token';\n  const WIX_DATA_QUERY_URL = 'https://www.wixapis.com/data/v2/items/query';\n  const WIX_TOKEN_CACHE_KEY = 'cafasso-wix-visitor-token-v1';\n"
           if old not in s:
               raise SystemExit('No se encontró RESOURCE_CATALOG_URL')
           s = s.replace(old, new, 1)
 
           start = s.index('  async function loadResourceLibrary() {')
           end = s.index('\n\n  loadResourceLibrary();', start)
-          replacement = r'''  async function getWixVisitorToken() {
-    try {
-      const cached = JSON.parse(sessionStorage.getItem(WIX_TOKEN_CACHE_KEY) || 'null');
-      if (cached?.accessToken && Number(cached?.expiresAt || 0) > Date.now() + 60000) {
-        return cached.accessToken;
-      }
-    } catch (error) {
-      // Si el caché falla, pedimos un token nuevo.
-    }
+          replacement = """  async function getWixVisitorToken() {
+            try {
+              const cached = JSON.parse(sessionStorage.getItem(WIX_TOKEN_CACHE_KEY) || 'null');
+              if (cached?.accessToken && Number(cached?.expiresAt || 0) > Date.now() + 60000) {
+                return cached.accessToken;
+              }
+            } catch (error) {
+              // Si el caché falla, pedimos un token nuevo.
+            }
 
-    const response = await fetch(WIX_TOKEN_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        clientId: WIX_OAUTH_CLIENT_ID,
-        grantType: 'anonymous'
-      })
-    });
-    if (!response.ok) throw new Error(`Wix OAuth ${response.status}`);
-    const token = await response.json();
-    if (!token?.access_token) throw new Error('Wix OAuth no devolvió access_token');
+            const response = await fetch(WIX_TOKEN_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                clientId: WIX_OAUTH_CLIENT_ID,
+                grantType: 'anonymous'
+              })
+            });
+            if (!response.ok) throw new Error(`Wix OAuth ${response.status}`);
+            const token = await response.json();
+            if (!token?.access_token) throw new Error('Wix OAuth no devolvió access_token');
 
-    try {
-      sessionStorage.setItem(WIX_TOKEN_CACHE_KEY, JSON.stringify({
-        accessToken: token.access_token,
-        expiresAt: Date.now() + (Number(token.expires_in || 3600) * 1000)
-      }));
-    } catch (error) {
-      // El acceso a sessionStorage no es obligatorio.
-    }
-    return token.access_token;
-  }
+            try {
+              sessionStorage.setItem(WIX_TOKEN_CACHE_KEY, JSON.stringify({
+                accessToken: token.access_token,
+                expiresAt: Date.now() + (Number(token.expires_in || 3600) * 1000)
+              }));
+            } catch (error) {
+              // El acceso a sessionStorage no es obligatorio.
+            }
+            return token.access_token;
+          }
 
-  async function loadResourceLibrary() {
-    if (space !== 'recursos') return;
-    try {
-      const accessToken = await getWixVisitorToken();
-      const response = await fetch(WIX_DATA_QUERY_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': accessToken
-        },
-        body: JSON.stringify({
-          dataCollectionId: WIX_RESOURCE_COLLECTION_ID,
-          query: { paging: { limit: 1000, offset: 0 } }
-        })
-      });
-      if (!response.ok) throw new Error(`Wix Data ${response.status}`);
-      const payload = await response.json();
-      const resources = Array.isArray(payload?.dataItems)
-        ? payload.dataItems.map((item) => ({
-            id: item.id,
-            ...(item.data || {}),
-            url: item?.data?.url || item?.data?.archivo || ''
-          }))
-        : [];
-      renderResourceLibrary(resources);
-    } catch (error) {
-      console.warn('CAFASSO: no se pudo cargar la biblioteca desde Wix CMS.', error);
-    }
-  }'''
+          async function loadResourceLibrary() {
+            if (space !== 'recursos') return;
+            try {
+              const accessToken = await getWixVisitorToken();
+              const response = await fetch(WIX_DATA_QUERY_URL, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': accessToken
+                },
+                body: JSON.stringify({
+                  dataCollectionId: WIX_RESOURCE_COLLECTION_ID,
+                  query: { paging: { limit: 1000, offset: 0 } }
+                })
+              });
+              if (!response.ok) throw new Error(`Wix Data ${response.status}`);
+              const payload = await response.json();
+              const resources = Array.isArray(payload?.dataItems)
+                ? payload.dataItems.map((item) => ({
+                    id: item.id,
+                    ...(item.data || {}),
+                    url: item?.data?.url || item?.data?.archivo || ''
+                  }))
+                : [];
+              renderResourceLibrary(resources);
+            } catch (error) {
+              console.warn('CAFASSO: no se pudo cargar la biblioteca desde Wix CMS.', error);
+            }
+          }"""
+          replacement = '\n'.join(line[10:] if line.startswith('          ') else line for line in replacement.splitlines())
           s = s[:start] + replacement + s[end:]
           js.write_text(s, encoding='utf-8')
 
           admin = Path('cafasso-wix-import/admin-dashboard.js')
           a = admin.read_text(encoding='utf-8')
           cms_url = 'https://manage.wix.com/dashboard/c6a6ef36-f36a-453a-b787-5762b698f820/wix-cms/data/cafasso-recursos'
-          a = a.replace("link.href='./resource-admin.html';", f"link.href='{cms_url}';\n      link.target='_blank';\n      link.rel='noopener noreferrer';")
+          a = a.replace("link.href='./resource-admin.html';", "link.href='" + cms_url + "';\n      link.target='_blank';\n      link.rel='noopener noreferrer';")
           admin.write_text(a, encoding='utf-8')
 
           resource_admin = Path('cafasso-wix-import/resource-admin.html')
-          resource_admin.write_text('''<!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CAFASSO · Recursos</title>
-<script src="./auth-guard.js"></script>
-<script>
-(() => {
-  const role = String(document.documentElement.dataset.cafassoRole || '').toLowerCase();
-  if (role && !role.includes('admin')) { location.replace('./'); return; }
-  location.replace('https://manage.wix.com/dashboard/c6a6ef36-f36a-453a-b787-5762b698f820/wix-cms/data/cafasso-recursos');
-})();
-</script>
-</head>
-<body></body>
-</html>
-''', encoding='utf-8')
+          resource_admin.write_text('<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>CAFASSO · Recursos</title>\n<script src="./auth-guard.js"></script>\n<script>\n(() => {\n  const role = String(document.documentElement.dataset.cafassoRole || "").toLowerCase();\n  if (role && !role.includes("admin")) { location.replace("./"); return; }\n  location.replace("https://manage.wix.com/dashboard/c6a6ef36-f36a-453a-b787-5762b698f820/wix-cms/data/cafasso-recursos");\n})();\n</script>\n</head>\n<body></body>\n</html>\n', encoding='utf-8')
 
           index = Path('cafasso-wix-import/index.html')
           i = index.read_text(encoding='utf-8')
