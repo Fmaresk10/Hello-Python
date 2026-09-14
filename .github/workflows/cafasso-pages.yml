@@ -1,19 +1,15 @@
 name: CAFASSO Pages
-
 on:
   push:
     branches: ["main"]
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: "pages"
   cancel-in-progress: true
-
 jobs:
   deploy:
     environment:
@@ -23,61 +19,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Forzar Home nuevo del animador
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
-
-          root = Path('cafasso-wix-import')
-          favicon = '<link rel="icon" type="image/svg+xml" href="./favicon.svg?v=20260908-1">'
-          for page in root.glob('*.html'):
-              html = page.read_text(encoding='utf-8')
-              html = re.sub(r'<link\s+[^>]*rel=["\'](?:shortcut\s+)?icon["\'][^>]*>\s*', '', html, flags=re.I)
-              if favicon not in html:
-                  html = html.replace('</head>', favicon + '\n</head>')
-              page.write_text(html, encoding='utf-8')
-
-          p = Path('cafasso-wix-import/index.html')
-          s = p.read_text(encoding='utf-8')
-          inject = '''<style id="cafasso-blank-mode">html,body{margin:0!important;padding:0!important;background:#ffffff!important;min-height:100%!important}body>*{display:none!important}</style>
-'''
-          s = s.replace('</body>', inject + '</body>')
-          editor = Path('cafasso-wix-import/curso-editor.html')
-          es = editor.read_text(encoding='utf-8')
-          for old in ['course-cover-editor.js?v=20260907-1','course-cover-editor.js?v=20260907-2']:
-              if old in es:
-                  es = es.replace(old,'course-cover-editor.js?v=20260907-3')
-          if 'course-cover-editor.js?v=20260907-3' not in es:
-              es = es.replace('</body>', '<script src="./course-cover-editor.js?v=20260907-3"></script>\n</body>')
-          es = re.sub(r'<script src="\./course-editor-nav\.js\?v=[^"]+"></script>\s*', '', es)
-          es = es.replace('</body>', '<script src="./course-editor-nav.js?v=20260907-4"></script>\n</body>')
-          editor.write_text(es, encoding='utf-8')
-
-          login = Path('cafasso-wix-import/login.html')
-          ls = login.read_text(encoding='utf-8')
-          ls = re.sub(r'<script src="\./login-redesign\.js\?v=[^"]+"></script>\s*', '', ls)
-          ls = ls.replace('</body>', '<script src="./login-redesign.js?v=20260907-1"></script>\n</body>')
-          login.write_text(ls, encoding='utf-8')
-
-          admin = Path('cafasso-wix-import/admin.html')
-          ads = admin.read_text(encoding='utf-8')
-          ads = re.sub(r'<script src="\./admin-login-image\.js\?v=[^"]+"></script>\s*', '', ads)
-          ads = ads.replace('</body>', '<script src="./admin-login-image.js?v=20260907-1"></script>\n</body>')
-          admin.write_text(ads, encoding='utf-8')
-
-          deliveries = Path('cafasso-wix-import/entregas.html')
-          ds = deliveries.read_text(encoding='utf-8')
-          ds = re.sub(r'<script src="\./entregas-manager\.js\?v=[^"]+"></script>\s*', '', ds)
-          ds = ds.replace('</body>', '<script src="./entregas-manager.js?v=20260909-1"></script>\n</body>')
-          deliveries.write_text(ds, encoding='utf-8')
-          PY
-      - name: Aplicar modelo Personas
-        run: python scripts/patch_people_semantics.py
       - name: Configure Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -85,4 +28,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
