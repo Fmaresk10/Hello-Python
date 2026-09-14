@@ -21,7 +21,7 @@
         <img class="cafasso-house__image" src="./assets/cafasso-casa-interior-v2.jpg" alt="Interior cálido de la Casa CAFASSO">
         <button class="cafasso-space-link cafasso-space-link--casa" data-space="patio" type="button">Patio</button>
         <button class="cafasso-bitacora-object" data-action="bitacora-open" type="button" aria-label="Abrir Bitácora">
-          <img src="./assets/cafasso-bitacora-v2.png" alt="Bitácora">
+          <img src="./assets/cafasso-bitacora-v3.svg" alt="Bitácora">
         </button>
         <section class="cafasso-bitacora-panel" data-bitacora-panel hidden aria-label="Bitácora personal">
           <div class="cafasso-bitacora-book" role="dialog" aria-modal="true" aria-labelledby="cafasso-bitacora-title">
