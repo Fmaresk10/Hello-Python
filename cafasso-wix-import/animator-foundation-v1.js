@@ -9,8 +9,6 @@
   const ESCUELA_BG = 'https://static.wixstatic.com/media/47bf07_481618e0256044f9b31ae360a03a9169~mv2.png';
   const RECURSOS_BG = 'https://static.wixstatic.com/media/47bf07_8451eada7d72451a854df7cae47a80b6~mv2.png';
   const BITACORA_IMG = 'https://static.wixstatic.com/media/47bf07_20750dc35c6f4678b865413ce34ec1fe~mv2.png';
-  const RESOURCE_API = 'https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
-  const RESOURCE_COURSE_ID = '53bca408-5745-4449-adf9-7c6cd6130408';
   const BITACORA_KEY = 'cafasso-bitacora-v1';
 
   const isAdmin = (() => {
@@ -23,11 +21,6 @@
       return false;
     }
   })();
-
-  const RESOURCE_COLORS = [
-    '#744936', '#3f5e53', '#6c5a38', '#584967', '#7b3f45',
-    '#355765', '#6d513f', '#4f603f', '#734f2f', '#4f4d6f'
-  ];
 
   if (space === 'patio') {
     app.innerHTML = '<main class="cafasso-patio"><img class="cafasso-patio__image" src="https://static.wixstatic.com/media/47bf07_2465a68b3ac64824b43bc20531ce6fd4~mv2.png" alt="Patio salesiano CAFASSO"><button class="cafasso-space-link cafasso-space-link--patio-home" data-space="house" type="button">Casa</button><button class="cafasso-space-link cafasso-space-link--patio-escuela" data-space="escuela" type="button">Escuela</button><button class="cafasso-space-link cafasso-space-link--patio-parroquia" data-space="parroquia" type="button">Parroquia</button></main>';
@@ -77,151 +70,8 @@
     });
   });
 
-  function hashText(value) {
-    let hash = 0;
-    const textValue = String(value || 'recurso');
-    for (let i = 0; i < textValue.length; i += 1) {
-      hash = ((hash << 5) - hash) + textValue.charCodeAt(i);
-      hash |= 0;
-    }
-    return Math.abs(hash);
-  }
-
-  function resourceColor(resource) {
-    if (resource.color) return resource.color;
-    const seed = resource.categoria || resource.id || resource.titulo;
-    return RESOURCE_COLORS[hashText(seed) % RESOURCE_COLORS.length];
-  }
-
-  function resourceHeight(resource, index) {
-    const seed = hashText(resource.id || resource.titulo || index);
-    return 72 + (seed % 24);
-  }
-
-  function createResourceBook(resource, index) {
-    const book = document.createElement(resource.url ? 'a' : 'button');
-    book.className = 'cafasso-resource-book';
-    book.style.setProperty('--book-color', resourceColor(resource));
-    book.style.setProperty('--book-height', `${resourceHeight(resource, index)}%`);
-    book.setAttribute('aria-label', resource.titulo || 'Recurso');
-    book.title = [resource.titulo, resource.categoria].filter(Boolean).join(' · ');
-
-    if (resource.url) {
-      book.href = resource.url;
-      book.target = '_blank';
-      book.rel = 'noopener noreferrer';
-    } else {
-      book.type = 'button';
-      book.disabled = true;
-    }
-
-    const spine = document.createElement('span');
-    spine.className = 'cafasso-resource-book__spine';
-
-    const title = document.createElement('span');
-    title.className = 'cafasso-resource-book__title';
-    title.textContent = resource.titulo || 'Recurso';
-
-    spine.appendChild(title);
-    book.appendChild(spine);
-    return book;
-  }
-
-  function renderResourceLibrary(resources) {
-    const shelf = app.querySelector('[data-resource-shelf]');
-    if (!shelf) return;
-
-    shelf.innerHTML = '';
-    const visibleResources = resources.filter((resource) => resource && resource.mostrarEnBiblioteca === true);
-    if (!visibleResources.length) return;
-
-    const rowCount = 8;
-    const rows = Array.from({ length: rowCount }, (_, index) => {
-      const row = document.createElement('div');
-      row.className = `cafasso-resource-row cafasso-resource-row--${index + 1}`;
-      shelf.appendChild(row);
-      return row;
-    });
-
-    visibleResources.forEach((resource, index) => {
-      const rowIndex = Math.min(Math.floor(index / 7), rowCount - 1);
-      rows[rowIndex].appendChild(createResourceBook(resource, index));
-    });
-  }
-
-  function truthy(value) {
-    return value === true || value === 1 || String(value || '').toLowerCase() === 'true';
-  }
-
-  function asObject(value) {
-    if (value && typeof value === 'object') return value;
-    if (typeof value !== 'string') return {};
-    try {
-      const parsed = JSON.parse(value);
-      return parsed && typeof parsed === 'object' ? parsed : {};
-    } catch (error) {
-      return {};
-    }
-  }
-
-  function collectResourceBlocks(payload) {
-    const course = payload?.course || payload?.data?.course || {};
-    const modules = [
-      ...(Array.isArray(course?.modules) ? course.modules : []),
-      ...(Array.isArray(payload?.modules) ? payload.modules : []),
-      ...(Array.isArray(payload?.data?.modules) ? payload.data.modules : [])
-    ];
-    const direct = [
-      ...(Array.isArray(course?.contents) ? course.contents : []),
-      ...(Array.isArray(course?.blocks) ? course.blocks : []),
-      ...(Array.isArray(payload?.contents) ? payload.contents : []),
-      ...(Array.isArray(payload?.blocks) ? payload.blocks : []),
-      ...(Array.isArray(payload?.data?.blocks) ? payload.data.blocks : [])
-    ];
-    modules.forEach((module) => {
-      if (Array.isArray(module?.contents)) direct.push(...module.contents);
-      if (Array.isArray(module?.blocks)) direct.push(...module.blocks);
-      if (Array.isArray(module?.data?.contents)) direct.push(...module.data.contents);
-      if (Array.isArray(module?.data?.blocks)) direct.push(...module.data.blocks);
-    });
-    return direct.map((entry) => entry?.data && typeof entry.data === 'object' ? { _itemId: entry.id, ...entry.data } : entry).filter(Boolean);
-  }
-
-  async function loadResourceLibrary() {
-    if (space !== 'recursos') return;
-    try {
-      const url = `${RESOURCE_API}?id=${encodeURIComponent(RESOURCE_COURSE_ID)}&verify=${Date.now()}`;
-      const response = await fetch(url, { method: 'GET', cache: 'no-store' });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const payload = await response.json();
-      if (payload?.ok === false) throw new Error(payload?.error || 'CAFASSO no devolvió el catálogo');
-
-      const resources = collectResourceBlocks(payload)
-        .map((block) => {
-          const settings = asObject(block?.settings);
-          const content = asObject(block?.content);
-          return {
-            id: block?._id || block?.id || block?._itemId || '',
-            titulo: block?.title || block?.titulo || 'Recurso',
-            categoria: settings.categoria || block?.categoria || '',
-            tipo: settings.resourceType || block?.tipo || block?.type || 'Documento',
-            url: content.body || block?.url || block?.archivo || '',
-            descripcion: settings.descripcion || block?.descripcion || '',
-            mostrarEnBiblioteca: truthy(settings.mostrarEnBiblioteca ?? block?.mostrarEnBiblioteca),
-            disponibleParaCursos: truthy(settings.disponibleParaCursos ?? block?.disponibleParaCursos),
-            cursos: Array.isArray(settings.cursos) ? settings.cursos : (Array.isArray(block?.cursos) ? block.cursos : [])
-          };
-        })
-        .filter((resource, index, all) => resource.titulo && all.findIndex((item) => item.id ? item.id === resource.id : item.titulo === resource.titulo) === index)
-        .filter((resource) => resource.mostrarEnBiblioteca === true);
-
-      renderResourceLibrary(resources);
-    } catch (error) {
-      console.warn('CAFASSO: no se pudo cargar la biblioteca de recursos.', error);
-    }
-  }
-
-  loadResourceLibrary();
+  // La Biblioteca de Recursos tiene un único renderizador dedicado:
+  // wix-resources-cms.js. No dibujamos libros acá para evitar dobles posiciones.
 
   const panel = app.querySelector('[data-bitacora-panel]');
   const text = app.querySelector('[data-bitacora-text]');
