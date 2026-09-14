@@ -10,7 +10,7 @@
   // Cada recurso toma una coordenada de esta tabla. Si más adelante un recurso
   // trae bibliotecaSlot/slot (1..N), se respeta ese lugar explícito.
   const BOOK_SLOTS = [
-    { id: 1,  x: 555,  shelfY: 623, width: 46, height: 146 },
+    { id: 1,  x: 555,  shelfY: 623, width: 40, height: 118 },
     { id: 2,  x: 617,  shelfY: 623, width: 47, height: 145 },
     { id: 3,  x: 672,  shelfY: 623, width: 54, height: 158 },
     { id: 4,  x: 734,  shelfY: 623, width: 49, height: 150 },
