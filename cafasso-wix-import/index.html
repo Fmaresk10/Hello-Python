@@ -14,6 +14,9 @@ html,body,#app{margin:0;width:100%;height:100%;overflow:hidden;background:#102f3
 .cafasso-space-link{position:absolute;z-index:4;border:1px solid rgba(239,195,93,.8);border-radius:4px;padding:10px 16px;background:rgba(15,39,40,.78);color:#fff8e9;font:15px Georgia,serif;letter-spacing:.04em;cursor:pointer;box-shadow:0 5px 14px rgba(0,0,0,.35);text-shadow:0 1px 5px rgba(0,0,0,.5);transition:transform .2s ease,background .2s ease}
 .cafasso-space-link:hover{transform:translateY(-2px);background:rgba(32,62,58,.92)}
 .cafasso-space-link:focus-visible{outline:3px solid #f2c95a;outline-offset:4px}
+.cafasso-admin-home-link{position:absolute;right:3.2%;top:4%;z-index:7;padding:9px 13px;border:1px solid rgba(242,201,76,.72);border-radius:999px;background:rgba(15,45,77,.82);color:#fff7dc;text-decoration:none;font:700 12px Inter,system-ui,sans-serif;letter-spacing:.02em;box-shadow:0 6px 18px rgba(0,0,0,.28);backdrop-filter:blur(5px);transition:transform .18s ease,background .18s ease,box-shadow .18s ease}
+.cafasso-admin-home-link:hover{transform:translateY(-2px);background:rgba(15,45,77,.96);box-shadow:0 9px 22px rgba(0,0,0,.34)}
+.cafasso-admin-home-link:focus-visible{outline:3px solid #f2c95a;outline-offset:4px}
 .cafasso-space-link--casa{left:calc(66% - 114px);top:calc(40% - 113px)}
 .cafasso-space-link--house-recursos{left:auto;right:8%;top:24%}
 .cafasso-space-link--patio-home{left:16%;top:48%}
@@ -63,6 +66,7 @@ html,body,#app{margin:0;width:100%;height:100%;overflow:hidden;background:#102f3
 
 @media(max-width:680px){
   .cafasso-space-link{padding:9px 13px;font-size:13px}
+  .cafasso-admin-home-link{right:4%;top:3%;padding:8px 11px;font-size:11px}
   .cafasso-space-link--casa{left:47%;top:24%}
   .cafasso-space-link--house-recursos{left:auto;right:5%;top:26%}
   .cafasso-space-link--patio-home{left:8%;top:50%}
@@ -82,8 +86,8 @@ html,body,#app{margin:0;width:100%;height:100%;overflow:hidden;background:#102f3
   .cafasso-bitacora-text{height:45vh;font-size:18px;line-height:29px}
   .cafasso-bitacora-footer{align-items:flex-end;flex-direction:column}
 }
-@media (prefers-reduced-motion:reduce){.cafasso-house:after{animation:none!important}.cafasso-space-link,.cafasso-bitacora-object,.cafasso-resource-book{transition:none}}
+@media (prefers-reduced-motion:reduce){.cafasso-house:after{animation:none!important}.cafasso-space-link,.cafasso-admin-home-link,.cafasso-bitacora-object,.cafasso-resource-book{transition:none}}
 </style>
 </head>
-<body><div id="app"></div><script src="./animator-foundation-v1.js?v=20260914-24"></script></body>
+<body><div id="app"></div><script src="./animator-foundation-v1.js?v=20260914-25"></script></body>
 </html>
