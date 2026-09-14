@@ -21,6 +21,18 @@
     .cafasso-world-v2--resources:before,.cafasso-world-v2--resources:after{display:none!important}
     .cafasso-world-v2--resources .world-v2__resource-room{position:fixed!important;top:0!important;right:0!important;bottom:0!important;left:0!important;z-index:2!important;width:100vw!important;height:100vh!important;background-image:none!important;background:transparent!important}
     .cafasso-world-v2--resources .world-v2__topbar{position:relative;z-index:9;background:rgba(15,39,40,.72);padding:14px 22px;color:#fff8e9}
+    .cafasso-world-v2--patio:before{background:linear-gradient(90deg,rgba(8,31,35,.64),rgba(8,31,35,.08) 72%,rgba(8,31,35,.18));}
+    .cafasso-world-v2--patio .cafasso-world-v2__content{align-items:flex-end;padding:clamp(28px,6vw,78px)!important}
+    .cafasso-world-v2--patio .cafasso-world-v2__intro{max-width:500px;padding:0 0 4px 20px;border-left:3px solid #efc35d;text-shadow:0 2px 12px rgba(0,0,0,.65)}
+    .cafasso-world-v2--patio .cafasso-world-v2__eyebrow{margin-bottom:10px;color:#efc35d;font:12px Georgia,serif;letter-spacing:.16em;text-transform:uppercase}
+    .cafasso-world-v2--patio .cafasso-world-v2__intro h2{margin:0 0 12px;color:#fff8e9;font:500 clamp(30px,4vw,48px)/1.05 Georgia,serif}
+    .cafasso-world-v2--patio .cafasso-world-v2__intro p{margin:0;max-width:470px;color:rgba(255,248,233,.86);font:16px/1.55 Georgia,serif}
+    .cafasso-world-v2--patio .cafasso-world-v2__actions{margin-top:22px}
+    .cafasso-world-v2--patio .cafasso-world-v2__primary{border:1px solid rgba(239,195,93,.75);border-radius:4px;padding:11px 18px;background:rgba(15,39,40,.74);color:#fff8e9;font:15px Georgia,serif;cursor:pointer;box-shadow:0 5px 14px rgba(0,0,0,.3);transition:transform .2s ease,background .2s ease}
+    .cafasso-world-v2--patio .cafasso-world-v2__primary:hover{transform:translateY(-2px);background:rgba(31,62,59,.9)}
+    .world-v2__topbar{position:relative;z-index:8;padding:14px 22px;background:linear-gradient(90deg,rgba(15,39,40,.72),transparent);color:#fff8e9}
+    .world-v2__topbar button{border:0;background:transparent;color:#fff8e9;font:15px Georgia,serif;cursor:pointer}
+    .world-v2__label{margin-left:18px;font:15px Georgia,serif;color:rgba(255,248,233,.72)}
     .cafasso-world-v2--arrival:before{background:radial-gradient(ellipse 38% 32% at 61% 25%,rgba(255,211,125,.2),transparent 72%),linear-gradient(180deg,rgba(9,32,37,.04),rgba(9,32,37,.18) 55%,rgba(9,32,37,.58));mix-blend-mode:screen;animation:worldV2WarmLight 7s ease-in-out infinite alternate}
     .cafasso-world-v2--arrival:after{animation:worldV2DepthBreath 11s ease-in-out infinite alternate}
     @keyframes worldV2WarmLight{from{opacity:.48;background-position:61% 25%,center}to{opacity:.9;background-position:57% 29%,center}}
