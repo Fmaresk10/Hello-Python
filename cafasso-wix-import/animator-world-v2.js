@@ -17,9 +17,10 @@
     body.cafasso-world-active main{width:100%!important;max-width:none!important;padding:0!important}
     .cafasso-world-v2{min-height:100vh;position:relative;overflow:hidden;color:#fff6e5;background:linear-gradient(90deg,rgba(8,31,35,.46),rgba(8,31,35,.06) 58%,rgba(8,31,35,.18)),url('./assets/cafasso-casa-interior-v2.jpg') center/cover no-repeat;isolation:isolate}
     .cafasso-world-v2--house,.cafasso-world-v2--patio{background:linear-gradient(90deg,rgba(8,31,35,.62),rgba(8,31,35,.08) 58%,rgba(8,31,35,.2)),url('https://static.wixstatic.com/media/47bf07_2465a68b3ac64824b43bc20531ce6fd4~mv2.png') center/cover no-repeat}
-    .cafasso-world-v2--resources{background-image:linear-gradient(90deg,rgba(8,31,35,.28),rgba(8,31,35,.04)),url('./assets/cafasso-biblioteca-vacia-v1.png')!important;background-position:center!important;background-size:cover!important;background-repeat:no-repeat!important}
+    .cafasso-world-v2--resources{background:#182f30!important}
     .cafasso-world-v2--resources:before,.cafasso-world-v2--resources:after{display:none!important}
-    .cafasso-world-v2--resources .world-v2__resource-room{background:transparent!important}
+    .cafasso-world-v2--resources .world-v2__resource-room{position:fixed!important;top:0!important;right:0!important;bottom:0!important;left:0!important;z-index:2!important;width:100vw!important;height:100vh!important;background-image:linear-gradient(90deg,rgba(8,31,35,.28),rgba(8,31,35,.04)),url('./assets/cafasso-biblioteca-vacia-v1.png')!important;background-position:center!important;background-size:cover!important;background-repeat:no-repeat!important}
+    .cafasso-world-v2--resources .world-v2__topbar{position:relative;z-index:9;background:rgba(15,39,40,.72);padding:14px 22px;color:#fff8e9}
     .cafasso-world-v2--arrival:before{background:radial-gradient(ellipse 38% 32% at 61% 25%,rgba(255,211,125,.2),transparent 72%),linear-gradient(180deg,rgba(9,32,37,.04),rgba(9,32,37,.18) 55%,rgba(9,32,37,.58));mix-blend-mode:screen;animation:worldV2WarmLight 7s ease-in-out infinite alternate}
     .cafasso-world-v2--arrival:after{animation:worldV2DepthBreath 11s ease-in-out infinite alternate}
     @keyframes worldV2WarmLight{from{opacity:.48;background-position:61% 25%,center}to{opacity:.9;background-position:57% 29%,center}}
