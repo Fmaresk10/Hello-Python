@@ -10,7 +10,7 @@
   const RECURSOS_BG = 'https://static.wixstatic.com/media/47bf07_8451eada7d72451a854df7cae47a80b6~mv2.png';
   const BITACORA_IMG = 'https://static.wixstatic.com/media/47bf07_20750dc35c6f4678b865413ce34ec1fe~mv2.png';
   const RESOURCE_API = 'https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
-  const RESOURCE_COURSE_TITLE = 'CAFASSO · Recursos internos';
+  const RESOURCE_COURSE_ID = '53bca408-5745-4449-adf9-7c6cd6130408';
   const BITACORA_KEY = 'cafasso-bitacora-v1';
 
   const isAdmin = (() => {
@@ -149,39 +149,75 @@
     });
   }
 
+  function truthy(value) {
+    return value === true || value === 1 || String(value || '').toLowerCase() === 'true';
+  }
+
+  function asObject(value) {
+    if (value && typeof value === 'object') return value;
+    if (typeof value !== 'string') return {};
+    try {
+      const parsed = JSON.parse(value);
+      return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function collectResourceBlocks(payload) {
+    const course = payload?.course || payload?.data?.course || {};
+    const modules = [
+      ...(Array.isArray(course?.modules) ? course.modules : []),
+      ...(Array.isArray(payload?.modules) ? payload.modules : []),
+      ...(Array.isArray(payload?.data?.modules) ? payload.data.modules : [])
+    ];
+    const direct = [
+      ...(Array.isArray(course?.contents) ? course.contents : []),
+      ...(Array.isArray(course?.blocks) ? course.blocks : []),
+      ...(Array.isArray(payload?.contents) ? payload.contents : []),
+      ...(Array.isArray(payload?.blocks) ? payload.blocks : []),
+      ...(Array.isArray(payload?.data?.blocks) ? payload.data.blocks : [])
+    ];
+    modules.forEach((module) => {
+      if (Array.isArray(module?.contents)) direct.push(...module.contents);
+      if (Array.isArray(module?.blocks)) direct.push(...module.blocks);
+      if (Array.isArray(module?.data?.contents)) direct.push(...module.data.contents);
+      if (Array.isArray(module?.data?.blocks)) direct.push(...module.data.blocks);
+    });
+    return direct.map((entry) => entry?.data && typeof entry.data === 'object' ? { _itemId: entry.id, ...entry.data } : entry).filter(Boolean);
+  }
+
   async function loadResourceLibrary() {
     if (space !== 'recursos') return;
     try {
-      const response = await fetch(`${RESOURCE_API}?title=${encodeURIComponent(RESOURCE_COURSE_TITLE)}`, { cache: 'no-store' });
-      if (!response.ok) {
-        renderResourceLibrary([]);
-        return;
-      }
+      const url = `${RESOURCE_API}?id=${encodeURIComponent(RESOURCE_COURSE_ID)}&verify=${Date.now()}`;
+      const response = await fetch(url, { method: 'GET', cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const payload = await response.json();
-      if (!payload?.ok || !payload?.course) {
-        renderResourceLibrary([]);
-        return;
-      }
-      const contents = Array.isArray(payload.course?.modules)
-        ? payload.course.modules.flatMap((module) => Array.isArray(module?.contents) ? module.contents : [])
-        : [];
-      const resources = contents
-        .filter((block) => block?.settings?.cafassoResource === true)
-        .map((block) => ({
-          id: block._id,
-          titulo: block.title || 'Recurso',
-          categoria: block.settings?.categoria || '',
-          tipo: block.settings?.resourceType || block.type || 'Documento',
-          url: block.content?.body || '',
-          descripcion: block.settings?.descripcion || '',
-          mostrarEnBiblioteca: block.settings?.mostrarEnBiblioteca === true,
-          disponibleParaCursos: block.settings?.disponibleParaCursos === true,
-          cursos: Array.isArray(block.settings?.cursos) ? block.settings.cursos : []
-        }));
+      if (payload?.ok === false) throw new Error(payload?.error || 'CAFASSO no devolvió el catálogo');
+
+      const resources = collectResourceBlocks(payload)
+        .map((block) => {
+          const settings = asObject(block?.settings);
+          const content = asObject(block?.content);
+          return {
+            id: block?._id || block?.id || block?._itemId || '',
+            titulo: block?.title || block?.titulo || 'Recurso',
+            categoria: settings.categoria || block?.categoria || '',
+            tipo: settings.resourceType || block?.tipo || block?.type || 'Documento',
+            url: content.body || block?.url || block?.archivo || '',
+            descripcion: settings.descripcion || block?.descripcion || '',
+            mostrarEnBiblioteca: truthy(settings.mostrarEnBiblioteca ?? block?.mostrarEnBiblioteca),
+            disponibleParaCursos: truthy(settings.disponibleParaCursos ?? block?.disponibleParaCursos),
+            cursos: Array.isArray(settings.cursos) ? settings.cursos : (Array.isArray(block?.cursos) ? block.cursos : [])
+          };
+        })
+        .filter((resource, index, all) => resource.titulo && all.findIndex((item) => item.id ? item.id === resource.id : item.titulo === resource.titulo) === index)
+        .filter((resource) => resource.mostrarEnBiblioteca === true);
+
       renderResourceLibrary(resources);
     } catch (error) {
       console.warn('CAFASSO: no se pudo cargar la biblioteca de recursos.', error);
-      renderResourceLibrary([]);
     }
   }
 
