@@ -19,6 +19,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Forzar versión fresca de Recursos
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os, re
+          path = Path('cafasso-wix-import/index.html')
+          text = path.read_text(encoding='utf-8')
+          version = os.environ['GITHUB_SHA'][:12]
+          updated = re.sub(r'wix-resources-cms\.js\?v=[^"\']+', f'wix-resources-cms.js?v={version}', text)
+          if updated == text:
+              raise SystemExit('No encontré la referencia a wix-resources-cms.js')
+          path.write_text(updated, encoding='utf-8')
+          PY
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
