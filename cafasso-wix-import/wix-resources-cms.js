@@ -3,7 +3,21 @@
   const RESOURCE_TITLE = 'CAFASSO · Recursos internos';
   const STATIC_CATALOG = './data/resources.json';
   const COLORS = ['#744936','#3f5e53','#6c5a38','#584967','#7b3f45','#355765','#6d513f','#4f603f','#734f2f','#4f4d6f'];
-  const SHELF_FILL_ORDER = [3, 7, 2, 6, 1, 5, 0, 4];
+  const SHELF_FILL_ORDER = [0, 1, 2, 3, 4, 5, 6, 7];
+
+  // Coordenadas tomadas de la imagen real de la Biblioteca (1672 x 941).
+  // Cada fila termina exactamente sobre una tabla de madera, para que los libros
+  // se perciban apoyados en el mueble y no flotando sobre la escena.
+  const SHELF_LAYOUT = [
+    { left: '29.8%', top: '47.5%', width: '20%', height: '13%' },
+    { left: '52.5%', top: '47.5%', width: '24%', height: '13%' },
+    { left: '29.8%', top: '33%',   width: '20%', height: '13%' },
+    { left: '52.5%', top: '31.8%', width: '24%', height: '13%' },
+    { left: '18.5%', top: '47.5%', width: '9%',  height: '13%' },
+    { left: '18.5%', top: '33%',   width: '9%',  height: '13%' },
+    { left: '18.5%', top: '18.3%', width: '9%',  height: '13%' },
+    { left: '52.5%', top: '17.2%', width: '24%', height: '13%' }
+  ];
 
   function alignShelfToLibraryImage() {
     const shelf = document.querySelector('[data-resource-shelf]');
@@ -42,6 +56,19 @@
       shelf.dataset.cafassoShelfAligned = 'true';
       window.addEventListener('resize', apply, { passive: true });
     }
+  }
+
+  function applyPhysicalShelfLayout(rows) {
+    rows.forEach((row, index) => {
+      const slot = SHELF_LAYOUT[index];
+      if (!slot) return;
+      row.style.left = slot.left;
+      row.style.top = slot.top;
+      row.style.width = slot.width;
+      row.style.height = slot.height;
+      row.style.right = 'auto';
+      row.style.bottom = 'auto';
+    });
   }
 
   function hashText(value) {
@@ -167,6 +194,7 @@
       shelf.appendChild(row);
       return row;
     });
+    applyPhysicalShelfLayout(rows);
 
     visible.forEach((resource, index) => {
       const shelfSlot = Math.min(Math.floor(index / 7), SHELF_FILL_ORDER.length - 1);
