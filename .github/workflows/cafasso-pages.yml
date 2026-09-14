@@ -40,10 +40,8 @@ jobs:
 
           p = Path('cafasso-wix-import/index.html')
           s = p.read_text(encoding='utf-8')
-          marker = '<script id="cafasso-home-v2-direct">'
-          if marker not in s:
-              inject = '''<style id="cafasso-blank-mode">html,body{margin:0!important;padding:0!important;background:#ffffff!important;min-height:100%!important}body>*{display:none!important}</style>
-'''<script id="cafasso-home-v2-direct">if(new URLSearchParams(location.search).get('previewRole')==='animador'||new URLSearchParams(location.search).get('previewUser'))document.documentElement.dataset.cafassoPreviewRole='animador';</script>\n<script src="./course-cover-home.js?v=20260907-4"></script>\n<script src="./animator-home.js?v=20260909-2"></script>\n<script src="./animator-home-tweaks.js?v=20260907-3"></script>\n<script src="./animator-home-refine.js?v=20260910-1"></script>\n'''
+          inject = '''<style id="cafasso-blank-mode">html,body{margin:0!important;padding:0!important;background:#ffffff!important;min-height:100%!important}body>*{display:none!important}</style>
+'''
           s = s.replace('</body>', inject + '</body>')
           profile_script = '<script src="./animator-profile-chip.js?v=20260907-2"></script>'
           s = re.sub(r'<script src="\./animator-profile-chip\.js\?v=[^"]+"></script>\s*', '', s)
