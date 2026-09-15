@@ -56,7 +56,7 @@
     loadHouseScript('./parish-lectionary-polish.js?v=3', 'cafasso-parish-lectionary-polish-loader');
     loadHouseScript('./parish-songbook.js?v=1', 'cafasso-parish-songbook-loader');
     loadHouseScript('./parish-candle.js?v=2', 'cafasso-parish-candle-loader');
-    loadHouseScript('./parish-candle-altar.js?v=1', 'cafasso-parish-candle-altar-loader');
+    loadHouseScript('./parish-candle-altar.js?v=2', 'cafasso-parish-candle-altar-loader');
   }
 
   if (document.readyState === 'loading') {
