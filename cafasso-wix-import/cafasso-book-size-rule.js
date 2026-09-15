@@ -52,6 +52,7 @@
     loadHouseScript('./patio-experience.js?v=1', 'cafasso-patio-experience-loader');
     loadHouseScript('./parish-experience.js?v=1', 'cafasso-parish-experience-loader');
     loadHouseScript('./parish-songbook.js?v=1', 'cafasso-parish-songbook-loader');
+    loadHouseScript('./parish-candle.js?v=1', 'cafasso-parish-candle-loader');
   }
 
   if (document.readyState === 'loading') {
