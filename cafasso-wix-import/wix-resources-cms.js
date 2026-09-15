@@ -166,8 +166,43 @@
       url: content.body || content.url || block.url || block.archivo || '',
       mostrarEnBiblioteca: showValue == null ? true : !explicitlyFalse(showValue),
       disponibleParaCursos: truthy(settings.disponibleParaCursos ?? block.disponibleParaCursos),
-      bibliotecaSlot: Number(settings.bibliotecaSlot ?? block.bibliotecaSlot ?? block.slot) || null
+      bibliotecaSlot: Number(settings.bibliotecaSlot ?? block.bibliotecaSlot ?? block.slot) || null,
+      color: settings.color || block.color || ''
     };
+  }
+
+  function normalizeCatalogResource(resource, index) {
+    if (!resource || typeof resource !== 'object') return null;
+    return {
+      id: resource.id || resource._id || `static-${index}`,
+      titulo: resource.titulo || resource.title || resource.name || 'Recurso',
+      categoria: resource.categoria || '',
+      tipo: resource.tipo || resource.type || 'Documento',
+      url: resource.url || resource.archivo || '',
+      mostrarEnBiblioteca: resource.mostrarEnBiblioteca == null ? true : !explicitlyFalse(resource.mostrarEnBiblioteca),
+      disponibleParaCursos: truthy(resource.disponibleParaCursos),
+      bibliotecaSlot: Number(resource.bibliotecaSlot ?? resource.slot) || null,
+      color: resource.color || ''
+    };
+  }
+
+  function mergeResources(staticResources, liveResources) {
+    const merged = new Map();
+    staticResources.forEach((resource, index) => {
+      const normalized = normalizeCatalogResource(resource, index);
+      if (normalized) merged.set(String(normalized.id), normalized);
+    });
+    liveResources.forEach(resource => {
+      if (!resource) return;
+      const key = String(resource.id);
+      const previous = merged.get(key) || {};
+      merged.set(key, { ...previous, ...resource });
+    });
+    return Array.from(merged.values()).sort((a, b) => {
+      const aSlot = Number(a.bibliotecaSlot) || 999;
+      const bSlot = Number(b.bibliotecaSlot) || 999;
+      return aSlot - bSlot;
+    });
   }
 
   function resolveSlot(resource, index) {
@@ -186,6 +221,7 @@
 
     book.className = 'cafasso-resource-book';
     book.dataset.cafassoSlot = String(slot.id);
+    book.dataset.cafassoResourceId = String(resource.id || '');
     book.setAttribute('aria-label', resource.titulo || 'Recurso');
     book.title = [resource.titulo, resource.categoria, resource.tipo, `Ubicación ${slot.id}`].filter(Boolean).join(' · ');
 
@@ -225,8 +261,6 @@
 
     alignShelfToLibraryImage();
     const visible = resources.filter(resource => resource && truthy(resource.mostrarEnBiblioteca));
-    if (!visible.length) return 0;
-
     shelf.innerHTML = '';
     shelf.dataset.cafassoCoordinateSystem = '1672x941';
     shelf.dataset.cafassoResourceCount = String(visible.length);
@@ -242,8 +276,6 @@
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const resources = await response.json();
       if (!Array.isArray(resources)) throw new Error('El catálogo local no es una lista');
-      const count = render(resources, 'static');
-      if (count) console.info(`CAFASSO: Biblioteca por coordenadas cargada con ${count} recurso(s).`);
       return resources;
     } catch (error) {
       console.warn('CAFASSO: no se pudo cargar el respaldo local de Recursos.', error);
@@ -259,26 +291,24 @@
       const course = payload?.course || payload?.data?.course || payload?.item || payload?.data || null;
       if (!course) throw new Error('El catálogo no vino en la respuesta');
 
-      const resources = collectContents(course).map(normalizeResource).filter(Boolean);
-      const count = render(resources, 'wix-live');
-      if (count) console.info(`CAFASSO: catálogo en vivo ubicado en ${count} coordenada(s).`);
-      return count;
+      return collectContents(course).map(normalizeResource).filter(Boolean);
     } catch (error) {
       console.warn('CAFASSO: no se pudo cargar el catálogo de Recursos desde Wix.', error);
-      return 0;
+      return [];
     }
   }
 
   async function loadLibrary() {
     if (new URLSearchParams(location.search).get('space') !== 'recursos') return;
     alignShelfToLibraryImage();
-    const localResources = await loadStatic();
-    const liveCount = await loadLive();
 
-    if (!liveCount && localResources.length) {
-      const shelf = document.querySelector('[data-resource-shelf]');
-      if (!shelf?.querySelector('.cafasso-resource-book')) render(localResources, 'static-final');
-    }
+    const [staticResources, liveResources] = await Promise.all([loadStatic(), loadLive()]);
+    const mergedResources = mergeResources(staticResources, liveResources);
+    const source = liveResources.length
+      ? (staticResources.length ? 'wix-live+static' : 'wix-live')
+      : 'static';
+    const count = render(mergedResources, source);
+    console.info(`CAFASSO: Biblioteca cargada con ${count} recurso(s) desde ${source}.`);
   }
 
   setTimeout(loadLibrary, 120);
