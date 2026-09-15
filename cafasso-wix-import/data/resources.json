@@ -22,5 +22,17 @@
     "disponibleParaCursos": false,
     "cursos": [],
     "bibliotecaSlot": 2
+  },
+  {
+    "id": "4eca82db-3768-402e-aee8-e5f64acefd39",
+    "titulo": "Fratelli Tutti",
+    "categoria": "Formacion",
+    "tipo": "PDF",
+    "url": "https://www.vatican.va/content/francesco/es/encyclicals/documents/papa-francesco_20201003_enciclica-fratelli-tutti.html",
+    "descripcion": "Encíclica del Papa Francisco",
+    "mostrarEnBiblioteca": true,
+    "disponibleParaCursos": true,
+    "cursos": [],
+    "bibliotecaSlot": 3
   }
 ]
