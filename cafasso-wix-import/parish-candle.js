@@ -5,22 +5,51 @@
   window.__cafassoParishCandleInstalled = true;
 
   const STYLE_ID = 'cafassoParishCandleStyles';
-  const todayKey = () => {
+
+  function readSession() {
+    try { return JSON.parse(localStorage.getItem('cafassoSession') || 'null'); }
+    catch (error) { return null; }
+  }
+
+  function userKey() {
+    const user = readSession()?.user || {};
+    const raw = user._id || user.id || user.email || user.name || 'local';
+    return encodeURIComponent(String(raw).trim().toLowerCase()).slice(0, 120);
+  }
+
+  function dateStamp() {
     const now = new Date();
     const y = now.getFullYear();
     const m = String(now.getMonth() + 1).padStart(2, '0');
     const d = String(now.getDate()).padStart(2, '0');
-    return `cafasso-parish-candle-${y}-${m}-${d}`;
-  };
+    return `${y}-${m}-${d}`;
+  }
+
+  const litKey = () => `cafasso-parish-candle-${userKey()}-${dateStamp()}`;
+  const intentionKey = () => `cafasso-parish-intention-${userKey()}-${dateStamp()}`;
 
   function isLitToday() {
-    try { return localStorage.getItem(todayKey()) === 'lit'; }
+    try { return localStorage.getItem(litKey()) === 'lit'; }
     catch (error) { return false; }
   }
 
   function rememberLit() {
-    try { localStorage.setItem(todayKey(), 'lit'); }
+    try { localStorage.setItem(litKey(), 'lit'); }
     catch (error) {}
+  }
+
+  function readIntention() {
+    try { return String(localStorage.getItem(intentionKey()) || ''); }
+    catch (error) { return ''; }
+  }
+
+  function saveIntention(value) {
+    const text = String(value || '').trim().slice(0, 240);
+    try {
+      if (text) localStorage.setItem(intentionKey(), text);
+      else localStorage.removeItem(intentionKey());
+    } catch (error) {}
+    return text;
   }
 
   function ensureStyles() {
@@ -46,8 +75,22 @@
       .cafasso-parish-candle-message strong{display:block;font:500 22px/1.1 Georgia,serif}
       .cafasso-parish-candle-message span{display:block;margin-top:7px;color:rgba(255,244,219,.67);font:600 10px/1.45 Inter,system-ui,sans-serif;letter-spacing:.035em}
 
+      .cafasso-candle-intention{position:fixed;inset:0;z-index:98;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(circle at 50% 42%,rgba(91,62,35,.13),rgba(4,10,9,.84) 72%);backdrop-filter:blur(8px) saturate(.82)}
+      .cafasso-candle-intention__sheet{position:relative;width:min(560px,94vw);padding:34px 36px 30px;border:1px solid rgba(118,82,45,.42);border-radius:6px;background:repeating-linear-gradient(0deg,rgba(105,72,39,.025) 0 1px,transparent 1px 10px),linear-gradient(145deg,#faf0d9,#efdfbd 70%,#e4c99a);box-shadow:0 32px 80px rgba(0,0,0,.55),inset 0 0 0 4px rgba(255,251,238,.24);color:#443427;font-family:Georgia,serif}
+      .cafasso-candle-intention__close{position:absolute;right:14px;top:13px;width:36px;height:36px;border:1px solid rgba(91,62,34,.18);border-radius:50%;background:rgba(255,249,233,.55);color:#5b4431;font:27px/1 Georgia,serif;cursor:pointer}
+      .cafasso-candle-intention__kicker{color:#987350;font:800 8px/1.2 Inter,system-ui,sans-serif;letter-spacing:.17em;text-transform:uppercase}
+      .cafasso-candle-intention h2{margin:7px 42px 9px 0;color:#433226;font:500 clamp(30px,5vw,43px)/1.04 Georgia,serif}
+      .cafasso-candle-intention p{margin:0 0 18px;color:#7b654f;font:14px/1.55 Georgia,serif}
+      .cafasso-candle-intention textarea{display:block;width:100%;min-height:118px;resize:none;border:0;border-bottom:1px solid rgba(111,77,43,.28);outline:0;padding:10px 7px;background:repeating-linear-gradient(180deg,transparent 0 30px,rgba(111,77,43,.1) 30px 31px);color:#49392d;font:17px/31px Georgia,serif;caret-color:#7a5738}
+      .cafasso-candle-intention textarea::placeholder{color:#9d876f;font-style:italic}
+      .cafasso-candle-intention__privacy{display:block;margin-top:9px;color:#967e65;font:800 8px/1.4 Inter,system-ui,sans-serif;letter-spacing:.04em}
+      .cafasso-candle-intention__actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:20px}
+      .cafasso-candle-intention__button{min-height:40px;padding:9px 14px;border:1px solid rgba(111,77,43,.32);border-radius:4px;background:rgba(255,250,238,.45);color:#604a36;font:800 10px/1 Inter,system-ui,sans-serif;cursor:pointer}
+      .cafasso-candle-intention__button--primary{border-color:#745234;background:linear-gradient(#795536,#67472d);color:#fff8e8;box-shadow:0 4px 9px rgba(77,51,29,.14)}
+
       @media(max-width:760px){
         .cafasso-parish-candle{left:50%;bottom:7%;width:62px;height:112px}.cafasso-parish-candle__wax{left:19px;bottom:18px;width:25px;height:60px}.cafasso-parish-candle__wax:after{left:11px}.cafasso-parish-candle__holder{left:9px;right:9px;bottom:8px;height:14px}.cafasso-parish-candle__flame{left:22px;bottom:77px;width:18px;height:28px}.cafasso-parish-candle__glow{top:5px;height:78px}.cafasso-parish-candle-message{bottom:4%;padding:15px 18px}.cafasso-parish-candle-message strong{font-size:19px}
+        .cafasso-candle-intention{align-items:flex-end;padding:10px}.cafasso-candle-intention__sheet{width:100%;padding:30px 22px 24px;border-radius:16px 16px 5px 5px}.cafasso-candle-intention h2{font-size:32px}.cafasso-candle-intention__actions{display:grid;grid-template-columns:1fr}.cafasso-candle-intention__button{width:100%;min-height:45px}
       }
       @media(prefers-reduced-motion:reduce){.cafasso-parish-candle,.cafasso-parish-candle__flame,.cafasso-parish-candle-message{transition:none!important;animation:none!important}}
     `;
@@ -55,14 +98,12 @@
   }
 
   let messageTimer = null;
-  function showMessage(alreadyLit = false) {
+  function showMessage(title, copy) {
     document.querySelector('.cafasso-parish-candle-message')?.remove();
     const message = document.createElement('div');
     message.className = 'cafasso-parish-candle-message';
     message.setAttribute('role', 'status');
-    message.innerHTML = alreadyLit
-      ? '<strong>Tu vela sigue encendida.</strong><span>Que esta luz te acompañe durante el día.</span>'
-      : '<strong>Una luz queda encendida.</strong><span>Que esta luz te recuerde a quién querés cuidar, acompañar o confiar hoy.</span>';
+    message.innerHTML = `<strong>${title}</strong><span>${copy}</span>`;
     document.body.appendChild(message);
     requestAnimationFrame(() => message.classList.add('is-visible'));
     clearTimeout(messageTimer);
@@ -70,6 +111,66 @@
       message.classList.remove('is-visible');
       setTimeout(() => message.remove(), 500);
     }, 4700);
+  }
+
+  function lightCandle(candle, intention = null) {
+    rememberLit();
+    if (intention !== null) saveIntention(intention);
+    candle.classList.add('is-lit');
+    candle.setAttribute('aria-label', 'Vela de oración encendida');
+    const saved = readIntention();
+    showMessage(
+      'Una luz queda encendida.',
+      saved ? 'Tu intención queda junto a esta luz durante el día.' : 'Que esta luz te recuerde a quién querés cuidar, acompañar o confiar hoy.'
+    );
+  }
+
+  function openIntention(candle, alreadyLit) {
+    document.querySelector('.cafasso-candle-intention')?.remove();
+    const current = readIntention();
+    const wrap = document.createElement('section');
+    wrap.className = 'cafasso-candle-intention';
+    wrap.setAttribute('role', 'dialog');
+    wrap.setAttribute('aria-modal', 'true');
+    wrap.setAttribute('aria-label', 'Intención de oración');
+    wrap.innerHTML = `
+      <article class="cafasso-candle-intention__sheet">
+        <button class="cafasso-candle-intention__close" type="button" data-candle-intention-close aria-label="Cerrar">×</button>
+        <div class="cafasso-candle-intention__kicker">Vela de oración · ${dateStamp()}</div>
+        <h2>${alreadyLit ? 'Tu intención de hoy' : '¿A quién querés confiar hoy?'}</h2>
+        <p>${alreadyLit ? 'Podés volver a leerla, cambiarla o dejar solamente la vela encendida.' : 'Podés escribir un nombre, una palabra o una frase. También podés encender la vela sin escribir nada.'}</p>
+        <textarea maxlength="240" data-candle-intention-text placeholder="Escribí acá, si querés…"></textarea>
+        <span class="cafasso-candle-intention__privacy">Privado · se guarda únicamente para este perfil en este dispositivo.</span>
+        <div class="cafasso-candle-intention__actions">
+          ${alreadyLit ? '' : '<button class="cafasso-candle-intention__button" type="button" data-candle-light-only>Encender sin escribir</button>'}
+          <button class="cafasso-candle-intention__button cafasso-candle-intention__button--primary" type="button" data-candle-save>${alreadyLit ? 'Guardar intención' : 'Guardar y encender'}</button>
+        </div>
+      </article>`;
+    document.body.appendChild(wrap);
+
+    const text = wrap.querySelector('[data-candle-intention-text]');
+    if (text) {
+      text.value = current;
+      setTimeout(() => text.focus(), 40);
+    }
+
+    const close = () => wrap.remove();
+    wrap.querySelector('[data-candle-intention-close]')?.addEventListener('click', close);
+    wrap.addEventListener('click', event => { if (event.target === wrap) close(); });
+    wrap.addEventListener('keydown', event => { if (event.key === 'Escape') close(); });
+
+    wrap.querySelector('[data-candle-light-only]')?.addEventListener('click', () => {
+      saveIntention('');
+      lightCandle(candle, null);
+      close();
+    });
+
+    wrap.querySelector('[data-candle-save]')?.addEventListener('click', () => {
+      const saved = saveIntention(text?.value || '');
+      if (!alreadyLit) lightCandle(candle, saved);
+      else showMessage(saved ? 'Tu intención quedó junto a la vela.' : 'Tu vela sigue encendida.', saved ? 'Queda guardada para hoy.' : 'No hace falta escribir nada para permanecer un momento acá.');
+      close();
+    });
   }
 
   function boot() {
@@ -85,18 +186,12 @@
     candle.innerHTML = '<span class="cafasso-parish-candle__glow" aria-hidden="true"></span><span class="cafasso-parish-candle__flame" aria-hidden="true"></span><span class="cafasso-parish-candle__wax" aria-hidden="true"></span><span class="cafasso-parish-candle__holder" aria-hidden="true"></span>';
     if (isLitToday()) {
       candle.classList.add('is-lit');
-      candle.setAttribute('aria-label', 'Vela de oración encendida');
+      candle.setAttribute('aria-label', 'Vela de oración encendida. Abrir intención de hoy');
     }
     parish.appendChild(candle);
 
     candle.addEventListener('click', () => {
-      const alreadyLit = candle.classList.contains('is-lit');
-      if (!alreadyLit) {
-        rememberLit();
-        candle.classList.add('is-lit');
-        candle.setAttribute('aria-label', 'Vela de oración encendida');
-      }
-      showMessage(alreadyLit);
+      openIntention(candle, candle.classList.contains('is-lit'));
     });
 
     return true;
