@@ -36,6 +36,15 @@
     observer.observe(shelf, { childList: true, subtree: true });
   }
 
+  function loadHouseDoorExperience() {
+    if (document.querySelector('script[data-cafasso-house-door-loader]')) return;
+    const script = document.createElement('script');
+    script.src = './house-door.js?v=1';
+    script.defer = true;
+    script.dataset.cafassoHouseDoorLoader = '1';
+    document.head.appendChild(script);
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', installRule, { once: true });
   } else {
@@ -43,4 +52,5 @@
   }
 
   setTimeout(installRule, 180);
+  loadHouseDoorExperience();
 })();
