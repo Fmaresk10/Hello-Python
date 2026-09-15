@@ -48,35 +48,41 @@
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
-      .cafasso-profile-frame{position:absolute;left:23.2%;top:20.5%;z-index:6;width:104px;height:126px;padding:11px 10px 18px;border:0;background:linear-gradient(135deg,#6e4a2f 0 8%,#bd8b54 8% 16%,#6b472d 16% 84%,#c79b67 84% 92%,#6a452c 92%);clip-path:polygon(7% 0,93% 0,100% 7%,100% 93%,93% 100%,7% 100%,0 93%,0 7%);box-shadow:0 12px 20px rgba(0,0,0,.34),inset 0 0 0 2px rgba(255,222,164,.28);cursor:pointer;transform:rotate(-1.4deg);transition:transform .18s ease,filter .18s ease,box-shadow .18s ease}
-      .cafasso-profile-frame:hover{transform:rotate(-.4deg) translateY(-4px) scale(1.025);filter:brightness(1.08);box-shadow:0 16px 26px rgba(0,0,0,.42),0 0 16px rgba(248,205,112,.18),inset 0 0 0 2px rgba(255,222,164,.34)}
-      .cafasso-profile-frame:focus-visible{outline:3px solid #f2c95a;outline-offset:5px}
-      .cafasso-profile-frame__photo{width:100%;height:100%;display:grid;place-items:center;overflow:hidden;background:linear-gradient(145deg,#d8c6a4,#a78b67);border:3px solid #ead9ba;box-shadow:inset 0 0 0 1px rgba(66,42,26,.4);color:#4d3827;font:700 27px Georgia,serif;letter-spacing:.03em}
-      .cafasso-profile-frame__photo img{display:block;width:100%;height:100%;object-fit:cover}
-      .cafasso-profile-frame:after{content:"";position:absolute;left:16%;right:16%;bottom:9px;height:3px;border-radius:99px;background:rgba(228,190,129,.72);box-shadow:0 1px 0 rgba(55,31,18,.45)}
-      .cafasso-profile-panel{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(7,23,25,.68);backdrop-filter:blur(6px)}
-      .cafasso-profile-card{position:relative;width:min(720px,92vw);min-height:430px;padding:38px 42px 34px;border:1px solid rgba(114,83,50,.36);border-radius:9px 24px 24px 9px;background:linear-gradient(90deg,rgba(117,86,48,.08),transparent 7%),linear-gradient(135deg,#f5ead2,#ead8b7);box-shadow:0 30px 80px rgba(0,0,0,.5),inset 16px 0 24px rgba(98,67,35,.1);color:#3c3026;font-family:Georgia,serif}
-      .cafasso-profile-card:before{content:"";position:absolute;left:32px;top:26px;bottom:26px;width:1px;background:rgba(116,81,45,.14)}
-      .cafasso-profile-close{position:absolute;right:18px;top:16px;width:38px;height:38px;border:0;border-radius:50%;background:rgba(73,54,36,.1);color:#503d2d;font:28px/1 Georgia,serif;cursor:pointer}
+      .cafasso-profile-frame{position:absolute;left:23.2%;top:20.5%;z-index:6;width:112px;height:140px;padding:13px 12px 22px;border:1px solid #3f2819;border-radius:6px;background:repeating-linear-gradient(8deg,rgba(255,255,255,.025) 0 1px,rgba(41,22,12,.055) 1px 3px,transparent 3px 8px),linear-gradient(108deg,#3b2416 0%,#8d5d34 11%,#4d2e1b 26%,#9f6d3f 48%,#5b3821 66%,#b17b49 84%,#432819 100%);box-shadow:0 18px 24px rgba(0,0,0,.42),0 4px 5px rgba(0,0,0,.24),inset 0 0 0 2px rgba(233,187,119,.22),inset 0 0 0 6px rgba(37,20,11,.22),inset 7px 0 10px rgba(255,219,159,.08),inset -8px 0 12px rgba(24,13,8,.24);cursor:pointer;overflow:visible;isolation:isolate;transform-origin:50% 100%;transform:perspective(620px) rotateY(-5deg) rotateZ(-1.5deg);filter:drop-shadow(0 2px 1px rgba(20,10,5,.3));transition:transform .22s ease,filter .22s ease,box-shadow .22s ease}
+      .cafasso-profile-frame:before{content:"";position:absolute;z-index:-1;left:29%;right:17%;bottom:-16px;height:25px;border-radius:2px 3px 11px 10px;background:linear-gradient(90deg,#2d1a10,#5b3823 24%,#805231 52%,#4a2d1b 79%,#26170e);box-shadow:0 8px 11px rgba(0,0,0,.38);transform-origin:50% 0;transform:perspective(110px) rotateX(60deg) skewX(-4deg)}
+      .cafasso-profile-frame:after{content:"";position:absolute;z-index:3;left:24%;right:24%;bottom:8px;height:4px;border-radius:99px;background:linear-gradient(90deg,#765024,#d5b26d 36%,#f0d28d 52%,#a97935 78%,#5d3e1c);box-shadow:0 1px 0 rgba(45,26,14,.7),0 -1px 0 rgba(255,236,185,.18)}
+      .cafasso-profile-frame:hover{transform:perspective(620px) rotateY(-2deg) rotateZ(-.6deg) translateY(-4px) scale(1.025);filter:brightness(1.04) drop-shadow(0 5px 3px rgba(17,9,5,.34));box-shadow:0 22px 30px rgba(0,0,0,.46),0 7px 8px rgba(0,0,0,.2),0 0 17px rgba(241,196,112,.12),inset 0 0 0 2px rgba(240,198,132,.27),inset 0 0 0 6px rgba(37,20,11,.22),inset 7px 0 10px rgba(255,219,159,.1),inset -8px 0 12px rgba(24,13,8,.22)}
+      .cafasso-profile-frame:focus-visible{outline:3px solid #f2c95a;outline-offset:6px}
+      .cafasso-profile-frame__photo{position:relative;z-index:2;width:100%;height:100%;display:grid;place-items:center;overflow:hidden;background:linear-gradient(145deg,#d8c6a4,#9f8461);border:5px solid #d8c39f;outline:1px solid rgba(45,27,17,.62);box-shadow:inset 0 0 0 1px rgba(255,247,223,.45),inset 0 0 13px rgba(50,31,20,.24),0 0 0 2px rgba(56,33,19,.22);color:#4d3827;font:700 28px Georgia,serif;letter-spacing:.03em}
+      .cafasso-profile-frame__photo:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(124deg,rgba(255,255,255,.26) 0 9%,rgba(255,255,255,.07) 16%,transparent 25% 57%,rgba(255,246,222,.07) 65%,transparent 74%);mix-blend-mode:screen;opacity:.75}
+      .cafasso-profile-frame__photo img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.92) contrast(1.02)}
+
+      .cafasso-profile-panel{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 50% 38%,rgba(48,35,22,.16),rgba(6,19,20,.72) 66%);backdrop-filter:blur(7px) saturate(.85)}
+      .cafasso-profile-card{position:relative;width:min(720px,92vw);min-height:430px;padding:40px 44px 36px;border:1px solid rgba(96,66,36,.44);border-radius:10px 28px 24px 10px;background:repeating-linear-gradient(180deg,rgba(116,82,46,.035) 0 1px,transparent 1px 28px),linear-gradient(96deg,rgba(107,71,36,.12),transparent 9%),linear-gradient(136deg,#f8efd9 0%,#f0e0be 54%,#e5cfaa 100%);box-shadow:0 32px 82px rgba(0,0,0,.54),0 6px 12px rgba(35,21,12,.22),inset 18px 0 30px rgba(86,56,29,.12),inset -8px -8px 18px rgba(125,88,47,.06);color:#3c3026;font-family:Georgia,serif}
+      .cafasso-profile-card:before{content:"";position:absolute;left:30px;top:24px;bottom:24px;width:2px;background:linear-gradient(180deg,transparent,rgba(111,76,39,.23) 12%,rgba(111,76,39,.23) 88%,transparent);box-shadow:1px 0 rgba(255,255,255,.34)}
+      .cafasso-profile-card:after{content:"";position:absolute;right:35px;top:24px;width:118px;height:18px;border-radius:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);transform:rotate(-3deg);opacity:.55;pointer-events:none}
+      .cafasso-profile-close{position:absolute;right:18px;top:16px;width:38px;height:38px;border:1px solid rgba(89,63,38,.17);border-radius:50%;background:rgba(245,233,208,.64);color:#503d2d;font:28px/1 Georgia,serif;cursor:pointer;box-shadow:0 3px 8px rgba(70,45,26,.1)}
       .cafasso-profile-kicker{margin-left:7px;color:#8a6748;font:700 11px/1.2 Inter,system-ui,sans-serif;letter-spacing:.15em;text-transform:uppercase}
       .cafasso-profile-head{display:grid;grid-template-columns:132px minmax(0,1fr);gap:28px;align-items:center;margin:18px 0 24px}
-      .cafasso-profile-avatar{width:132px;height:156px;padding:9px;background:linear-gradient(135deg,#714d31,#c49a69 20%,#68442b 82%,#b4834e);box-shadow:0 10px 22px rgba(70,43,24,.24),inset 0 0 0 2px rgba(255,229,182,.24);transform:rotate(-1deg)}
-      .cafasso-profile-avatar__image{width:100%;height:100%;display:grid;place-items:center;overflow:hidden;background:#d9c7a5;border:3px solid #ead9ba;color:#4d3827;font:700 34px Georgia,serif}
+      .cafasso-profile-avatar{width:132px;height:156px;padding:10px;border:1px solid #3f2819;border-radius:5px;background:repeating-linear-gradient(9deg,rgba(255,255,255,.025) 0 1px,transparent 1px 7px),linear-gradient(115deg,#482a18,#a26b3b 17%,#57351f 47%,#a77748 77%,#3b2416);box-shadow:0 13px 24px rgba(70,43,24,.28),inset 0 0 0 2px rgba(255,229,182,.19),inset 0 0 0 6px rgba(48,28,16,.14);transform:rotate(-1.2deg)}
+      .cafasso-profile-avatar__image{position:relative;width:100%;height:100%;display:grid;place-items:center;overflow:hidden;background:#d9c7a5;border:4px solid #dfcaab;box-shadow:inset 0 0 12px rgba(57,36,23,.2);color:#4d3827;font:700 34px Georgia,serif}
+      .cafasso-profile-avatar__image:after{content:"";position:absolute;inset:0;background:linear-gradient(128deg,rgba(255,255,255,.22),transparent 24% 64%,rgba(255,255,255,.05) 72%,transparent 80%);pointer-events:none}
       .cafasso-profile-avatar__image img{width:100%;height:100%;display:block;object-fit:cover}
-      .cafasso-profile-name{margin:0;color:#3d3025;font:500 clamp(32px,4vw,48px)/1.02 Georgia,serif}
+      .cafasso-profile-name{margin:0;color:#3d3025;font:500 clamp(32px,4vw,48px)/1.02 Georgia,serif;text-shadow:0 1px rgba(255,255,255,.4)}
       .cafasso-profile-role{margin-top:7px;color:#7b6148;font:700 13px/1.4 Inter,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.09em}
-      .cafasso-profile-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:6px 0 20px}
-      .cafasso-profile-meta__item{padding:13px 15px;border:1px solid rgba(118,86,50,.18);border-radius:13px;background:rgba(255,253,246,.45)}
-      .cafasso-profile-meta__item small{display:block;margin-bottom:4px;color:#8a735d;font:700 10px/1.2 Inter,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.1em}
+      .cafasso-profile-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px;margin:7px 0 20px;padding:17px 0 8px;border-top:1px solid rgba(112,79,43,.16);border-bottom:1px solid rgba(112,79,43,.14)}
+      .cafasso-profile-meta__item{padding:6px 2px 11px;border:0;border-bottom:1px solid rgba(115,82,48,.12);border-radius:0;background:transparent}
+      .cafasso-profile-meta__item small{display:block;margin-bottom:5px;color:#8a735d;font:700 10px/1.2 Inter,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.1em}
       .cafasso-profile-meta__item strong{display:block;color:#49392c;font:600 15px/1.35 Inter,system-ui,sans-serif;overflow-wrap:anywhere}
-      .cafasso-profile-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid rgba(108,76,45,.18)}
-      .cafasso-profile-action{border:1px solid #84613d;border-radius:999px;padding:10px 16px;background:#725033;color:#fff8e8;font:700 12px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 4px 10px rgba(77,51,29,.14)}
-      .cafasso-profile-action--secondary{background:rgba(255,253,246,.46);color:#5d4936;border-color:rgba(112,79,45,.28)}
+      .cafasso-profile-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:4px}
+      .cafasso-profile-action{border:1px solid #765434;border-radius:6px;padding:10px 16px;background:linear-gradient(#7c5837,#69472d);color:#fff8e8;font:700 12px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 4px 9px rgba(77,51,29,.16),inset 0 1px rgba(255,255,255,.12)}
+      .cafasso-profile-action--secondary{background:rgba(249,240,221,.55);color:#5d4936;border-color:rgba(112,79,45,.28);box-shadow:none}
       .cafasso-profile-note{flex:1;min-width:220px;color:#7a6856;font:12px/1.45 Inter,system-ui,sans-serif}
       .cafasso-profile-status{min-height:18px;margin-top:9px;color:#6a5745;font:700 12px/1.4 Inter,system-ui,sans-serif}
       @media(max-width:680px){
-        .cafasso-profile-frame{left:8%;top:18%;width:78px;height:96px;padding:8px 8px 14px}
-        .cafasso-profile-frame__photo{font-size:21px}
+        .cafasso-profile-frame{left:8%;top:18%;width:84px;height:108px;padding:9px 9px 17px;transform:perspective(500px) rotateY(-4deg) rotateZ(-1.2deg)}
+        .cafasso-profile-frame:before{bottom:-12px;height:20px}
+        .cafasso-profile-frame__photo{border-width:4px;font-size:21px}
         .cafasso-profile-panel{padding:12px;align-items:flex-end}
         .cafasso-profile-card{width:100%;max-height:90vh;overflow:auto;min-height:0;padding:31px 22px 24px;border-radius:22px 22px 0 0}
         .cafasso-profile-card:before{display:none}
@@ -126,7 +132,7 @@
           const side = Math.min(image.width, image.height);
           const sx = (image.width - side) / 2;
           const sy = (image.height - side) / 2;
-          ctx.drawImage(image, sx, sy, side, side, 0, 0, size, size);
+          ctx.drawImage(image, sx, sy,side,side,0,0,size,size);
           const output = canvas.toDataURL('image/jpeg', .72);
           if (output.length > 80000) return reject(new Error('Probá con una foto más simple o liviana.'));
           resolve(output);
