@@ -9,7 +9,10 @@
   const RUAH_COURSE_ID = '__cafasso_ruah__';
   const RUAH_MODULE_ID = '__daily__';
   const RESERVED_PREFIX = '__cafasso_';
+  const RUAH_REWARD_EVERY = 10;
+  const RUAH_REWARD_ALMITAS = 50;
   const STYLE_ID = 'cafassoHouseProfileProgressStyles';
+  let loadPromise = null;
 
   function json(storage, key) {
     try { return JSON.parse(storage.getItem(key) || 'null'); }
@@ -72,10 +75,13 @@
     const previousNumber = dayNumber(previousDay);
 
     let streak = previousStreak;
+    let currentStreakRewards = Math.max(0, Number(old.currentStreakRewards || 0));
+    let bonusAlmitas = Math.max(0, Number(old.bonusAlmitas || 0));
     let changed = false;
 
     if (!Number.isFinite(previousNumber) || previousStreak < 1) {
       streak = 1;
+      currentStreakRewards = 0;
       changed = true;
     } else if (previousDay === today) {
       streak = Math.max(1, previousStreak);
@@ -84,19 +90,27 @@
       changed = true;
     } else {
       streak = 1;
+      currentStreakRewards = 0;
+      changed = true;
+    }
+
+    const earnedMilestones = Math.floor(streak / RUAH_REWARD_EVERY);
+    if (earnedMilestones > currentStreakRewards) {
+      bonusAlmitas += (earnedMilestones - currentStreakRewards) * RUAH_REWARD_ALMITAS;
+      currentStreakRewards = earnedMilestones;
       changed = true;
     }
 
     const longest = Math.max(Number(old.longest || 0), streak);
-    const milestonesReached = Math.max(Number(old.milestonesReached || 0), Math.floor(streak / 10));
-    if (longest !== Number(old.longest || 0) || milestonesReached !== Number(old.milestonesReached || 0)) changed = true;
+    if (longest !== Number(old.longest || 0)) changed = true;
 
     return {
       state: {
         streak,
         lastDay: today,
         longest,
-        milestonesReached,
+        currentStreakRewards,
+        bonusAlmitas,
         updatedAt: changed ? new Date().toISOString() : String(old.updatedAt || new Date().toISOString())
       },
       changed: changed || previousDay !== today
@@ -158,8 +172,8 @@
     return { percent, completed, total: courses.length };
   }
 
-  function metricMarkup(label, value, subtitle, attrs = '') {
-    return `<div class="cafasso-profile-path__item" ${attrs}><small>${label}</small><strong data-profile-metric>${value}</strong><span class="cafasso-profile-metric-sub">${subtitle}</span></div>`;
+  function metricMarkup(label, value, subtitle, dataAttr) {
+    return `<div class="cafasso-profile-path__item is-loading" ${dataAttr}><small>${label}</small><strong data-profile-metric>${value}</strong><span class="cafasso-profile-metric-sub">${subtitle}</span></div>`;
   }
 
   function mountMetrics() {
@@ -168,9 +182,9 @@
     ensureStyles();
     path.dataset.profileMetricsMounted = '1';
     path.innerHTML =
-      metricMarkup('Almitas', '…', 'Sincronizando tu recorrido.', 'data-profile-almitas-card class="cafasso-profile-path__item is-loading"') +
-      metricMarkup('RUAH', '…', 'Revisando tu constancia.', 'data-profile-ruah-card class="cafasso-profile-path__item is-loading"') +
-      metricMarkup('Mi camino', '…', 'Calculando tu progreso.', 'data-profile-progress-card class="cafasso-profile-path__item is-loading"');
+      metricMarkup('Almitas', '…', 'Sincronizando tu recorrido.', 'data-profile-almitas-card') +
+      metricMarkup('RUAH', '…', 'Revisando tu constancia.', 'data-profile-ruah-card') +
+      metricMarkup('Mi camino', '…', 'Calculando tu progreso.', 'data-profile-progress-card');
     return path;
   }
 
@@ -188,7 +202,7 @@
   async function persistRuah(userId, ruah) {
     const headers = authHeaders(true);
     if (!headers || !userId) return false;
-    const cycle = ((Math.max(1, ruah.streak) - 1) % 10) + 1;
+    const cycle = ((Math.max(1, ruah.streak) - 1) % RUAH_REWARD_EVERY) + 1;
     const response = await fetch(PROGRESS_API, {
       method: 'POST',
       headers,
@@ -197,7 +211,7 @@
         courseId: RUAH_COURSE_ID,
         moduleId: RUAH_MODULE_ID,
         completed: true,
-        percent: cycle * 10,
+        percent: cycle * (100 / RUAH_REWARD_EVERY),
         completedBlocks: [`day:${ruah.lastDay}`],
         blockAnswers: { ruahState: ruah }
       })
@@ -206,7 +220,7 @@
     return Boolean(response.ok && result?.ok !== false);
   }
 
-  async function loadMetrics() {
+  async function performLoad() {
     const path = mountMetrics();
     if (!path) return false;
 
@@ -225,35 +239,47 @@
       const data = await response.json().catch(() => ({}));
       if (!response.ok || data?.ok === false) throw new Error(data?.error || 'No se pudo cargar tu recorrido.');
 
-      const rewards = rewardSummary(data, userId);
+      const challengeRewards = rewardSummary(data, userId);
       const course = courseSummary(data, userId);
-      const pendingText = rewards.pendingCount
-        ? `${rewards.pendingCount} desafío${rewards.pendingCount === 1 ? '' : 's'} en revisión · ${rewards.pending} almitas pendientes.`
-        : 'Acreditadas por desafíos aprobados.';
-      setCard('[data-profile-almitas-card]', rewards.approved, pendingText);
-
       const today = todayKey();
       const ruahRow = findRuahRow(data, userId);
       const rawRuah = ruahRow?.blockAnswers?.ruahState || null;
       const normalized = normalizeRuah(rawRuah, today);
       const ruah = normalized.state;
-      const daysToNext = 10 - (ruah.streak % 10 || 0);
-      const next = daysToNext === 0 ? 10 : daysToNext;
-      setCard('[data-profile-ruah-card]', `${ruah.streak} día${ruah.streak === 1 ? '' : 's'}`, `Próximo impulso: ${next} día${next === 1 ? '' : 's'} · Récord: ${ruah.longest}.`);
+      const preview = Boolean(params.get('previewUser') || params.get('previewRole'));
+
+      if (normalized.changed && !preview && userId) {
+        await persistRuah(userId, ruah);
+      }
+
+      const totalAlmitas = challengeRewards.approved + ruah.bonusAlmitas;
+      const almitasParts = [];
+      if (challengeRewards.approved) almitasParts.push(`${challengeRewards.approved} por desafíos`);
+      if (ruah.bonusAlmitas) almitasParts.push(`${ruah.bonusAlmitas} por RUAH`);
+      if (challengeRewards.pendingCount) almitasParts.push(`${challengeRewards.pending} pendientes`);
+      const almitasSubtitle = almitasParts.length ? almitasParts.join(' · ') : 'Tu camino recién empieza.';
+      setCard('[data-profile-almitas-card]', totalAlmitas, almitasSubtitle);
+
+      const remainder = ruah.streak % RUAH_REWARD_EVERY;
+      const next = remainder === 0 ? RUAH_REWARD_EVERY : RUAH_REWARD_EVERY - remainder;
+      setCard(
+        '[data-profile-ruah-card]',
+        `${ruah.streak} día${ruah.streak === 1 ? '' : 's'}`,
+        `Próximo +${RUAH_REWARD_ALMITAS}: ${next} día${next === 1 ? '' : 's'} · Récord: ${ruah.longest}.`
+      );
 
       const courseSubtitle = course.total
         ? `${course.completed} de ${course.total} curso${course.total === 1 ? '' : 's'} completado${course.completed === 1 ? '' : 's'}.`
         : 'Todavía no hay cursos con progreso registrado.';
       setCard('[data-profile-progress-card]', `${course.percent}%`, courseSubtitle);
 
-      document.querySelectorAll('[data-almitas-total]').forEach(node => { node.textContent = String(rewards.approved); });
+      document.querySelectorAll('[data-almitas-total]').forEach(node => { node.textContent = String(totalAlmitas); });
 
-      const preview = Boolean(params.get('previewUser') || params.get('previewRole'));
-      if (normalized.changed && !preview && userId) {
-        persistRuah(userId, ruah).catch(() => {});
-      }
-
-      window.CafassoProfileMetrics = { almitas: rewards, ruah, progress: course };
+      window.CafassoProfileMetrics = {
+        almitas: { total: totalAlmitas, challenges: challengeRewards.approved, ruahBonus: ruah.bonusAlmitas, pending: challengeRewards.pending },
+        ruah,
+        progress: course
+      };
       window.dispatchEvent(new CustomEvent('cafasso:profile-metrics', { detail: window.CafassoProfileMetrics }));
       return true;
     } catch (error) {
@@ -262,6 +288,12 @@
       setCard('[data-profile-progress-card]', '—', 'No pudimos sincronizar el progreso.', 'is-error');
       return true;
     }
+  }
+
+  function loadMetrics() {
+    if (loadPromise) return loadPromise;
+    loadPromise = performLoad().finally(() => { loadPromise = null; });
+    return loadPromise;
   }
 
   let attempts = 0;
