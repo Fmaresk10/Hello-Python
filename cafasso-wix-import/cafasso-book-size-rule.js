@@ -57,7 +57,7 @@
     loadHouseScript('./school-experience.js?v=1', 'cafasso-school-experience-loader');
     loadHouseScript('./school-screen-integration.js?v=2', 'cafasso-school-screen-integration-loader');
     loadHouseScript('./school-resume.js?v=2', 'cafasso-school-resume-loader');
-    loadHouseScript('./school-resume-position.js?v=1', 'cafasso-school-resume-position-loader');
+    loadHouseScript('./school-resume-position.js?v=2', 'cafasso-school-resume-position-loader');
 
     // Primero fijamos la geometría final. Así F5 no muestra posiciones antiguas.
     loadHouseScript('./parish-lectionary-position.js?v=2', 'cafasso-parish-lectionary-position-loader');
