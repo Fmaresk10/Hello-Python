@@ -53,6 +53,7 @@
     loadHouseScript('./house-prologue.js?v=1', 'cafasso-house-prologue-loader');
     loadHouseScript('./house-microinteractions.js?v=1', 'cafasso-house-micro-loader');
     loadHouseScript('./patio-experience.js?v=1', 'cafasso-patio-experience-loader');
+    loadHouseScript('./school-experience.js?v=1', 'cafasso-school-experience-loader');
 
     // Primero fijamos la geometría final. Así F5 no muestra posiciones antiguas.
     loadHouseScript('./parish-lectionary-position.js?v=2', 'cafasso-parish-lectionary-position-loader');
