@@ -3,6 +3,8 @@
   const RESOURCE_TITLE = 'CAFASSO · Recursos internos';
   const STATIC_CATALOG = './data/resources.json';
   const COLORS = ['#744936','#3f5e53','#6c5a38','#584967','#7b3f45','#355765','#6d513f','#4f603f','#734f2f','#4f4d6f'];
+  const REFRESH_MS = 30000;
+  let loadInFlight = null;
 
   // Sistema de coordenadas fijo sobre la imagen original de Biblioteca: 1672 x 941 px.
   // x = borde izquierdo del libro; shelfY = línea de apoyo sobre la madera.
@@ -49,6 +51,10 @@
     { id: 32, x: 1147, shelfY: 348, width: 49, height: 101 },
     { id: 33, x: 1202, shelfY: 348, width: 52, height: 104 }
   ];
+
+  function onLibraryScreen() {
+    return new URLSearchParams(location.search).get('space') === 'recursos';
+  }
 
   function alignShelfToLibraryImage() {
     const shelf = document.querySelector('[data-resource-shelf]');
@@ -122,28 +128,41 @@
     }
   }
 
-  function collectContents(course) {
+  // El endpoint de Wix fue cambiando de forma a medida que CAFASSO creció.
+  // En vez de depender de que los bloques estén exactamente dentro de course.modules,
+  // recorremos toda la respuesta y tomamos únicamente objetos marcados como recurso.
+  function collectContents(payload) {
     const blocks = [];
-    const seen = new Set();
+    const seenObjects = new Set();
+    const seenIds = new Set();
 
     function walk(value) {
-      if (!value || typeof value !== 'object' || seen.has(value)) return;
-      seen.add(value);
+      if (!value || typeof value !== 'object' || seenObjects.has(value)) return;
+      seenObjects.add(value);
+
       if (Array.isArray(value)) {
         value.forEach(walk);
         return;
       }
-      if (Array.isArray(value.contents)) {
-        value.contents.forEach(block => {
-          if (block && typeof block === 'object') blocks.push(block);
-        });
+
+      const settings = asObject(value.settings || value.config || value.metadata || {});
+      const isResource = truthy(settings.cafassoResource) ||
+        Object.prototype.hasOwnProperty.call(settings, 'mostrarEnBiblioteca') ||
+        Object.prototype.hasOwnProperty.call(settings, 'resourceType') ||
+        Object.prototype.hasOwnProperty.call(settings, 'categoria');
+
+      if (isResource) {
+        const id = String(value._id || value.id || '');
+        if (!id || !seenIds.has(id)) {
+          blocks.push(value);
+          if (id) seenIds.add(id);
+        }
       }
-      Object.entries(value).forEach(([key, child]) => {
-        if (key !== 'contents' && child && typeof child === 'object') walk(child);
-      });
+
+      Object.values(value).forEach(walk);
     }
 
-    walk(course);
+    walk(payload);
     return blocks;
   }
 
@@ -155,7 +174,7 @@
       Object.prototype.hasOwnProperty.call(settings, 'resourceType') ||
       Object.prototype.hasOwnProperty.call(settings, 'categoria');
 
-    if (!markedAsResource && !block?.title && !block?.titulo) return null;
+    if (!markedAsResource) return null;
 
     const showValue = settings.mostrarEnBiblioteca ?? block.mostrarEnBiblioteca;
     return {
@@ -225,7 +244,6 @@
     book.setAttribute('aria-label', resource.titulo || 'Recurso');
     book.title = [resource.titulo, resource.categoria, resource.tipo, `Ubicación ${slot.id}`].filter(Boolean).join(' · ');
 
-    // Coordenadas absolutas sobre la imagen natural: la base del libro coincide con shelfY.
     book.style.position = 'absolute';
     book.style.left = `${slot.x}px`;
     book.style.top = `${slot.shelfY - slot.height}px`;
@@ -285,21 +303,21 @@
 
   async function loadLive() {
     try {
-      const response = await fetch(`${API}?title=${encodeURIComponent(RESOURCE_TITLE)}&_=${Date.now()}`, { cache: 'no-store' });
+      const response = await fetch(`${API}?title=${encodeURIComponent(RESOURCE_TITLE)}&_=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const payload = await response.json();
-      const course = payload?.course || payload?.data?.course || payload?.item || payload?.data || null;
-      if (!course) throw new Error('El catálogo no vino en la respuesta');
-
-      return collectContents(course).map(normalizeResource).filter(Boolean);
+      return collectContents(payload).map(normalizeResource).filter(Boolean);
     } catch (error) {
       console.warn('CAFASSO: no se pudo cargar el catálogo de Recursos desde Wix.', error);
       return [];
     }
   }
 
-  async function loadLibrary() {
-    if (new URLSearchParams(location.search).get('space') !== 'recursos') return;
+  async function performLoad() {
+    if (!onLibraryScreen()) return 0;
     alignShelfToLibraryImage();
 
     const [staticResources, liveResources] = await Promise.all([loadStatic(), loadLive()]);
@@ -309,7 +327,33 @@
       : 'static';
     const count = render(mergedResources, source);
     console.info(`CAFASSO: Biblioteca cargada con ${count} recurso(s) desde ${source}.`);
+    return count;
   }
 
+  function loadLibrary() {
+    if (!onLibraryScreen()) return Promise.resolve(0);
+    if (loadInFlight) return loadInFlight;
+    loadInFlight = performLoad().finally(() => { loadInFlight = null; });
+    return loadInFlight;
+  }
+
+  // Carga inicial y una segunda pasada: cubre el pequeño lapso entre guardar en Wix
+  // y que el endpoint público reconstruya el catálogo completo.
   setTimeout(loadLibrary, 120);
+  setTimeout(loadLibrary, 1800);
+
+  // Si la Biblioteca queda abierta mientras Administración guarda un recurso en otra pestaña,
+  // se vuelve a sincronizar sin exigir F5.
+  window.addEventListener('focus', () => loadLibrary(), { passive: true });
+  window.addEventListener('pageshow', () => loadLibrary(), { passive: true });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) loadLibrary();
+  });
+  window.addEventListener('storage', event => {
+    if (event.key === 'cafasso-resources-updated') loadLibrary();
+  });
+
+  setInterval(() => {
+    if (!document.hidden && onLibraryScreen()) loadLibrary();
+  }, REFRESH_MS);
 })();
