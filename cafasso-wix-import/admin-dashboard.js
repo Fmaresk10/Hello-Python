@@ -4,8 +4,9 @@
   const ROOT_ID='cafassoAdminDashboardV2';
   const DAY=86400000;
   const RESOURCE_CATALOG_TITLE='CAFASSO · Recursos internos';
+  const SONGBOOK_CATALOG_TITLE='CAFASSO · Cancionero parroquial';
   const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-  const when=v=>{if(!v)return 'Nunca';const d=new Date(v);if(Number.isNaN(d.getTime()))return '—';const diff=Date.now()-d.getTime();if(diff<60000)return 'Recién';if(diff<3600000)return `Hace ${Math.max(1,Math.floor(diff/60000))} min`;if(diff<DAY)return `Hace ${Math.max(1,Math.floor(diff/3600000))} h`;if(diff<7*DAY)return `Hace ${Math.max(1,Math.floor(diff/DAY))} días`;return d.toLocaleDateString('es-UY',{day:'2-digit',month:'2-digit'});};
+  const when=v=>{if(!v)return 'Nunca';const d=new Date(v);if(Number.isNaN(d.getTime()))return '—';const diff=Date.now()-d.getTime();if(diff<60000)return `Recién`;if(diff<3600000)return `Hace ${Math.max(1,Math.floor(diff/60000))} min`;if(diff<DAY)return `Hace ${Math.max(1,Math.floor(diff/3600000))} h`;if(diff<7*DAY)return `Hace ${Math.max(1,Math.floor(diff/DAY))} días`;return d.toLocaleDateString('es-UY',{day:'2-digit',month:'2-digit'});};
   const initials=name=>{const p=String(name||'').trim().split(/\s+/);return ((p[0]?.[0]||'A')+(p[1]?.[0]||'')).toUpperCase();};
 
   function ensureStyles(){
@@ -77,6 +78,7 @@
         <a href="./asignaciones.html">↗ Asignar formación</a>
         <a href="./entregas.html">📥 Revisar entregas</a>
         <a href="./curso-editor.html">＋ Crear curso</a>
+        <a href="./parish-songbook-admin.html">🎵 Editar cancionero</a>
         <button class="wide" id="adm2PreviewUser">👁 Ver como un animador</button>
       </div>
       <div class="adm2-attention">
@@ -98,13 +100,23 @@
     if(preview)preview.onclick=()=>window.CafassoRolePreview?.openUserPicker?.()||window.CafassoRolePreview?.open?.();
   }
 
-  function installResourceAdminEntry(){
+  function installInternalAdminEntries(){
     const menu=document.querySelector('.menu');
     if(menu&&!menu.querySelector('[data-cafasso-resource-admin]')){
       const link=document.createElement('a');
       link.href='./resource-admin.html';
       link.dataset.cafassoResourceAdmin='1';
       link.innerHTML='📚 <span>Recursos</span>';
+      link.style.cssText='display:block;width:100%;background:transparent;color:#fff;text-align:left;padding:12px 13px;border-radius:13px;font:700 14px Inter,system-ui;text-decoration:none;cursor:pointer';
+      link.addEventListener('mouseenter',()=>link.style.background='rgba(255,255,255,.11)');
+      link.addEventListener('mouseleave',()=>link.style.background='transparent');
+      menu.appendChild(link);
+    }
+    if(menu&&!menu.querySelector('[data-cafasso-songbook-admin]')){
+      const link=document.createElement('a');
+      link.href='./parish-songbook-admin.html';
+      link.dataset.cafassoSongbookAdmin='1';
+      link.innerHTML='🎵 <span>Cancionero</span>';
       link.style.cssText='display:block;width:100%;background:transparent;color:#fff;text-align:left;padding:12px 13px;border-radius:13px;font:700 14px Inter,system-ui;text-decoration:none;cursor:pointer';
       link.addEventListener('mouseenter',()=>link.style.background='rgba(255,255,255,.11)');
       link.addEventListener('mouseleave',()=>link.style.background='transparent');
@@ -118,12 +130,19 @@
       link.innerHTML='<span>📚</span><span>Recursos</span>';
       sheet.appendChild(link);
     }
+    if(sheet&&!sheet.querySelector('[data-cafasso-songbook-admin]')){
+      const link=document.createElement('a');
+      link.href='./parish-songbook-admin.html';
+      link.dataset.cafassoSongbookAdmin='1';
+      link.innerHTML='<span>🎵</span><span>Cancionero</span>';
+      sheet.appendChild(link);
+    }
   }
 
-  function hideInternalResourceCourse(){
+  function hideInternalCatalogCourses(){
     try{
       if(typeof state==='undefined'||!Array.isArray(state.courses))return;
-      const filtered=state.courses.filter(c=>c.title!==RESOURCE_CATALOG_TITLE);
+      const filtered=state.courses.filter(c=>c.title!==RESOURCE_CATALOG_TITLE&&c.title!==SONGBOOK_CATALOG_TITLE);
       if(filtered.length===state.courses.length)return;
       state.courses=filtered;
       if(typeof renderCourses==='function')renderCourses();
@@ -131,8 +150,8 @@
   }
 
   async function loadDashboard(){
-    installResourceAdminEntry();
-    hideInternalResourceCourse();
+    installInternalAdminEntries();
+    hideInternalCatalogCourses();
     const resumen=document.getElementById('resumen');if(!resumen||document.getElementById(ROOT_ID))return;
     ensureStyles();
     const head=document.querySelector('.head p');if(head)head.textContent='Lo que requiere tu atención hoy y el panorama general de CAFASSO.';
@@ -142,11 +161,11 @@
       const r=await fetch(API,{cache:'no-store'}),j=await r.json();
       if(!r.ok||!j.ok)throw new Error(j.error||'No se pudo cargar el tablero.');
       render(j);
-      hideInternalResourceCourse();
+      hideInternalCatalogCourses();
     }catch(e){root.innerHTML=`<div class="adm2-box"><div class="adm2-empty">No pudimos cargar el tablero de gestión: ${esc(e.message||e)}</div></div>`;}
   }
 
-  setInterval(hideInternalResourceCourse,1500);
+  setInterval(hideInternalCatalogCourses,1500);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',loadDashboard,{once:true});else loadDashboard();
 })();
-// CAFASSO deploy marker: admin-dashboard-v2
+// CAFASSO deploy marker: admin-dashboard-v2-songbook
