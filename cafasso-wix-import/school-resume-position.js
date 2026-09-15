@@ -8,20 +8,20 @@
     .cafasso-escuela .cafasso-school-resume{
       left:52.3%!important;
       right:auto!important;
-      top:42.5%!important;
+      top:35.2%!important;
       bottom:auto!important;
       width:145px!important;
       height:92px!important;
-      transform:translateX(-50%) perspective(760px) rotateX(38deg) rotateZ(-2.2deg)!important;
+      transform:translateX(-50%) perspective(760px) rotateX(6deg) rotateZ(-1.2deg)!important;
       transform-origin:50% 100%!important;
-      filter:drop-shadow(0 10px 7px rgba(0,0,0,.48))!important;
+      filter:drop-shadow(0 10px 7px rgba(0,0,0,.5))!important;
     }
     .cafasso-escuela .cafasso-school-resume:hover{
-      transform:translateX(-50%) translateY(-4px) perspective(760px) rotateX(32deg) rotateZ(-1.4deg) scale(1.035)!important;
-      filter:drop-shadow(0 14px 10px rgba(0,0,0,.54))!important;
+      transform:translateX(-50%) translateY(-4px) perspective(760px) rotateX(4deg) rotateZ(-.7deg) scale(1.035)!important;
+      filter:drop-shadow(0 14px 10px rgba(0,0,0,.56))!important;
     }
     .cafasso-escuela .cafasso-school-resume.is-opening{
-      transform:translateX(-50%) translateY(-5px) perspective(760px) rotateX(30deg) rotateZ(-1deg) scale(1.04)!important;
+      transform:translateX(-50%) translateY(-5px) perspective(760px) rotateX(3deg) rotateZ(-.5deg) scale(1.04)!important;
       opacity:1!important;
     }
     .cafasso-escuela .cafasso-school-resume__label{
@@ -39,10 +39,10 @@
     @media(max-width:760px){
       .cafasso-escuela .cafasso-school-resume{
         left:53%!important;
-        top:43%!important;
+        top:36%!important;
         width:105px!important;
         height:69px!important;
-        transform:translateX(-50%) perspective(620px) rotateX(34deg) rotateZ(-2deg)!important;
+        transform:translateX(-50%) perspective(620px) rotateX(5deg) rotateZ(-1deg)!important;
       }
       .cafasso-escuela .cafasso-school-resume__label{left:16px!important;right:10px!important;top:10px!important;min-height:42px!important;padding:5px 6px 4px!important}
       .cafasso-escuela .cafasso-school-resume__kicker{font-size:5px!important}
