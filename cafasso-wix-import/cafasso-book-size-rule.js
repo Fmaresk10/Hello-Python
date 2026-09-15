@@ -54,6 +54,7 @@
     loadHouseScript('./house-microinteractions.js?v=1', 'cafasso-house-micro-loader');
     loadHouseScript('./patio-experience.js?v=1', 'cafasso-patio-experience-loader');
     loadHouseScript('./school-entry.js?v=1', 'cafasso-school-entry-loader');
+    loadHouseScript('./school-course-auth.js?v=1', 'cafasso-school-course-auth-loader');
     loadHouseScript('./school-experience.js?v=1', 'cafasso-school-experience-loader');
     loadHouseScript('./school-screen-integration.js?v=2', 'cafasso-school-screen-integration-loader');
     loadHouseScript('./school-resume.js?v=2', 'cafasso-school-resume-loader');
