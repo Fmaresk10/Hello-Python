@@ -10,5 +10,17 @@
     "disponibleParaCursos": false,
     "cursos": [],
     "bibliotecaSlot": 1
+  },
+  {
+    "id": "32924cc8-c02e-4f13-93d8-ed8682e8c4ec",
+    "titulo": "Don Bosco \"conocelo e imitalo\"",
+    "categoria": "Dinamica",
+    "tipo": "PDF",
+    "url": "https://drive.google.com/file/d/1NggafxkLNj_Fy4AkdiXMdNFYkzKoCW0o/view?usp=drive_link",
+    "descripcion": "He aqui el libro que acompaña el desarrollo del retiro",
+    "mostrarEnBiblioteca": true,
+    "disponibleParaCursos": false,
+    "cursos": [],
+    "bibliotecaSlot": 2
   }
 ]
