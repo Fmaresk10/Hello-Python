@@ -36,13 +36,18 @@
     observer.observe(shelf, { childList: true, subtree: true });
   }
 
-  function loadHouseDoorExperience() {
-    if (document.querySelector('script[data-cafasso-house-door-loader]')) return;
+  function loadHouseScript(src, marker) {
+    if (document.querySelector(`script[data-${marker}]`)) return;
     const script = document.createElement('script');
-    script.src = './house-door.js?v=1';
+    script.src = src;
     script.defer = true;
-    script.dataset.cafassoHouseDoorLoader = '1';
+    script.setAttribute(`data-${marker}`, '1');
     document.head.appendChild(script);
+  }
+
+  function loadHouseExperiences() {
+    loadHouseScript('./house-door.js?v=1', 'cafasso-house-door-loader');
+    loadHouseScript('./house-prologue.js?v=1', 'cafasso-house-prologue-loader');
   }
 
   if (document.readyState === 'loading') {
@@ -52,5 +57,5 @@
   }
 
   setTimeout(installRule, 180);
-  loadHouseDoorExperience();
+  loadHouseExperiences();
 })();
