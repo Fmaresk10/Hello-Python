@@ -48,6 +48,7 @@
   function loadHouseExperiences() {
     loadHouseScript('./house-door.js?v=1', 'cafasso-house-door-loader');
     loadHouseScript('./house-prologue.js?v=1', 'cafasso-house-prologue-loader');
+    loadHouseScript('./house-microinteractions.js?v=1', 'cafasso-house-micro-loader');
   }
 
   if (document.readyState === 'loading') {
