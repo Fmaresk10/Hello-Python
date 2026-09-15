@@ -27,14 +27,7 @@
   }
 
   function getGroupLabel(user) {
-    const candidates = [
-      user.groupName,
-      user.group,
-      user.grupo,
-      user.teamName,
-      user.community,
-      user.comunidad
-    ];
+    const candidates = [user.groupName, user.group, user.grupo, user.teamName, user.community, user.comunidad];
     const direct = candidates.find(value => typeof value === 'string' && value.trim());
     if (direct) return direct.trim();
     if (Array.isArray(user.groups) && user.groups.length) {
@@ -48,53 +41,67 @@
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
-      .cafasso-profile-frame{position:absolute;left:23.2%;top:20.5%;z-index:6;width:112px;height:140px;padding:13px 12px 22px;border:1px solid #3f2819;border-radius:6px;background:repeating-linear-gradient(8deg,rgba(255,255,255,.025) 0 1px,rgba(41,22,12,.055) 1px 3px,transparent 3px 8px),linear-gradient(108deg,#3b2416 0%,#8d5d34 11%,#4d2e1b 26%,#9f6d3f 48%,#5b3821 66%,#b17b49 84%,#432819 100%);box-shadow:0 18px 24px rgba(0,0,0,.42),0 4px 5px rgba(0,0,0,.24),inset 0 0 0 2px rgba(233,187,119,.22),inset 0 0 0 6px rgba(37,20,11,.22),inset 7px 0 10px rgba(255,219,159,.08),inset -8px 0 12px rgba(24,13,8,.24);cursor:pointer;overflow:visible;isolation:isolate;transform-origin:50% 100%;transform:perspective(620px) rotateY(-5deg) rotateZ(-1.5deg);filter:drop-shadow(0 2px 1px rgba(20,10,5,.3));transition:transform .22s ease,filter .22s ease,box-shadow .22s ease}
-      .cafasso-profile-frame:before{content:"";position:absolute;z-index:-1;left:29%;right:17%;bottom:-16px;height:25px;border-radius:2px 3px 11px 10px;background:linear-gradient(90deg,#2d1a10,#5b3823 24%,#805231 52%,#4a2d1b 79%,#26170e);box-shadow:0 8px 11px rgba(0,0,0,.38);transform-origin:50% 0;transform:perspective(110px) rotateX(60deg) skewX(-4deg)}
-      .cafasso-profile-frame:after{content:"";position:absolute;z-index:3;left:24%;right:24%;bottom:8px;height:4px;border-radius:99px;background:linear-gradient(90deg,#765024,#d5b26d 36%,#f0d28d 52%,#a97935 78%,#5d3e1c);box-shadow:0 1px 0 rgba(45,26,14,.7),0 -1px 0 rgba(255,236,185,.18)}
-      .cafasso-profile-frame:hover{transform:perspective(620px) rotateY(-2deg) rotateZ(-.6deg) translateY(-4px) scale(1.025);filter:brightness(1.04) drop-shadow(0 5px 3px rgba(17,9,5,.34));box-shadow:0 22px 30px rgba(0,0,0,.46),0 7px 8px rgba(0,0,0,.2),0 0 17px rgba(241,196,112,.12),inset 0 0 0 2px rgba(240,198,132,.27),inset 0 0 0 6px rgba(37,20,11,.22),inset 7px 0 10px rgba(255,219,159,.1),inset -8px 0 12px rgba(24,13,8,.22)}
-      .cafasso-profile-frame:focus-visible{outline:3px solid #f2c95a;outline-offset:6px}
-      .cafasso-profile-frame__photo{position:relative;z-index:2;width:100%;height:100%;display:grid;place-items:center;overflow:hidden;background:linear-gradient(145deg,#d8c6a4,#9f8461);border:5px solid #d8c39f;outline:1px solid rgba(45,27,17,.62);box-shadow:inset 0 0 0 1px rgba(255,247,223,.45),inset 0 0 13px rgba(50,31,20,.24),0 0 0 2px rgba(56,33,19,.22);color:#4d3827;font:700 28px Georgia,serif;letter-spacing:.03em}
-      .cafasso-profile-frame__photo:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(124deg,rgba(255,255,255,.26) 0 9%,rgba(255,255,255,.07) 16%,transparent 25% 57%,rgba(255,246,222,.07) 65%,transparent 74%);mix-blend-mode:screen;opacity:.75}
-      .cafasso-profile-frame__photo img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.92) contrast(1.02)}
+      .cafasso-animator-sheet{position:absolute;left:22.6%;top:20.8%;z-index:6;width:156px;height:184px;padding:0;border:0;background:transparent;cursor:pointer;transform-origin:50% 100%;transform:perspective(700px) rotateY(-4deg) rotateZ(-4.2deg);filter:drop-shadow(0 14px 10px rgba(0,0,0,.42));transition:transform .22s ease,filter .22s ease}
+      .cafasso-animator-sheet:hover{transform:perspective(700px) rotateY(-2deg) rotateZ(-2.2deg) translateY(-5px) scale(1.025);filter:drop-shadow(0 18px 14px rgba(0,0,0,.46)) brightness(1.025)}
+      .cafasso-animator-sheet:focus-visible{outline:3px solid #f2c95a;outline-offset:6px;border-radius:5px}
+      .cafasso-animator-sheet__paper{position:absolute;inset:0;overflow:hidden;border:1px solid rgba(91,66,40,.52);border-radius:3px;background:repeating-linear-gradient(0deg,rgba(92,66,39,.025) 0 1px,transparent 1px 7px),linear-gradient(145deg,#f7ecd2 0%,#ead6ad 72%,#ddc295 100%);box-shadow:inset 0 0 18px rgba(113,78,42,.11),inset 0 0 0 3px rgba(255,250,235,.34),0 3px 1px rgba(58,37,21,.12)}
+      .cafasso-animator-sheet__paper:before{content:"";position:absolute;right:-1px;bottom:-1px;width:31px;height:31px;background:linear-gradient(135deg,rgba(167,128,79,.16) 0 49%,#c9aa79 50% 53%,#f1dfbd 54% 100%);clip-path:polygon(100% 0,100% 100%,0 100%);filter:drop-shadow(-2px -2px 2px rgba(76,51,29,.12))}
+      .cafasso-animator-sheet__paper:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(118deg,rgba(255,255,255,.22),transparent 22% 72%,rgba(108,74,39,.04));mix-blend-mode:screen}
+      .cafasso-animator-sheet__clip{position:absolute;z-index:4;left:50%;top:-10px;width:56px;height:25px;transform:translateX(-50%) rotate(1deg);border:1px solid rgba(69,53,35,.58);border-radius:4px 4px 7px 7px;background:linear-gradient(180deg,#9a907e,#d0c5ad 32%,#766c5c 50%,#b9ad95 74%,#6b6254);box-shadow:0 4px 5px rgba(0,0,0,.25),inset 0 1px rgba(255,255,255,.42)}
+      .cafasso-animator-sheet__brand{position:absolute;left:13px;right:13px;top:17px;display:flex;align-items:flex-end;justify-content:space-between;gap:8px;padding-bottom:7px;border-bottom:1px solid rgba(105,75,42,.24);color:#6b4d2f;font-family:Georgia,serif}
+      .cafasso-animator-sheet__brand strong{font-size:14px;letter-spacing:.07em}
+      .cafasso-animator-sheet__brand span{font:800 7px/1 Inter,system-ui,sans-serif;letter-spacing:.15em;text-transform:uppercase;color:#937453}
+      .cafasso-animator-sheet__body{position:absolute;left:13px;right:13px;top:54px;bottom:19px;display:grid;grid-template-columns:57px minmax(0,1fr);gap:10px;align-content:start}
+      .cafasso-animator-sheet__portrait{width:57px;height:69px;display:grid;place-items:center;overflow:hidden;border:3px solid #eee1c7;background:linear-gradient(145deg,#d2b98c,#987853);box-shadow:0 0 0 1px rgba(85,58,32,.42),0 4px 8px rgba(65,42,23,.17);color:#4a3828;font:700 20px Georgia,serif}
+      .cafasso-animator-sheet__portrait img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.9) contrast(1.03)}
+      .cafasso-animator-sheet__copy{min-width:0;padding-top:2px;text-align:left}
+      .cafasso-animator-sheet__name{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;margin:0 0 5px;color:#483527;font:700 12px/1.08 Georgia,serif}
+      .cafasso-animator-sheet__role{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#85694c;font:800 7px/1.2 Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+      .cafasso-animator-sheet__stamp{position:absolute;left:15px;bottom:16px;padding:3px 6px 2px;border:1px solid rgba(126,66,46,.5);border-radius:2px;color:rgba(126,66,46,.72);font:800 7px/1 Inter,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;transform:rotate(-3deg)}
+      .cafasso-animator-sheet__label{position:absolute;right:15px;bottom:17px;color:#876e54;font:700 8px/1 Georgia,serif;font-style:italic}
 
-      .cafasso-profile-panel{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 50% 38%,rgba(48,35,22,.16),rgba(6,19,20,.72) 66%);backdrop-filter:blur(7px) saturate(.85)}
-      .cafasso-profile-card{position:relative;width:min(720px,92vw);min-height:430px;padding:40px 44px 36px;border:1px solid rgba(96,66,36,.44);border-radius:10px 28px 24px 10px;background:repeating-linear-gradient(180deg,rgba(116,82,46,.035) 0 1px,transparent 1px 28px),linear-gradient(96deg,rgba(107,71,36,.12),transparent 9%),linear-gradient(136deg,#f8efd9 0%,#f0e0be 54%,#e5cfaa 100%);box-shadow:0 32px 82px rgba(0,0,0,.54),0 6px 12px rgba(35,21,12,.22),inset 18px 0 30px rgba(86,56,29,.12),inset -8px -8px 18px rgba(125,88,47,.06);color:#3c3026;font-family:Georgia,serif}
-      .cafasso-profile-card:before{content:"";position:absolute;left:30px;top:24px;bottom:24px;width:2px;background:linear-gradient(180deg,transparent,rgba(111,76,39,.23) 12%,rgba(111,76,39,.23) 88%,transparent);box-shadow:1px 0 rgba(255,255,255,.34)}
-      .cafasso-profile-card:after{content:"";position:absolute;right:35px;top:24px;width:118px;height:18px;border-radius:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);transform:rotate(-3deg);opacity:.55;pointer-events:none}
-      .cafasso-profile-close{position:absolute;right:18px;top:16px;width:38px;height:38px;border:1px solid rgba(89,63,38,.17);border-radius:50%;background:rgba(245,233,208,.64);color:#503d2d;font:28px/1 Georgia,serif;cursor:pointer;box-shadow:0 3px 8px rgba(70,45,26,.1)}
-      .cafasso-profile-kicker{margin-left:7px;color:#8a6748;font:700 11px/1.2 Inter,system-ui,sans-serif;letter-spacing:.15em;text-transform:uppercase}
-      .cafasso-profile-head{display:grid;grid-template-columns:132px minmax(0,1fr);gap:28px;align-items:center;margin:18px 0 24px}
-      .cafasso-profile-avatar{width:132px;height:156px;padding:10px;border:1px solid #3f2819;border-radius:5px;background:repeating-linear-gradient(9deg,rgba(255,255,255,.025) 0 1px,transparent 1px 7px),linear-gradient(115deg,#482a18,#a26b3b 17%,#57351f 47%,#a77748 77%,#3b2416);box-shadow:0 13px 24px rgba(70,43,24,.28),inset 0 0 0 2px rgba(255,229,182,.19),inset 0 0 0 6px rgba(48,28,16,.14);transform:rotate(-1.2deg)}
-      .cafasso-profile-avatar__image{position:relative;width:100%;height:100%;display:grid;place-items:center;overflow:hidden;background:#d9c7a5;border:4px solid #dfcaab;box-shadow:inset 0 0 12px rgba(57,36,23,.2);color:#4d3827;font:700 34px Georgia,serif}
-      .cafasso-profile-avatar__image:after{content:"";position:absolute;inset:0;background:linear-gradient(128deg,rgba(255,255,255,.22),transparent 24% 64%,rgba(255,255,255,.05) 72%,transparent 80%);pointer-events:none}
+      .cafasso-profile-panel{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 50% 38%,rgba(57,42,26,.12),rgba(6,19,20,.73) 68%);backdrop-filter:blur(7px) saturate(.82)}
+      .cafasso-profile-card{position:relative;width:min(790px,93vw);min-height:470px;padding:34px 42px 32px;border:1px solid rgba(92,64,35,.46);border-radius:4px;background:repeating-linear-gradient(0deg,rgba(103,73,41,.028) 0 1px,transparent 1px 9px),linear-gradient(142deg,#f9efd8 0%,#efdfbf 66%,#e5cc9e 100%);box-shadow:0 34px 88px rgba(0,0,0,.55),0 8px 14px rgba(38,24,14,.2),inset 0 0 0 4px rgba(255,250,236,.32),inset 18px 0 30px rgba(91,60,31,.07);color:#3c3026;font-family:Georgia,serif;transform:rotate(-.35deg)}
+      .cafasso-profile-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:11px;background:linear-gradient(180deg,#7b5737,#a87847 44%,#704c30);box-shadow:inset -2px 0 rgba(255,227,180,.14),4px 0 10px rgba(73,48,28,.09)}
+      .cafasso-profile-card:after{content:"CAFASSO · FICHA PERSONAL";position:absolute;right:32px;top:26px;color:rgba(111,77,42,.35);font:800 8px/1 Inter,system-ui,sans-serif;letter-spacing:.18em}
+      .cafasso-profile-close{position:absolute;right:16px;top:14px;z-index:3;width:37px;height:37px;border:1px solid rgba(87,60,33,.18);border-radius:50%;background:rgba(247,236,213,.78);color:#503d2d;font:28px/1 Georgia,serif;cursor:pointer;box-shadow:0 3px 7px rgba(70,45,26,.1)}
+      .cafasso-profile-kicker{margin:0 0 5px 8px;color:#8a6748;font:800 10px/1.2 Inter,system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase}
+      .cafasso-profile-title{margin:0 0 23px 8px;color:#443326;font:500 38px/1 Georgia,serif}
+      .cafasso-profile-head{display:grid;grid-template-columns:126px minmax(0,1fr);gap:27px;align-items:start;margin:0 7px 24px}
+      .cafasso-profile-avatar{position:relative;width:126px;height:151px;padding:8px;border:1px solid rgba(85,57,31,.48);background:#e6d2ab;box-shadow:0 9px 17px rgba(67,43,24,.18);transform:rotate(-1.6deg)}
+      .cafasso-profile-avatar:after{content:"";position:absolute;inset:8px;pointer-events:none;background:linear-gradient(125deg,rgba(255,255,255,.18),transparent 24% 68%,rgba(255,255,255,.04))}
+      .cafasso-profile-avatar__image{width:100%;height:100%;display:grid;place-items:center;overflow:hidden;background:linear-gradient(145deg,#ceb68c,#947651);color:#4d3827;font:700 34px Georgia,serif}
       .cafasso-profile-avatar__image img{width:100%;height:100%;display:block;object-fit:cover}
-      .cafasso-profile-name{margin:0;color:#3d3025;font:500 clamp(32px,4vw,48px)/1.02 Georgia,serif;text-shadow:0 1px rgba(255,255,255,.4)}
-      .cafasso-profile-role{margin-top:7px;color:#7b6148;font:700 13px/1.4 Inter,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.09em}
-      .cafasso-profile-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px;margin:7px 0 20px;padding:17px 0 8px;border-top:1px solid rgba(112,79,43,.16);border-bottom:1px solid rgba(112,79,43,.14)}
-      .cafasso-profile-meta__item{padding:6px 2px 11px;border:0;border-bottom:1px solid rgba(115,82,48,.12);border-radius:0;background:transparent}
-      .cafasso-profile-meta__item small{display:block;margin-bottom:5px;color:#8a735d;font:700 10px/1.2 Inter,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.1em}
-      .cafasso-profile-meta__item strong{display:block;color:#49392c;font:600 15px/1.35 Inter,system-ui,sans-serif;overflow-wrap:anywhere}
-      .cafasso-profile-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:4px}
-      .cafasso-profile-action{border:1px solid #765434;border-radius:6px;padding:10px 16px;background:linear-gradient(#7c5837,#69472d);color:#fff8e8;font:700 12px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 4px 9px rgba(77,51,29,.16),inset 0 1px rgba(255,255,255,.12)}
-      .cafasso-profile-action--secondary{background:rgba(249,240,221,.55);color:#5d4936;border-color:rgba(112,79,45,.28);box-shadow:none}
-      .cafasso-profile-note{flex:1;min-width:220px;color:#7a6856;font:12px/1.45 Inter,system-ui,sans-serif}
-      .cafasso-profile-status{min-height:18px;margin-top:9px;color:#6a5745;font:700 12px/1.4 Inter,system-ui,sans-serif}
+      .cafasso-profile-identity{padding-top:6px}
+      .cafasso-profile-name{margin:0;color:#3e2f23;font:500 clamp(31px,4vw,47px)/1 Georgia,serif}
+      .cafasso-profile-role{margin-top:8px;color:#806143;font:800 12px/1.4 Inter,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.11em}
+      .cafasso-profile-identity-line{margin-top:16px;padding-top:13px;border-top:1px solid rgba(110,77,42,.18);color:#6f5b47;font:14px/1.55 Georgia,serif;font-style:italic;max-width:470px}
+      .cafasso-profile-details{display:grid;grid-template-columns:1fr 1fr;gap:0 26px;margin:0 7px 19px;padding:13px 0 4px;border-top:1px solid rgba(110,77,42,.18);border-bottom:1px solid rgba(110,77,42,.14)}
+      .cafasso-profile-field{min-width:0;padding:9px 3px 12px;border-bottom:1px solid rgba(110,77,42,.09)}
+      .cafasso-profile-field small{display:block;margin-bottom:5px;color:#927454;font:800 9px/1.1 Inter,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.12em}
+      .cafasso-profile-field strong{display:block;color:#49392c;font:600 14px/1.38 Inter,system-ui,sans-serif;overflow-wrap:anywhere}
+      .cafasso-profile-path{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 7px 20px}
+      .cafasso-profile-path__item{position:relative;padding:13px 15px 12px;border:1px dashed rgba(116,78,42,.31);background:rgba(255,250,237,.22)}
+      .cafasso-profile-path__item small{display:block;margin-bottom:4px;color:#917150;font:800 9px/1.1 Inter,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.12em}
+      .cafasso-profile-path__item strong{display:block;color:#4b392b;font:600 15px/1.3 Georgia,serif}
+      .cafasso-profile-path__item span{display:block;margin-top:3px;color:#8a735c;font:11px/1.3 Inter,system-ui,sans-serif}
+      .cafasso-profile-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 7px;padding-top:2px}
+      .cafasso-profile-action{border:1px solid #765434;border-radius:4px;padding:10px 15px;background:linear-gradient(#795536,#67472d);color:#fff8e8;font:800 11px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 4px 8px rgba(77,51,29,.15),inset 0 1px rgba(255,255,255,.12)}
+      .cafasso-profile-action--secondary{background:rgba(249,240,221,.5);color:#5d4936;border-color:rgba(112,79,45,.28);box-shadow:none}
+      .cafasso-profile-note{flex:1;min-width:230px;color:#7a6856;font:11px/1.45 Inter,system-ui,sans-serif}
+      .cafasso-profile-status{min-height:18px;margin:8px 7px 0;color:#6a5745;font:700 11px/1.4 Inter,system-ui,sans-serif}
+
       @media(max-width:680px){
-        .cafasso-profile-frame{left:8%;top:18%;width:84px;height:108px;padding:9px 9px 17px;transform:perspective(500px) rotateY(-4deg) rotateZ(-1.2deg)}
-        .cafasso-profile-frame:before{bottom:-12px;height:20px}
-        .cafasso-profile-frame__photo{border-width:4px;font-size:21px}
-        .cafasso-profile-panel{padding:12px;align-items:flex-end}
-        .cafasso-profile-card{width:100%;max-height:90vh;overflow:auto;min-height:0;padding:31px 22px 24px;border-radius:22px 22px 0 0}
-        .cafasso-profile-card:before{display:none}
-        .cafasso-profile-head{grid-template-columns:92px 1fr;gap:18px;margin-top:20px}
-        .cafasso-profile-avatar{width:92px;height:112px;padding:7px}
-        .cafasso-profile-avatar__image{font-size:26px}
-        .cafasso-profile-name{font-size:31px}
-        .cafasso-profile-role{font-size:11px}
-        .cafasso-profile-meta{grid-template-columns:1fr}
-        .cafasso-profile-actions{display:grid;grid-template-columns:1fr}.cafasso-profile-action{width:100%}.cafasso-profile-note{min-width:0}
+        .cafasso-animator-sheet{left:7.5%;top:18.5%;width:112px;height:134px;transform:perspective(560px) rotateY(-3deg) rotateZ(-3.4deg)}
+        .cafasso-animator-sheet__clip{width:43px;height:20px;top:-8px}
+        .cafasso-animator-sheet__brand{left:9px;right:9px;top:13px;padding-bottom:5px}.cafasso-animator-sheet__brand strong{font-size:10px}.cafasso-animator-sheet__brand span{font-size:5px}
+        .cafasso-animator-sheet__body{left:9px;right:9px;top:41px;bottom:15px;grid-template-columns:42px 1fr;gap:7px}.cafasso-animator-sheet__portrait{width:42px;height:51px;border-width:2px;font-size:16px}.cafasso-animator-sheet__name{font-size:9px}.cafasso-animator-sheet__role{font-size:5.5px}.cafasso-animator-sheet__stamp{left:10px;bottom:10px;font-size:5px}.cafasso-animator-sheet__label{right:10px;bottom:11px;font-size:6px}
+        .cafasso-profile-panel{padding:10px;align-items:flex-end}
+        .cafasso-profile-card{width:100%;max-height:91vh;overflow:auto;min-height:0;padding:31px 21px 24px;border-radius:13px 13px 0 0;transform:none}.cafasso-profile-card:before{width:7px}.cafasso-profile-card:after{display:none}
+        .cafasso-profile-title{font-size:31px}.cafasso-profile-head{grid-template-columns:88px 1fr;gap:17px;margin-bottom:18px}.cafasso-profile-avatar{width:88px;height:106px;padding:6px}.cafasso-profile-avatar__image{font-size:24px}.cafasso-profile-name{font-size:29px}.cafasso-profile-role{font-size:10px}.cafasso-profile-identity-line{font-size:12px;margin-top:11px;padding-top:10px}
+        .cafasso-profile-details,.cafasso-profile-path{grid-template-columns:1fr}.cafasso-profile-actions{display:grid;grid-template-columns:1fr}.cafasso-profile-action{width:100%}.cafasso-profile-note{min-width:0}
       }
-      @media(prefers-reduced-motion:reduce){.cafasso-profile-frame{transition:none}}
+      @media(prefers-reduced-motion:reduce){.cafasso-animator-sheet{transition:none}}
     `;
     document.head.appendChild(style);
   }
@@ -132,7 +139,7 @@
           const side = Math.min(image.width, image.height);
           const sx = (image.width - side) / 2;
           const sy = (image.height - side) / 2;
-          ctx.drawImage(image, sx, sy,side,side,0,0,size,size);
+          ctx.drawImage(image, sx, sy, side, side, 0, 0, size, size);
           const output = canvas.toDataURL('image/jpeg', .72);
           if (output.length > 80000) return reject(new Error('Probá con una foto más simple o liviana.'));
           resolve(output);
@@ -172,57 +179,76 @@
     const email = String(user.email || '').trim();
     const group = getGroupLabel(user);
 
-    const frame = document.createElement('button');
-    frame.type = 'button';
-    frame.className = 'cafasso-profile-frame';
-    frame.dataset.houseProfile = 'open';
-    frame.setAttribute('aria-label', `Abrir perfil de ${name}`);
-    frame.innerHTML = portraitMarkup(user, 'cafasso-profile-frame__photo');
+    const sheet = document.createElement('button');
+    sheet.type = 'button';
+    sheet.className = 'cafasso-animator-sheet';
+    sheet.dataset.houseProfile = 'open';
+    sheet.setAttribute('aria-label', `Abrir mi ficha CAFASSO: ${name}`);
+    sheet.innerHTML = `
+      <span class="cafasso-animator-sheet__clip" aria-hidden="true"></span>
+      <span class="cafasso-animator-sheet__paper">
+        <span class="cafasso-animator-sheet__brand"><strong>CAFASSO</strong><span>Mi ficha</span></span>
+        <span class="cafasso-animator-sheet__body">
+          ${portraitMarkup(user, 'cafasso-animator-sheet__portrait')}
+          <span class="cafasso-animator-sheet__copy">
+            <span class="cafasso-animator-sheet__name">${esc(name)}</span>
+            <span class="cafasso-animator-sheet__role">${esc(role)}</span>
+          </span>
+        </span>
+        <span class="cafasso-animator-sheet__stamp">Animador</span>
+        <span class="cafasso-animator-sheet__label">abrir ficha</span>
+      </span>`;
 
     const panel = document.createElement('section');
     panel.className = 'cafasso-profile-panel';
     panel.dataset.houseProfilePanel = '1';
     panel.hidden = true;
-    panel.setAttribute('aria-label', 'Mi perfil CAFASSO');
+    panel.setAttribute('aria-label', 'Mi ficha CAFASSO');
     panel.innerHTML = `
       <article class="cafasso-profile-card" role="dialog" aria-modal="true" aria-labelledby="cafasso-house-profile-title">
-        <button class="cafasso-profile-close" data-house-profile-close type="button" aria-label="Cerrar perfil">×</button>
-        <div class="cafasso-profile-kicker">Mi lugar en CAFASSO</div>
+        <button class="cafasso-profile-close" data-house-profile-close type="button" aria-label="Cerrar mi ficha">×</button>
+        <div class="cafasso-profile-kicker">Identidad · camino · pertenencia</div>
+        <h2 class="cafasso-profile-title" id="cafasso-house-profile-title">Mi ficha</h2>
         <div class="cafasso-profile-head">
           <div class="cafasso-profile-avatar" data-house-profile-avatar>${portraitMarkup(user, 'cafasso-profile-avatar__image')}</div>
-          <div>
-            <h2 class="cafasso-profile-name" id="cafasso-house-profile-title">${esc(name)}</h2>
+          <div class="cafasso-profile-identity">
+            <h3 class="cafasso-profile-name">${esc(name)}</h3>
             <div class="cafasso-profile-role">${esc(role)}</div>
+            <div class="cafasso-profile-identity-line">Mi lugar dentro de CAFASSO: crecer, servir y acompañar a otros en el camino.</div>
           </div>
         </div>
-        <div class="cafasso-profile-meta">
-          ${email ? `<div class="cafasso-profile-meta__item"><small>Correo</small><strong>${esc(email)}</strong></div>` : ''}
-          ${group ? `<div class="cafasso-profile-meta__item"><small>Grupo / comunidad</small><strong>${esc(group)}</strong></div>` : ''}
-          <div class="cafasso-profile-meta__item"><small>Almitas</small><strong>Se conecta en el próximo paso</strong></div>
-          <div class="cafasso-profile-meta__item"><small>RUAH</small><strong>Se conecta en el próximo paso</strong></div>
+        <div class="cafasso-profile-details">
+          ${email ? `<div class="cafasso-profile-field"><small>Correo</small><strong>${esc(email)}</strong></div>` : ''}
+          ${group ? `<div class="cafasso-profile-field"><small>Grupo / comunidad</small><strong>${esc(group)}</strong></div>` : ''}
+          <div class="cafasso-profile-field"><small>Rol</small><strong>${esc(role)}</strong></div>
+          <div class="cafasso-profile-field"><small>Identidad CAFASSO</small><strong>Animador en camino</strong></div>
+        </div>
+        <div class="cafasso-profile-path" aria-label="Camino CAFASSO">
+          <div class="cafasso-profile-path__item"><small>Almitas</small><strong>Tu recorrido</strong><span>Se integrará acá sin cambiar esta ficha.</span></div>
+          <div class="cafasso-profile-path__item"><small>RUAH</small><strong>Tu constancia</strong><span>La racha vivirá en este mismo espacio.</span></div>
         </div>
         <div class="cafasso-profile-actions">
           <button class="cafasso-profile-action" data-house-profile-photo type="button">Cambiar mi foto</button>
           ${user.avatarData ? '<button class="cafasso-profile-action cafasso-profile-action--secondary" data-house-profile-photo-remove type="button">Quitar foto</button>' : ''}
           <input data-house-profile-file type="file" accept="image/jpeg,image/png,image/webp" hidden>
-          <span class="cafasso-profile-note">Tu foto identifica tu Casa. Almitas, RUAH y progreso van a vivir en esta misma ficha.</span>
+          <span class="cafasso-profile-note">Esta ficha es personal: toma los datos de la sesión del animador que entra a su Casa.</span>
         </div>
         <div class="cafasso-profile-status" data-house-profile-status></div>
       </article>`;
 
-    house.appendChild(frame);
+    house.appendChild(sheet);
     house.appendChild(panel);
 
     const fileInput = panel.querySelector('[data-house-profile-file]');
     const choose = panel.querySelector('[data-house-profile-photo]');
-    const remove = panel.querySelector('[data-house-profile-photo-remove]');
     const status = panel.querySelector('[data-house-profile-status]');
+    const close = () => { panel.hidden = true; sheet.focus(); };
 
-    const close = () => { panel.hidden = true; frame.focus(); };
-    const refreshPhoto = () => {
+    function refreshPhoto() {
       const fresh = readUser();
-      frame.innerHTML = portraitMarkup(fresh, 'cafasso-profile-frame__photo');
+      const smallPortrait = sheet.querySelector('.cafasso-animator-sheet__portrait');
       const avatar = panel.querySelector('[data-house-profile-avatar]');
+      if (smallPortrait) smallPortrait.outerHTML = portraitMarkup(fresh, 'cafasso-animator-sheet__portrait');
       if (avatar) avatar.innerHTML = portraitMarkup(fresh, 'cafasso-profile-avatar__image');
       const oldRemove = panel.querySelector('[data-house-profile-photo-remove]');
       if (fresh.avatarData && !oldRemove) {
@@ -234,7 +260,7 @@
         choose.insertAdjacentElement('afterend', button);
         bindRemove(button);
       } else if (!fresh.avatarData && oldRemove) oldRemove.remove();
-    };
+    }
 
     async function removePhoto(button) {
       button.disabled = true;
@@ -248,7 +274,7 @@
         status.textContent = error.message || 'No se pudo quitar la foto.';
       } finally {
         choose.disabled = false;
-        button.disabled = false;
+        if (button.isConnected) button.disabled = false;
       }
     }
 
@@ -256,16 +282,18 @@
       button.addEventListener('click', () => removePhoto(button));
     }
 
-    frame.addEventListener('click', () => { panel.hidden = false; panel.querySelector('[data-house-profile-close]')?.focus(); });
+    sheet.addEventListener('click', () => { panel.hidden = false; panel.querySelector('[data-house-profile-close]')?.focus(); });
     panel.querySelector('[data-house-profile-close]')?.addEventListener('click', close);
     panel.addEventListener('click', event => { if (event.target === panel) close(); });
     choose?.addEventListener('click', () => fileInput?.click());
-    if (remove) bindRemove(remove);
+    const initialRemove = panel.querySelector('[data-house-profile-photo-remove]');
+    if (initialRemove) bindRemove(initialRemove);
 
     fileInput?.addEventListener('change', async () => {
       const file = fileInput.files?.[0];
       if (!file) return;
       choose.disabled = true;
+      const remove = panel.querySelector('[data-house-profile-photo-remove]');
       if (remove) remove.disabled = true;
       status.textContent = 'Preparando tu foto…';
       try {
@@ -278,7 +306,8 @@
         status.textContent = error.message || 'No se pudo guardar la foto.';
       } finally {
         choose.disabled = false;
-        if (remove) remove.disabled = false;
+        const freshRemove = panel.querySelector('[data-house-profile-photo-remove]');
+        if (freshRemove) freshRemove.disabled = false;
         fileInput.value = '';
       }
     });
