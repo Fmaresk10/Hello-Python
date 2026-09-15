@@ -40,6 +40,9 @@
     if (document.querySelector(`script[data-${marker}]`)) return;
     const script = document.createElement('script');
     script.src = src;
+    // Los scripts dinámicos son async por defecto. Forzamos orden estable para que
+    // las posiciones finales existan antes de crear Leccionario y Vela.
+    script.async = false;
     script.defer = true;
     script.setAttribute(`data-${marker}`, '1');
     document.head.appendChild(script);
@@ -50,16 +53,19 @@
     loadHouseScript('./house-prologue.js?v=1', 'cafasso-house-prologue-loader');
     loadHouseScript('./house-microinteractions.js?v=1', 'cafasso-house-micro-loader');
     loadHouseScript('./patio-experience.js?v=1', 'cafasso-patio-experience-loader');
+
+    // Primero fijamos la geometría final. Así F5 no muestra posiciones antiguas.
+    loadHouseScript('./parish-lectionary-position.js?v=2', 'cafasso-parish-lectionary-position-loader');
+    loadHouseScript('./parish-candle-position.js?v=2', 'cafasso-parish-candle-position-loader');
+
     loadHouseScript('./parish-experience.js?v=1', 'cafasso-parish-experience-loader');
     loadHouseScript('./parish-lectionary-realism.js?v=1', 'cafasso-parish-lectionary-realism-loader');
-    loadHouseScript('./parish-lectionary-position.js?v=1', 'cafasso-parish-lectionary-position-loader');
     loadHouseScript('./parish-lectionary-polish.js?v=3', 'cafasso-parish-lectionary-polish-loader');
     loadHouseScript('./parish-songbook.js?v=1', 'cafasso-parish-songbook-loader');
     loadHouseScript('./parish-songbook-realism.js?v=1', 'cafasso-parish-songbook-realism-loader');
     loadHouseScript('./parish-songbook-interior-v2.js?v=1', 'cafasso-parish-songbook-interior-v2-loader');
     loadHouseScript('./parish-candle.js?v=2', 'cafasso-parish-candle-loader');
     loadHouseScript('./parish-candle-altar.js?v=2', 'cafasso-parish-candle-altar-loader');
-    loadHouseScript('./parish-candle-position.js?v=1', 'cafasso-parish-candle-position-loader');
   }
 
   if (document.readyState === 'loading') {
