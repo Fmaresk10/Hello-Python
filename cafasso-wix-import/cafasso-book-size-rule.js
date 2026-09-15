@@ -53,6 +53,7 @@
     loadHouseScript('./house-prologue.js?v=1', 'cafasso-house-prologue-loader');
     loadHouseScript('./house-microinteractions.js?v=1', 'cafasso-house-micro-loader');
     loadHouseScript('./patio-experience.js?v=1', 'cafasso-patio-experience-loader');
+    loadHouseScript('./school-entry.js?v=1', 'cafasso-school-entry-loader');
     loadHouseScript('./school-experience.js?v=1', 'cafasso-school-experience-loader');
     loadHouseScript('./school-screen-integration.js?v=2', 'cafasso-school-screen-integration-loader');
 
