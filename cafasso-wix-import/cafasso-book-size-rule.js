@@ -64,6 +64,7 @@
     loadHouseScript('./school-entry.js?v=1', 'cafasso-school-entry-loader');
     loadHouseScript('./school-course-auth.js?v=1', 'cafasso-school-course-auth-loader');
     loadHouseScript('./school-experience.js?v=1', 'cafasso-school-experience-loader');
+    loadHouseScript('./cafasso-school-secret.js?v=1', 'cafasso-school-secret-loader');
     loadHouseScript('./school-screen-integration.js?v=2', 'cafasso-school-screen-integration-loader');
     loadHouseScript('./school-resume.js?v=2', 'cafasso-school-resume-loader');
     loadHouseScript('./school-resume-position.js?v=3', 'cafasso-school-resume-position-loader');
