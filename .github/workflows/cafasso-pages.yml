@@ -62,17 +62,15 @@ jobs:
 
           admin_path = Path('cafasso-wix-import/admin.html')
           admin_text = admin_path.read_text(encoding='utf-8')
-          gift_tag = f'<script src="./cafasso-admin-almitas-gifts.js?v={version}"></script>'
-          if 'cafasso-admin-almitas-gifts.js' in admin_text:
-              admin_text = re.sub(
-                  r'<script src="\./cafasso-admin-almitas-gifts\.js\?v=[^"]+"></script>',
-                  gift_tag,
-                  admin_text
-              )
-          else:
-              if '</body>' not in admin_text:
-                  raise SystemExit('No encontré </body> en admin.html para insertar regalos de Almitas')
-              admin_text = admin_text.replace('</body>', gift_tag + '</body>', 1)
+          gift_tag = f'<script src="./cafasso-admin-almitas-gifts-v2.js?v={version}"></script>'
+          admin_text = re.sub(
+              r'<script src="\./cafasso-admin-almitas-gifts(?:-v2)?\.js\?v=[^"]+"></script>',
+              '',
+              admin_text
+          )
+          if '</body>' not in admin_text:
+              raise SystemExit('No encontré </body> en admin.html para insertar regalos de Almitas')
+          admin_text = admin_text.replace('</body>', gift_tag + '</body>', 1)
           admin_path.write_text(admin_text, encoding='utf-8')
           PY
       - name: Configure Pages
