@@ -63,6 +63,7 @@
     loadHouseScript('./cafasso-levels.js?v=1', 'cafasso-levels-loader');
     loadHouseScript('./cafasso-world-unlocks.js?v=1', 'cafasso-world-unlocks-loader');
     loadHouseScript('./cafasso-world-unlocks-position.js?v=1', 'cafasso-world-unlocks-position-loader');
+    loadHouseScript('./cafasso-presencia-patio.js?v=1', 'cafasso-presencia-patio-loader');
     loadHouseScript('./school-entry.js?v=1', 'cafasso-school-entry-loader');
     loadHouseScript('./school-course-auth.js?v=1', 'cafasso-school-course-auth-loader');
     loadHouseScript('./school-experience.js?v=1', 'cafasso-school-experience-loader');
