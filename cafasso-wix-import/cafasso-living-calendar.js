@@ -27,6 +27,13 @@
     return Number.isFinite(date.getTime()) ? date : null;
   }
 
+  function ymd(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
   function previewDate() {
     if (!isAdmin()) return null;
     const raw = new URLSearchParams(location.search).get('cafassoDate');
@@ -78,17 +85,8 @@
   }
 
   function adventStart(year) {
-    const christmas = safeDate(year, 11, 25);
-    const weekday = christmas.getDay();
-    const daysBackToSunday = weekday === 0 ? 0 : weekday;
-    const sundayBeforeOrOn = addDays(christmas, -daysBackToSunday);
-    return addDays(sundayBeforeOrOn, -21);
-  }
-
-  function baptismEnd(year) {
-    const jan6 = safeDate(year, 0, 6);
-    const delta = (7 - jan6.getDay()) % 7;
-    return addDays(jan6, delta || 7);
+    const dec3 = safeDate(year, 11, 3);
+    return addDays(dec3, -dec3.getDay());
   }
 
   function calendarFor(date) {
@@ -100,14 +98,13 @@
     const pentecost = addDays(easter, 49);
     const advent = adventStart(year);
     const christmas = safeDate(year, 11, 25);
-    const christmasEndCurrent = baptismEnd(year);
-    const christmasEndPrevious = baptismEnd(year);
+    const christmasEnd = safeDate(year, 0, 6);
 
     let season = 'ordinary';
     let week = 0;
     let label = 'Tiempo Ordinario';
 
-    if (date.getMonth() === 0 && date <= christmasEndPrevious) {
+    if (date.getMonth() === 0 && date <= christmasEnd) {
       season = 'christmas'; label = 'Navidad';
     } else if (between(date, ashWednesday, addDays(palmSunday, -1))) {
       season = 'lent'; label = 'Cuaresma';
@@ -131,20 +128,7 @@
     if (date.getMonth() === 4 && date.getDate() === 24) salesian = { id:'auxiliadora', label:'María Auxiliadora' };
     if (date.getMonth() === 7 && date.getDate() === 16) salesian = { id:'bosco-birthday', label:'Nacimiento de Don Bosco' };
 
-    return {
-      date,
-      season,
-      label,
-      week,
-      salesian,
-      easter,
-      ashWednesday,
-      palmSunday,
-      pentecost,
-      advent,
-      christmas,
-      preview: Boolean(previewDate())
-    };
+    return { date, season, label, week, salesian, easter, ashWednesday, palmSunday, pentecost, advent, christmas, preview:Boolean(previewDate()) };
   }
 
   function root() {
@@ -177,17 +161,17 @@
       .cafasso-advent-candle.is-lit:after{content:"";position:absolute;left:3px;top:-12px;width:6px;height:11px;border-radius:52% 48% 48% 52%;background:radial-gradient(circle at 50% 70%,#fff7c9 0 19%,#ffd76f 31%,#e99a38 57%,transparent 70%);filter:drop-shadow(0 0 5px rgba(255,205,92,.75));animation:cafassoCalendarFlame 1.8s ease-in-out infinite alternate}
       @keyframes cafassoCalendarFlame{from{transform:rotate(-2deg) scale(.94)}to{transform:rotate(2deg) scale(1.06)}}
 
-      .cafasso-calendar-star{right:11%;top:10%;width:28px;height:28px;filter:drop-shadow(0 0 12px rgba(255,219,124,.48));transform:scale(.8) rotate(0deg)}
+      .cafasso-calendar-star{right:11%;top:10%;width:28px;height:28px;filter:drop-shadow(0 0 12px rgba(255,219,124,.48));transform:scale(.8)}
       .cafasso-calendar-star:before,.cafasso-calendar-star:after{content:"";position:absolute;left:13px;top:0;width:2px;height:28px;border-radius:99px;background:linear-gradient(transparent,#ffe7a0 35%,#fff7d0 50%,#ffe7a0 65%,transparent)}
       .cafasso-calendar-star:after{transform:rotate(90deg)}
       .cafasso-lit-christmas .cafasso-calendar-star,.cafasso-lit-easter .cafasso-calendar-star{opacity:.9;transform:scale(1)}
 
-      .cafasso-calendar-cross{right:10%;top:14%;width:30px;height:45px;opacity:0;filter:drop-shadow(0 6px 8px rgba(0,0,0,.26))}
+      .cafasso-calendar-cross{right:10%;top:14%;width:30px;height:45px;filter:drop-shadow(0 6px 8px rgba(0,0,0,.26))}
       .cafasso-calendar-cross:before,.cafasso-calendar-cross:after{content:"";position:absolute;background:rgba(78,57,44,.72);border-radius:2px}
       .cafasso-calendar-cross:before{left:12px;top:0;width:6px;height:45px}.cafasso-calendar-cross:after{left:2px;top:12px;width:26px;height:5px}
       .cafasso-lit-lent .cafasso-calendar-cross{opacity:.48}.cafasso-lit-holy-week .cafasso-calendar-cross{opacity:.74;transform:translateY(2px)}
 
-      .cafasso-pentecost-ember{left:50%;top:18%;width:7px;height:12px;border-radius:60% 40% 65% 35%;background:radial-gradient(circle at 50% 70%,#fff5b8,#ef8f46 48%,#b8392d 72%,transparent 75%);box-shadow:-34px 14px 0 -1px rgba(221,77,51,.45),31px 18px 0 -1px rgba(244,139,65,.42),12px -8px 0 -2px rgba(255,210,104,.46);opacity:0}
+      .cafasso-pentecost-ember{left:50%;top:18%;width:7px;height:12px;border-radius:60% 40% 65% 35%;background:radial-gradient(circle at 50% 70%,#fff5b8,#ef8f46 48%,#b8392d 72%,transparent 75%);box-shadow:-34px 14px 0 -1px rgba(221,77,51,.45),31px 18px 0 -1px rgba(244,139,65,.42),12px -8px 0 -2px rgba(255,210,104,.46)}
       .cafasso-lit-pentecost .cafasso-pentecost-ember{opacity:.86;animation:cafassoPentecostFloat 3.6s ease-in-out infinite alternate}
       @keyframes cafassoPentecostFloat{from{transform:translate(-50%,4px) rotate(-4deg)}to{transform:translate(-50%,-5px) rotate(4deg)}}
 
@@ -197,16 +181,20 @@
       .cafasso-lit-easter .cafasso-escuela .cafasso-season-word{opacity:.72}.cafasso-lit-easter .cafasso-escuela .cafasso-season-word:after{content:"Vida nueva"}
       .cafasso-lit-pentecost .cafasso-escuela .cafasso-season-word{opacity:.76}.cafasso-lit-pentecost .cafasso-escuela .cafasso-season-word:after{content:"Espíritu"}
 
-      .cafasso-salesian-sign{left:50%;bottom:7.8%;width:76px;height:20px;transform:translate(-50%,6px);opacity:0}
+      .cafasso-salesian-sign{left:50%;bottom:7.8%;width:76px;height:20px;transform:translate(-50%,6px)}
       .cafasso-salesian-sign:before{content:"";position:absolute;left:6px;right:6px;top:5px;height:9px;border-radius:70% 35% 65% 40%;background:linear-gradient(90deg,#154f7c,#2b78a3 48%,#e7b94c 50%,#dba42f 100%);box-shadow:0 5px 9px rgba(0,0,0,.28);transform:rotate(-4deg)}
       .cafasso-salesian-don-bosco .cafasso-patio .cafasso-salesian-sign,.cafasso-salesian-bosco-birthday .cafasso-house .cafasso-salesian-sign{opacity:.92;transform:translate(-50%,0)}
       .cafasso-salesian-auxiliadora .cafasso-parroquia .cafasso-salesian-sign{opacity:.92;transform:translate(-50%,0)}
       .cafasso-salesian-auxiliadora .cafasso-parroquia .cafasso-salesian-sign:before{background:linear-gradient(90deg,#dcefff,#77a8d1 46%,#f5e7b0 50%,#f0d889 100%)}
 
-      .cafasso-calendar-preview{position:fixed;right:12px;bottom:12px;z-index:2147483100;padding:5px 8px;border:1px solid rgba(236,202,130,.25);border-radius:999px;background:rgba(9,25,25,.72);color:rgba(255,241,207,.72);font:700 7px/1 Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;pointer-events:none;backdrop-filter:blur(5px)}
+      .cafasso-calendar-preview{position:fixed;right:14px;bottom:58px;z-index:2147483100;padding:5px 8px;border:1px solid rgba(236,202,130,.25);border-radius:999px;background:rgba(9,25,25,.72);color:rgba(255,241,207,.72);font:700 7px/1 Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;pointer-events:none;backdrop-filter:blur(5px)}
+      .cafasso-calendar-admin-trigger{position:fixed;right:14px;bottom:14px;z-index:2147483200;width:36px;height:36px;border:1px solid rgba(236,202,130,.30);border-radius:50%;background:rgba(12,35,34,.66);color:#f5e2ae;font:700 17px/1 Georgia,serif;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.24);backdrop-filter:blur(5px);opacity:.78}
+      .cafasso-calendar-admin-trigger:hover,.cafasso-calendar-admin-trigger:focus-visible{opacity:1;outline:none;transform:translateY(-1px)}
+      .cafasso-calendar-admin-panel{position:fixed;right:14px;bottom:58px;z-index:2147483201;width:min(280px,calc(100vw - 28px));padding:12px;border:1px solid rgba(236,202,130,.24);border-radius:14px;background:rgba(8,28,28,.94);box-shadow:0 16px 44px rgba(0,0,0,.38);backdrop-filter:blur(10px);color:#f8edd1;font-family:Inter,system-ui,sans-serif}
+      .cafasso-calendar-admin-panel[hidden]{display:none!important}.cafasso-calendar-admin-panel strong{display:block;margin:0 0 9px;font:600 14px/1.2 Georgia,serif;color:#fff5d9}.cafasso-calendar-admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.cafasso-calendar-admin-grid button{min-height:32px;padding:7px 8px;border:1px solid rgba(240,210,141,.18);border-radius:8px;background:rgba(255,255,255,.035);color:#f6e7c0;font:700 8px/1.15 Inter,system-ui,sans-serif;cursor:pointer;text-align:left}.cafasso-calendar-admin-grid button:hover{background:rgba(240,210,141,.10);border-color:rgba(240,210,141,.35)}
 
-      @media(max-width:680px){.cafasso-advent-wreath{right:5%;bottom:10%;transform:scale(.76);transform-origin:100% 100%}.cafasso-calendar-cross,.cafasso-calendar-star{right:6%}.cafasso-season-word{left:6%;top:10%;font-size:15px}.cafasso-salesian-sign{bottom:9%}}
-      @media(prefers-reduced-motion:reduce){.cafasso-calendar-atmosphere,.cafasso-calendar-symbol{transition:none!important}.cafasso-advent-candle.is-lit:after,.cafasso-lit-pentecost .cafasso-pentecost-ember{animation:none!important}}
+      @media(max-width:680px){.cafasso-advent-wreath{right:5%;bottom:10%;transform:scale(.76);transform-origin:100% 100%}.cafasso-calendar-cross,.cafasso-calendar-star{right:6%}.cafasso-season-word{left:6%;top:10%;font-size:15px}.cafasso-salesian-sign{bottom:9%}.cafasso-calendar-admin-trigger{right:10px;bottom:10px}.cafasso-calendar-admin-panel{right:10px;bottom:54px}}
+      @media(prefers-reduced-motion:reduce){.cafasso-calendar-atmosphere,.cafasso-calendar-symbol,.cafasso-calendar-admin-trigger{transition:none!important}.cafasso-advent-candle.is-lit:after,.cafasso-lit-pentecost .cafasso-pentecost-ember{animation:none!important}}
     `;
     document.head.appendChild(style);
   }
@@ -245,6 +233,66 @@
     return true;
   }
 
+  function setPreview(value) {
+    if (!isAdmin()) return false;
+    const next = new URL(location.href);
+    if (value) next.searchParams.set('cafassoDate', value);
+    else next.searchParams.delete('cafassoDate');
+    location.href = next.toString();
+    return true;
+  }
+
+  function mountAdminPreview(state) {
+    document.querySelector('.cafasso-calendar-admin-trigger')?.remove();
+    document.querySelector('.cafasso-calendar-admin-panel')?.remove();
+    if (!isAdmin()) return;
+
+    const year = new Date().getFullYear();
+    const easter = easterSunday(year);
+    const advent = adventStart(year);
+    const presets = [
+      ['Hoy',''],
+      ['Adviento 1',ymd(advent)],
+      ['Adviento 4',ymd(addDays(advent,21))],
+      ['Navidad',`${year}-12-25`],
+      ['Cuaresma',ymd(addDays(easter,-30))],
+      ['Semana Santa',ymd(addDays(easter,-7))],
+      ['Pascua',ymd(easter)],
+      ['Pentecostés',ymd(addDays(easter,49))],
+      ['Don Bosco',`${year}-01-31`],
+      ['Auxiliadora',`${year}-05-24`],
+      ['Nacimiento DB',`${year}-08-16`]
+    ];
+
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'cafasso-calendar-admin-trigger';
+    trigger.textContent = '◷';
+    trigger.title = 'Previsualizar calendario CAFASSO';
+    trigger.setAttribute('aria-label', trigger.title);
+
+    const panel = document.createElement('div');
+    panel.className = 'cafasso-calendar-admin-panel';
+    panel.hidden = true;
+    panel.innerHTML = `<strong>Calendario vivo</strong><div class="cafasso-calendar-admin-grid"></div>`;
+    const grid = panel.querySelector('.cafasso-calendar-admin-grid');
+    presets.forEach(([name,value]) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = name;
+      button.addEventListener('click', () => setPreview(value));
+      grid.appendChild(button);
+    });
+
+    trigger.addEventListener('click', event => {
+      event.preventDefault(); event.stopPropagation(); panel.hidden = !panel.hidden;
+    });
+    document.addEventListener('pointerdown', event => {
+      if (!panel.hidden && !panel.contains(event.target) && event.target !== trigger) panel.hidden = true;
+    });
+    document.body.append(trigger,panel);
+  }
+
   function apply(state) {
     ensureStyles();
     PERIOD_CLASSES.forEach(name => document.body.classList.remove(name));
@@ -255,40 +303,27 @@
     if (state.salesian) document.body.classList.add(`cafasso-salesian-${state.salesian.id}`);
     mountLayer(state);
 
-    const old = document.querySelector('.cafasso-calendar-preview');
-    if (old) old.remove();
+    document.querySelector('.cafasso-calendar-preview')?.remove();
     if (state.preview) {
       const badge = document.createElement('div');
       badge.className = 'cafasso-calendar-preview';
-      badge.textContent = `Previsualización · ${state.date.toLocaleDateString('es-UY')} · ${state.label}`;
+      badge.textContent = `Previsualización · ${state.date.toLocaleDateString('es-UY')} · ${state.salesian?.label || state.label}`;
       document.body.appendChild(badge);
     }
 
     window.CafassoCalendar = {
       get: () => state,
-      preview: value => {
-        if (!isAdmin()) return false;
-        const next = new URL(location.href);
-        if (value) next.searchParams.set('cafassoDate', value);
-        else next.searchParams.delete('cafassoDate');
-        location.href = next.toString();
-        return true;
-      },
-      clearPreview: () => {
-        if (!isAdmin()) return false;
-        const next = new URL(location.href);
-        next.searchParams.delete('cafassoDate');
-        location.href = next.toString();
-        return true;
-      }
+      preview: value => setPreview(value),
+      clearPreview: () => setPreview('')
     };
+    mountAdminPreview(state);
 
     window.dispatchEvent(new CustomEvent('cafasso:calendar', { detail: {
       season: state.season,
       label: state.label,
       week: state.week,
       salesian: state.salesian,
-      date: state.date.toISOString().slice(0,10),
+      date: ymd(state.date),
       preview: state.preview,
       space: SPACE
     }}));
