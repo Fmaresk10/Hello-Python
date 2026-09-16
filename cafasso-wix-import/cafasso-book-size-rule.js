@@ -11,17 +11,12 @@
 
   function normalizeBook(book) {
     if (!book || book.dataset.cafassoStandardBookSize === '1') return;
-
     const currentTop = Number.parseFloat(book.style.top);
     const currentHeight = Number.parseFloat(book.style.height);
-
-    // Conserva la línea de apoyo original del slot y aplica a todos los libros
-    // el tamaño visual aprobado de "Juego de Tronos".
     if (Number.isFinite(currentTop) && Number.isFinite(currentHeight)) {
       const shelfY = currentTop + currentHeight;
       book.style.top = `${shelfY - STANDARD_HEIGHT}px`;
     }
-
     book.style.width = `${STANDARD_WIDTH}px`;
     book.style.height = `${STANDARD_HEIGHT}px`;
     book.style.minHeight = '0';
@@ -36,9 +31,7 @@
   function installRule() {
     const shelf = document.querySelector('[data-resource-shelf]');
     if (!shelf) return;
-
     normalizeAllBooks();
-
     const observer = new MutationObserver(() => normalizeAllBooks());
     observer.observe(shelf, { childList: true, subtree: true });
   }
@@ -49,8 +42,6 @@
     const url = new URL(src, location.href);
     url.searchParams.set('build', BUILD_VERSION);
     script.src = url.href;
-    // Los scripts dinámicos son async por defecto. Forzamos orden estable para que
-    // cada experiencia pueda escuchar los eventos de las que se cargaron antes.
     script.async = false;
     script.defer = true;
     script.setAttribute(`data-${marker}`, '1');
@@ -67,17 +58,18 @@
     loadHouseScript('./patio-experience.js?v=1', 'cafasso-patio-experience-loader');
     loadHouseScript('./cafasso-patio-secret.js?v=1', 'cafasso-patio-secret-loader');
     loadHouseScript('./cafasso-huellas-v2.js?v=1', 'cafasso-huellas-v2-loader');
-    loadHouseScript('./cafasso-almitas-history.js?v=1', 'cafasso-almitas-history-loader');
+
+    // Fuente única del total. Debe existir antes de cualquier sistema que muestre,
+    // recompense o desbloquee usando Almitas.
+    loadHouseScript('./cafasso-almitas-core.js?v=1', 'cafasso-almitas-core-loader');
+    loadHouseScript('./cafasso-almitas-history.js?v=2', 'cafasso-almitas-history-loader');
     loadHouseScript('./cafasso-huella-rewards.js?v=1', 'cafasso-huella-rewards-loader');
-    loadHouseScript('./cafasso-levels.js?v=1', 'cafasso-levels-loader');
+    loadHouseScript('./cafasso-admin-gifts-client-v2.js?v=3', 'cafasso-admin-gifts-client-v2-loader');
+    loadHouseScript('./cafasso-levels.js?v=2', 'cafasso-levels-loader');
+
     loadHouseScript('./cafasso-world-unlocks.js?v=1', 'cafasso-world-unlocks-loader');
     loadHouseScript('./cafasso-world-unlocks-position.js?v=1', 'cafasso-world-unlocks-position-loader');
-    loadHouseScript('./cafasso-presencia-patio.js?v=1', 'cafasso-presencia-patio-loader');
-
-    // Los regalos se cargan después de los desbloqueos: si un regalo cruza un
-    // umbral, Casa/Patio ya están escuchando el cambio de etapa.
-    loadHouseScript('./cafasso-admin-gifts-client-v2.js?v=2', 'cafasso-admin-gifts-client-v2-loader');
-    loadHouseScript('./cafasso-presencia-gift-sync.js?v=1', 'cafasso-presencia-gift-sync-loader');
+    loadHouseScript('./cafasso-presencia-patio.js?v=2', 'cafasso-presencia-patio-loader');
 
     loadHouseScript('./school-entry.js?v=1', 'cafasso-school-entry-loader');
     loadHouseScript('./school-course-auth.js?v=1', 'cafasso-school-course-auth-loader');
@@ -87,10 +79,8 @@
     loadHouseScript('./school-resume.js?v=2', 'cafasso-school-resume-loader');
     loadHouseScript('./school-resume-position.js?v=3', 'cafasso-school-resume-position-loader');
 
-    // Primero fijamos la geometría final. Así F5 no muestra posiciones antiguas.
     loadHouseScript('./parish-lectionary-position.js?v=2', 'cafasso-parish-lectionary-position-loader');
     loadHouseScript('./parish-candle-position.js?v=2', 'cafasso-parish-candle-position-loader');
-
     loadHouseScript('./parish-experience.js?v=1', 'cafasso-parish-experience-loader');
     loadHouseScript('./parish-lectionary-realism.js?v=1', 'cafasso-parish-lectionary-realism-loader');
     loadHouseScript('./parish-lectionary-polish.js?v=3', 'cafasso-parish-lectionary-polish-loader');
@@ -102,12 +92,8 @@
     loadHouseScript('./cafasso-parish-secret.js?v=1', 'cafasso-parish-secret-loader');
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', installRule, { once: true });
-  } else {
-    installRule();
-  }
-
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installRule, { once: true });
+  else installRule();
   setTimeout(installRule, 180);
   loadHouseExperiences();
 })();
