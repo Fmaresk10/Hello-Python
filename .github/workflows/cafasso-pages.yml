@@ -36,6 +36,15 @@ jobs:
           if updated == text:
               raise SystemExit('No encontré la referencia a wix-resources-cms.js')
 
+          updated_loader = re.sub(
+              r'cafasso-book-size-rule\.js\?v=[^"\']+',
+              f'cafasso-book-size-rule.js?v={version}',
+              updated
+          )
+          if updated_loader == updated:
+              raise SystemExit('No encontré la referencia a cafasso-book-size-rule.js')
+          updated = updated_loader
+
           ruah_tag = f'<script src="./cafasso-ruah-fix.js?v={version}"></script>'
           if 'cafasso-ruah-fix.js' in updated:
               updated = re.sub(
