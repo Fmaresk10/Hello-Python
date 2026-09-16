@@ -2,11 +2,8 @@
   const STANDARD_WIDTH = 40;
   const STANDARD_HEIGHT = 118;
   const BUILD_VERSION = (() => {
-    try {
-      return new URL(document.currentScript?.src || '', location.href).searchParams.get('v') || '1';
-    } catch (error) {
-      return '1';
-    }
+    try { return new URL(document.currentScript?.src || '', location.href).searchParams.get('v') || '1'; }
+    catch (error) { return '1'; }
   })();
 
   function normalizeBook(book) {
@@ -24,10 +21,7 @@
     book.dataset.cafassoStandardBookSize = '1';
   }
 
-  function normalizeAllBooks() {
-    document.querySelectorAll('[data-resource-shelf] .cafasso-resource-book').forEach(normalizeBook);
-  }
-
+  function normalizeAllBooks() { document.querySelectorAll('[data-resource-shelf] .cafasso-resource-book').forEach(normalizeBook); }
   function installRule() {
     const shelf = document.querySelector('[data-resource-shelf]');
     if (!shelf) return;
@@ -59,11 +53,9 @@
     loadHouseScript('./cafasso-patio-secret.js?v=1', 'cafasso-patio-secret-loader');
     loadHouseScript('./cafasso-huellas-v2.js?v=1', 'cafasso-huellas-v2-loader');
 
-    // Fuente única del total. Debe existir antes de cualquier sistema que muestre,
-    // recompense o desbloquee usando Almitas.
     loadHouseScript('./cafasso-almitas-core.js?v=1', 'cafasso-almitas-core-loader');
-    loadHouseScript('./cafasso-almitas-history.js?v=2', 'cafasso-almitas-history-loader');
-    loadHouseScript('./cafasso-huella-rewards.js?v=1', 'cafasso-huella-rewards-loader');
+    loadHouseScript('./cafasso-almitas-history-v2.js?v=1', 'cafasso-almitas-history-v2-loader');
+    loadHouseScript('./cafasso-huella-rewards-v2.js?v=1', 'cafasso-huella-rewards-v2-loader');
     loadHouseScript('./cafasso-admin-gifts-client-v2.js?v=3', 'cafasso-admin-gifts-client-v2-loader');
     loadHouseScript('./cafasso-levels.js?v=2', 'cafasso-levels-loader');
 
