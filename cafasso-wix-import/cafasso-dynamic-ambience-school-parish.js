@@ -323,10 +323,7 @@
     window.addEventListener('focus', () => applyPeriod(getPeriod(), true));
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) fadeScene(.0001, .18);
-      else if (unlocked && enabled) {
-        ensureAudio();
-        fadeScene(targetSceneLevel(), .45);
-      }
+      else if (unlocked && enabled) rebuildScene();
     });
     setInterval(() => applyPeriod(getPeriod(), false), 60000);
     return true;
