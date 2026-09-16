@@ -9,7 +9,6 @@
   const REWARD_EVERY = 10;
   const REWARD_ALMITAS = 50;
   let syncing = null;
-  let applying = false;
 
   function json(storage, key) {
     try { return JSON.parse(storage.getItem(key) || 'null'); }
@@ -94,6 +93,33 @@
     return best;
   }
 
+  function localCandidates() {
+    return [
+      json(localStorage, stateKey()),
+      json(localStorage, legacyCounterKey())?.ruah,
+      window.CafassoProfileMetrics?.ruah
+    ].map(normalize).filter(item => item.streak > 0 || item.lastDay);
+  }
+
+  function continuityBase(candidates, today) {
+    const usable = (candidates || []).map(normalize).filter(item => item.streak > 0 || item.lastDay);
+    if (!usable.length) return normalize(null);
+
+    const todayNumber = dayNumber(today);
+    const yesterdayStates = usable.filter(item => dayNumber(item.lastDay) === todayNumber - 1);
+    const todayStates = usable.filter(item => dayNumber(item.lastDay) === todayNumber);
+
+    if (yesterdayStates.length) {
+      const yesterday = bestState(...yesterdayStates);
+      const current = todayStates.length ? bestState(...todayStates) : normalize(null);
+      // Si algún componente viejo inicializó hoy en 1 antes de leer ayer,
+      // preservamos la continuidad y dejamos que advance() lo convierta en +1.
+      if (!current.lastDay || current.streak <= yesterday.streak) return yesterday;
+    }
+
+    return bestState(...usable);
+  }
+
   function advance(raw, today = todayKey()) {
     const old = normalize(raw);
     const previousDay = old.lastDay;
@@ -142,13 +168,6 @@
       },
       changed: changed || previousDay !== today
     };
-  }
-
-  function readLocal() {
-    const direct = json(localStorage, stateKey());
-    const legacy = json(localStorage, legacyCounterKey())?.ruah;
-    const profile = window.CafassoProfileMetrics?.ruah;
-    return bestState(direct, legacy, profile);
   }
 
   function writeLocal(state) {
@@ -255,7 +274,7 @@
   async function sync() {
     if (syncing) return syncing;
     syncing = (async () => {
-      const local = readLocal();
+      const candidates = localCandidates();
       const headers = authHeaders(false);
       const uid = userId();
       let remote = null;
@@ -268,8 +287,10 @@
         } catch (error) {}
       }
 
-      const base = bestState(local, remote);
-      const result = advance(base, todayKey());
+      if (remote) candidates.push(normalize(remote));
+      const today = todayKey();
+      const base = continuityBase(candidates, today);
+      const result = advance(base, today);
       const state = result.state;
       writeLocal(state);
       patchUi(state);
@@ -286,13 +307,11 @@
   }
 
   function boot() {
-    scheduleSync(180);
-    scheduleSync(1100);
+    scheduleSync(80);
+    scheduleSync(900);
+    scheduleSync(1800);
 
-    window.addEventListener('cafasso:profile-metrics', () => {
-      if (applying) return;
-      scheduleSync(40);
-    });
+    window.addEventListener('cafasso:profile-metrics', () => scheduleSync(30));
     window.addEventListener('focus', () => scheduleSync(20));
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') scheduleSync(20);
