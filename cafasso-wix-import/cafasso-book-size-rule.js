@@ -46,10 +46,11 @@
     loadHouseScript('./house-door.js?v=1', 'cafasso-house-door-loader');
     loadHouseScript('./house-prologue.js?v=1', 'cafasso-house-prologue-loader');
     loadHouseScript('./house-microinteractions.js?v=1', 'cafasso-house-micro-loader');
+    loadHouseScript('./cafasso-dynamic-ambience.js?v=1', 'cafasso-dynamic-ambience-loader');
     loadHouseScript('./cafasso-exploration.js?v=1', 'cafasso-exploration-loader');
     loadHouseScript('./cafasso-exploration-click-fix.js?v=1', 'cafasso-exploration-click-fix-loader');
     loadHouseScript('./cafasso-exploration-position-v2.js?v=1', 'cafasso-exploration-position-v2-loader');
-    loadHouseScript('./patio-experience.js?v=1', 'cafasso-patio-experience-loader');
+    loadHouseScript('./patio-experience-v2.js?v=1', 'cafasso-patio-experience-v2-loader');
     loadHouseScript('./cafasso-patio-secret.js?v=1', 'cafasso-patio-secret-loader');
     loadHouseScript('./cafasso-huellas-v2.js?v=1', 'cafasso-huellas-v2-loader');
 
