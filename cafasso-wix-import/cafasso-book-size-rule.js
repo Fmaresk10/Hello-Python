@@ -81,6 +81,7 @@
     loadHouseScript('./parish-songbook-interior-v2.js?v=1', 'cafasso-parish-songbook-interior-v2-loader');
     loadHouseScript('./parish-candle.js?v=2', 'cafasso-parish-candle-loader');
     loadHouseScript('./parish-candle-altar.js?v=2', 'cafasso-parish-candle-altar-loader');
+    loadHouseScript('./cafasso-parish-secret.js?v=1', 'cafasso-parish-secret-loader');
   }
 
   if (document.readyState === 'loading') {
