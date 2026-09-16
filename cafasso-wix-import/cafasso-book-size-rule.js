@@ -1,6 +1,13 @@
 (() => {
   const STANDARD_WIDTH = 40;
   const STANDARD_HEIGHT = 118;
+  const BUILD_VERSION = (() => {
+    try {
+      return new URL(document.currentScript?.src || '', location.href).searchParams.get('v') || '1';
+    } catch (error) {
+      return '1';
+    }
+  })();
 
   function normalizeBook(book) {
     if (!book || book.dataset.cafassoStandardBookSize === '1') return;
@@ -39,9 +46,11 @@
   function loadHouseScript(src, marker) {
     if (document.querySelector(`script[data-${marker}]`)) return;
     const script = document.createElement('script');
-    script.src = src;
+    const url = new URL(src, location.href);
+    url.searchParams.set('build', BUILD_VERSION);
+    script.src = url.href;
     // Los scripts dinámicos son async por defecto. Forzamos orden estable para que
-    // las posiciones finales existan antes de crear Leccionario y Vela.
+    // cada experiencia pueda escuchar los eventos de las que se cargaron antes.
     script.async = false;
     script.defer = true;
     script.setAttribute(`data-${marker}`, '1');
@@ -61,10 +70,15 @@
     loadHouseScript('./cafasso-almitas-history.js?v=1', 'cafasso-almitas-history-loader');
     loadHouseScript('./cafasso-huella-rewards.js?v=1', 'cafasso-huella-rewards-loader');
     loadHouseScript('./cafasso-levels.js?v=1', 'cafasso-levels-loader');
-    loadHouseScript('./cafasso-admin-gifts-client-v2.js?v=1', 'cafasso-admin-gifts-client-v2-loader');
     loadHouseScript('./cafasso-world-unlocks.js?v=1', 'cafasso-world-unlocks-loader');
     loadHouseScript('./cafasso-world-unlocks-position.js?v=1', 'cafasso-world-unlocks-position-loader');
     loadHouseScript('./cafasso-presencia-patio.js?v=1', 'cafasso-presencia-patio-loader');
+
+    // Los regalos se cargan después de los desbloqueos: si un regalo cruza un
+    // umbral, Casa/Patio ya están escuchando el cambio de etapa.
+    loadHouseScript('./cafasso-admin-gifts-client-v2.js?v=2', 'cafasso-admin-gifts-client-v2-loader');
+    loadHouseScript('./cafasso-presencia-gift-sync.js?v=1', 'cafasso-presencia-gift-sync-loader');
+
     loadHouseScript('./school-entry.js?v=1', 'cafasso-school-entry-loader');
     loadHouseScript('./school-course-auth.js?v=1', 'cafasso-school-course-auth-loader');
     loadHouseScript('./school-experience.js?v=1', 'cafasso-school-experience-loader');
