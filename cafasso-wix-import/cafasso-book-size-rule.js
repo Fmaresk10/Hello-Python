@@ -58,6 +58,7 @@
     loadHouseScript('./patio-experience.js?v=1', 'cafasso-patio-experience-loader');
     loadHouseScript('./cafasso-patio-secret.js?v=1', 'cafasso-patio-secret-loader');
     loadHouseScript('./cafasso-huellas-v2.js?v=1', 'cafasso-huellas-v2-loader');
+    loadHouseScript('./cafasso-almitas-history.js?v=1', 'cafasso-almitas-history-loader');
     loadHouseScript('./cafasso-huella-rewards.js?v=1', 'cafasso-huella-rewards-loader');
     loadHouseScript('./cafasso-levels.js?v=1', 'cafasso-levels-loader');
     loadHouseScript('./school-entry.js?v=1', 'cafasso-school-entry-loader');
