@@ -61,6 +61,7 @@
     loadHouseScript('./cafasso-almitas-history.js?v=1', 'cafasso-almitas-history-loader');
     loadHouseScript('./cafasso-huella-rewards.js?v=1', 'cafasso-huella-rewards-loader');
     loadHouseScript('./cafasso-levels.js?v=1', 'cafasso-levels-loader');
+    loadHouseScript('./cafasso-admin-gifts-client.js?v=1', 'cafasso-admin-gifts-client-loader');
     loadHouseScript('./cafasso-world-unlocks.js?v=1', 'cafasso-world-unlocks-loader');
     loadHouseScript('./cafasso-world-unlocks-position.js?v=1', 'cafasso-world-unlocks-position-loader');
     loadHouseScript('./cafasso-presencia-patio.js?v=1', 'cafasso-presencia-patio-loader');
