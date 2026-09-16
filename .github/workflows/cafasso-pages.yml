@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Forzar versión fresca de Recursos
+      - name: Forzar versiones frescas de CAFASSO
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -27,9 +27,28 @@ jobs:
           path = Path('cafasso-wix-import/index.html')
           text = path.read_text(encoding='utf-8')
           version = os.environ['GITHUB_SHA'][:12]
-          updated = re.sub(r'wix-resources-cms\.js\?v=[^"\']+', f'wix-resources-cms.js?v={version}', text)
+
+          updated = re.sub(
+              r'wix-resources-cms\.js\?v=[^"\']+',
+              f'wix-resources-cms.js?v={version}',
+              text
+          )
           if updated == text:
               raise SystemExit('No encontré la referencia a wix-resources-cms.js')
+
+          ruah_tag = f'<script src="./cafasso-ruah-fix.js?v={version}"></script>'
+          if 'cafasso-ruah-fix.js' in updated:
+              updated = re.sub(
+                  r'<script src="\./cafasso-ruah-fix\.js\?v=[^"]+"></script>',
+                  ruah_tag,
+                  updated
+              )
+          else:
+              marker = '<script src="./cafasso-global-counters.js?v=1"></script>'
+              if marker not in updated:
+                  raise SystemExit('No encontré el contador global para insertar RUAH fix')
+              updated = updated.replace(marker, marker + ruah_tag, 1)
+
           path.write_text(updated, encoding='utf-8')
           PY
       - name: Configure Pages
