@@ -1,6 +1,8 @@
 (() => {
   const params = new URLSearchParams(location.search);
   const SPACE = params.get('space') || 'house';
+  const VALID_PERIODS = new Set(['morning', 'afternoon', 'sunset', 'night']);
+  const PREVIEW_PERIOD = VALID_PERIODS.has(params.get('loopPeriod')) ? params.get('loopPeriod') : '';
   const ROOTS = {
     house: '.cafasso-house',
     patio: '.cafasso-patio',
@@ -37,7 +39,7 @@
   let pendingToken = 0;
   let root = null;
 
-  function period() {
+  function realPeriod() {
     const declared = document.documentElement.dataset.cafassoPeriod;
     if (declared) return declared;
     const now = new Date();
@@ -46,6 +48,10 @@
     if (hour >= 12 && hour < 17.5) return 'afternoon';
     if (hour >= 17.5 && hour < 20.5) return 'sunset';
     return 'night';
+  }
+
+  function period() {
+    return PREVIEW_PERIOD || realPeriod();
   }
 
   function loopSource(space = SPACE, time = period()) {
@@ -72,6 +78,12 @@
       body.${ACTIVE_CLASS} .cafasso-dynamic-light{opacity:.22!important}
       body.${ACTIVE_CLASS} .cafasso-dynamic-light-sp{opacity:.18!important}
       body.${ACTIVE_CLASS} .cafasso-corazon-ambient{opacity:.36!important}
+      .cafasso-loop-preview-badge{
+        position:fixed;right:12px;bottom:12px;z-index:2147483100;padding:5px 8px;border-radius:999px;
+        background:rgba(12,20,21,.72);border:1px solid rgba(255,239,199,.14);color:rgba(255,245,220,.70);
+        font:700 9px/1 Inter,system-ui,sans-serif;letter-spacing:.05em;text-transform:uppercase;
+        pointer-events:none;backdrop-filter:blur(5px)
+      }
       @media(max-width:700px){
         .cafasso-visual-loop-video{inset:-2%;width:104%;height:104%}
       }
@@ -111,7 +123,7 @@
       }
     }
     window.dispatchEvent(new CustomEvent('cafasso:visual-loop', {
-      detail: { active: false, space: SPACE, period: period() }
+      detail: { active: false, space: SPACE, period: period(), preview: Boolean(PREVIEW_PERIOD) }
     }));
   }
 
@@ -208,7 +220,7 @@
     }
 
     window.dispatchEvent(new CustomEvent('cafasso:visual-loop', {
-      detail: { active: true, space: SPACE, period: time, src }
+      detail: { active: true, space: SPACE, period: time, src, preview: Boolean(PREVIEW_PERIOD) }
     }));
   }
 
@@ -224,10 +236,20 @@
     }
   }
 
+  function ensurePreviewBadge() {
+    if (!PREVIEW_PERIOD || document.querySelector('.cafasso-loop-preview-badge')) return;
+    const badge = document.createElement('div');
+    badge.className = 'cafasso-loop-preview-badge';
+    badge.textContent = `Preview loop · ${SPACE} · ${PREVIEW_PERIOD}`;
+    badge.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(badge);
+  }
+
   function boot() {
     root = host();
     if (!root) return false;
     ensureStyles();
+    ensurePreviewBadge();
     apply(true);
     window.addEventListener('cafasso:time-period', () => apply(false));
     window.addEventListener('focus', () => apply(false));
@@ -237,6 +259,9 @@
     window.CafassoVisualLoops = {
       get space() { return SPACE; },
       get period() { return period(); },
+      get realPeriod() { return realPeriod(); },
+      get previewPeriod() { return PREVIEW_PERIOD; },
+      get preview() { return Boolean(PREVIEW_PERIOD); },
       get active() { return Boolean(currentVideo && currentVideo.classList.contains('is-visible')); },
       get source() { return loopSource(); },
       refresh: () => apply(true),
