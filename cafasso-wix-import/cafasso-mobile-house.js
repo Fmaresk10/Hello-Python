@@ -16,33 +16,46 @@
         isolation:isolate;
       }
 
-      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house__image{
-        object-fit:cover!important;
-        object-position:52% 50%!important;
-        transform:scale(1.025);
-        transform-origin:50% 50%;
-      }
-
+      /* Cámara móvil: mostramos más habitación sin perder pantalla completa */
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house:before{
         content:"";
         position:absolute;
-        inset:0;
-        z-index:2;
+        inset:-22px;
+        z-index:0;
         pointer-events:none;
         background:
-          linear-gradient(180deg,rgba(8,15,14,.18) 0%,transparent 17%,transparent 71%,rgba(5,12,11,.30) 100%),
-          radial-gradient(ellipse 80% 54% at 50% 58%,transparent 52%,rgba(3,9,8,.15) 100%);
+          linear-gradient(180deg,rgba(4,11,10,.24),rgba(4,11,10,.05) 31%,rgba(4,11,10,.13) 66%,rgba(3,9,8,.40)),
+          url("./assets/cafasso-casa-interior-v2.jpg") 52% 50% / cover no-repeat;
+        filter:blur(13px) brightness(.54) saturate(.78);
+        transform:scale(1.08);
+      }
+
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house__image{
+        position:absolute!important;
+        z-index:1!important;
+        left:50%!important;
+        top:48%!important;
+        width:auto!important;
+        max-width:none!important;
+        height:76%!important;
+        object-fit:contain!important;
+        object-position:center!important;
+        transform:translate(-50%,-50%)!important;
+        transform-origin:50% 50%!important;
+        filter:brightness(.88) saturate(.92) contrast(1.02);
+        -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 5.5%,#000 94.5%,transparent 100%);
+        mask-image:linear-gradient(180deg,transparent 0%,#000 5.5%,#000 94.5%,transparent 100%);
       }
 
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house:after{
         z-index:2;
-        opacity:.54;
+        opacity:.34;
       }
 
       /* Identidad: ficha visible, arriba a la izquierda pero fuera del notch */
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house .cafasso-animator-sheet{
-        left:max(14px,calc(var(--cafasso-safe-left) + 10px))!important;
-        top:max(126px,calc(var(--cafasso-safe-top) + 108px))!important;
+        left:max(13px,calc(var(--cafasso-safe-left) + 9px))!important;
+        top:max(146px,calc(var(--cafasso-safe-top) + 128px))!important;
         width:96px!important;
         height:115px!important;
         transform:perspective(560px) rotateY(-2deg) rotateZ(-3.2deg)!important;
@@ -55,11 +68,11 @@
 
       /* En móvil la puerta es la navegación: el botón deja de parecer UI */
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house .cafasso-space-link--casa.cafasso-house-door{
-        left:39%!important;
+        left:47%!important;
         right:auto!important;
-        top:16%!important;
-        width:51%!important;
-        height:42%!important;
+        top:23%!important;
+        width:42%!important;
+        height:31%!important;
         min-width:0!important;
         min-height:0!important;
         padding:0!important;
@@ -85,11 +98,11 @@
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house .cafasso-house-door__main{
         position:absolute!important;
         left:50%;
-        bottom:9%;
+        bottom:5%;
         transform:translateX(-50%);
         display:block!important;
         width:max-content;
-        padding:7px 12px 8px;
+        padding:6px 11px 7px;
         border:1px solid rgba(239,201,112,.24);
         border-radius:999px;
         background:rgba(10,29,27,.48);
@@ -112,19 +125,19 @@
 
       /* Recursos vuelve a sentirse parte de la biblioteca */
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house .cafasso-space-link--house-recursos{
-        left:max(14px,calc(var(--cafasso-safe-left) + 10px))!important;
+        left:max(10px,calc(var(--cafasso-safe-left) + 7px))!important;
         right:auto!important;
-        top:45%!important;
+        top:39%!important;
         z-index:13!important;
-        min-width:76px!important;
-        min-height:42px!important;
-        padding:8px 10px!important;
+        min-width:68px!important;
+        min-height:40px!important;
+        padding:7px 9px!important;
         border-color:rgba(239,195,93,.30)!important;
         background:rgba(10,31,29,.54)!important;
         box-shadow:0 5px 14px rgba(0,0,0,.20)!important;
         backdrop-filter:blur(5px);
-        font-size:11px!important;
-        opacity:.90;
+        font-size:10px!important;
+        opacity:.78;
       }
 
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house .cafasso-space-link--house-recursos:active{
@@ -136,7 +149,7 @@
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house .cafasso-bitacora-object{
         left:50%!important;
         right:auto!important;
-        bottom:max(52px,calc(var(--cafasso-safe-bottom) + 38px))!important;
+        bottom:max(66px,calc(var(--cafasso-safe-bottom) + 52px))!important;
         width:120px!important;
         height:106px!important;
         transform:translateX(-50%) rotate(-5deg)!important;
@@ -151,7 +164,7 @@
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house .cafasso-world-compass{
         left:auto!important;
         right:max(20px,calc(var(--cafasso-safe-right) + 16px))!important;
-        bottom:max(112px,calc(var(--cafasso-safe-bottom) + 96px))!important;
+        bottom:max(124px,calc(var(--cafasso-safe-bottom) + 108px))!important;
         width:64px!important;
         height:64px!important;
         z-index:15!important;
@@ -360,7 +373,16 @@
 
       /* Paisaje: prioriza visibilidad sin rehacer la escena */
       html.cafasso-mobile.cafasso-mobile-landscape .cafasso-house__image{
+        position:absolute!important;
+        inset:0!important;
+        width:100%!important;
+        height:100%!important;
+        object-fit:cover!important;
         object-position:50% 50%!important;
+        transform:none!important;
+        filter:none!important;
+        -webkit-mask-image:none!important;
+        mask-image:none!important;
       }
 
       html.cafasso-mobile.cafasso-mobile-landscape .cafasso-house .cafasso-animator-sheet{
@@ -395,8 +417,8 @@
       }
 
       @media(prefers-reduced-motion:reduce){
-        html.cafasso-mobile .cafasso-house__image{
-          transform:none!important;
+        html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house__image{
+          transform:translate(-50%,-50%)!important;
         }
       }
     `;
