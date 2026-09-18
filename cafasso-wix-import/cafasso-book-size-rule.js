@@ -94,6 +94,7 @@
     loadHouseScript('./cafasso-parish-secret.js?v=1', 'cafasso-parish-secret-loader');
 
     loadHouseScript('./cafasso-mobile-foundation.js?v=1', 'cafasso-mobile-foundation-loader');
+    loadHouseScript('./cafasso-mobile-house.js?v=1', 'cafasso-mobile-house-loader');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installRule, { once: true });
