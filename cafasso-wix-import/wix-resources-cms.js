@@ -348,6 +348,7 @@
   // se vuelve a sincronizar sin exigir F5.
   window.addEventListener('focus', () => loadLibrary(), { passive: true });
   window.addEventListener('pageshow', () => loadLibrary(), { passive: true });
+  window.addEventListener('cafasso:resources-realign', () => alignShelfToLibraryImage());
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) loadLibrary();
   });
