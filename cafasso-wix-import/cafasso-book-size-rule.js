@@ -95,6 +95,7 @@
 
     loadHouseScript('./cafasso-mobile-foundation.js?v=1', 'cafasso-mobile-foundation-loader');
     loadHouseScript('./cafasso-mobile-house.js?v=6', 'cafasso-mobile-house-loader');
+    loadHouseScript('./cafasso-mobile-patio.js?v=1', 'cafasso-mobile-patio-loader');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installRule, { once: true });
