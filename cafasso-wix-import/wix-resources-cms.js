@@ -65,8 +65,10 @@
     const apply = () => {
       const naturalWidth = image.naturalWidth;
       const naturalHeight = image.naturalHeight;
-      const boxWidth = scene.clientWidth;
-      const boxHeight = scene.clientHeight;
+      const panorama = scene.querySelector('.cafasso-resources-panorama');
+      const alignmentHost = panorama || scene;
+      const boxWidth = alignmentHost.clientWidth;
+      const boxHeight = alignmentHost.clientHeight;
       if (!naturalWidth || !naturalHeight || !boxWidth || !boxHeight) return;
 
       const scale = Math.max(boxWidth / naturalWidth, boxHeight / naturalHeight);
