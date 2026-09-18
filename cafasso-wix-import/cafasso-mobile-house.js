@@ -158,63 +158,66 @@
 
       /* Biblioteca: el acceso queda físicamente en el mueble izquierdo. */
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house-panorama .cafasso-space-link--house-recursos{
-        left:8.5%!important;
-        right:auto!important;
-        top:31%!important;
-        min-width:84px!important;
+        left:auto!important;
+        right:8%!important;
+        top:24%!important;
+        min-width:92px!important;
         min-height:44px!important;
-        padding:9px 12px!important;
-        border-color:rgba(224,190,119,.34)!important;
-        background:rgba(12,31,29,.64)!important;
-        box-shadow:0 5px 15px rgba(0,0,0,.24)!important;
-        color:#fff4d7!important;
-        font-size:12px!important;
-        opacity:.92;
+        padding:10px 14px!important;
+        border-color:rgba(239,195,93,.8)!important;
+        background:rgba(15,39,40,.78)!important;
+        box-shadow:0 5px 14px rgba(0,0,0,.35)!important;
+        color:#fff8e9!important;
+        font-size:13px!important;
+        opacity:1!important;
         z-index:13!important;
       }
 
       /* Toda la puerta funciona como salida; la etiqueta es solo una pista. */
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house-panorama .cafasso-space-link--casa.cafasso-house-door{
-        left:53%!important;
-        top:17%!important;
-        width:22%!important;
-        height:49%!important;
-        min-width:0!important;
-        min-height:0!important;
-        padding:0!important;
-        border:0!important;
-        border-radius:0!important;
-        background:transparent!important;
-        box-shadow:none!important;
-        backdrop-filter:none!important;
+        left:calc(66% - 114px)!important;
+        top:calc(40% - 113px)!important;
+        width:auto!important;
+        height:auto!important;
+        min-width:92px!important;
+        min-height:44px!important;
+        padding:9px 13px 8px!important;
+        border:1px solid rgba(235,200,126,.62)!important;
+        border-radius:4px!important;
+        background:linear-gradient(180deg,rgba(45,35,25,.68),rgba(24,30,28,.78))!important;
+        box-shadow:0 7px 17px rgba(0,0,0,.31),inset 0 1px rgba(255,243,205,.10)!important;
+        backdrop-filter:blur(3px)!important;
         transform:none!important;
         translate:0 0!important;
         z-index:13!important;
       }
 
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house-panorama .cafasso-house-door__main{
-        position:absolute!important;
-        left:50%;
-        bottom:7%;
-        transform:translateX(-50%);
-        width:max-content;
-        padding:7px 12px;
-        border:1px solid rgba(239,201,112,.28);
-        border-radius:999px;
-        background:rgba(9,29,27,.56);
-        color:rgba(255,248,229,.88);
-        box-shadow:0 5px 15px rgba(0,0,0,.20);
-        backdrop-filter:blur(5px);
-        font-size:0!important;
+        position:static!important;
+        display:block!important;
+        width:auto!important;
+        padding:0!important;
+        border:0!important;
+        border-radius:0!important;
+        background:transparent!important;
+        box-shadow:none!important;
+        backdrop-filter:none!important;
+        color:#fff8e9!important;
+        transform:none!important;
+        font:600 14px/1.05 Georgia,serif!important;
       }
 
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house-panorama .cafasso-house-door__main:after{
-        content:"Patio  →";
-        font:600 12px/1 Georgia,serif;
+        content:none!important;
       }
 
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house-panorama .cafasso-house-door__sub{
-        display:none!important;
+        display:block!important;
+        margin-top:3px!important;
+        color:rgba(255,244,216,.68)!important;
+        font:800 7px/1 Inter,system-ui,sans-serif!important;
+        letter-spacing:.14em!important;
+        text-transform:uppercase!important;
       }
 
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house-panorama .cafasso-calendar-layer{
