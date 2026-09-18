@@ -92,6 +92,8 @@
     loadHouseScript('./parish-candle-altar.js?v=2', 'cafasso-parish-candle-altar-loader');
     loadHouseScript('./cafasso-servidor-parroquia.js?v=1', 'cafasso-servidor-parroquia-loader');
     loadHouseScript('./cafasso-parish-secret.js?v=1', 'cafasso-parish-secret-loader');
+
+    loadHouseScript('./cafasso-mobile-foundation.js?v=1', 'cafasso-mobile-foundation-loader');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installRule, { once: true });
