@@ -212,7 +212,7 @@
   }
 
   function requestShelfRealign() {
-    window.dispatchEvent(new Event('resize'));
+    window.dispatchEvent(new CustomEvent('cafasso:resources-realign'));
   }
 
   function applySceneSize() {
