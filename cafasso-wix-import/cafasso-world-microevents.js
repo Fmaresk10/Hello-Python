@@ -3,11 +3,11 @@
   const SPACE = params.get('space') || 'house';
   const SUPPORTED = new Set(['house', 'patio', 'escuela', 'parroquia']);
   if (!SUPPORTED.has(SPACE)) return;
-  if (window.__cafassoWorldMicroeventsInstalledV2) return;
-  window.__cafassoWorldMicroeventsInstalledV2 = true;
+  if (window.__cafassoWorldMicroeventsInstalledV3) return;
+  window.__cafassoWorldMicroeventsInstalledV3 = true;
 
-  const STYLE_ID = 'cafassoWorldMicroeventsStylesV2';
-  const PREFIX = 'cafasso-world-microevent-v2';
+  const STYLE_ID = 'cafassoWorldMicroeventsStylesV3';
+  const PREFIX = 'cafasso-world-microevent-v3';
   const MAX_SESSION_ATTEMPTS = 2;
   const COOLDOWN_MS = 3 * 60 * 60 * 1000;
   const FORCE = params.get('microevent') === 'force';
@@ -176,10 +176,14 @@
       @keyframes cafassoMicroHouseGlow{0%,100%{opacity:0;transform:scale(.97)}38%{opacity:.58;transform:scale(1.02)}68%{opacity:.28;transform:scale(1.01)}}
       .cafasso-microevent-dust{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(255,235,190,.72);box-shadow:0 0 7px rgba(255,226,164,.45);opacity:0;animation:cafassoMicroDust 5.4s ease-in-out both}
       @keyframes cafassoMicroDust{0%{opacity:0;transform:translate3d(0,12px,0) scale(.6)}28%{opacity:.7}75%{opacity:.28}100%{opacity:0;transform:translate3d(34px,-25px,0) scale(1.08)}}
+      .cafasso-bitacora-object.cafasso-microevent-book-shift{animation:cafassoMicroBookShift 4.9s ease-in-out both!important}
+      @keyframes cafassoMicroBookShift{0%,100%{transform:translate3d(0,0,0) rotate(0)}38%{transform:translate3d(1px,-1px,0) rotate(.34deg)}58%{transform:translate3d(-.5px,0,0) rotate(-.12deg)}}
 
       .cafasso-microevent-patio-sweep{position:absolute;left:-28%;top:8%;width:48%;height:120%;opacity:0;transform:skewX(-18deg) rotate(5deg);background:linear-gradient(90deg,transparent,rgba(255,227,163,.10) 28%,rgba(255,227,163,.20) 48%,rgba(42,57,50,.10) 72%,transparent);filter:blur(7px);animation:cafassoMicroPatioSweep 6.4s ease-in-out both}
       .cafasso-time-night .cafasso-microevent-patio-sweep{background:linear-gradient(90deg,transparent,rgba(199,220,235,.04) 28%,rgba(199,220,235,.11) 49%,rgba(5,11,19,.16) 70%,transparent)}
       @keyframes cafassoMicroPatioSweep{0%{opacity:0;transform:translateX(0) skewX(-18deg) rotate(5deg)}20%{opacity:.56}76%{opacity:.34}100%{opacity:0;transform:translateX(270%) skewX(-18deg) rotate(5deg)}}
+      .cafasso-presencia-ball.cafasso-microevent-ball-roll{animation:cafassoMicroBallRoll 5.8s cubic-bezier(.25,.72,.31,1) both!important}
+      @keyframes cafassoMicroBallRoll{0%,100%{transform:translate3d(0,0,0) rotate(0deg)}28%{transform:translate3d(7px,1px,0) rotate(7deg)}54%{transform:translate3d(11px,1px,0) rotate(12deg)}78%{transform:translate3d(4px,0,0) rotate(4deg)}}
 
       .cafasso-microevent-chalk{position:absolute;z-index:12;right:9%;top:14%;color:rgba(243,240,219,.78);font:italic 22px/1.1 Georgia,serif;letter-spacing:.02em;text-shadow:0 0 2px rgba(255,255,255,.22);opacity:0;transform:rotate(-1.2deg);filter:blur(.1px);animation:cafassoMicroChalk 6.8s ease both}
       .cafasso-microevent-chalk:after{content:"";display:block;width:0;height:1px;margin-top:5px;background:rgba(238,235,213,.42);box-shadow:0 0 3px rgba(255,255,255,.13);animation:cafassoMicroChalkLine 5.2s ease .7s both}
@@ -192,11 +196,8 @@
       .cafasso-parish-candle.cafasso-microevent-candle-breathe{animation:cafassoMicroCandleBreathe 5.4s ease-in-out both!important}
       @keyframes cafassoMicroCandleBreathe{0%,100%{filter:drop-shadow(0 13px 8px rgba(0,0,0,.31))}44%{filter:drop-shadow(0 13px 8px rgba(0,0,0,.31)) drop-shadow(0 0 18px rgba(255,187,80,.26)) brightness(1.035)}72%{filter:drop-shadow(0 13px 8px rgba(0,0,0,.31)) drop-shadow(0 0 9px rgba(255,187,80,.11))}}
 
-      .cafasso-microevent-whisper{position:fixed;left:50%;bottom:7.5%;z-index:65;max-width:min(420px,78vw);padding:8px 13px;border-radius:999px;background:rgba(18,17,15,.60);border:1px solid rgba(255,244,214,.12);box-shadow:0 8px 28px rgba(0,0,0,.18);backdrop-filter:blur(8px);color:rgba(255,248,229,.80);font:italic 13px/1.35 Georgia,serif;letter-spacing:.015em;text-align:center;pointer-events:none;opacity:0;transform:translate(-50%,9px);animation:cafassoMicroWhisper 4.8s ease both}
-      @keyframes cafassoMicroWhisper{0%{opacity:0;transform:translate(-50%,9px)}18%,72%{opacity:.82;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-3px)}}
-
-      @media(max-width:700px){.cafasso-microevent-chalk{right:8%;top:10%;font-size:17px}.cafasso-microevent-parish-ray{left:38%;width:22%}.cafasso-microevent-whisper{bottom:10%;font-size:12px}}
-      @media(prefers-reduced-motion:reduce){.cafasso-microevent-layer,.cafasso-microevent-chalk,.cafasso-microevent-whisper,.cafasso-parish-candle.cafasso-microevent-candle-breathe{display:none!important;animation:none!important}}
+      @media(max-width:700px){.cafasso-microevent-chalk{right:8%;top:10%;font-size:17px}.cafasso-microevent-parish-ray{left:38%;width:22%}}
+      @media(prefers-reduced-motion:reduce){.cafasso-microevent-layer,.cafasso-microevent-chalk,.cafasso-parish-candle.cafasso-microevent-candle-breathe,.cafasso-bitacora-object.cafasso-microevent-book-shift,.cafasso-presencia-ball.cafasso-microevent-ball-roll{display:none!important;animation:none!important}}
     `;
     document.head.appendChild(style);
   }
@@ -207,17 +208,6 @@
     el.setAttribute('aria-hidden', 'true');
     host.appendChild(el);
     return el;
-  }
-
-  function whisper() {
-    const message = CONFIG[SPACE]?.phrase?.[period()];
-    if (!message) return;
-    const note = document.createElement('div');
-    note.className = 'cafasso-microevent-whisper';
-    note.textContent = message;
-    note.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(note);
-    setTimeout(() => note.remove(), 5000);
   }
 
   function houseEvent(host) {
@@ -238,6 +228,11 @@
         el.appendChild(mote);
       }
     }
+    const book = host.querySelector('.cafasso-bitacora-object');
+    if (book && random() < .58) {
+      book.classList.add('cafasso-microevent-book-shift');
+      setTimeout(() => book.classList.remove('cafasso-microevent-book-shift'), 5100);
+    }
     setTimeout(() => el.remove(), 7600);
     return true;
   }
@@ -247,6 +242,11 @@
     const sweep = document.createElement('div');
     sweep.className = 'cafasso-microevent-patio-sweep';
     el.appendChild(sweep);
+    const ball = host.querySelector('.cafasso-presencia-ball');
+    if (ball && random() < .68) {
+      ball.classList.add('cafasso-microevent-ball-roll');
+      setTimeout(() => ball.classList.remove('cafasso-microevent-ball-roll'), 6100);
+    }
     setTimeout(() => el.remove(), 7000);
     return true;
   }
@@ -323,11 +323,9 @@
       markFiredThisSession();
       markLastEvent();
     }
-
-    setTimeout(whisper, 1900);
     window.dispatchEvent(new CustomEvent('cafasso:microevent', {
       detail: {
-        version: 2,
+        version: 3,
         space: SPACE,
         period: period(),
         forced: FORCE
