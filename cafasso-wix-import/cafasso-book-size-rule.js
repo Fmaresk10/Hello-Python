@@ -98,6 +98,7 @@
     loadHouseScript('./cafasso-mobile-patio.js?v=1', 'cafasso-mobile-patio-loader');
     loadHouseScript('./cafasso-mobile-school.js?v=1', 'cafasso-mobile-school-loader');
     loadHouseScript('./cafasso-mobile-parish.js?v=2', 'cafasso-mobile-parish-loader');
+    loadHouseScript('./cafasso-mobile-resources.js?v=1', 'cafasso-mobile-resources-loader');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installRule, { once: true });
