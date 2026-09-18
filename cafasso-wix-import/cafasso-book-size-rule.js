@@ -51,7 +51,7 @@
     loadHouseScript('./cafasso-time-seasonal-fix.js?v=1', 'cafasso-time-seasonal-fix-loader');
     loadHouseScript('./cafasso-living-calendar.js?v=1', 'cafasso-living-calendar-loader');
     loadHouseScript('./cafasso-time-visual-loops.js?v=3', 'cafasso-time-visual-loops-loader');
-    loadHouseScript('./cafasso-world-microevents.js?v=2', 'cafasso-world-microevents-loader');
+    loadHouseScript('./cafasso-world-microevents.js?v=3', 'cafasso-world-microevents-loader');
     loadHouseScript('./cafasso-exploration.js?v=1', 'cafasso-exploration-loader');
     loadHouseScript('./cafasso-exploration-click-fix.js?v=1', 'cafasso-exploration-click-fix-loader');
     loadHouseScript('./cafasso-exploration-position-v2.js?v=1', 'cafasso-exploration-position-v2-loader');
