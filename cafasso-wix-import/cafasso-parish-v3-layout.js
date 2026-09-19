@@ -75,16 +75,16 @@
 
       /* Vela interactiva: coincide con la vela del lado derecho del altar. */
       html body .cafasso-parroquia .cafasso-parish-candle{
-        left:61.2%!important;
+        left:61.0%!important;
         right:auto!important;
-        bottom:48.8%!important;
+        bottom:51.0%!important;
         width:84px!important;
         height:152px!important;
         transform:translateX(-50%) perspective(700px) rotateX(1.6deg) scale(.47)!important;
         transform-origin:50% 100%!important;
       }
       html body .cafasso-parroquia .cafasso-parish-candle:hover{
-        transform:translateX(-50%) perspective(700px) rotateX(1deg) translateY(-2px) scale(.415)!important;
+        transform:translateX(-50%) perspective(700px) rotateX(1deg) translateY(-2px) scale(.485)!important;
       }
 
       /* Paño de Servidor: plegado sobre el frente del altar. */
@@ -140,9 +140,9 @@
         transform:perspective(720px) rotateX(4deg) rotateZ(-2.2deg)!important;
       }
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle{
-        left:61.2%!important;
+        left:61.0%!important;
         right:auto!important;
-        bottom:48.8%!important;
+        bottom:51.0%!important;
         width:84px!important;
         height:152px!important;
         transform:translateX(-50%) perspective(700px) rotateX(1.6deg) scale(.47)!important;
