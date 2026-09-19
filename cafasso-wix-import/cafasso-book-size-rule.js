@@ -88,6 +88,7 @@
     loadHouseScript('./parish-experience.js?v=1', 'cafasso-parish-experience-loader');
     loadHouseScript('./parish-lectionary-realism.js?v=1', 'cafasso-parish-lectionary-realism-loader');
     loadHouseScript('./parish-lectionary-polish.js?v=3', 'cafasso-parish-lectionary-polish-loader');
+    loadHouseScript('./parish-lectionary-image-v2.js?v=1', 'cafasso-parish-lectionary-image-v2-loader');
     loadHouseScript('./parish-songbook.js?v=2', 'cafasso-parish-songbook-loader');
     loadHouseScript('./parish-songbook-realism.js?v=1', 'cafasso-parish-songbook-realism-loader');
     loadHouseScript('./parish-songbook-interior-v2.js?v=1', 'cafasso-parish-songbook-interior-v2-loader');
