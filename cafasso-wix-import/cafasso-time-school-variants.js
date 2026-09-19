@@ -22,13 +22,31 @@
   let swapping = false;
   let pendingPeriod = '';
 
+  const SUNRISE = [5.70,6.05,6.45,6.95,7.30,7.55,7.52,7.15,6.55,5.95,5.55,5.45];
+  const SUNSET  = [20.10,19.75,19.15,18.40,18.00,17.72,17.80,18.05,18.45,18.88,19.35,19.85];
+
+  function interpolateMonth(date, values) {
+    const month = date.getMonth();
+    const next = (month + 1) % 12;
+    const days = new Date(date.getFullYear(), month + 1, 0).getDate();
+    const t = Math.max(0, Math.min(1, (date.getDate() - 1) / days));
+    return values[month] + (values[next] - values[month]) * t;
+  }
+
   function realPeriod(date = new Date()) {
     const declared = document.documentElement.dataset.cafassoPeriod;
     if (VALID_PERIODS.has(declared)) return declared;
+
     const hour = date.getHours() + date.getMinutes() / 60;
-    if (hour >= 6 && hour < 12) return 'morning';
-    if (hour >= 12 && hour < 17.5) return 'afternoon';
-    if (hour >= 17.5 && hour < 20.5) return 'sunset';
+    const sunrise = interpolateMonth(date, SUNRISE);
+    const sunset = interpolateMonth(date, SUNSET);
+    const morningStart = sunrise - 0.20;
+    const sunsetStart = sunset - 1.05;
+    const nightStart = sunset + 0.25;
+
+    if (hour >= morningStart && hour < 12) return 'morning';
+    if (hour >= 12 && hour < sunsetStart) return 'afternoon';
+    if (hour >= sunsetStart && hour < nightStart) return 'sunset';
     return 'night';
   }
 
