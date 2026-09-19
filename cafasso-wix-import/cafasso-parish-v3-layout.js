@@ -69,7 +69,7 @@
         transform-origin:50% 100%!important;
       }
       html body .cafasso-parroquia .cafasso-parish-candle:hover{
-        transform:translateX(-50%) perspective(700px) rotateX(1deg) translateY(-2px) scale(.485)!important;
+        transform:translateX(-50%) perspective(700px) rotateX(1deg) translateY(-2px) scale(.415)!important;
       }
 
       /* Paño de Servidor: plegado sobre el frente del altar. */
