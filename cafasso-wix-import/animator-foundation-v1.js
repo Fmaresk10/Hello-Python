@@ -5,14 +5,31 @@
   document.body.className = 'cafasso-foundation';
 
   const space = new URLSearchParams(location.search).get('space') || 'house';
-  const HOUSE_BG = 'https://static.wixstatic.com/media/47bf07_32fab0f8b4a444808b0f577cf89e2196~mv2.png';
-  const PATIO_BG = 'https://static.wixstatic.com/media/47bf07_794847b8f87d4577a04e10fb9adf630c~mv2.png';
-  const PARROQUIA_BG = 'https://static.wixstatic.com/media/47bf07_1c9e484e5ec8490781a6e54d6c262e1a~mv2.png';
-  const ESCUELA_IMAGES = {
-    morning: 'https://static.wixstatic.com/media/47bf07_a8d33103cb5a4effb8af4af5d7a38c17~mv2.png',
-    afternoon: 'https://static.wixstatic.com/media/47bf07_3248c27ab7aa4fe5847c319c7e250cc4~mv2.png',
-    sunset: 'https://static.wixstatic.com/media/47bf07_2323847daa184448bdc3b4e6543b6c43~mv2.png',
-    night: 'https://static.wixstatic.com/media/47bf07_5a9befdb2e4c41b5960e7476b971e655~mv2.png'
+  const TIME_IMAGES = {
+    house: {
+      morning: 'https://static.wixstatic.com/media/47bf07_a80080c806984cfaaa53b5d16aa89731~mv2.jpg',
+      afternoon: 'https://static.wixstatic.com/media/47bf07_9bc5db4bdd144670b58b89d62684b300~mv2.jpg',
+      sunset: 'https://static.wixstatic.com/media/47bf07_32fab0f8b4a444808b0f577cf89e2196~mv2.png',
+      night: 'https://static.wixstatic.com/media/47bf07_35127a444ffb4f3ab1f669abc21c067d~mv2.jpg'
+    },
+    patio: {
+      morning: 'https://static.wixstatic.com/media/47bf07_1b5565dca9f446b38de8a368dfc8c4f3~mv2.png',
+      afternoon: 'https://static.wixstatic.com/media/47bf07_794847b8f87d4577a04e10fb9adf630c~mv2.png',
+      sunset: 'https://static.wixstatic.com/media/47bf07_2ffcd3027228450c9c7487350e067bdd~mv2.png',
+      night: 'https://static.wixstatic.com/media/47bf07_e63b403b8b64424c981b1169ddb04fe2~mv2.png'
+    },
+    parroquia: {
+      morning: 'https://static.wixstatic.com/media/47bf07_f64cd4cb65ad4fccb885553d8121dae0~mv2.png',
+      afternoon: 'https://static.wixstatic.com/media/47bf07_1c9e484e5ec8490781a6e54d6c262e1a~mv2.png',
+      sunset: 'https://static.wixstatic.com/media/47bf07_36ab84721e95485587152a40d3adce64~mv2.png',
+      night: 'https://static.wixstatic.com/media/47bf07_18a734a77ca94196970c4be45eb416ff~mv2.png'
+    },
+    escuela: {
+      morning: 'https://static.wixstatic.com/media/47bf07_a8d33103cb5a4effb8af4af5d7a38c17~mv2.png',
+      afternoon: 'https://static.wixstatic.com/media/47bf07_3248c27ab7aa4fe5847c319c7e250cc4~mv2.png',
+      sunset: 'https://static.wixstatic.com/media/47bf07_2323847daa184448bdc3b4e6543b6c43~mv2.png',
+      night: 'https://static.wixstatic.com/media/47bf07_5a9befdb2e4c41b5960e7476b971e655~mv2.png'
+    }
   };
   const URUGUAY_SUNRISE = [5.70,6.05,6.45,6.95,7.30,7.55,7.52,7.15,6.55,5.95,5.55,5.45];
   const URUGUAY_SUNSET  = [20.10,19.75,19.15,18.40,18.00,17.72,17.80,18.05,18.45,18.88,19.35,19.85];
@@ -38,7 +55,29 @@
     return 'night';
   }
 
-  const ESCUELA_BG = ESCUELA_IMAGES[cafassoInitialPeriod()] || ESCUELA_IMAGES.afternoon;
+  const INITIAL_PERIOD = cafassoInitialPeriod();
+  document.documentElement.dataset.cafassoPeriod = INITIAL_PERIOD;
+  document.documentElement.dataset.cafassoTimeModel = 'uruguay-seasonal-bootstrap';
+
+  function initialImageFor(targetSpace) {
+    const variants = TIME_IMAGES[targetSpace];
+    return variants?.[INITIAL_PERIOD] || variants?.afternoon || '';
+  }
+
+  const HOUSE_BG = initialImageFor('house');
+  const PATIO_BG = initialImageFor('patio');
+  const PARROQUIA_BG = initialImageFor('parroquia');
+  const ESCUELA_BG = initialImageFor('escuela');
+
+  // Empieza a descargar la escena correcta antes de montar el espacio.
+  if (TIME_IMAGES[space]) {
+    const preload = document.createElement('link');
+    preload.rel = 'preload';
+    preload.as = 'image';
+    preload.href = initialImageFor(space);
+    document.head.appendChild(preload);
+  }
+
   const RECURSOS_BG = 'https://static.wixstatic.com/media/47bf07_8451eada7d72451a854df7cae47a80b6~mv2.png';
   const BITACORA_IMG = 'https://static.wixstatic.com/media/47bf07_20750dc35c6f4678b865413ce34ec1fe~mv2.png';
   const BITACORA_KEY = 'cafasso-bitacora-v1';
