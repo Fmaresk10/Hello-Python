@@ -20,9 +20,6 @@
   const PROBE_TIMEOUT_MS = 4500;
 
   const LOOPS = {
-    patio: {
-      sunset: './assets/loops/patio-sunset.mp4'
-    },
     escuela: {
       night: './assets/loops/school-night.mp4'
     },
