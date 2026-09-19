@@ -9,7 +9,7 @@
   const REDUCED = () => Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
 
   let period = '';
-  let enabled = true;
+  let enabled = false;
   let audioCtx = null;
   let masterGain = null;
   let sceneGain = null;
@@ -19,17 +19,12 @@
   let rebuilding = false;
 
   function readPreference() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      return saved.enabled !== false;
-    } catch (error) {
-      return true;
-    }
+    return false;
   }
 
   function writePreference() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ enabled, updatedAt: new Date().toISOString() }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ enabled: false, updatedAt: new Date().toISOString() }));
     } catch (error) {}
   }
 
@@ -136,17 +131,7 @@
   }
 
   function ensureToggle() {
-    if (!SUPPORTED.has(SPACE) || document.querySelector('.cafasso-ambience-toggle')) return;
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'cafasso-ambience-toggle';
-    button.addEventListener('click', event => {
-      event.preventDefault();
-      event.stopPropagation();
-      setEnabled(!enabled);
-    });
-    document.body.appendChild(button);
-    updateToggle();
+    document.querySelectorAll('.cafasso-ambience-toggle').forEach(button => button.remove());
   }
 
   function updateToggle() {
@@ -161,20 +146,7 @@
   }
 
   function ensureAudioContext() {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return false;
-      if (!audioCtx) {
-        audioCtx = new AudioCtx();
-        masterGain = audioCtx.createGain();
-        masterGain.gain.value = 0.72;
-        masterGain.connect(audioCtx.destination);
-      }
-      if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
-      return true;
-    } catch (error) {
-      return false;
-    }
+    return false;
   }
 
   function stopTimers() {
@@ -340,29 +312,22 @@
   }
 
   function start() {
-    if (!SUPPORTED.has(SPACE) || !enabled) return;
-    if (document.body.classList.contains('cafasso-prologue-open')) {
-      setTimeout(start, 420);
-      return;
-    }
-    if (!ensureAudioContext()) return;
-    audioUnlocked = true;
-    if (!sceneGain) buildScene();
+    enabled = false;
+    audioUnlocked = false;
+    return false;
   }
 
   function fadeOut(seconds = .28) {
     stopScene(seconds, { rebuild: false });
   }
 
-  function setEnabled(value) {
-    enabled = Boolean(value);
+  function setEnabled() {
+    enabled = false;
+    audioUnlocked = false;
     writePreference();
-    updateToggle();
-    if (!enabled) {
-      fadeOut(.22);
-      return;
-    }
-    start();
+    ensureToggle();
+    stopScene(.01, { rebuild: false });
+    return false;
   }
 
   function ownsSpace(space) {
@@ -370,8 +335,7 @@
   }
 
   function handleFirstGesture() {
-    if (!enabled || !SUPPORTED.has(SPACE)) return;
-    start();
+    return false;
   }
 
   function boot() {
@@ -381,16 +345,11 @@
     ensureLightLayer();
     ensureToggle();
 
-    document.addEventListener('pointerdown', handleFirstGesture, { capture: true, passive: true });
-    document.addEventListener('keydown', handleFirstGesture, { capture: true });
-    document.addEventListener('click', event => {
-      if (event.target.closest?.('[data-space]')) fadeOut(.28);
-    }, { capture: true });
-    window.addEventListener('pagehide', () => fadeOut(.18), { once: true });
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) fadeOut(.20);
-      else if (enabled && audioUnlocked) setTimeout(start, 120);
-    });
+    // CAFASSO funciona sin sonido ambiente automático.
+    enabled = false;
+    audioUnlocked = false;
+    writePreference();
+    ensureToggle();
 
     setInterval(() => updatePeriod(false), 60000);
   }
