@@ -11,6 +11,23 @@
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
+      /* Mantener el mapa completo de Casa en cualquier proporción de ventana.
+         fill evita el recorte/zoom de cover y conserva alineados los objetos por porcentaje. */
+      .cafasso-house > .cafasso-house__image,
+      .cafasso-house .cafasso-house-panorama > .cafasso-house__image{
+        width:100%!important;
+        height:100%!important;
+        max-width:none!important;
+        object-fit:fill!important;
+        object-position:center center!important;
+        transform:none!important;
+      }
+
+      /* En móvil vertical el panorama ya mantiene una escena física 16:9; ahí no deformamos. */
+      html.cafasso-mobile.cafasso-mobile-portrait body .cafasso-house-panorama > .cafasso-house__image{
+        object-fit:cover!important;
+      }
+
       /* La nueva Casa ya trae su propia luz: evitamos superponer filtros o videos viejos. */
       .cafasso-house:after,
       .cafasso-house .cafasso-dynamic-light,
