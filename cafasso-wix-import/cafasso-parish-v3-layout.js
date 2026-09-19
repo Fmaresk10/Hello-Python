@@ -75,9 +75,9 @@
 
       /* Vela interactiva: coincide con la vela del lado derecho del altar. */
       html body .cafasso-parroquia .cafasso-parish-candle{
-        left:61.0%!important;
+        left:calc(61.0% - .5cm)!important;
         right:auto!important;
-        bottom:51.0%!important;
+        bottom:calc(51.0% - 1cm)!important;
         width:84px!important;
         height:152px!important;
         transform:translateX(-50%) perspective(700px) rotateX(1.6deg) scale(.47)!important;
@@ -140,9 +140,9 @@
         transform:perspective(720px) rotateX(4deg) rotateZ(-2.2deg)!important;
       }
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle{
-        left:61.0%!important;
+        left:calc(61.0% - .5cm)!important;
         right:auto!important;
-        bottom:51.0%!important;
+        bottom:calc(51.0% - 1cm)!important;
         width:84px!important;
         height:152px!important;
         transform:translateX(-50%) perspective(700px) rotateX(1.6deg) scale(.47)!important;
