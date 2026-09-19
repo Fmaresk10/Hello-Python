@@ -88,7 +88,7 @@
     loadHouseScript('./parish-experience.js?v=1', 'cafasso-parish-experience-loader');
     loadHouseScript('./parish-lectionary-realism.js?v=1', 'cafasso-parish-lectionary-realism-loader');
     loadHouseScript('./parish-lectionary-polish.js?v=3', 'cafasso-parish-lectionary-polish-loader');
-    loadHouseScript('./parish-songbook.js?v=1', 'cafasso-parish-songbook-loader');
+    loadHouseScript('./parish-songbook.js?v=2', 'cafasso-parish-songbook-loader');
     loadHouseScript('./parish-songbook-realism.js?v=1', 'cafasso-parish-songbook-realism-loader');
     loadHouseScript('./parish-songbook-interior-v2.js?v=1', 'cafasso-parish-songbook-interior-v2-loader');
     loadHouseScript('./parish-candle.js?v=2', 'cafasso-parish-candle-loader');
@@ -104,7 +104,7 @@
     loadHouseScript('./cafasso-mobile-resources.js?v=1', 'cafasso-mobile-resources-loader');
     loadHouseScript('./cafasso-house-v3-layout.js?v=2', 'cafasso-house-v3-layout-loader');
     loadHouseScript('./cafasso-patio-v3-layout.js?v=1', 'cafasso-patio-v3-layout-loader');
-    loadHouseScript('./cafasso-parish-v3-layout.js?v=4', 'cafasso-parish-v3-layout-loader');
+    loadHouseScript('./cafasso-parish-v3-layout.js?v=5', 'cafasso-parish-v3-layout-loader');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installRule, { once: true });
