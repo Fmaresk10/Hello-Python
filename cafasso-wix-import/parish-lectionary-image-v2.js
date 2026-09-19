@@ -4,7 +4,7 @@
   if (window.__cafassoParishLectionaryImageV2Installed) return;
   window.__cafassoParishLectionaryImageV2Installed = true;
 
-  const IMAGE_URL = 'https://static.wixstatic.com/media/47bf07_518f23c514b64872b77db11b0a2beb9c~mv2.png';
+  const IMAGE_URL = 'https://static.wixstatic.com/media/47bf07_cc8859dac793489ab88eec337ab07645~mv2.png';
   const STYLE_ID = 'cafassoParishLectionaryImageV2Styles';
 
   function ensureStyles() {
@@ -15,7 +15,9 @@
       .cafasso-parish-lectionary{
         overflow:visible!important;
         background:transparent!important;
+        background-color:transparent!important;
         border:0!important;
+        box-shadow:none!important;
         filter:drop-shadow(0 14px 10px rgba(41,27,18,.34))!important;
       }
       .cafasso-parish-lectionary:hover{
@@ -32,6 +34,9 @@
         height:100%!important;
         object-fit:contain!important;
         object-position:center!important;
+        background:transparent!important;
+        border:0!important;
+        box-shadow:none!important;
         pointer-events:none!important;
         user-select:none!important;
       }
