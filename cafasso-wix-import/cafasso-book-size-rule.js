@@ -50,7 +50,7 @@
     loadHouseScript('./cafasso-time-house-variants.js?v=1', 'cafasso-time-house-variants-loader');
     loadHouseScript('./cafasso-time-patio-variants.js?v=1', 'cafasso-time-patio-variants-loader');
     loadHouseScript('./cafasso-time-parish-variants.js?v=1', 'cafasso-time-parish-variants-loader');
-    loadHouseScript('./cafasso-time-school-variants.js?v=1', 'cafasso-time-school-variants-loader');
+    loadHouseScript('./cafasso-time-school-variants.js?v=2', 'cafasso-time-school-variants-loader');
     loadHouseScript('./cafasso-dynamic-ambience-school-parish.js?v=1', 'cafasso-dynamic-ambience-school-parish-loader');
     loadHouseScript('./cafasso-time-seasonal-fix.js?v=3', 'cafasso-time-seasonal-fix-loader');
     loadHouseScript('./cafasso-living-calendar.js?v=1', 'cafasso-living-calendar-loader');
