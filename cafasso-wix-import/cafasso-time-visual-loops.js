@@ -22,9 +22,6 @@
   const LOOPS = {
     escuela: {
       night: './assets/loops/school-night.mp4'
-    },
-    parroquia: {
-      night: './assets/loops/parish-night.mp4'
     }
   };
 
