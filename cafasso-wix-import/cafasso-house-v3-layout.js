@@ -48,7 +48,7 @@
 
       /* Bitácora: vuelve a ser un objeto apoyado sobre la mesa. */
       .cafasso-house .cafasso-bitacora-object{
-        left:53.2%!important;
+        left:calc(53.2% - 3cm)!important;
         right:auto!important;
         top:auto!important;
         bottom:6.7%!important;
