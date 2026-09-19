@@ -47,6 +47,7 @@
     loadHouseScript('./house-prologue.js?v=1', 'cafasso-house-prologue-loader');
     loadHouseScript('./house-microinteractions.js?v=1', 'cafasso-house-micro-loader');
     loadHouseScript('./cafasso-dynamic-ambience.js?v=1', 'cafasso-dynamic-ambience-loader');
+    loadHouseScript('./cafasso-time-house-variants.js?v=1', 'cafasso-time-house-variants-loader');
     loadHouseScript('./cafasso-dynamic-ambience-school-parish.js?v=1', 'cafasso-dynamic-ambience-school-parish-loader');
     loadHouseScript('./cafasso-time-seasonal-fix.js?v=1', 'cafasso-time-seasonal-fix-loader');
     loadHouseScript('./cafasso-living-calendar.js?v=1', 'cafasso-living-calendar-loader');
