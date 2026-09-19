@@ -6,6 +6,7 @@
 
   const space = new URLSearchParams(location.search).get('space') || 'house';
   const HOUSE_BG = 'https://static.wixstatic.com/media/47bf07_32fab0f8b4a444808b0f577cf89e2196~mv2.png';
+  const PATIO_BG = 'https://static.wixstatic.com/media/47bf07_794847b8f87d4577a04e10fb9adf630c~mv2.png';
   const PARROQUIA_BG = 'https://static.wixstatic.com/media/47bf07_b411bebc79644a0092920abb58a2f56d~mv2.png';
   const ESCUELA_BG = 'https://static.wixstatic.com/media/47bf07_481618e0256044f9b31ae360a03a9169~mv2.png';
   const RECURSOS_BG = 'https://static.wixstatic.com/media/47bf07_8451eada7d72451a854df7cae47a80b6~mv2.png';
@@ -24,7 +25,7 @@
   })();
 
   if (space === 'patio') {
-    app.innerHTML = '<main class="cafasso-patio"><img class="cafasso-patio__image" src="https://static.wixstatic.com/media/47bf07_2465a68b3ac64824b43bc20531ce6fd4~mv2.png" alt="Patio salesiano CAFASSO"><button class="cafasso-space-link cafasso-space-link--patio-home" data-space="house" type="button">Casa</button><button class="cafasso-space-link cafasso-space-link--patio-escuela" data-space="escuela" type="button">Escuela</button><button class="cafasso-space-link cafasso-space-link--patio-parroquia" data-space="parroquia" type="button">Parroquia</button></main>';
+    app.innerHTML = '<main class="cafasso-patio"><img class="cafasso-patio__image" src="${PATIO_BG}" alt="Patio salesiano CAFASSO"><button class="cafasso-space-link cafasso-space-link--patio-home" data-space="house" type="button">Casa</button><button class="cafasso-space-link cafasso-space-link--patio-escuela" data-space="escuela" type="button">Escuela</button><button class="cafasso-space-link cafasso-space-link--patio-parroquia" data-space="parroquia" type="button">Parroquia</button></main>';
   } else if (space === 'parroquia') {
     app.innerHTML = `<main class="cafasso-parroquia"><img class="cafasso-parroquia__image" src="${PARROQUIA_BG}" alt="Espacio Parroquia de CAFASSO"><button class="cafasso-space-link cafasso-space-link--parroquia-patio" data-space="patio" type="button">Patio</button></main>`;
   } else if (space === 'escuela') {
