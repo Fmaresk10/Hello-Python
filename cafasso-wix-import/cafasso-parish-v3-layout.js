@@ -53,9 +53,24 @@
         left:auto!important;
         right:5.2%!important;
         bottom:9.8%!important;
-        width:138px!important;
-        height:94px!important;
-        transform:perspective(720px) rotateX(7deg) rotateZ(-3deg)!important;
+        width:148px!important;
+        height:110px!important;
+        transform:perspective(720px) rotateX(4deg) rotateZ(-2.2deg)!important;
+        filter:drop-shadow(0 12px 8px rgba(44,28,17,.34))!important;
+      }
+      .cafasso-parroquia .cafasso-parish-songbook:hover{
+        transform:perspective(720px) rotateX(3deg) rotateZ(-1.5deg) translateY(-4px) scale(1.025)!important;
+      }
+      .cafasso-parroquia .cafasso-parish-songbook:before{
+        display:none!important;
+        content:none!important;
+      }
+      .cafasso-parroquia .cafasso-parish-songbook__image{
+        display:block!important;
+        width:100%!important;
+        height:100%!important;
+        object-fit:contain!important;
+        object-position:center!important;
       }
 
       /* Vela interactiva: coincide con la vela del lado derecho del altar. */
@@ -120,9 +135,9 @@
         left:auto!important;
         right:5.2%!important;
         bottom:9.8%!important;
-        width:138px!important;
-        height:94px!important;
-        transform:perspective(720px) rotateX(7deg) rotateZ(-3deg)!important;
+        width:148px!important;
+        height:110px!important;
+        transform:perspective(720px) rotateX(4deg) rotateZ(-2.2deg)!important;
       }
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle{
         left:61.2%!important;
