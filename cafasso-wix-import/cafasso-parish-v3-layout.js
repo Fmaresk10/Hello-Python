@@ -75,7 +75,7 @@
 
       /* Vela interactiva: coincide con la vela del lado derecho del altar. */
       html body .cafasso-parroquia .cafasso-parish-candle{
-        left:calc(61.0% - .5cm)!important;
+        left:calc(61.0% - .2cm)!important;
         right:auto!important;
         bottom:calc(51.0% - 1cm)!important;
         width:84px!important;
@@ -85,6 +85,14 @@
       }
       html body .cafasso-parroquia .cafasso-parish-candle:hover{
         transform:translateX(-50%) perspective(700px) rotateX(1deg) translateY(-2px) scale(.485)!important;
+      }
+
+      /* Sin pie de bronce: conservamos cera, mecha, llama y glow. */
+      .cafasso-parroquia .cafasso-parish-candle__holder,
+      .cafasso-parroquia .cafasso-parish-candle__holder:before,
+      .cafasso-parroquia .cafasso-parish-candle__holder:after{
+        display:none!important;
+        content:none!important;
       }
 
       /* Paño de Servidor: plegado sobre el frente del altar. */
@@ -140,7 +148,7 @@
         transform:perspective(720px) rotateX(4deg) rotateZ(-2.2deg)!important;
       }
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle{
-        left:calc(61.0% - .5cm)!important;
+        left:calc(61.0% - .2cm)!important;
         right:auto!important;
         bottom:calc(51.0% - 1cm)!important;
         width:84px!important;
