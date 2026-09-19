@@ -6,7 +6,7 @@
 
   const STORAGE_KEY = 'cafasso-dynamic-ambience-v1';
   const STYLE_ID = 'cafassoDynamicAmbienceSchoolParishStyles';
-  let enabled = true;
+  let enabled = false;
   let period = '';
   let audioCtx = null;
   let master = null;
@@ -17,17 +17,12 @@
   let silenceObserver = null;
 
   function readPreference() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      return saved.enabled !== false;
-    } catch (error) {
-      return true;
-    }
+    return false;
   }
 
   function writePreference() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ enabled, updatedAt: new Date().toISOString() }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ enabled: false, updatedAt: new Date().toISOString() }));
     } catch (error) {}
   }
 
@@ -81,25 +76,7 @@
   }
 
   function ensureToggle() {
-    if (document.querySelector('.cafasso-ambience-toggle')) return;
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'cafasso-ambience-toggle';
-    button.addEventListener('click', event => {
-      event.preventDefault();
-      event.stopPropagation();
-      enabled = !enabled;
-      writePreference();
-      updateToggle();
-      if (enabled) {
-        unlockAudio();
-        rebuildScene();
-      } else {
-        fadeScene(.0001, .28);
-      }
-    });
-    document.body.appendChild(button);
-    updateToggle();
+    document.querySelectorAll('.cafasso-ambience-toggle').forEach(button => button.remove());
   }
 
   function updateToggle() {
@@ -114,27 +91,13 @@
   }
 
   function ensureAudio() {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return false;
-      if (!audioCtx) {
-        audioCtx = new AudioCtx();
-        master = audioCtx.createGain();
-        master.gain.value = .72;
-        master.connect(audioCtx.destination);
-      }
-      if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
-      return true;
-    } catch (error) {
-      return false;
-    }
+    return false;
   }
 
   function unlockAudio() {
-    if (unlocked) return;
-    if (!ensureAudio()) return;
-    unlocked = true;
-    if (enabled) rebuildScene();
+    enabled = false;
+    unlocked = false;
+    return false;
   }
 
   function clearScene() {
@@ -317,14 +280,12 @@
     applyPeriod(getPeriod(), false);
     observeParishSilence();
 
-    document.addEventListener('pointerdown', unlockAudio, { capture: true, passive: true });
-    document.addEventListener('keydown', unlockAudio, { capture: true });
-    window.addEventListener('cafasso:time-period', event => applyPeriod(event?.detail?.period || getPeriod(), true));
-    window.addEventListener('focus', () => applyPeriod(getPeriod(), true));
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) fadeScene(.0001, .18);
-      else if (unlocked && enabled) rebuildScene();
-    });
+    enabled = false;
+    unlocked = false;
+    writePreference();
+    ensureToggle();
+    window.addEventListener('cafasso:time-period', event => applyPeriod(event?.detail?.period || getPeriod(), false));
+    window.addEventListener('focus', () => applyPeriod(getPeriod(), false));
     setInterval(() => applyPeriod(getPeriod(), false), 60000);
     return true;
   }
