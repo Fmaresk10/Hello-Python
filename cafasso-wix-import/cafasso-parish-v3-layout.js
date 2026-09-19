@@ -36,9 +36,9 @@
 
       /* Leccionario: apoyado sobre el altar, a la derecha. */
       html body .cafasso-parroquia .cafasso-parish-lectionary{
-        left:calc(28.4% - 3cm)!important;
+        left:calc(28.4% - 5cm)!important;
         right:auto!important;
-        bottom:53.6%!important;
+        bottom:calc(53.6% - 2cm)!important;
         width:186px!important;
         height:126px!important;
         transform:perspective(820px) rotateX(3deg) rotateZ(1deg)!important;
@@ -124,9 +124,9 @@
         transform:none!important;
       }
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-lectionary{
-        left:calc(28.4% - 3cm)!important;
+        left:calc(28.4% - 5cm)!important;
         right:auto!important;
-        bottom:53.6%!important;
+        bottom:calc(53.6% - 2cm)!important;
         width:186px!important;
         height:126px!important;
         transform:perspective(820px) rotateX(3deg) rotateZ(1deg)!important;
