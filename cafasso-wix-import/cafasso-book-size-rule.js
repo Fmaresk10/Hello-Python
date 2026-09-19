@@ -50,10 +50,11 @@
     loadHouseScript('./cafasso-time-house-variants.js?v=1', 'cafasso-time-house-variants-loader');
     loadHouseScript('./cafasso-time-patio-variants.js?v=1', 'cafasso-time-patio-variants-loader');
     loadHouseScript('./cafasso-time-parish-variants.js?v=1', 'cafasso-time-parish-variants-loader');
+    loadHouseScript('./cafasso-time-school-variants.js?v=1', 'cafasso-time-school-variants-loader');
     loadHouseScript('./cafasso-dynamic-ambience-school-parish.js?v=1', 'cafasso-dynamic-ambience-school-parish-loader');
-    loadHouseScript('./cafasso-time-seasonal-fix.js?v=2', 'cafasso-time-seasonal-fix-loader');
+    loadHouseScript('./cafasso-time-seasonal-fix.js?v=3', 'cafasso-time-seasonal-fix-loader');
     loadHouseScript('./cafasso-living-calendar.js?v=1', 'cafasso-living-calendar-loader');
-    loadHouseScript('./cafasso-time-visual-loops.js?v=6', 'cafasso-time-visual-loops-loader');
+    loadHouseScript('./cafasso-time-visual-loops.js?v=7', 'cafasso-time-visual-loops-loader');
     loadHouseScript('./cafasso-world-microevents.js?v=3', 'cafasso-world-microevents-loader');
     loadHouseScript('./cafasso-exploration.js?v=1', 'cafasso-exploration-loader');
     loadHouseScript('./cafasso-exploration-click-fix.js?v=1', 'cafasso-exploration-click-fix-loader');
