@@ -7,7 +7,7 @@
   const space = new URLSearchParams(location.search).get('space') || 'house';
   const HOUSE_BG = 'https://static.wixstatic.com/media/47bf07_32fab0f8b4a444808b0f577cf89e2196~mv2.png';
   const PATIO_BG = 'https://static.wixstatic.com/media/47bf07_794847b8f87d4577a04e10fb9adf630c~mv2.png';
-  const PARROQUIA_BG = 'https://static.wixstatic.com/media/47bf07_b411bebc79644a0092920abb58a2f56d~mv2.png';
+  const PARROQUIA_BG = 'https://static.wixstatic.com/media/47bf07_1c9e484e5ec8490781a6e54d6c262e1a~mv2.png';
   const ESCUELA_BG = 'https://static.wixstatic.com/media/47bf07_481618e0256044f9b31ae360a03a9169~mv2.png';
   const RECURSOS_BG = 'https://static.wixstatic.com/media/47bf07_8451eada7d72451a854df7cae47a80b6~mv2.png';
   const BITACORA_IMG = 'https://static.wixstatic.com/media/47bf07_20750dc35c6f4678b865413ce34ec1fe~mv2.png';
