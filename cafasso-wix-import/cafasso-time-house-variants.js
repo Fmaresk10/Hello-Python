@@ -21,7 +21,7 @@
     },
     sunset: {
       primary: 'https://static.wixstatic.com/media/47bf07_32fab0f8b4a444808b0f577cf89e2196~mv2.png',
-      fallback: ''
+      fallback: './assets/time/house-sunset.jpg'
     },
     night: {
       primary: 'https://static.wixstatic.com/media/47bf07_35127a444ffb4f3ab1f669abc21c067d~mv2.jpg',
