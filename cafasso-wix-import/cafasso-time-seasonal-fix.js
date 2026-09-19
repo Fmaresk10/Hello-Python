@@ -43,34 +43,17 @@
   }
 
   function ensureStyles() {
-    if (document.getElementById(STYLE_ID)) return;
+    if (SPACE !== 'escuela' || document.getElementById(STYLE_ID)) return;
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
       .cafasso-seasonal-night-layer{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;transition:opacity 1.1s ease,background 1.1s ease,backdrop-filter 1.1s ease;}
       .cafasso-time-night .cafasso-seasonal-night-layer{opacity:1;}
-
-      .cafasso-time-night .cafasso-house .cafasso-seasonal-night-layer{
-        background:radial-gradient(ellipse 30% 28% at 61% 28%,rgba(255,176,82,.10),transparent 72%),linear-gradient(180deg,rgba(4,12,29,.34),rgba(2,9,23,.58));
-        backdrop-filter:brightness(.62) saturate(.78) contrast(1.04);
-        box-shadow:inset 0 0 190px rgba(0,5,16,.34);
-      }
-      .cafasso-time-night .cafasso-patio .cafasso-seasonal-night-layer{
-        background:radial-gradient(circle 18% at 72% 12%,rgba(180,210,228,.08),transparent 72%),linear-gradient(180deg,rgba(5,15,34,.40),rgba(2,9,24,.64));
-        backdrop-filter:brightness(.56) saturate(.74) contrast(1.05);
-        box-shadow:inset 0 0 210px rgba(0,4,14,.38);
-      }
       .cafasso-time-night .cafasso-escuela .cafasso-seasonal-night-layer{
         background:radial-gradient(ellipse 30% 30% at 22% 28%,rgba(238,183,96,.08),transparent 72%),linear-gradient(180deg,rgba(4,15,28,.36),rgba(3,10,22,.60));
         backdrop-filter:brightness(.60) saturate(.76) contrast(1.04);
         box-shadow:inset 0 0 190px rgba(0,5,15,.34);
       }
-      .cafasso-time-night .cafasso-parroquia .cafasso-seasonal-night-layer{
-        background:radial-gradient(ellipse 24% 38% at 56% 43%,rgba(255,176,81,.085),transparent 72%),linear-gradient(180deg,rgba(2,8,19,.38),rgba(1,6,14,.66));
-        backdrop-filter:brightness(.54) saturate(.72) contrast(1.04);
-        box-shadow:inset 0 0 220px rgba(0,3,10,.42);
-      }
-
       @media(prefers-reduced-motion:reduce){.cafasso-seasonal-night-layer{transition:none!important}}
     `;
     document.head.appendChild(style);
@@ -78,7 +61,16 @@
 
   function ensureLayer() {
     const host = root();
-    if (!host || host.querySelector('.cafasso-seasonal-night-layer')) return;
+    if (!host) return;
+
+    // Casa, Patio y Parroquia ya tienen imágenes propias por franja horaria.
+    // Eliminamos cualquier capa nocturna heredada para no oscurecerlas dos veces.
+    if (SPACE !== 'escuela') {
+      host.querySelectorAll('.cafasso-seasonal-night-layer').forEach(layer => layer.remove());
+      return;
+    }
+
+    if (host.querySelector('.cafasso-seasonal-night-layer')) return;
     const layer = document.createElement('div');
     layer.className = 'cafasso-seasonal-night-layer';
     layer.setAttribute('aria-hidden','true');
