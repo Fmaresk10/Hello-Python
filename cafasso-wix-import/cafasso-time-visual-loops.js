@@ -19,10 +19,10 @@
   const CROSSFADE_MS = 1400;
   const PROBE_TIMEOUT_MS = 4500;
 
+  // Las escenas horarias actuales ya contienen la atmósfera visual completa.
+  // Se conserva el motor para futuras experiencias, pero Escuela no superpone video.
   const LOOPS = {
-    escuela: {
-      night: './assets/loops/school-night.mp4'
-    }
+    escuela: {}
   };
 
   let currentKey = '';
