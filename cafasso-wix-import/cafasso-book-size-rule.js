@@ -99,7 +99,7 @@
     loadHouseScript('./cafasso-mobile-school.js?v=1', 'cafasso-mobile-school-loader');
     loadHouseScript('./cafasso-mobile-parish.js?v=2', 'cafasso-mobile-parish-loader');
     loadHouseScript('./cafasso-mobile-resources.js?v=1', 'cafasso-mobile-resources-loader');
-    loadHouseScript('./cafasso-house-v3-layout.js?v=1', 'cafasso-house-v3-layout-loader');
+    loadHouseScript('./cafasso-house-v3-layout.js?v=2', 'cafasso-house-v3-layout-loader');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installRule, { once: true });
