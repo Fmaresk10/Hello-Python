@@ -36,11 +36,11 @@
 
       /* Leccionario: apoyado sobre el altar, a la derecha. */
       html body .cafasso-parroquia .cafasso-parish-lectionary{
-        left:55.7%!important;
+        left:28.4%!important;
         right:auto!important;
-        bottom:49.5%!important;
-        width:186px!important;
-        height:126px!important;
+        bottom:53.6%!important;
+        width:116px!important;
+        height:78px!important;
         transform:perspective(820px) rotateX(3deg) rotateZ(1deg)!important;
         transform-origin:50% 100%!important;
       }
@@ -50,11 +50,11 @@
 
       /* Cancionero: sobre la mesita del primer plano izquierdo. */
       .cafasso-parroquia .cafasso-parish-songbook{
-        left:6.7%!important;
-        right:auto!important;
-        bottom:10.6%!important;
-        width:154px!important;
-        height:106px!important;
+        left:auto!important;
+        right:5.2%!important;
+        bottom:9.8%!important;
+        width:138px!important;
+        height:94px!important;
         transform:perspective(720px) rotateX(7deg) rotateZ(-3deg)!important;
       }
 
@@ -109,19 +109,19 @@
         transform:none!important;
       }
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-lectionary{
-        left:55.7%!important;
+        left:28.4%!important;
         right:auto!important;
-        bottom:49.5%!important;
-        width:186px!important;
-        height:126px!important;
+        bottom:53.6%!important;
+        width:116px!important;
+        height:78px!important;
         transform:perspective(820px) rotateX(3deg) rotateZ(1deg)!important;
       }
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-songbook{
-        left:6.7%!important;
-        right:auto!important;
-        bottom:10.6%!important;
-        width:154px!important;
-        height:106px!important;
+        left:auto!important;
+        right:5.2%!important;
+        bottom:9.8%!important;
+        width:138px!important;
+        height:94px!important;
         transform:perspective(720px) rotateX(7deg) rotateZ(-3deg)!important;
       }
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle{
