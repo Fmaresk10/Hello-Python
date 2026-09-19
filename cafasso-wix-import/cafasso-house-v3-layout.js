@@ -6,37 +6,109 @@
 
   const STYLE_ID = 'cafassoHouseV3LayoutStyles';
 
-  function syncObjectScale() {
-    const root = document.documentElement;
-    if (root.classList.contains('cafasso-mobile')) return;
+  const ASPECT = 16 / 9;
+  const SPATIAL_SELECTORS = [
+    '.cafasso-house__image',
+    '.cafasso-space-link--casa[data-space="patio"]',
+    '.cafasso-space-link--house-recursos',
+    '.cafasso-bitacora-object',
+    '.cafasso-animator-sheet',
+    '.cafasso-world-compass',
+    '.cafasso-explore-secret--house',
+    '.cafasso-corazon-huella',
+    '.cafasso-calendar-layer'
+  ];
 
-    const viewportWidth = Math.max(1, window.innerWidth || document.documentElement.clientWidth || 1);
-    const fullWidth = Math.max(viewportWidth, window.screen?.availWidth || window.screen?.width || viewportWidth);
-    const scale = Math.max(.42, Math.min(1, viewportWidth / fullWidth));
+  let house = null;
+  let desktopScene = null;
+  let sceneObserver = null;
 
-    root.style.setProperty('--cafasso-house-bitacora-w', `${150 * scale}px`);
-    root.style.setProperty('--cafasso-house-bitacora-h', `${132 * scale}px`);
-    root.style.setProperty('--cafasso-house-bitacora-x', `${113.3858 * scale}px`);
-    root.style.setProperty('--cafasso-house-sheet-w', `${142 * scale}px`);
-    root.style.setProperty('--cafasso-house-sheet-h', `${168 * scale}px`);
-    root.style.setProperty('--cafasso-house-compass-size', `${70 * scale}px`);
-    root.style.setProperty('--cafasso-house-secret-w', `${29 * scale}px`);
-    root.style.setProperty('--cafasso-house-secret-h', `${20 * scale}px`);
-    root.style.setProperty('--cafasso-house-heart-size', `${38 * scale}px`);
-    root.style.setProperty('--cafasso-house-heart-font', `${29 * scale}px`);
-    root.style.setProperty('--cafasso-house-door-min', `${88 * scale}px`);
-    root.dataset.cafassoHouseObjectScale = scale.toFixed(4);
+  function isMobile() {
+    return document.documentElement.classList.contains('cafasso-mobile');
   }
 
+  function viewportSize() {
+    const vv = window.visualViewport;
+    return {
+      width: Math.max(1, Math.round(vv?.width || window.innerWidth || 1)),
+      height: Math.max(1, Math.round(vv?.height || window.innerHeight || 1))
+    };
+  }
+
+  function referenceSize() {
+    const screenWidth = Math.max(1, Number(window.screen?.width) || viewportSize().width);
+    return { width: screenWidth, height: screenWidth / ASPECT };
+  }
+
+  function sizeDesktopScene() {
+    if (!desktopScene || isMobile()) return;
+    const viewport = viewportSize();
+    const base = referenceSize();
+    const scale = Math.min(viewport.width / base.width, viewport.height / base.height);
+    const renderedWidth = base.width * scale;
+    const renderedHeight = base.height * scale;
+    desktopScene.style.setProperty('--cafasso-house-base-w', base.width + 'px');
+    desktopScene.style.setProperty('--cafasso-house-base-h', base.height + 'px');
+    desktopScene.style.setProperty('--cafasso-house-scene-scale', String(scale));
+    desktopScene.style.left = ((viewport.width - renderedWidth) / 2) + 'px';
+    desktopScene.style.top = ((viewport.height - renderedHeight) / 2) + 'px';
+    document.documentElement.dataset.cafassoHouseSceneScale = scale.toFixed(4);
+  }
+
+  function moveSpatialElements() {
+    if (!house || !desktopScene || isMobile()) return;
+    SPATIAL_SELECTORS.forEach(selector => {
+      house.querySelectorAll(selector).forEach(node => {
+        if (node === desktopScene || desktopScene.contains(node)) return;
+        desktopScene.appendChild(node);
+      });
+    });
+  }
+
+  function mountDesktopScene() {
+    if (isMobile()) return false;
+    house = document.querySelector('.cafasso-house');
+    if (!house) return false;
+    desktopScene = house.querySelector('.cafasso-house-desktop-scene');
+    if (!desktopScene) {
+      desktopScene = document.createElement('div');
+      desktopScene.className = 'cafasso-house-desktop-scene';
+      desktopScene.setAttribute('aria-label', 'Escena Casa CAFASSO');
+      house.insertBefore(desktopScene, house.firstChild);
+    }
+    moveSpatialElements();
+    sizeDesktopScene();
+    if (!sceneObserver) {
+      sceneObserver = new MutationObserver(() => {
+        moveSpatialElements();
+        sizeDesktopScene();
+      });
+      sceneObserver.observe(house, { childList:true });
+    }
+    house.dataset.cafassoDesktopScene = '1';
+    return true;
+  }
   function ensureStyles() {
     if (document.getElementById(STYLE_ID)) return;
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
-      /* Mantener el mapa completo de Casa en cualquier proporción de ventana.
-         fill evita el recorte/zoom de cover y conserva alineados los objetos por porcentaje. */
-      .cafasso-house > .cafasso-house__image,
-      .cafasso-house .cafasso-house-panorama > .cafasso-house__image{
+      /* Escritorio: fondo y objetos viven dentro de una única escena 16:9. */
+      .cafasso-house .cafasso-house-desktop-scene{
+        position:absolute!important;
+        z-index:1!important;
+        width:var(--cafasso-house-base-w)!important;
+        height:var(--cafasso-house-base-h)!important;
+        overflow:hidden!important;
+        transform:scale(var(--cafasso-house-scene-scale,1))!important;
+        transform-origin:0 0!important;
+        will-change:transform;
+      }
+      .cafasso-house .cafasso-house-desktop-scene > .cafasso-house__image{
+        position:absolute!important;
+        inset:0!important;
+        z-index:0!important;
+        display:block!important;
         width:100%!important;
         height:100%!important;
         max-width:none!important;
@@ -45,7 +117,7 @@
         transform:none!important;
       }
 
-      /* En móvil vertical el panorama ya mantiene una escena física 16:9; ahí no deformamos. */
+      /* Móvil conserva su panorama dedicado. */
       html.cafasso-mobile.cafasso-mobile-portrait body .cafasso-house-panorama > .cafasso-house__image{
         object-fit:cover!important;
       }
@@ -62,7 +134,7 @@
         left:50.4%!important;
         right:auto!important;
         top:48.5%!important;
-        min-width:var(--cafasso-house-door-min,88px)!important;
+        min-width:88px!important;
         transform:none!important;
         transform-origin:center center!important;
         background:linear-gradient(180deg,rgba(50,39,28,.56),rgba(25,31,28,.70))!important;
@@ -87,12 +159,12 @@
 
       /* Bitácora: vuelve a ser un objeto apoyado sobre la mesa. */
       .cafasso-house .cafasso-bitacora-object{
-        left:calc(53.2% - var(--cafasso-house-bitacora-x,3cm))!important;
+        left:calc(53.2% - 3cm)!important;
         right:auto!important;
         top:auto!important;
         bottom:6.7%!important;
-        width:var(--cafasso-house-bitacora-w,150px)!important;
-        height:var(--cafasso-house-bitacora-h,132px)!important;
+        width:150px!important;
+        height:132px!important;
         transform:rotate(-3.5deg)!important;
         filter:drop-shadow(0 8px 7px rgba(35,22,13,.34))!important;
       }
@@ -106,8 +178,8 @@
         right:auto!important;
         top:24.8%!important;
         bottom:auto!important;
-        width:var(--cafasso-house-sheet-w,142px)!important;
-        height:var(--cafasso-house-sheet-h,168px)!important;
+        width:142px!important;
+        height:168px!important;
         transform:perspective(700px) rotateY(-3deg) rotateZ(-2.8deg)!important;
         filter:drop-shadow(0 10px 8px rgba(31,20,13,.31))!important;
       }
@@ -120,24 +192,21 @@
         left:63.2%!important;
         right:auto!important;
         bottom:8.8%!important;
-        width:var(--cafasso-house-compass-size,70px)!important;
-        height:var(--cafasso-house-compass-size,70px)!important;
+        width:70px!important;
+        height:70px!important;
       }
       .cafasso-house .cafasso-explore-secret--house{
         left:38.1%!important;
         right:auto!important;
         bottom:8.2%!important;
-        width:var(--cafasso-house-secret-w,29px)!important;
-        height:var(--cafasso-house-secret-h,20px)!important;
+        width:29px!important;
+        height:20px!important;
         transform:rotate(-7deg)!important;
       }
       .cafasso-house .cafasso-corazon-huella{
         left:76.1%!important;
         right:auto!important;
         bottom:9.2%!important;
-        width:var(--cafasso-house-heart-size,38px)!important;
-        height:var(--cafasso-house-heart-size,38px)!important;
-        font-size:var(--cafasso-house-heart-font,29px)!important;
       }
 
       @media(max-width:680px){
@@ -207,11 +276,20 @@
 
   function boot() {
     ensureStyles();
-    syncObjectScale();
+    if (isMobile()) return;
+    if (!mountDesktopScene()) setTimeout(boot, 80);
   }
 
-  window.addEventListener('resize', syncObjectScale, { passive:true });
-  window.visualViewport?.addEventListener('resize', syncObjectScale, { passive:true });
+  const refresh = () => {
+    if (isMobile()) return;
+    if (!desktopScene) mountDesktopScene();
+    moveSpatialElements();
+    sizeDesktopScene();
+  };
+
+  window.addEventListener('resize', refresh, { passive:true });
+  window.visualViewport?.addEventListener('resize', refresh, { passive:true });
+  window.addEventListener('cafasso:mobile-layout', refresh);
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot, { once:true });
