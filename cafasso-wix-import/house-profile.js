@@ -60,8 +60,8 @@
       .cafasso-animator-sheet__stamp{position:absolute;left:15px;bottom:16px;padding:3px 6px 2px;border:1px solid rgba(126,66,46,.5);border-radius:2px;color:rgba(126,66,46,.72);font:800 7px/1 Inter,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;transform:rotate(-3deg)}
       .cafasso-animator-sheet__label{position:absolute;right:15px;bottom:17px;color:#876e54;font:700 8px/1 Georgia,serif;font-style:italic}
 
-      .cafasso-profile-panel{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 50% 38%,rgba(57,42,26,.12),rgba(6,19,20,.73) 68%);backdrop-filter:blur(7px) saturate(.82)}
-      .cafasso-profile-card{position:relative;width:min(790px,93vw);min-height:470px;padding:34px 42px 32px;border:1px solid rgba(92,64,35,.46);border-radius:4px;background:repeating-linear-gradient(0deg,rgba(103,73,41,.028) 0 1px,transparent 1px 9px),linear-gradient(142deg,#f9efd8 0%,#efdfbf 66%,#e5cc9e 100%);box-shadow:0 34px 88px rgba(0,0,0,.55),0 8px 14px rgba(38,24,14,.2),inset 0 0 0 4px rgba(255,250,236,.32),inset 18px 0 30px rgba(91,60,31,.07);color:#3c3026;font-family:Georgia,serif;transform:rotate(-.35deg)}
+      .cafasso-profile-panel{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:clamp(10px,2.2vh,24px);overflow:hidden;background:radial-gradient(circle at 50% 38%,rgba(57,42,26,.12),rgba(6,19,20,.73) 68%);backdrop-filter:blur(7px) saturate(.82)}
+      .cafasso-profile-card{position:relative;width:min(790px,93vw);max-width:calc(100vw - 20px);max-height:calc(100dvh - 20px);min-height:0;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:34px 42px 32px;border:1px solid rgba(92,64,35,.46);border-radius:4px;background:repeating-linear-gradient(0deg,rgba(103,73,41,.028) 0 1px,transparent 1px 9px),linear-gradient(142deg,#f9efd8 0%,#efdfbf 66%,#e5cc9e 100%);box-shadow:0 34px 88px rgba(0,0,0,.55),0 8px 14px rgba(38,24,14,.2),inset 0 0 0 4px rgba(255,250,236,.32),inset 18px 0 30px rgba(91,60,31,.07);color:#3c3026;font-family:Georgia,serif;transform:rotate(-.35deg)}
       .cafasso-profile-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:11px;background:linear-gradient(180deg,#7b5737,#a87847 44%,#704c30);box-shadow:inset -2px 0 rgba(255,227,180,.14),4px 0 10px rgba(73,48,28,.09)}
       .cafasso-profile-card:after{content:"CAFASSO · FICHA PERSONAL";position:absolute;right:32px;top:26px;color:rgba(111,77,42,.35);font:800 8px/1 Inter,system-ui,sans-serif;letter-spacing:.18em}
       .cafasso-profile-close{position:absolute;right:16px;top:14px;z-index:3;width:37px;height:37px;border:1px solid rgba(87,60,33,.18);border-radius:50%;background:rgba(247,236,213,.78);color:#503d2d;font:28px/1 Georgia,serif;cursor:pointer;box-shadow:0 3px 7px rgba(70,45,26,.1)}
@@ -100,6 +100,19 @@
         .cafasso-profile-card{width:100%;max-height:91vh;overflow:auto;min-height:0;padding:31px 21px 24px;border-radius:13px 13px 0 0;transform:none}.cafasso-profile-card:before{width:7px}.cafasso-profile-card:after{display:none}
         .cafasso-profile-title{font-size:31px}.cafasso-profile-head{grid-template-columns:88px 1fr;gap:17px;margin-bottom:18px}.cafasso-profile-avatar{width:88px;height:106px;padding:6px}.cafasso-profile-avatar__image{font-size:24px}.cafasso-profile-name{font-size:29px}.cafasso-profile-role{font-size:10px}.cafasso-profile-identity-line{font-size:12px;margin-top:11px;padding-top:10px}
         .cafasso-profile-details,.cafasso-profile-path{grid-template-columns:1fr}.cafasso-profile-actions{display:grid;grid-template-columns:1fr}.cafasso-profile-action{width:100%}.cafasso-profile-note{min-width:0}
+      }
+      @media(max-height:720px) and (min-width:681px){
+        .cafasso-profile-panel{padding:10px}
+        .cafasso-profile-card{max-height:calc(100dvh - 20px);padding:22px 30px 20px;transform:none}
+        .cafasso-profile-title{margin-bottom:14px;font-size:32px}
+        .cafasso-profile-head{grid-template-columns:96px minmax(0,1fr);gap:20px;margin-bottom:14px}
+        .cafasso-profile-avatar{width:96px;height:115px;padding:6px}
+        .cafasso-profile-name{font-size:clamp(27px,3.2vw,38px)}
+        .cafasso-profile-identity-line{margin-top:10px;padding-top:9px;line-height:1.4}
+        .cafasso-profile-details{margin-bottom:12px;padding-top:8px}
+        .cafasso-profile-field{padding:6px 3px 8px}
+        .cafasso-profile-path{gap:10px;margin-bottom:12px}
+        .cafasso-profile-path__item{padding:9px 12px}
       }
       @media(prefers-reduced-motion:reduce){.cafasso-animator-sheet{transition:none}}
     `;
