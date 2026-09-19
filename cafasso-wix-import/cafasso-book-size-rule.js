@@ -47,12 +47,13 @@
     loadHouseScript('./house-prologue.js?v=1', 'cafasso-house-prologue-loader');
     loadHouseScript('./house-microinteractions.js?v=1', 'cafasso-house-micro-loader');
     loadHouseScript('./cafasso-dynamic-ambience.js?v=1', 'cafasso-dynamic-ambience-loader');
+    // El reloj estacional se instala antes que cualquier variante visual.
+    loadHouseScript('./cafasso-time-seasonal-fix.js?v=4', 'cafasso-time-seasonal-fix-loader');
     loadHouseScript('./cafasso-time-house-variants.js?v=1', 'cafasso-time-house-variants-loader');
     loadHouseScript('./cafasso-time-patio-variants.js?v=1', 'cafasso-time-patio-variants-loader');
     loadHouseScript('./cafasso-time-parish-variants.js?v=1', 'cafasso-time-parish-variants-loader');
     loadHouseScript('./cafasso-time-school-variants.js?v=2', 'cafasso-time-school-variants-loader');
     loadHouseScript('./cafasso-dynamic-ambience-school-parish.js?v=1', 'cafasso-dynamic-ambience-school-parish-loader');
-    loadHouseScript('./cafasso-time-seasonal-fix.js?v=3', 'cafasso-time-seasonal-fix-loader');
     loadHouseScript('./cafasso-living-calendar.js?v=1', 'cafasso-living-calendar-loader');
     loadHouseScript('./cafasso-time-visual-loops.js?v=7', 'cafasso-time-visual-loops-loader');
     loadHouseScript('./cafasso-world-microevents.js?v=3', 'cafasso-world-microevents-loader');
