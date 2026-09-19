@@ -6,11 +6,120 @@
 
   const STYLE_ID = 'cafassoParishV3LayoutStyles';
 
+  const SCENE_ASPECT = 1672 / 941;
+  const SPATIAL_SELECTORS = [
+    '.cafasso-parroquia__image',
+    '.cafasso-space-link--parroquia-patio',
+    '.cafasso-parish-lectionary',
+    '.cafasso-parish-songbook',
+    '.cafasso-parish-candle',
+    '.cafasso-servidor-cloth',
+    '.cafasso-parish-secret',
+    '.cafasso-corazon-huella'
+  ];
+
+  let parish = null;
+  let desktopScene = null;
+  let sceneObserver = null;
+
+  function isMobile() {
+    return document.documentElement.classList.contains('cafasso-mobile');
+  }
+
+  function viewportSize() {
+    const vv = window.visualViewport;
+    return {
+      width: Math.max(1, Math.round(vv?.width || window.innerWidth || 1)),
+      height: Math.max(1, Math.round(vv?.height || window.innerHeight || 1))
+    };
+  }
+
+  function referenceSize() {
+    const screenWidth = Math.max(1, Number(window.screen?.width) || viewportSize().width);
+    return { width: screenWidth, height: screenWidth / SCENE_ASPECT };
+  }
+
+  function sizeDesktopScene() {
+    if (!desktopScene || isMobile()) return;
+    const viewport = viewportSize();
+    const base = referenceSize();
+    const scale = Math.min(viewport.width / base.width, viewport.height / base.height);
+    const renderedWidth = base.width * scale;
+    const renderedHeight = base.height * scale;
+    desktopScene.style.setProperty('--cafasso-parish-base-w', base.width + 'px');
+    desktopScene.style.setProperty('--cafasso-parish-base-h', base.height + 'px');
+    desktopScene.style.setProperty('--cafasso-parish-scene-scale', String(scale));
+    desktopScene.style.left = ((viewport.width - renderedWidth) / 2) + 'px';
+    desktopScene.style.top = ((viewport.height - renderedHeight) / 2) + 'px';
+    document.documentElement.dataset.cafassoParishSceneScale = scale.toFixed(4);
+  }
+
+  function moveSpatialElements() {
+    if (!parish || !desktopScene || isMobile()) return;
+    SPATIAL_SELECTORS.forEach(selector => {
+      parish.querySelectorAll(selector).forEach(node => {
+        if (node === desktopScene || desktopScene.contains(node)) return;
+        desktopScene.appendChild(node);
+      });
+    });
+  }
+
+  function mountDesktopScene() {
+    if (isMobile()) return false;
+    parish = document.querySelector('.cafasso-parroquia');
+    if (!parish) return false;
+
+    desktopScene = parish.querySelector('.cafasso-parish-desktop-scene');
+    if (!desktopScene) {
+      desktopScene = document.createElement('div');
+      desktopScene.className = 'cafasso-parish-desktop-scene';
+      desktopScene.setAttribute('aria-label', 'Escena Parroquia CAFASSO');
+      parish.insertBefore(desktopScene, parish.firstChild);
+    }
+
+    moveSpatialElements();
+    sizeDesktopScene();
+
+    if (!sceneObserver) {
+      sceneObserver = new MutationObserver(() => {
+        moveSpatialElements();
+        sizeDesktopScene();
+      });
+      sceneObserver.observe(parish, { childList:true });
+    }
+
+    parish.dataset.cafassoDesktopScene = '1';
+    return true;
+  }
   function ensureStyles() {
     if (document.getElementById(STYLE_ID)) return;
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
+      /* Escritorio: fondo y objetos comparten una única escena física.
+         Así pantalla completa y ventana normal conservan exactamente la misma geografía. */
+      .cafasso-parroquia .cafasso-parish-desktop-scene{
+        position:absolute!important;
+        z-index:1!important;
+        width:var(--cafasso-parish-base-w)!important;
+        height:var(--cafasso-parish-base-h)!important;
+        overflow:hidden!important;
+        transform:scale(var(--cafasso-parish-scene-scale,1))!important;
+        transform-origin:0 0!important;
+        will-change:transform;
+      }
+      .cafasso-parroquia .cafasso-parish-desktop-scene > .cafasso-parroquia__image{
+        position:absolute!important;
+        inset:0!important;
+        z-index:0!important;
+        display:block!important;
+        width:100%!important;
+        height:100%!important;
+        max-width:none!important;
+        object-fit:fill!important;
+        object-position:center center!important;
+        transform:none!important;
+      }
       /* Las imágenes horarias ya contienen la atmósfera completa. */
       .cafasso-parroquia:before,
       .cafasso-parroquia:after,
@@ -186,9 +295,26 @@
     document.head.appendChild(style);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', ensureStyles, { once:true });
-  } else {
+  function boot() {
     ensureStyles();
+    if (isMobile()) return;
+    if (!mountDesktopScene()) setTimeout(boot, 80);
+  }
+
+  const refresh = () => {
+    if (isMobile()) return;
+    if (!desktopScene) mountDesktopScene();
+    moveSpatialElements();
+    sizeDesktopScene();
+  };
+
+  window.addEventListener('resize', refresh, { passive:true });
+  window.visualViewport?.addEventListener('resize', refresh, { passive:true });
+  window.addEventListener('cafasso:mobile-layout', refresh);
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot, { once:true });
+  } else {
+    boot();
   }
 })();
