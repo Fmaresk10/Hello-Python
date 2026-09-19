@@ -5,6 +5,7 @@
   document.body.className = 'cafasso-foundation';
 
   const space = new URLSearchParams(location.search).get('space') || 'house';
+  const HOUSE_BG = 'https://static.wixstatic.com/media/47bf07_32fab0f8b4a444808b0f577cf89e2196~mv2.png';
   const PARROQUIA_BG = 'https://static.wixstatic.com/media/47bf07_b411bebc79644a0092920abb58a2f56d~mv2.png';
   const ESCUELA_BG = 'https://static.wixstatic.com/media/47bf07_481618e0256044f9b31ae360a03a9169~mv2.png';
   const RECURSOS_BG = 'https://static.wixstatic.com/media/47bf07_8451eada7d72451a854df7cae47a80b6~mv2.png';
@@ -38,7 +39,7 @@
   } else {
     app.innerHTML = `
       <main class="cafasso-house">
-        <img class="cafasso-house__image" src="./assets/cafasso-casa-interior-v2.jpg" alt="Interior cálido de la Casa CAFASSO">
+        <img class="cafasso-house__image" src="${HOUSE_BG}" alt="Casa CAFASSO, espacio cálido de encuentro y acompañamiento">
         ${isAdmin ? '<a class="cafasso-admin-home-link" href="./admin.html" aria-label="Ir al perfil de administrador">⚙ Administrador</a>' : ''}
         <button class="cafasso-space-link cafasso-space-link--casa" data-space="patio" type="button">Patio</button>
         <button class="cafasso-space-link cafasso-space-link--house-recursos" data-space="recursos" type="button">Recursos</button>
