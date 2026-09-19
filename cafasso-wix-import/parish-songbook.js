@@ -7,6 +7,7 @@
   const STYLE_ID = 'cafassoParishSongbookStyles';
   const COURSE_API = 'https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
   const CATALOG_TITLE = 'CAFASSO · Cancionero parroquial';
+  const SONGBOOK_IMAGE = 'https://static.wixstatic.com/media/47bf07_9b6ae550193048e787de9af9e20ee467~mv2.png';
 
   const FALLBACK_TRACKS = [
     { id:'gregoriano', category:'contemplacion', categoryLabel:'Contemplación', title:'Canto gregoriano', subtitle:'Oración en el silencio del monasterio', videoId:'qPWTZR-opkY', source:'Catholic Chants TV', order:1 },
@@ -97,6 +98,7 @@
       .cafasso-parish-songbook{position:absolute;left:9.2%;bottom:12.2%;z-index:7;width:172px;height:118px;padding:0;border:0;background:transparent;cursor:pointer;filter:drop-shadow(0 13px 10px rgba(0,0,0,.42));transform:perspective(650px) rotateX(5deg) rotateZ(-4deg);transform-origin:50% 100%;transition:transform .22s ease,filter .22s ease}
       .cafasso-parish-songbook:hover{transform:perspective(650px) rotateX(2deg) rotateZ(-2.2deg) translateY(-5px) scale(1.03);filter:drop-shadow(0 18px 14px rgba(0,0,0,.48)) brightness(1.04)}
       .cafasso-parish-songbook:focus-visible{outline:3px solid #e9c569;outline-offset:6px;border-radius:7px}
+      .cafasso-parish-songbook__image{display:block;width:100%;height:100%;object-fit:contain;object-position:center;pointer-events:none;user-select:none;filter:drop-shadow(0 5px 4px rgba(45,27,15,.18))}
       .cafasso-parish-songbook__book{position:absolute;left:13px;right:10px;top:10px;height:88px;border:1px solid rgba(73,39,31,.75);border-radius:5px 4px 7px 5px;background:repeating-linear-gradient(8deg,rgba(255,255,255,.025) 0 1px,transparent 1px 7px),linear-gradient(108deg,#4d171b 0%,#7c2729 24%,#5f1b20 52%,#8b3432 77%,#4a1519 100%);box-shadow:inset 0 0 0 2px rgba(225,184,115,.15),inset 7px 0 13px rgba(255,213,151,.05),inset -8px 0 14px rgba(36,12,13,.25),0 4px 4px rgba(31,18,13,.25);overflow:hidden}
       .cafasso-parish-songbook__book:before{content:"";position:absolute;left:6px;right:6px;top:6px;bottom:6px;border:1px solid rgba(221,183,108,.31);border-radius:3px;pointer-events:none}
       .cafasso-parish-songbook__book:after{content:"";position:absolute;left:8px;right:-3px;bottom:-8px;height:14px;border-radius:0 0 4px 4px;background:repeating-linear-gradient(180deg,#eadfc4 0 1px,#cbb995 1px 2px);box-shadow:0 4px 6px rgba(0,0,0,.25);transform:skewX(-3deg)}
@@ -242,7 +244,7 @@
     book.className = 'cafasso-parish-songbook';
     book.type = 'button';
     book.setAttribute('aria-label', 'Abrir el Cancionero de la Parroquia');
-    book.innerHTML = '<span class="cafasso-parish-songbook__book" aria-hidden="true"><span class="cafasso-parish-songbook__cross">✝</span><span class="cafasso-parish-songbook__title">Cancionero</span><span class="cafasso-parish-songbook__ribbon"></span><span class="cafasso-parish-songbook__note">cantos para rezar</span></span>';
+    book.innerHTML = `<img class="cafasso-parish-songbook__image" src="${SONGBOOK_IMAGE}" alt="" aria-hidden="true">`;
     parish.appendChild(book);
 
     const panel = document.createElement('section');
