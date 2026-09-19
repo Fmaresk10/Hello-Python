@@ -48,10 +48,11 @@
     loadHouseScript('./house-microinteractions.js?v=1', 'cafasso-house-micro-loader');
     loadHouseScript('./cafasso-dynamic-ambience.js?v=1', 'cafasso-dynamic-ambience-loader');
     loadHouseScript('./cafasso-time-house-variants.js?v=1', 'cafasso-time-house-variants-loader');
+    loadHouseScript('./cafasso-time-patio-variants.js?v=1', 'cafasso-time-patio-variants-loader');
     loadHouseScript('./cafasso-dynamic-ambience-school-parish.js?v=1', 'cafasso-dynamic-ambience-school-parish-loader');
     loadHouseScript('./cafasso-time-seasonal-fix.js?v=1', 'cafasso-time-seasonal-fix-loader');
     loadHouseScript('./cafasso-living-calendar.js?v=1', 'cafasso-living-calendar-loader');
-    loadHouseScript('./cafasso-time-visual-loops.js?v=4', 'cafasso-time-visual-loops-loader');
+    loadHouseScript('./cafasso-time-visual-loops.js?v=5', 'cafasso-time-visual-loops-loader');
     loadHouseScript('./cafasso-world-microevents.js?v=3', 'cafasso-world-microevents-loader');
     loadHouseScript('./cafasso-exploration.js?v=1', 'cafasso-exploration-loader');
     loadHouseScript('./cafasso-exploration-click-fix.js?v=1', 'cafasso-exploration-click-fix-loader');
@@ -101,6 +102,7 @@
     loadHouseScript('./cafasso-mobile-parish.js?v=2', 'cafasso-mobile-parish-loader');
     loadHouseScript('./cafasso-mobile-resources.js?v=1', 'cafasso-mobile-resources-loader');
     loadHouseScript('./cafasso-house-v3-layout.js?v=2', 'cafasso-house-v3-layout-loader');
+    loadHouseScript('./cafasso-patio-v3-layout.js?v=1', 'cafasso-patio-v3-layout-loader');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installRule, { once: true });
