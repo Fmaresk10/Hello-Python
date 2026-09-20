@@ -5,6 +5,7 @@
   const TOKEN_KEY = 'cafasso-spotify-token-v1';
   const PKCE_VERIFIER_KEY = 'cafasso-spotify-pkce-verifier';
   const PKCE_STATE_KEY = 'cafasso-spotify-pkce-state';
+  const RETURN_SEARCH_KEY = 'cafasso-spotify-return-search';
   const PLAYLIST_NAME = 'CAFASSO · Cancionero';
   const SCOPES = [
     'streaming',
@@ -89,6 +90,7 @@
     const challenge = base64url(await sha256(verifier));
     sessionStorage.setItem(PKCE_VERIFIER_KEY, verifier);
     sessionStorage.setItem(PKCE_STATE_KEY, state);
+    sessionStorage.setItem(RETURN_SEARCH_KEY, location.search || '');
 
     const auth = new URL('https://accounts.spotify.com/authorize');
     auth.searchParams.set('client_id', clientId);
@@ -193,6 +195,9 @@
   function cleanUrlAfterAuth() {
     const url = new URL(location.href);
     ['code','state','error','error_description'].forEach(key => url.searchParams.delete(key));
+    const returnSearch = sessionStorage.getItem(RETURN_SEARCH_KEY);
+    if (returnSearch != null) url.search = returnSearch;
+    sessionStorage.removeItem(RETURN_SEARCH_KEY);
     history.replaceState(history.state, '', url.href);
   }
 
