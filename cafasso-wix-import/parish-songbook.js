@@ -177,7 +177,7 @@
     if (copy) copy.textContent = activeTrack.subtitle || activeTrack.categoryLabel || '';
     if (source) {
       const label = activeTrack.source || activeTrack.categoryLabel || 'Cancionero CAFASSO';
-      source.innerHTML = `<span>${esc(label)}</span><a href="https://www.youtube.com/watch?v=${encodeURIComponent(activeTrack.videoId)}" target="_blank" rel="noopener">Abrir en YouTube ↗</a>`;
+      source.innerHTML = `<span>${esc(label)}</span><span>Reproducción integrada en CAFASSO</span>`;
     }
     if (frame && panel && !panel.hidden) window.CafassoGlobalMusic?.attachVideo?.(frame);
   }
