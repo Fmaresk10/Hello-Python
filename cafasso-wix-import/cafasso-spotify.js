@@ -347,11 +347,29 @@
     return initPromise;
   }
 
+  async function waitForDevice(timeout = 8000) {
+    if (deviceId) return deviceId;
+    const started = Date.now();
+    return new Promise((resolve, reject) => {
+      const timer = setInterval(() => {
+        if (deviceId) {
+          clearInterval(timer);
+          resolve(deviceId);
+          return;
+        }
+        if (Date.now() - started >= timeout) {
+          clearInterval(timer);
+          reject(new Error('Spotify todavía no terminó de preparar el reproductor'));
+        }
+      }, 120);
+    });
+  }
+
   async function playTrack(track) {
     if (!track?.spotifyUri) throw new Error('Este canto no tiene vínculo de Spotify');
     await initPlayer();
-    if (!deviceId) throw new Error('Spotify todavía no está listo');
-    await api(`/me/player/play?device_id=${encodeURIComponent(deviceId)}`, {
+    const readyDevice = await waitForDevice();
+    await api(`/me/player/play?device_id=${encodeURIComponent(readyDevice)}`, {
       method:'PUT',
       body:JSON.stringify({ uris:[track.spotifyUri] })
     });
