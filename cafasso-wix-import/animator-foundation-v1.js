@@ -80,7 +80,18 @@
 
   const RECURSOS_BG = 'https://static.wixstatic.com/media/47bf07_8451eada7d72451a854df7cae47a80b6~mv2.png';
   const BITACORA_IMG = 'https://static.wixstatic.com/media/47bf07_20750dc35c6f4678b865413ce34ec1fe~mv2.png';
-  const BITACORA_KEY = 'cafasso-bitacora-v1';
+
+  function bitacoraKey() {
+    if (window.CafassoUserCloud?.bitacoraKey) return window.CafassoUserCloud.bitacoraKey();
+    try {
+      const session = JSON.parse(localStorage.getItem('cafassoSession') || '{}');
+      const user = session?.user || {};
+      const key = String(user?._id || user?.id || user?.email || user?.name || 'local');
+      return `cafasso-bitacora-v2:${key}`;
+    } catch (error) {
+      return 'cafasso-bitacora-v2:local';
+    }
+  }
 
   const isAdmin = (() => {
     const datasetRole = String(document.documentElement.dataset.cafassoRole || '').toLowerCase();
@@ -124,7 +135,7 @@
             <p class="cafasso-bitacora-prompt">Un lugar para guardar lo que vas descubriendo, sintiendo y aprendiendo en el camino.</p>
             <textarea class="cafasso-bitacora-text" data-bitacora-text placeholder="Escribí acá..." aria-label="Escribir en la Bitácora"></textarea>
             <div class="cafasso-bitacora-footer">
-              <span data-bitacora-status>Tu texto queda guardado en este dispositivo.</span>
+              <span data-bitacora-status>Tu Bitácora queda guardada en tu cuenta CAFASSO.</span>
               <button class="cafasso-bitacora-save" data-action="bitacora-save" type="button">Guardar</button>
             </div>
           </div>
@@ -151,7 +162,7 @@
   function readBitacora() {
     if (!text) return;
     try {
-      const saved = JSON.parse(localStorage.getItem(BITACORA_KEY) || '{}');
+      const saved = JSON.parse(localStorage.getItem(bitacoraKey()) || '{}');
       text.value = saved.text || '';
       if (status && saved.updatedAt) {
         const when = new Date(saved.updatedAt);
@@ -178,10 +189,13 @@
     if (!text) return;
     const updatedAt = new Date().toISOString();
     try {
-      localStorage.setItem(BITACORA_KEY, JSON.stringify({ text: text.value, updatedAt }));
-      if (status) status.textContent = 'Guardado recién.';
+      localStorage.setItem(bitacoraKey(), JSON.stringify({ text: text.value, updatedAt }));
+      if (status) status.textContent = 'Guardado · sincronizando con tu cuenta…';
+      window.CafassoUserCloud?.flush?.().then(ok => {
+        if (status) status.textContent = ok ? 'Guardado en tu cuenta CAFASSO.' : 'Guardado en este equipo · se sincronizará al recuperar conexión.';
+      });
     } catch (e) {
-      if (status) status.textContent = 'No se pudo guardar en este dispositivo.';
+      if (status) status.textContent = 'No se pudo guardar la Bitácora.';
     }
   }
 
