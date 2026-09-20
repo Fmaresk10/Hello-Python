@@ -41,9 +41,11 @@
   }
 
   const ME_API = 'https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoMe';
-  const PROGRESS_API = 'https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoProgress';
-  const COURSE_ID = '__cafasso_user_state__';
-  const MODULE_ID = '__cloud_profile__';
+  const SUBMISSION_API = 'https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoSubmission';
+  const COURSE_ID = '__cafasso_user_cloud__';
+  const MODULE_ID = '__cloud__';
+  const ACTIVITY_ID = 'state-v1';
+  const TYPE = 'Estado interno CAFASSO';
   const VERSION = 1;
   const LEGACY_BITACORA_KEY = 'cafasso-bitacora-v1';
 
@@ -287,17 +289,40 @@
 
   function remoteStateFrom(data) {
     const uid = userId();
-    const row = (Array.isArray(data?.progress) ? data.progress : []).find(item =>
-      String(item?.courseId || '') === COURSE_ID &&
+    const rows = (Array.isArray(data?.submissions) ? data.submissions : [])
+      .filter(item =>
+        String(item?.courseId || '') === COURSE_ID &&
+        String(item?.moduleId || '') === MODULE_ID &&
+        String(item?.activityId || '') === ACTIVITY_ID &&
+        (!uid || !item?.userId || String(item.userId) === uid)
+      )
+      .sort((a, b) => new Date(b?._updatedDate || b?._createdDate || 0) - new Date(a?._updatedDate || a?._createdDate || 0));
+
+    for (const row of rows) {
+      const raw = json(row?.content);
+      if (!raw || typeof raw !== 'object') continue;
+      return {
+        version:VERSION,
+        storage:raw.storage && typeof raw.storage === 'object' ? raw.storage : {},
+        updatedAt:String(raw.updatedAt || row?._updatedDate || row?._createdDate || '')
+      };
+    }
+
+    // Compatibilidad con el intento anterior por cafassoProgress, por si alguna instalación llegó a guardarlo.
+    const legacyRow = (Array.isArray(data?.progress) ? data.progress : []).find(item =>
+      String(item?.courseId || '') === '__cafasso_user_state__' &&
       (!uid || !item?.userId || String(item.userId) === uid)
     );
-    const raw = row?.blockAnswers?.userState;
-    if (!raw || typeof raw !== 'object') return emptyCloud();
-    return {
-      version:VERSION,
-      storage:raw.storage && typeof raw.storage === 'object' ? raw.storage : {},
-      updatedAt:String(raw.updatedAt || '')
-    };
+    const legacy = legacyRow?.blockAnswers?.userState;
+    if (legacy && typeof legacy === 'object') {
+      return {
+        version:VERSION,
+        storage:legacy.storage && typeof legacy.storage === 'object' ? legacy.storage : {},
+        updatedAt:String(legacy.updatedAt || '')
+      };
+    }
+
+    return emptyCloud();
   }
 
   function applyStorage(storage) {
@@ -344,21 +369,22 @@
     const headers = authHeaders(true);
     const uid = userId();
     if (!headers || !uid) return false;
-    const response = await fetch(PROGRESS_API, {
+    const response = await fetch(SUBMISSION_API, {
       method:'POST',
       headers,
       body:JSON.stringify({
         userId:uid,
         courseId:COURSE_ID,
         moduleId:MODULE_ID,
-        completed:true,
-        percent:100,
-        completedBlocks:['cloud-profile'],
-        blockAnswers:{ userState:state }
+        activityId:ACTIVITY_ID,
+        type:TYPE,
+        content:JSON.stringify(state)
       })
     });
     const result = await response.json().catch(() => ({}));
-    if (!response.ok || result?.ok === false) throw new Error(result?.error || 'No se pudo guardar el perfil CAFASSO');
+    if (!response.ok || result?.ok === false || !result?.submission?._id) {
+      throw new Error(result?.error || 'No se pudo guardar el perfil CAFASSO');
+    }
     return true;
   }
 
@@ -401,13 +427,17 @@
     return savePromise;
   }
 
-  function scheduleSave(delay = 700) {
+  function scheduleSave(delay = 1800) {
     clearTimeout(saveTimer);
     saveTimer = window.setTimeout(() => saveNow(), delay);
   }
 
   function captureStorageMutation(key, value, deleted = false) {
     if (suppress || !shouldSyncKey(key)) return;
+    const current = cloudState.storage[key];
+    if (!deleted && current && !current.deleted && String(current.value ?? '') === String(value)) return;
+    if (deleted && current?.deleted) return;
+
     const now = new Date().toISOString();
     cloudState.storage[key] = deleted
       ? { deleted:true, updatedAt:now }
@@ -469,6 +499,13 @@
   window.CafassoUserCloud = api;
   installBridge(api);
   const ready = hydrate();
+
+  window.addEventListener('focus', () => {
+    hydrate().catch(() => {});
+  });
+  window.setInterval(() => {
+    if (document.visibilityState === 'visible') hydrate().catch(() => {});
+  }, 60000);
 
   window.addEventListener('pagehide', () => {
     if (saveTimer) saveNow();
