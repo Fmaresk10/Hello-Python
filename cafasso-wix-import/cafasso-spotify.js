@@ -7,7 +7,7 @@
   const PKCE_STATE_KEY = 'cafasso-spotify-pkce-state';
   const RETURN_SEARCH_KEY = 'cafasso-spotify-return-search';
   const PLAYLIST_NAME = 'CAFASSO · Cancionero';
-  const REDIRECT_URI = 'https://fmaresk10.github.io/Hello-Python/cafasso-wix-import/';
+  const REDIRECT_URI = 'https://fmaresk10.github.io/Hello-Python/';
   const SCOPES = [
     'streaming',
     'user-read-private',
