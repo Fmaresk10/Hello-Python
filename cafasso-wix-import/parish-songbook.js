@@ -29,6 +29,17 @@
   let activeTrack = null;
   let playing = false;
 
+  function musicHost() {
+    try {
+      if (window.parent !== window && window.parent.CafassoGlobalMusic) return window.parent;
+    } catch (error) {}
+    return window;
+  }
+
+  function musicApi() {
+    return musicHost().CafassoGlobalMusic || null;
+  }
+
   function esc(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
   }
@@ -152,7 +163,7 @@
     });
   }
 
-  function syncSongbookUi(snapshot = window.CafassoGlobalMusic?.getState?.()) {
+  function syncSongbookUi(snapshot = musicApi()?.getState?.()) {
     activeTrack = snapshot?.track || null;
     playing = Boolean(snapshot?.playing);
     setButtonStates();
@@ -179,27 +190,27 @@
       const label = activeTrack.source || activeTrack.categoryLabel || 'Cancionero CAFASSO';
       source.innerHTML = `<span>${esc(label)}</span><span>Reproducción integrada en CAFASSO</span>`;
     }
-    if (frame && panel && !panel.hidden) window.CafassoGlobalMusic?.attachVideo?.(frame);
+    if (frame && panel && !panel.hidden) musicApi()?.attachVideo?.(frame);
   }
 
   function stopPlayer() {
-    window.CafassoGlobalMusic?.stop?.();
+    musicApi()?.stop?.();
     syncSongbookUi();
   }
 
   function pauseCurrent() {
-    window.CafassoGlobalMusic?.pause?.();
+    musicApi()?.pause?.();
     syncSongbookUi();
   }
 
   function playTrack(track) {
     if (!track?.videoId) return;
-    const current = window.CafassoGlobalMusic?.getState?.();
+    const current = musicApi()?.getState?.();
     if (current?.track?.id === track.id && current?.playing) {
       pauseCurrent();
       return;
     }
-    window.CafassoGlobalMusic?.play?.(track);
+    musicApi()?.play?.(track);
     activeTrack = track;
     playing = true;
     syncSongbookUi({ track, playing:true, requestedPlaying:true, needsGesture:false, position:0 });
@@ -232,12 +243,12 @@
       renderTracks(panel);
       syncSongbookUi();
       const frame = panel.querySelector('[data-songbook-frame]');
-      if (frame && window.CafassoGlobalMusic?.getState?.()?.track) window.CafassoGlobalMusic.attachVideo(frame);
+      if (frame && musicApi()?.getState?.()?.track) musicApi().attachVideo(frame);
     }
   }
 
   function closePanel(panel) {
-    window.CafassoGlobalMusic?.detachVideo?.();
+    musicApi()?.detachVideo?.();
     panel.hidden = true;
   }
 
@@ -287,7 +298,7 @@
       if (event.target.closest('[data-parish-silence]')) stopPlayer();
     }, true);
 
-    window.addEventListener('cafasso:global-music-state', event => syncSongbookUi(event.detail));
+    musicHost().addEventListener('cafasso:global-music-state', event => syncSongbookUi(event.detail));
 
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !panel.hidden) closePanel(panel);
