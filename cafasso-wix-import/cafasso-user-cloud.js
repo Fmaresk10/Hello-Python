@@ -108,9 +108,13 @@
 
   function shouldSyncKey(key) {
     const currentKey = userKey();
-    if (!currentKey || currentKey === 'local') return false;
-    if (!String(key || '').includes(currentKey)) return false;
-    return USER_PREFIXES.some(prefix => String(key).startsWith(prefix));
+    const candidate = String(key || '');
+    if (!currentKey || currentKey === 'local' || !candidate.startsWith('cafasso-')) return false;
+    const lower = candidate.toLowerCase();
+    const identity = currentKey.toLowerCase();
+    if (!lower.includes(identity)) return false;
+    if (/cafasso-(auth|session)|spotify|token/i.test(candidate)) return false;
+    return true;
   }
 
   function inferTimestamp(value) {
