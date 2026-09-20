@@ -28,7 +28,6 @@
   let tracksPromise = null;
   let activeTrack = null;
   let playing = false;
-  let iframe = null;
 
   function esc(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
@@ -153,53 +152,57 @@
     });
   }
 
-  function stopPlayer() {
-    if (iframe) {
-      try { iframe.contentWindow?.postMessage(JSON.stringify({event:'command',func:'stopVideo',args:[]}), '*'); } catch (error) {}
-      iframe.remove();
-      iframe = null;
-    }
-    activeTrack = null;
-    playing = false;
+  function syncSongbookUi(snapshot = window.CafassoGlobalMusic?.getState?.()) {
+    activeTrack = snapshot?.track || null;
+    playing = Boolean(snapshot?.playing);
     setButtonStates();
-    const frame = document.querySelector('[data-songbook-frame]');
-    if (frame) frame.innerHTML = '<div class="cafasso-songbook-player__empty">Elegí una música y dejá que el sonido acompañe la oración.</div>';
+
     const title = document.querySelector('[data-songbook-now-title]');
     const copy = document.querySelector('[data-songbook-now-copy]');
     const source = document.querySelector('[data-songbook-source]');
-    if (title) title.textContent = 'Todavía no elegiste una música';
-    if (copy) copy.textContent = 'No se reproduce nada automáticamente.';
-    if (source) source.innerHTML = '<span>La música comienza solo cuando vos la elegís.</span>';
+    const frame = document.querySelector('[data-songbook-frame]');
+    const panel = document.querySelector('.cafasso-songbook-panel');
+
+    if (!activeTrack) {
+      if (title) title.textContent = 'Todavía no elegiste una música';
+      if (copy) copy.textContent = 'No se reproduce nada automáticamente.';
+      if (source) source.innerHTML = '<span>La música comienza solo cuando vos la elegís.</span>';
+      if (frame && !frame.querySelector('.cafasso-global-music__media')) {
+        frame.innerHTML = '<div class="cafasso-songbook-player__empty">Elegí una música y dejá que el sonido acompañe la oración.</div>';
+      }
+      return;
+    }
+
+    if (title) title.textContent = activeTrack.title || 'Música';
+    if (copy) copy.textContent = activeTrack.subtitle || activeTrack.categoryLabel || '';
+    if (source) {
+      const label = activeTrack.source || activeTrack.categoryLabel || 'Cancionero CAFASSO';
+      source.innerHTML = `<span>${esc(label)}</span><a href="https://www.youtube.com/watch?v=${encodeURIComponent(activeTrack.videoId)}" target="_blank" rel="noopener">Abrir en YouTube ↗</a>`;
+    }
+    if (frame && panel && !panel.hidden) window.CafassoGlobalMusic?.attachVideo?.(frame);
+  }
+
+  function stopPlayer() {
+    window.CafassoGlobalMusic?.stop?.();
+    syncSongbookUi();
   }
 
   function pauseCurrent() {
-    if (!iframe || !playing) return;
-    try { iframe.contentWindow?.postMessage(JSON.stringify({event:'command',func:'pauseVideo',args:[]}), '*'); } catch (error) {}
-    playing = false;
-    setButtonStates();
+    window.CafassoGlobalMusic?.pause?.();
+    syncSongbookUi();
   }
 
   function playTrack(track) {
-    const frame = document.querySelector('[data-songbook-frame]');
-    if (!frame || !track?.videoId) return;
-    if (activeTrack?.id === track.id && playing) return pauseCurrent();
-    if (iframe) iframe.remove();
+    if (!track?.videoId) return;
+    const current = window.CafassoGlobalMusic?.getState?.();
+    if (current?.track?.id === track.id && current?.playing) {
+      pauseCurrent();
+      return;
+    }
+    window.CafassoGlobalMusic?.play?.(track);
     activeTrack = track;
     playing = true;
-    iframe = document.createElement('iframe');
-    iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
-    iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-    iframe.title = `Música: ${track.title}`;
-    iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(track.videoId)}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1`;
-    frame.innerHTML = '';
-    frame.appendChild(iframe);
-    const title = document.querySelector('[data-songbook-now-title]');
-    const copy = document.querySelector('[data-songbook-now-copy]');
-    const source = document.querySelector('[data-songbook-source]');
-    if (title) title.textContent = track.title;
-    if (copy) copy.textContent = track.subtitle || track.categoryLabel;
-    if (source) source.innerHTML = `<span>${esc(track.source || track.categoryLabel)}</span><a href="https://www.youtube.com/watch?v=${encodeURIComponent(track.videoId)}" target="_blank" rel="noopener">Abrir en YouTube ↗</a>`;
-    setButtonStates();
+    syncSongbookUi({ track, playing:true, requestedPlaying:true, needsGesture:false, position:0 });
   }
 
   function renderTracks(panel) {
@@ -225,11 +228,16 @@
     const groups = panel.querySelector('[data-songbook-groups]');
     if (groups) groups.innerHTML = '<p class="cafasso-songbook-lead">Abriendo el cancionero…</p>';
     await loadTracks(true);
-    if (!panel.hidden) renderTracks(panel);
+    if (!panel.hidden) {
+      renderTracks(panel);
+      syncSongbookUi();
+      const frame = panel.querySelector('[data-songbook-frame]');
+      if (frame && window.CafassoGlobalMusic?.getState?.()?.track) window.CafassoGlobalMusic.attachVideo(frame);
+    }
   }
 
   function closePanel(panel) {
-    // Cerrar el libro no corta la música: el reproductor queda vivo en segundo plano.
+    window.CafassoGlobalMusic?.detachVideo?.();
     panel.hidden = true;
   }
 
@@ -267,7 +275,7 @@
             <div class="cafasso-songbook-player__source" data-songbook-source><span>La música comienza solo cuando vos la elegís.</span></div>
           </aside>
         </div>
-        <div class="cafasso-songbook-footnote">Al salir de la Parroquia o entrar en el minuto de silencio, la música se detiene.</div>
+        <div class="cafasso-songbook-footnote">La música puede acompañarte por todo CAFASSO. El minuto de silencio sí la detiene.</div>
       </article>`;
     document.body.appendChild(panel);
 
@@ -277,13 +285,14 @@
 
     document.addEventListener('click', event => {
       if (event.target.closest('[data-parish-silence]')) stopPlayer();
-      if (event.target.closest('.cafasso-space-link--parroquia-patio')) stopPlayer();
     }, true);
+
+    window.addEventListener('cafasso:global-music-state', event => syncSongbookUi(event.detail));
 
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !panel.hidden) closePanel(panel);
     });
-    window.addEventListener('pagehide', stopPlayer, { once:true });
+    syncSongbookUi();
     return true;
   }
 
