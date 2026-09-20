@@ -7,6 +7,7 @@
   const PKCE_STATE_KEY = 'cafasso-spotify-pkce-state';
   const RETURN_SEARCH_KEY = 'cafasso-spotify-return-search';
   const PLAYLIST_NAME = 'CAFASSO · Cancionero';
+  const REDIRECT_URI = 'https://fmaresk10.github.io/Hello-Python/cafasso-wix-import/';
   const SCOPES = [
     'streaming',
     'user-read-private',
@@ -28,10 +29,7 @@
   let lastState = null;
 
   function redirectUri() {
-    const url = new URL(location.href);
-    url.search = '';
-    url.hash = '';
-    return url.href;
+    return REDIRECT_URI;
   }
 
   function readToken() {
