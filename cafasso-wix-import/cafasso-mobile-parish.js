@@ -193,24 +193,6 @@
         height:128px!important;
       }
 
-      /* Servidor: toalla sobre el altar en su posición original. */
-      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-servidor-cloth{
-        left:48.2%!important;
-        right:auto!important;
-        bottom:30.1%!important;
-        width:112px!important;
-        height:49px!important;
-        transform:translateX(-50%) rotate(-1.8deg)!important;
-        z-index:15!important;
-      }
-
-      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-servidor-cloth__fold{
-        left:7px!important;
-        right:7px!important;
-        top:6px!important;
-        height:34px!important;
-      }
-
       /* Secreto y Corazón salesiano. */
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-secret{
         left:49.2%!important;
