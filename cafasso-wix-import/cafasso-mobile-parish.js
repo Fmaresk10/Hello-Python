@@ -15,7 +15,6 @@
     '.cafasso-parish-lectionary',
     '.cafasso-parish-songbook',
     '.cafasso-parish-candle',
-    '.cafasso-servidor-cloth',
     '.cafasso-parish-secret',
     '.cafasso-corazon-huella',
     '.cafasso-calendar-layer'
