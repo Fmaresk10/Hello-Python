@@ -42,10 +42,10 @@
 
   const ME_API = 'https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoMe';
   const SUBMISSION_API = 'https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoSubmission';
-  const COURSE_ID = '__cafasso_user_cloud__';
-  const MODULE_ID = '__cloud__';
+  const COURSE_ID = '__cafasso_internal_notes__';
+  const MODULE_ID = 'user-cloud';
   const ACTIVITY_ID = 'state-v1';
-  const TYPE = 'Estado interno CAFASSO';
+  const TYPE = 'Nota interna';
   const VERSION = 1;
   const LEGACY_BITACORA_KEY = 'cafasso-bitacora-v1';
 
