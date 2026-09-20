@@ -12,7 +12,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102f33}
 </head>
 <body>
 <iframe id="cafassoWorld" title="CAFASSO" allow="autoplay; fullscreen; picture-in-picture"></iframe>
-<script src="./cafasso-global-music.js?v=4"></script>
+<script src="./cafasso-spotify.js?v=1"></script>
+<script src="./cafasso-global-music.js?v=5"></script>
 <script>
 (() => {
   const frame = document.getElementById('cafassoWorld');
@@ -21,6 +22,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102f33}
   const worldUrl = () => {
     const url = new URL('./world.html', location.href);
     url.search = location.search;
+    ['code','state','error','error_description'].forEach(key => url.searchParams.delete(key));
     url.hash = location.hash;
     return url.href;
   };
