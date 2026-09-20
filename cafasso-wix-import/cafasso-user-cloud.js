@@ -64,6 +64,7 @@
   let suppress = 0;
   let saveTimer = 0;
   let savePromise = null;
+  const dirtyKeys = new Set();
   let cloudState = emptyCloud();
   let lastRemoteData = null;
 
@@ -373,9 +374,18 @@
         const remote = remoteStateFrom(latest);
         const local = collectLocal();
         const merged = mergeCloud(local, remote);
+        dirtyKeys.forEach(key => {
+          const pending = cloudState.storage[key];
+          if (!pending || !shouldSyncKey(key)) return;
+          const current = merged.storage[key];
+          const pendingTime = Date.parse(String(pending.updatedAt || '')) || 0;
+          const currentTime = Date.parse(String(current?.updatedAt || '')) || 0;
+          if (pending.deleted || pendingTime >= currentTime) merged.storage[key] = pending;
+        });
         cloudState = merged;
         applyStorage(merged.storage);
         await persist(merged);
+        dirtyKeys.clear();
         window.dispatchEvent(new CustomEvent('cafasso:user-cloud-synced', {
           detail:{ userId:userId(), updatedAt:merged.updatedAt }
         }));
@@ -403,6 +413,7 @@
       ? { deleted:true, updatedAt:now }
       : { value:String(value), updatedAt:inferTimestamp(value) || now };
     cloudState.updatedAt = now;
+    dirtyKeys.add(key);
     scheduleSave();
   }
 
