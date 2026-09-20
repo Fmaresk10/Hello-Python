@@ -229,7 +229,7 @@
   }
 
   function closePanel(panel) {
-    stopPlayer();
+    // Cerrar el libro no corta la música: el reproductor queda vivo en segundo plano.
     panel.hidden = true;
   }
 
