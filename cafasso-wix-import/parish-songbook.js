@@ -7,7 +7,7 @@
   const STYLE_ID = 'cafassoParishSongbookStyles';
   const COURSE_API = 'https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
   const CATALOG_TITLE = 'CAFASSO · Cancionero parroquial';
-  const SONGBOOK_IMAGE = 'https://static.wixstatic.com/media/47bf07_9b6ae550193048e787de9af9e20ee467~mv2.png';
+  const SONGBOOK_IMAGE = 'https://static.wixstatic.com/media/47bf07_697589d0c0e14387bd1014e8ba3e9b5a~mv2.png';
 
   const FALLBACK_TRACKS = [
     { id:'gregoriano', category:'contemplacion', categoryLabel:'Contemplación', title:'Canto gregoriano', subtitle:'Oración en el silencio del monasterio', videoId:'qPWTZR-opkY', source:'Catholic Chants TV', order:1 },
