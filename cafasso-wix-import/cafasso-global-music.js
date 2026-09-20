@@ -63,6 +63,7 @@
 
   function emit() {
     renderWidget();
+    renderAttachedView();
     window.dispatchEvent(new CustomEvent('cafasso:global-music-state', { detail:snapshot() }));
   }
 
@@ -124,7 +125,18 @@
       }
       .cafasso-global-music__media{width:100%;height:100%;overflow:hidden}
       .cafasso-global-music__media iframe{display:block;width:100%!important;height:100%!important;border:0!important}
-      .cafasso-global-music__media.is-attached{position:absolute;inset:0;width:100%;height:100%;opacity:1;pointer-events:auto}
+      .cafasso-global-music__book-display{
+        position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;
+        background:
+          radial-gradient(circle at 50% 42%,rgba(126,78,58,.08),transparent 34%),
+          repeating-linear-gradient(180deg,transparent 0 27px,rgba(111,79,44,.045) 27px 28px),
+          #eadcc0;color:#6f5643;font-family:Georgia,serif
+      }
+      .cafasso-global-music__book-display-inner{max-width:90%}
+      .cafasso-global-music__book-note{display:block;margin:0 auto 10px;color:#8b3a35;font:34px/1 Georgia,serif}
+      .cafasso-global-music__book-status{display:block;margin-bottom:7px;color:#9a7650;font:700 8px/1 Georgia,serif;letter-spacing:.15em;text-transform:uppercase}
+      .cafasso-global-music__book-title{display:block;color:#6f2f2c;font:600 22px/1.12 Georgia,serif}
+      .cafasso-global-music__book-meta{display:block;margin-top:7px;color:#8a725f;font:italic 11px/1.35 Georgia,serif}
       @media(max-width:680px){
         .cafasso-global-music{right:8px;bottom:max(8px,env(safe-area-inset-bottom));width:calc(100vw - 16px);grid-template-columns:38px minmax(0,1fr) 36px 28px;min-height:60px;padding:8px 8px 8px 9px}
         .cafasso-global-music__mark{width:38px;height:38px}.cafasso-global-music__toggle{width:36px;height:36px}
@@ -288,13 +300,34 @@
     emit();
   }
 
+  function renderAttachedView() {
+    if (!attachedContainer) return;
+    if (!state.track) {
+      attachedContainer.innerHTML = '<div class="cafasso-songbook-player__empty">Elegí una música y dejá que el sonido acompañe la oración.</div>';
+      return;
+    }
+    const status = state.needsGesture ? 'Tocá el reproductor para continuar' : state.playing ? 'Reproduciendo en CAFASSO' : 'En pausa';
+    const meta = state.track.source || state.track.subtitle || state.track.categoryLabel || 'Cancionero CAFASSO';
+    attachedContainer.innerHTML = `
+      <div class="cafasso-global-music__book-display" aria-hidden="true">
+        <div class="cafasso-global-music__book-display-inner">
+          <span class="cafasso-global-music__book-note">♪</span>
+          <span class="cafasso-global-music__book-status">${status}</span>
+          <strong class="cafasso-global-music__book-title">${state.track.title || 'Música'}</strong>
+          <span class="cafasso-global-music__book-meta">${meta}</span>
+        </div>
+      </div>`;
+  }
+
   function attachVideo(container) {
     if (!container) return false;
     ensureDom();
     attachedContainer = container;
-    container.innerHTML = '';
-    mediaShell.classList.add('is-attached');
-    container.appendChild(mediaShell);
+
+    // El iframe real nunca sale del reproductor oculto: mover un iframe de YouTube
+    // dentro del DOM lo recarga. En el libro mostramos una vista propia de CAFASSO.
+    if (mediaShell.parentNode !== hiddenSlot) hiddenSlot.appendChild(mediaShell);
+    renderAttachedView();
     if (state.track && !iframe) createIframe({ autoplay:state.playing, start:currentPosition() });
     return true;
   }
@@ -302,8 +335,7 @@
   function detachVideo() {
     ensureDom();
     attachedContainer = null;
-    mediaShell.classList.remove('is-attached');
-    hiddenSlot.appendChild(mediaShell);
+    if (mediaShell.parentNode !== hiddenSlot) hiddenSlot.appendChild(mediaShell);
   }
 
   function boot() {
