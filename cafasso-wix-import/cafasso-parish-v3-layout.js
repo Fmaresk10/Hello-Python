@@ -13,7 +13,6 @@
     '.cafasso-parish-lectionary',
     '.cafasso-parish-songbook',
     '.cafasso-parish-candle',
-    '.cafasso-servidor-cloth',
     '.cafasso-parish-secret',
     '.cafasso-corazon-huella'
   ];
@@ -204,19 +203,6 @@
         content:none!important;
       }
 
-      /* Paño de Servidor: plegado sobre el frente del altar. */
-      .cafasso-parroquia .cafasso-servidor-cloth{
-        left:49.6%!important;
-        bottom:45.2%!important;
-        width:102px!important;
-        height:44px!important;
-        transform:translateX(-50%) rotate(-1.3deg)!important;
-      }
-      .cafasso-parroquia .cafasso-servidor-cloth:hover,
-      .cafasso-parroquia .cafasso-servidor-cloth:focus-visible{
-        transform:translateX(-50%) translateY(-2px) rotate(-.8deg) scale(1.015)!important;
-      }
-
       /* Secreto "Hacer lugar": asociado a la luz del crucifijo. */
       .cafasso-parroquia .cafasso-parish-secret{
         left:46%!important;
@@ -263,14 +249,6 @@
         width:84px!important;
         height:152px!important;
         transform:translateX(-50%) perspective(700px) rotateX(1.6deg) scale(.47)!important;
-      }
-      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-servidor-cloth{
-        left:49.6%!important;
-        right:auto!important;
-        bottom:45.2%!important;
-        width:102px!important;
-        height:44px!important;
-        transform:translateX(-50%) rotate(-1.3deg)!important;
       }
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-secret{
         left:46%!important;
