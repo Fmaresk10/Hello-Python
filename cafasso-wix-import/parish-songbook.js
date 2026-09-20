@@ -19,6 +19,7 @@
   ];
 
   const GROUPS = [
+    { id:'spotify', title:'Spotify · CAFASSO', copy:'Tu playlist personal del Cancionero, reproducida directamente desde Spotify.' },
     { id:'contemplacion', title:'Contemplación', copy:'Música serena para disponerte, respirar y permanecer.' },
     { id:'taize', title:'Taizé', copy:'Cantos breves y repetitivos para sostener la oración.' },
     { id:'salesiano', title:'Salesiano', copy:'Canciones para rezar desde una espiritualidad joven, cercana y servicial.' }
@@ -28,6 +29,7 @@
   let tracksPromise = null;
   let activeTrack = null;
   let playing = false;
+  let spotifyStatus = '';
 
   function musicHost() {
     try {
@@ -38,6 +40,10 @@
 
   function musicApi() {
     return musicHost().CafassoGlobalMusic || null;
+  }
+
+  function spotifyApi() {
+    return musicHost().CafassoSpotify || null;
   }
 
   function esc(value) {
@@ -87,6 +93,27 @@
   async function loadTracks(force = false) {
     if (tracksPromise && !force) return tracksPromise;
     tracksPromise = (async () => {
+      spotifyStatus = '';
+      const spotify = spotifyApi();
+
+      if (spotify?.isConfigured?.()) {
+        if (spotify.isAuthenticated?.()) {
+          try {
+            const result = await spotify.getCancioneroTracks();
+            if (result?.tracks?.length) {
+              tracks = result.tracks;
+              spotifyStatus = `Conectado a “${result.playlist?.name || 'CAFASSO · Cancionero'}”.`;
+              return tracks;
+            }
+            spotifyStatus = 'Spotify está conectado, pero todavía no encontré una playlist propia llamada “CAFASSO · Cancionero”.';
+          } catch (error) {
+            spotifyStatus = 'No pude leer el Cancionero de Spotify. Podés seguir usando los cantos actuales.';
+          }
+        } else {
+          spotifyStatus = 'Spotify está preparado. Conectá tu cuenta para usar tu playlist “CAFASSO · Cancionero”.';
+        }
+      }
+
       try {
         const response = await fetch(`${COURSE_API}?title=${encodeURIComponent(CATALOG_TITLE)}`, { cache:'no-store' });
         const data = await response.json().catch(() => ({}));
@@ -146,6 +173,9 @@
       .cafasso-songbook-player__source{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:11px;color:#8a7159;font:9px/1.3 Inter,system-ui,sans-serif}
       .cafasso-songbook-player__source a{color:#735338;font-weight:800;text-decoration:none}
       .cafasso-songbook-footnote{margin:20px 8px 0;padding-top:13px;border-top:1px solid rgba(111,77,42,.13);color:#8c755e;font:10px/1.45 Inter,system-ui,sans-serif}
+      .cafasso-songbook-spotify-status{margin:0 0 16px;padding:10px 12px;border:1px solid rgba(30,215,96,.18);border-radius:6px;background:rgba(30,215,96,.045);color:#665342;font:italic 11px/1.45 Georgia,serif}
+      .cafasso-songbook-spotify-connect{margin-top:8px;padding:7px 11px;border:1px solid rgba(62,92,65,.32);border-radius:999px;background:rgba(36,91,54,.08);color:#345b3f;font:700 10px/1 Georgia,serif;cursor:pointer}
+      .cafasso-songbook-spotify-connect:hover{background:rgba(36,91,54,.14)}
       @media(max-width:760px){
         .cafasso-parish-songbook{left:4.5%;bottom:11.2%;width:124px;height:89px}.cafasso-parish-songbook__book{left:9px;right:7px;top:7px;height:65px}.cafasso-parish-songbook__cross{top:11px;font-size:17px}.cafasso-parish-songbook__title{top:36px;font-size:7px}.cafasso-parish-songbook__ribbon{left:30px;width:9px;height:25px}.cafasso-parish-songbook__note{right:11px;bottom:4px;font-size:6.5px}
         .cafasso-songbook-panel{padding:10px;align-items:flex-end}.cafasso-songbook-sheet{width:100%;max-height:92vh;padding:31px 21px 24px;border-radius:13px 13px 0 0}.cafasso-songbook-sheet:before{display:none}.cafasso-songbook-kicker,.cafasso-songbook-sheet h2,.cafasso-songbook-lead{margin-left:0}.cafasso-songbook-layout{grid-template-columns:1fr;margin:0;gap:18px}.cafasso-songbook-player{position:relative;order:-1}.cafasso-songbook-footnote{margin-left:0;margin-right:0}
@@ -204,7 +234,7 @@
   }
 
   function playTrack(track) {
-    if (!track?.videoId) return;
+    if (!track?.videoId && !track?.spotifyUri) return;
     const current = musicApi()?.getState?.();
     if (current?.track?.id === track.id && current?.playing) {
       pauseCurrent();
@@ -219,11 +249,20 @@
   function renderTracks(panel) {
     const groups = panel.querySelector('[data-songbook-groups]');
     if (!groups) return;
-    groups.innerHTML = GROUPS.map(group => {
+    const spotify = spotifyApi();
+    const spotifyIntro = spotifyStatus
+      ? `<div class="cafasso-songbook-spotify-status">${esc(spotifyStatus)}${spotify?.isConfigured?.() && !spotify?.isAuthenticated?.() ? '<br><button class="cafasso-songbook-spotify-connect" type="button" data-spotify-connect>Conectar Spotify</button>' : ''}</div>`
+      : '';
+    groups.innerHTML = spotifyIntro + GROUPS.map(group => {
       const list = tracks.filter(track => track.category === group.id);
       if (!list.length) return '';
       return `<section class="cafasso-songbook-group"><div class="cafasso-songbook-group__title"><strong>${esc(group.title)}</strong><span>${list.length} ${list.length === 1 ? 'tema' : 'temas'}</span></div><p class="cafasso-songbook-group__copy">${esc(group.copy)}</p>${list.map(track => `<div class="cafasso-songbook-track"><div class="cafasso-songbook-track__copy"><strong>${esc(track.title)}</strong><span>${esc(track.subtitle || track.source || '')}</span></div><button class="cafasso-songbook-play" type="button" data-track-id="${esc(track.id)}">Escuchar</button></div>`).join('')}</section>`;
     }).join('') || '<p class="cafasso-songbook-lead">Todavía no hay temas activos en el cancionero.</p>';
+
+    groups.querySelector('[data-spotify-connect]')?.addEventListener('click', async () => {
+      try { await spotifyApi()?.connectAccount?.(); }
+      catch (error) { spotifyStatus = error?.message || 'No se pudo abrir Spotify.'; renderTracks(panel); }
+    });
 
     groups.querySelectorAll('[data-track-id]').forEach(button => {
       button.addEventListener('click', () => {
