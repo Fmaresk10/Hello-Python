@@ -90,7 +90,10 @@
     };
     try { localStorage.setItem(stateKey(), JSON.stringify(state)); } catch (error) {}
     const status = document.querySelector('[data-bitacora-status]');
-    if (status) status.textContent = 'Acompañamiento guardado recién.';
+    if (status) status.textContent = 'Acompañamiento guardado · sincronizando…';
+    window.CafassoUserCloud?.flush?.().then(ok => {
+      if (status) status.textContent = ok ? 'Acompañamiento guardado en tu cuenta CAFASSO.' : 'Guardado en este equipo · se sincronizará al recuperar conexión.';
+    });
     window.dispatchEvent(new CustomEvent('cafasso:acompanante-bitacora', { detail: state }));
   }
 
