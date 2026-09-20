@@ -40,12 +40,7 @@
     return;
   }
 
-  const ME_API = 'https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoMe';
-  const SUBMISSION_API = 'https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoSubmission';
-  const COURSE_ID = '__cafasso_internal_notes__';
-  const MODULE_ID = 'user-cloud';
-  const ACTIVITY_ID = 'state-v1';
-  const TYPE = 'Nota interna';
+  const STATE_API = 'https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoUserState';
   const VERSION = 1;
   const LEGACY_BITACORA_KEY = 'cafasso-bitacora-v1';
 
@@ -293,41 +288,21 @@
   }
 
   function remoteStateFrom(data) {
-    const uid = userId();
-    const rows = (Array.isArray(data?.submissions) ? data.submissions : [])
-      .filter(item =>
-        String(item?.courseId || '') === COURSE_ID &&
-        String(item?.moduleId || '') === MODULE_ID &&
-        String(item?.activityId || '') === ACTIVITY_ID &&
-        (!uid || !item?.userId || String(item.userId) === uid)
-      )
-      .sort((a, b) => new Date(b?._updatedDate || b?._createdDate || 0) - new Date(a?._updatedDate || a?._createdDate || 0));
+    const raw = data?.state;
+    if (!raw || typeof raw !== 'object') return emptyCloud();
+    return {
+      version:Number(raw.version || VERSION),
+      storage:raw.storage && typeof raw.storage === 'object' ? raw.storage : {},
+      updatedAt:String(raw.updatedAt || data?.updatedAt || '')
+    };
+  }
 
-    for (const row of rows) {
-      const raw = json(row?.content);
-      if (!raw || typeof raw !== 'object') continue;
-      return {
-        version:VERSION,
-        storage:raw.storage && typeof raw.storage === 'object' ? raw.storage : {},
-        updatedAt:String(raw.updatedAt || row?._updatedDate || row?._createdDate || '')
-      };
-    }
-
-    // Compatibilidad con el intento anterior por cafassoProgress, por si alguna instalación llegó a guardarlo.
-    const legacyRow = (Array.isArray(data?.progress) ? data.progress : []).find(item =>
-      String(item?.courseId || '') === '__cafasso_user_state__' &&
-      (!uid || !item?.userId || String(item.userId) === uid)
-    );
-    const legacy = legacyRow?.blockAnswers?.userState;
-    if (legacy && typeof legacy === 'object') {
-      return {
-        version:VERSION,
-        storage:legacy.storage && typeof legacy.storage === 'object' ? legacy.storage : {},
-        updatedAt:String(legacy.updatedAt || '')
-      };
-    }
-
-    return emptyCloud();
+  async function sessionHash() {
+    const auth = json(nativeGet.call(localStorage, 'cafassoAuth')) || {};
+    const token = String(auth?.sessionToken || '');
+    if (!token || Number(auth.expiresAt || 0) <= Date.now()) return '';
+    const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
+    return Array.from(new Uint8Array(bytes)).map(byte => byte.toString(16).padStart(2, '0')).join('');
   }
 
   function applyStorage(storage) {
@@ -360,34 +335,33 @@
     return merged;
   }
 
-  async function fetchMe() {
-    const headers = authHeaders(false);
-    if (!headers) throw new Error('auth');
-    const response = await fetch(ME_API, { headers, cache:'no-store' });
+  async function fetchRemote() {
+    const hash = await sessionHash();
+    if (!hash) throw new Error('auth');
+    const response = await fetch(STATE_API, {
+      method:'GET',
+      headers:{ 'X-Cafasso-Session-Hash':hash },
+      cache:'no-store'
+    });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok || data?.ok === false) throw new Error(data?.error || 'No se pudo leer el perfil CAFASSO');
+    if (!response.ok || data?.ok === false) throw new Error(data?.error || 'No se pudo leer el estado CAFASSO');
     lastRemoteData = data;
     return data;
   }
 
   async function persist(state) {
-    const headers = authHeaders(true);
-    const uid = userId();
-    if (!headers || !uid) return false;
-    const response = await fetch(SUBMISSION_API, {
+    const hash = await sessionHash();
+    if (!hash || !userId()) return false;
+    const response = await fetch(STATE_API, {
       method:'POST',
-      headers,
-      body:JSON.stringify({
-        userId:uid,
-        courseId:COURSE_ID,
-        moduleId:MODULE_ID,
-        activityId:ACTIVITY_ID,
-        type:TYPE,
-        content:JSON.stringify(state)
-      })
+      headers:{
+        'Content-Type':'application/json',
+        'X-Cafasso-Session-Hash':hash
+      },
+      body:JSON.stringify({ state })
     });
     const result = await response.json().catch(() => ({}));
-    if (!response.ok || result?.ok === false || !result?.submission?._id) {
+    if (!response.ok || result?.ok === false) {
       throw new Error(result?.error || 'No se pudo guardar el perfil CAFASSO');
     }
     return true;
@@ -401,7 +375,7 @@
 
     savePromise = (async () => {
       try {
-        const latest = await fetchMe();
+        const latest = await fetchRemote();
         const remote = remoteStateFrom(latest);
         const local = collectLocal();
         const merged = mergeCloud(local, remote);
@@ -457,7 +431,7 @@
 
     const migrated = migrateLegacyBitacora();
     try {
-      const data = await fetchMe();
+      const data = await fetchRemote();
       const remote = remoteStateFrom(data);
       const local = collectLocal();
       const merged = mergeCloud(local, remote);
