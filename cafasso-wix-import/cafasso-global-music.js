@@ -12,21 +12,26 @@
   let attachedContainer = null;
 
   function cleanTrack(track) {
-    if (!track || !track.videoId) return null;
+    if (!track || (!track.videoId && !track.spotifyUri)) return null;
     return {
-      id: String(track.id || track.videoId),
+      id: String(track.id || track.spotifyUri || track.videoId),
       title: String(track.title || 'Música'),
       subtitle: String(track.subtitle || track.categoryLabel || ''),
       source: String(track.source || track.categoryLabel || ''),
       categoryLabel: String(track.categoryLabel || ''),
-      videoId: String(track.videoId)
+      videoId: String(track.videoId || ''),
+      spotifyUri: String(track.spotifyUri || ''),
+      spotifyUrl: String(track.spotifyUrl || ''),
+      image: String(track.image || ''),
+      durationMs: Number(track.durationMs || 0),
+      provider: String(track.provider || (track.spotifyUri ? 'spotify' : 'youtube'))
     };
   }
 
   function readState() {
     try {
       const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-      if (!raw?.track?.videoId) return { track:null, playing:false, position:0, updatedAt:Date.now(), needsGesture:false };
+      if (!raw?.track?.videoId && !raw?.track?.spotifyUri) return { track:null, playing:false, position:0, updatedAt:Date.now(), needsGesture:false };
       return {
         track: cleanTrack(raw.track),
         playing: Boolean(raw.playing),
@@ -202,7 +207,10 @@
     const title = widget.querySelector('[data-global-music-title]');
     const meta = widget.querySelector('[data-global-music-meta]');
     const toggleButton = widget.querySelector('[data-global-music-toggle]');
-    if (status) status.textContent = state.needsGesture ? 'Tocá para continuar' : state.playing ? 'Ahora suena' : 'En pausa';
+    if (status) {
+      const provider = state.track?.provider === 'spotify' ? 'Spotify · ' : '';
+      status.textContent = provider + (state.needsGesture ? 'Tocá para continuar' : state.playing ? 'Ahora suena' : 'En pausa');
+    }
     if (title) title.textContent = state.track.title || 'Música';
     if (meta) meta.textContent = state.track.source || state.track.subtitle || state.track.categoryLabel || 'Cancionero CAFASSO';
     if (toggleButton) {
@@ -227,7 +235,7 @@
 
   function createIframe({ autoplay = false, start = currentPosition(), force = false } = {}) {
     ensureDom();
-    if (!state.track) return null;
+    if (!state.track?.videoId) return null;
     if (iframe && !force) return iframe;
 
     if (iframe) iframe.remove();
@@ -251,10 +259,36 @@
     }
   }
 
-  function play(track) {
+  async function play(track) {
     const clean = cleanTrack(track || state.track);
     if (!clean) return false;
 
+    if (clean.spotifyUri && window.CafassoSpotify?.isAuthenticated?.()) {
+      state.track = clean;
+      state.position = 0;
+      state.updatedAt = Date.now();
+      state.playing = true;
+      state.needsGesture = false;
+      if (iframe) {
+        iframe.remove();
+        iframe = null;
+      }
+      writeState();
+      emit();
+      try {
+        await window.CafassoSpotify.playTrack(clean);
+        return true;
+      } catch (error) {
+        state.playing = false;
+        state.needsGesture = true;
+        writeState();
+        emit();
+        console.warn('CAFASSO Spotify playback:', error);
+        return false;
+      }
+    }
+
+    if (!clean.videoId) return false;
     const sameTrack = state.track?.videoId === clean.videoId;
     const resumeAt = sameTrack ? currentPosition() : 0;
     state.track = clean;
@@ -271,25 +305,39 @@
     return true;
   }
 
-  function pause() {
+  async function pause() {
     if (!state.track) return;
     state.position = currentPosition();
     state.updatedAt = Date.now();
     state.playing = false;
     state.needsGesture = false;
-    sendCommand('pauseVideo');
+    if (state.track.spotifyUri && window.CafassoSpotify?.isAuthenticated?.()) {
+      try { await window.CafassoSpotify.pause(); } catch (error) {}
+    } else {
+      sendCommand('pauseVideo');
+    }
     writeState();
     emit();
   }
 
-  function toggle() {
+  async function toggle() {
     if (!state.track) return;
+    if (state.track.spotifyUri && window.CafassoSpotify?.isAuthenticated?.()) {
+      try {
+        await window.CafassoSpotify.toggle();
+        return;
+      } catch (error) {}
+    }
     if (state.playing && !state.needsGesture) pause();
     else play(state.track);
   }
 
-  function stop() {
-    try { sendCommand('stopVideo'); } catch (error) {}
+  async function stop() {
+    if (state.track?.spotifyUri && window.CafassoSpotify?.isAuthenticated?.()) {
+      try { await window.CafassoSpotify.pause(); } catch (error) {}
+    } else {
+      try { sendCommand('stopVideo'); } catch (error) {}
+    }
     state = { track:null, playing:false, position:0, updatedAt:Date.now(), needsGesture:false };
     writeState();
     if (iframe) {
@@ -328,7 +376,7 @@
     // dentro del DOM lo recarga. En el libro mostramos una vista propia de CAFASSO.
     if (mediaShell.parentNode !== hiddenSlot) hiddenSlot.appendChild(mediaShell);
     renderAttachedView();
-    if (state.track && !iframe) createIframe({ autoplay:state.playing, start:currentPosition() });
+    if (state.track?.videoId && !iframe) createIframe({ autoplay:state.playing, start:currentPosition() });
     return true;
   }
 
@@ -341,13 +389,27 @@
   function boot() {
     ensureDom();
     renderWidget();
-    if (state.track) {
+    if (state.track?.videoId) {
       createIframe({
         autoplay:Boolean(state.playing && !state.needsGesture),
         start:currentPosition(),
         force:true
       });
     }
+    window.addEventListener('cafasso:spotify-state', event => {
+      const detail = event.detail || {};
+      if (!detail.track) return;
+      const next = cleanTrack(detail.track);
+      if (!next) return;
+      state.track = next;
+      state.playing = Boolean(detail.playing);
+      state.needsGesture = false;
+      state.position = Math.max(0, Number(detail.position || 0));
+      state.updatedAt = Date.now();
+      writeState();
+      emit();
+    });
+
     window.addEventListener('pagehide', persistFromPlayer);
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') persistFromPlayer();
