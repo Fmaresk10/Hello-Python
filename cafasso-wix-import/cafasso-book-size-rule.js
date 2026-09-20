@@ -96,18 +96,17 @@
     loadHouseScript('./parish-songbook-interior-v2.js?v=1', 'cafasso-parish-songbook-interior-v2-loader');
     loadHouseScript('./parish-candle.js?v=2', 'cafasso-parish-candle-loader');
     loadHouseScript('./parish-candle-altar.js?v=2', 'cafasso-parish-candle-altar-loader');
-    loadHouseScript('./cafasso-servidor-parroquia.js?v=1', 'cafasso-servidor-parroquia-loader');
     loadHouseScript('./cafasso-parish-secret.js?v=1', 'cafasso-parish-secret-loader');
 
     loadHouseScript('./cafasso-mobile-foundation.js?v=1', 'cafasso-mobile-foundation-loader');
     loadHouseScript('./cafasso-mobile-house.js?v=6', 'cafasso-mobile-house-loader');
     loadHouseScript('./cafasso-mobile-patio.js?v=1', 'cafasso-mobile-patio-loader');
     loadHouseScript('./cafasso-mobile-school.js?v=1', 'cafasso-mobile-school-loader');
-    loadHouseScript('./cafasso-mobile-parish.js?v=2', 'cafasso-mobile-parish-loader');
+    loadHouseScript('./cafasso-mobile-parish.js?v=3', 'cafasso-mobile-parish-loader');
     loadHouseScript('./cafasso-mobile-resources.js?v=1', 'cafasso-mobile-resources-loader');
     loadHouseScript('./cafasso-house-v3-layout.js?v=5', 'cafasso-house-v3-layout-loader');
     loadHouseScript('./cafasso-patio-v3-layout.js?v=1', 'cafasso-patio-v3-layout-loader');
-    loadHouseScript('./cafasso-parish-v3-layout.js?v=11', 'cafasso-parish-v3-layout-loader');
+    loadHouseScript('./cafasso-parish-v3-layout.js?v=12', 'cafasso-parish-v3-layout-loader');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installRule, { once: true });
