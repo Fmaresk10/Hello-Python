@@ -2,7 +2,7 @@
 (function(){
   function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
   function safeEsc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
-  function isInternalNote(s){return s&&s.courseId==='__cafasso_internal_notes__';}
+  function isInternalNote(s){return s&&String(s.courseId||'').startsWith('__cafasso_');}
   function memberProgress(user){try{return typeof progressForUser==='function'?Number(progressForUser(user._id)||0):Number(user.progressPercent||0);}catch{return Number(user.progressPercent||0);}}
   function pendingFor(user){const rows=((window.state&&state.submissions)||[]).filter(s=>!isInternalNote(s)&&s.userId===user._id);return rows.filter(s=>!s.status||s.status==='Pendiente'||s.status==='En revisión'||s.status==='Rehacer');}
   function daysSince(v){if(!v)return null;const d=new Date(v);if(Number.isNaN(d.getTime()))return null;return Math.floor((Date.now()-d.getTime())/86400000);}
