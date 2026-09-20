@@ -4,15 +4,9 @@
   const STORAGE_KEY = 'cafasso-global-music-v1';
   const STYLE_ID = 'cafassoGlobalMusicStyles';
   const WIDGET_ID = 'cafassoGlobalMusicWidget';
-  const API_SRC = 'https://www.youtube.com/iframe_api';
-
   let state = readState();
-  let player = null;
-  let playerReady = false;
-  let restoring = false;
-  let restoreTimer = 0;
+  let iframe = null;
   let mediaShell = null;
-  let mediaNode = null;
   let hiddenSlot = null;
   let widget = null;
   let attachedContainer = null;
@@ -47,14 +41,10 @@
 
   function currentPosition() {
     if (!state.track) return 0;
-    if (playerReady && player && typeof player.getCurrentTime === 'function') {
-      const value = Number(player.getCurrentTime());
-      if (Number.isFinite(value) && value >= 0) return value;
-    }
     if (state.playing && !state.needsGesture) {
-      return Math.max(0, state.position + (Date.now() - state.updatedAt) / 1000);
+      return Math.max(0, Number(state.position || 0) + (Date.now() - Number(state.updatedAt || Date.now())) / 1000);
     }
-    return Math.max(0, state.position || 0);
+    return Math.max(0, Number(state.position || 0));
   }
 
   function writeState() {
@@ -80,15 +70,6 @@
     if (!state.track) return;
     state.position = currentPosition();
     state.updatedAt = Date.now();
-    if (playerReady && player && window.YT?.PlayerState) {
-      const ps = player.getPlayerState?.();
-      if (ps === YT.PlayerState.PLAYING) {
-        state.playing = true;
-        state.needsGesture = false;
-      } else if (ps === YT.PlayerState.PAUSED || ps === YT.PlayerState.ENDED) {
-        state.playing = false;
-      }
-    }
     writeState();
   }
 
@@ -192,9 +173,6 @@
     if (!mediaShell) {
       mediaShell = document.createElement('div');
       mediaShell.className = 'cafasso-global-music__media';
-      mediaNode = document.createElement('div');
-      mediaNode.id = 'cafassoGlobalMusicYoutube';
-      mediaShell.appendChild(mediaNode);
       hiddenSlot.appendChild(mediaShell);
     }
   }
@@ -222,128 +200,62 @@
     }
   }
 
-  function loadYoutubeApi() {
-    if (window.YT?.Player) return Promise.resolve();
-    if (window.__cafassoYoutubeApiPromise) return window.__cafassoYoutubeApiPromise;
-    window.__cafassoYoutubeApiPromise = new Promise((resolve) => {
-      const previous = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = () => {
-        try { if (typeof previous === 'function') previous(); } catch (error) {}
-        resolve();
-      };
-      if (!document.querySelector(`script[src="${API_SRC}"]`)) {
-        const script = document.createElement('script');
-        script.src = API_SRC;
-        script.async = true;
-        document.head.appendChild(script);
-      }
-      const poll = setInterval(() => {
-        if (window.YT?.Player) {
-          clearInterval(poll);
-          resolve();
-        }
-      }, 120);
+  function playerUrl(track, { autoplay = false, start = 0 } = {}) {
+    const seconds = Math.max(0, Math.floor(Number(start || 0)));
+    const params = new URLSearchParams({
+      autoplay: autoplay ? '1' : '0',
+      enablejsapi: '1',
+      playsinline: '1',
+      rel: '0',
+      modestbranding: '1',
+      start: String(seconds)
     });
-    return window.__cafassoYoutubeApiPromise;
+    return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(track.videoId)}?${params.toString()}`;
   }
 
-  async function ensurePlayer() {
+  function createIframe({ autoplay = false, start = currentPosition(), force = false } = {}) {
     ensureDom();
-    if (player) return player;
-    await loadYoutubeApi();
-    if (player) return player;
+    if (!state.track) return null;
+    if (iframe && !force) return iframe;
 
-    const restoreTrack = state.track ? { ...state.track } : null;
-    const restorePosition = currentPosition();
-    const shouldRestorePlaying = Boolean(state.playing && !state.needsGesture);
-    restoring = true;
-
-    player = new YT.Player(mediaNode, {
-      width:'100%',
-      height:'100%',
-      host:'https://www.youtube-nocookie.com',
-      videoId:restoreTrack?.videoId || '',
-      playerVars:{
-        playsinline:1,
-        rel:0,
-        modestbranding:1,
-        enablejsapi:1,
-        origin:location.origin
-      },
-      events:{
-        onReady:event => {
-          playerReady = true;
-          if (!restoreTrack) {
-            restoring = false;
-            return;
-          }
-          event.target.cueVideoById({ videoId:restoreTrack.videoId, startSeconds:restorePosition });
-          setTimeout(() => {
-            restoring = false;
-            if (shouldRestorePlaying) {
-              try { event.target.playVideo(); } catch (error) {}
-              clearTimeout(restoreTimer);
-              restoreTimer = window.setTimeout(() => {
-                if (!player || player.getPlayerState?.() === YT.PlayerState.PLAYING) return;
-                state.position = currentPosition();
-                state.updatedAt = Date.now();
-                state.playing = false;
-                state.needsGesture = true;
-                writeState();
-                emit();
-              }, 1800);
-            }
-          }, 120);
-        },
-        onStateChange:event => {
-          if (restoring) return;
-          clearTimeout(restoreTimer);
-          const ps = event.data;
-          if (ps === YT.PlayerState.PLAYING) {
-            state.playing = true;
-            state.needsGesture = false;
-            state.position = Number(player.getCurrentTime?.() || state.position || 0);
-            state.updatedAt = Date.now();
-            writeState();
-            emit();
-          } else if (ps === YT.PlayerState.PAUSED) {
-            state.position = Number(player.getCurrentTime?.() || state.position || 0);
-            state.updatedAt = Date.now();
-            state.playing = false;
-            state.needsGesture = false;
-            writeState();
-            emit();
-          } else if (ps === YT.PlayerState.ENDED) {
-            state.position = 0;
-            state.updatedAt = Date.now();
-            state.playing = false;
-            state.needsGesture = false;
-            writeState();
-            emit();
-          }
-        }
-      }
-    });
-    return player;
+    if (iframe) iframe.remove();
+    iframe = document.createElement('iframe');
+    iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
+    iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+    iframe.title = `Música: ${state.track.title || 'CAFASSO'}`;
+    iframe.src = playerUrl(state.track, { autoplay, start });
+    iframe.setAttribute('allowfullscreen', '');
+    mediaShell.replaceChildren(iframe);
+    return iframe;
   }
 
-  async function play(track) {
+  function sendCommand(func) {
+    if (!iframe?.contentWindow) return false;
+    try {
+      iframe.contentWindow.postMessage(JSON.stringify({ event:'command', func, args:[] }), '*');
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function play(track) {
     const clean = cleanTrack(track || state.track);
     if (!clean) return false;
+
     const sameTrack = state.track?.videoId === clean.videoId;
+    const resumeAt = sameTrack ? currentPosition() : 0;
     state.track = clean;
-    state.needsGesture = false;
-    if (!sameTrack) state.position = 0;
+    state.position = resumeAt;
     state.updatedAt = Date.now();
     state.playing = true;
+    state.needsGesture = false;
     writeState();
-    emit();
 
-    const p = await ensurePlayer();
-    try {
-      if (!sameTrack) p.loadVideoById({ videoId:clean.videoId, startSeconds:0 });
-      else if (playerReady) p.playVideo();
-    } catch (error) {}
+    if (!sameTrack || !iframe) createIframe({ autoplay:true, start:resumeAt, force:true });
+    else if (!sendCommand('playVideo')) createIframe({ autoplay:true, start:resumeAt, force:true });
+
+    emit();
     return true;
   }
 
@@ -353,7 +265,7 @@
     state.updatedAt = Date.now();
     state.playing = false;
     state.needsGesture = false;
-    try { player?.pauseVideo?.(); } catch (error) {}
+    sendCommand('pauseVideo');
     writeState();
     emit();
   }
@@ -365,10 +277,13 @@
   }
 
   function stop() {
-    if (state.track) state.position = currentPosition();
-    try { player?.stopVideo?.(); } catch (error) {}
+    try { sendCommand('stopVideo'); } catch (error) {}
     state = { track:null, playing:false, position:0, updatedAt:Date.now(), needsGesture:false };
     writeState();
+    if (iframe) {
+      iframe.remove();
+      iframe = null;
+    }
     detachVideo();
     emit();
   }
@@ -380,7 +295,7 @@
     container.innerHTML = '';
     mediaShell.classList.add('is-attached');
     container.appendChild(mediaShell);
-    if (state.track) ensurePlayer();
+    if (state.track && !iframe) createIframe({ autoplay:state.playing, start:currentPosition() });
     return true;
   }
 
@@ -394,7 +309,13 @@
   function boot() {
     ensureDom();
     renderWidget();
-    if (state.track) ensurePlayer();
+    if (state.track) {
+      createIframe({
+        autoplay:Boolean(state.playing && !state.needsGesture),
+        start:currentPosition(),
+        force:true
+      });
+    }
     window.addEventListener('pagehide', persistFromPlayer);
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') persistFromPlayer();
