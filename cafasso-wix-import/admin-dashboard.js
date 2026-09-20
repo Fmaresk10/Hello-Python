@@ -56,8 +56,9 @@
     const inactive=animators.filter(u=>u.lastAccess&&(Date.now()-new Date(u.lastAccess).getTime())>14*DAY);
     const pairs=assignedPairs(data,animators);
     const low=pairs.filter(x=>x.percent<50).sort((a,b)=>a.percent-b.percent||String(a.user.name).localeCompare(String(b.user.name),'es'));
-    const pending=(data.submissions||[]).filter(s=>!s.status||['Pendiente','En revisión'].includes(s.status)).sort((a,b)=>new Date(a._createdDate||a._updatedDate||0)-new Date(b._createdDate||b._updatedDate||0));
-    const recent=(data.submissions||[]).slice().sort((a,b)=>new Date(b._updatedDate||b._createdDate||0)-new Date(a._updatedDate||a._createdDate||0));
+    const visibleSubmissions=(data.submissions||[]).filter(s=>!String(s?.courseId||'').startsWith('__cafasso_'));
+    const pending=visibleSubmissions.filter(s=>!s.status||['Pendiente','En revisión'].includes(s.status)).sort((a,b)=>new Date(a._createdDate||a._updatedDate||0)-new Date(b._createdDate||b._updatedDate||0));
+    const recent=visibleSubmissions.slice().sort((a,b)=>new Date(b._updatedDate||b._createdDate||0)-new Date(a._updatedDate||a._createdDate||0));
 
     const pendingRows=pending.slice(0,5).map(s=>{
       const u=users.find(x=>String(x._id)===String(s.userId))||{name:s.userName||'Animador',groupName:s.groupName||''};
