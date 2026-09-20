@@ -163,13 +163,13 @@
       const newTime = Date.parse(String(value || '')) || 0;
       if (!(key in merged) || newTime >= oldTime) merged[key] = value;
     });
+    const latest = Math.max(
+      Date.parse(stamp(a) || '') || 0,
+      Date.parse(stamp(b) || '') || 0
+    );
     return {
       value:JSON.stringify(merged),
-      updatedAt:new Date(Math.max(
-        Date.parse(stamp(a) || '') || 0,
-        Date.parse(stamp(b) || '') || 0,
-        Date.now()
-      )).toISOString()
+      updatedAt:latest ? new Date(latest).toISOString() : ''
     };
   }
 
@@ -185,7 +185,8 @@
     });
     const when = [left.updatedAt, right.updatedAt, stamp(a), stamp(b)]
       .map(value => Date.parse(String(value || '')) || 0);
-    merged.updatedAt = new Date(Math.max(...when, Date.now())).toISOString();
+    const latest = Math.max(...when);
+    merged.updatedAt = latest ? new Date(latest).toISOString() : '';
     return { value:JSON.stringify(merged), updatedAt:merged.updatedAt };
   }
 
@@ -252,7 +253,11 @@
     if (key.startsWith('cafasso-world-state-')) return mergeWorldState(localEntry, remoteEntry);
     if (key.startsWith('cafasso-house-prologue-v1:')) {
       const seen = localEntry.value === 'seen' || remoteEntry.value === 'seen';
-      return { value: seen ? 'seen' : newerEntry(localEntry, remoteEntry).value, updatedAt:new Date().toISOString() };
+      const latest = Math.max(
+        Date.parse(stamp(localEntry) || '') || 0,
+        Date.parse(stamp(remoteEntry) || '') || 0
+      );
+      return { value: seen ? 'seen' : newerEntry(localEntry, remoteEntry).value, updatedAt:latest ? new Date(latest).toISOString() : '' };
     }
     return newerEntry(localEntry, remoteEntry);
   }
