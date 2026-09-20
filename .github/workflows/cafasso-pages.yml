@@ -24,7 +24,9 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import os, re
-          path = Path('cafasso-wix-import/index.html')
+          world_path = Path('cafasso-wix-import/world.html')
+          legacy_path = Path('cafasso-wix-import/index.html')
+          path = world_path if world_path.exists() else legacy_path
           text = path.read_text(encoding='utf-8')
           version = os.environ['GITHUB_SHA'][:12]
 
