@@ -16,6 +16,7 @@
   let activeTrack = null;
   let playing = false;
   let spotifyStatus = '';
+  let searchQuery = '';
 
   function musicHost() {
     try {
@@ -34,6 +35,20 @@
 
   function esc(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+  }
+
+  function normalizeSearch(value) {
+    return String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
+  function matchesSearch(track) {
+    const query = normalizeSearch(searchQuery);
+    if (!query) return true;
+    return normalizeSearch([track?.title, track?.subtitle, track?.source].filter(Boolean).join(' ')).includes(query);
   }
 
   async function loadTracks(force = false) {
@@ -143,10 +158,17 @@
   }
 
   function setButtonStates() {
+    document.querySelectorAll('.cafasso-songbook-track').forEach(row => {
+      const isSelected = row.dataset.trackId === activeTrack?.id;
+      row.classList.toggle('is-active', isSelected);
+      row.classList.toggle('is-playing', isSelected && playing);
+    });
     document.querySelectorAll('.cafasso-songbook-play').forEach(button => {
-      const isActive = button.dataset.trackId === activeTrack?.id && playing;
+      const isSelected = button.dataset.trackId === activeTrack?.id;
+      const isActive = isSelected && playing;
       button.classList.toggle('is-playing', isActive);
-      button.textContent = isActive ? 'Pausar' : 'Escuchar';
+      button.classList.toggle('is-active', isSelected);
+      button.textContent = isActive ? 'Pausar' : isSelected ? 'Reanudar' : 'Escuchar';
     });
   }
 
@@ -207,21 +229,63 @@
     const groups = panel.querySelector('[data-songbook-groups]');
     if (!groups) return;
     const spotify = spotifyApi();
-    const spotifyIntro = spotifyStatus
-      ? `<div class="cafasso-songbook-spotify-status">${esc(spotifyStatus)}${spotify?.isConfigured?.() && !spotify?.isAuthenticated?.() ? '<br><button class="cafasso-songbook-spotify-connect" type="button" data-spotify-connect>Conectar Spotify</button>' : ''}</div>`
+    const spotifyState = spotify?.getState?.() || {};
+    const connected = Boolean(spotify?.isAuthenticated?.());
+    const connectedBadge = connected
+      ? `<div class="cafasso-songbook-spotify-badge" title="${esc(spotifyState?.profile?.displayName || 'Spotify conectado')}"><span aria-hidden="true"></span>Spotify conectado</div>`
       : '';
-    groups.innerHTML = spotifyIntro + GROUPS.map(group => {
-      const list = tracks.filter(track => track.category === group.id);
+    const spotifyIntro = spotifyStatus
+      ? `<div class="cafasso-songbook-spotify-status">${connectedBadge}<div>${esc(spotifyStatus)}</div>${spotify?.isConfigured?.() && !connected ? '<button class="cafasso-songbook-spotify-connect" type="button" data-spotify-connect>Conectar Spotify</button>' : ''}</div>`
+      : connectedBadge;
+
+    const visibleTracks = tracks.filter(matchesSearch);
+    const searchControls = tracks.length
+      ? `<div class="cafasso-songbook-search">
+          <label for="cafassoSongbookSearch">Buscar en el cancionero</label>
+          <div class="cafasso-songbook-search__field">
+            <span aria-hidden="true">⌕</span>
+            <input id="cafassoSongbookSearch" type="search" autocomplete="off" placeholder="Canción o artista…" value="${esc(searchQuery)}">
+          </div>
+          <small>${visibleTracks.length} de ${tracks.length} ${tracks.length === 1 ? 'tema' : 'temas'}</small>
+        </div>`
+      : '';
+
+    const renderedGroups = GROUPS.map(group => {
+      const list = visibleTracks.filter(track => track.category === group.id);
       if (!list.length) return '';
-      return `<section class="cafasso-songbook-group"><div class="cafasso-songbook-group__title"><strong>${esc(group.title)}</strong><span>${list.length} ${list.length === 1 ? 'tema' : 'temas'}</span></div><p class="cafasso-songbook-group__copy">${esc(group.copy)}</p>${list.map(track => `<div class="cafasso-songbook-track"><div class="cafasso-songbook-track__copy"><strong>${esc(track.title)}</strong><span>${esc(track.subtitle || track.source || '')}</span></div><button class="cafasso-songbook-play" type="button" data-track-id="${esc(track.id)}">Escuchar</button></div>`).join('')}</section>`;
-    }).join('') || '<p class="cafasso-songbook-lead">El Cancionero usa únicamente Spotify. Conectá tu cuenta y asegurate de tener la playlist “CAFASSO · Cancionero”.</p>';
+      return `<section class="cafasso-songbook-group">
+        <div class="cafasso-songbook-group__title"><strong>${esc(group.title)}</strong><span>${list.length} ${list.length === 1 ? 'tema' : 'temas'}</span></div>
+        <p class="cafasso-songbook-group__copy">${esc(group.copy)}</p>
+        ${list.map(track => `<div class="cafasso-songbook-track" data-track-id="${esc(track.id)}">
+          <div class="cafasso-songbook-track__copy"><strong>${esc(track.title)}</strong><span>${esc(track.subtitle || track.source || '')}</span></div>
+          <button class="cafasso-songbook-play" type="button" data-track-id="${esc(track.id)}">Escuchar</button>
+        </div>`).join('')}
+      </section>`;
+    }).join('');
+
+    const emptyCopy = tracks.length && searchQuery
+      ? '<p class="cafasso-songbook-search-empty">No encontré ningún canto con esas palabras.</p>'
+      : '<p class="cafasso-songbook-lead">El Cancionero usa únicamente Spotify. Conectá tu cuenta y asegurate de tener la playlist “CAFASSO · Cancionero”.</p>';
+
+    groups.innerHTML = spotifyIntro + searchControls + (renderedGroups || emptyCopy);
 
     groups.querySelector('[data-spotify-connect]')?.addEventListener('click', async () => {
       try { await spotifyApi()?.connectAccount?.(); }
       catch (error) { spotifyStatus = error?.message || 'No se pudo abrir Spotify.'; renderTracks(panel); }
     });
 
-    groups.querySelectorAll('[data-track-id]').forEach(button => {
+    groups.querySelector('#cafassoSongbookSearch')?.addEventListener('input', event => {
+      searchQuery = String(event.target?.value || '');
+      renderTracks(panel);
+      const input = groups.querySelector('#cafassoSongbookSearch');
+      if (input) {
+        input.focus({ preventScroll:true });
+        const end = input.value.length;
+        try { input.setSelectionRange(end, end); } catch (error) {}
+      }
+    });
+
+    groups.querySelectorAll('[data-track-id].cafasso-songbook-play').forEach(button => {
       button.addEventListener('click', () => {
         const track = tracks.find(item => item.id === button.dataset.trackId);
         if (track) playTrack(track);
