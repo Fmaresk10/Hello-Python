@@ -427,12 +427,12 @@
 
   async function previous() {
     if (!state.track?.spotifyUri || !window.CafassoSpotify?.isAuthenticated?.()) return;
-    try { await window.CafassoSpotify.previous(); } catch (error) {}
+    try { await window.CafassoSpotify.previous(state.track.spotifyUri); } catch (error) {}
   }
 
   async function next() {
     if (!state.track?.spotifyUri || !window.CafassoSpotify?.isAuthenticated?.()) return;
-    try { await window.CafassoSpotify.next(); } catch (error) {}
+    try { await window.CafassoSpotify.next(state.track.spotifyUri); } catch (error) {}
   }
 
   async function stop() {
