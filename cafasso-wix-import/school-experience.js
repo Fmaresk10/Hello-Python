@@ -282,6 +282,12 @@
       const completed = new Set(Array.isArray(progress?.completedModules) ? progress.completedModules.map(String) : []);
       const firstPending = modules.findIndex(module => !completed.has(moduleId(module)));
 
+      let routeNotice = '';
+      try {
+        routeNotice = String(sessionStorage.getItem('cafassoSchoolNotice') || '').trim();
+        if (routeNotice) sessionStorage.removeItem('cafassoSchoolNotice');
+      } catch (error) {}
+
       panel.innerHTML = `
         <button class="cafasso-school-map__close" type="button" data-school-map-close>← Volver a Escuela</button>
         <header class="cafasso-school-map__head">
@@ -300,8 +306,8 @@
           }).join('')}
         </div>
         <aside class="cafasso-school-module-note" data-school-module-note>
-          <strong>${modules.length ? 'Elegí una etapa del camino' : 'Este curso todavía no tiene módulos'}</strong>
-          <span>${modules.length ? 'Los candados respetan tu progreso real. El próximo paso es entrar a las misiones de cada módulo.' : 'Cuando se publiquen los módulos, van a aparecer acá.'}</span>
+          <strong>${routeNotice ? 'Todavía no podés entrar ahí' : modules.length ? 'Elegí una etapa del camino' : 'Este curso todavía no tiene módulos'}</strong>
+          <span>${routeNotice ? esc(routeNotice) : modules.length ? 'Los candados respetan tu progreso real. El próximo paso es entrar a las misiones de cada módulo.' : 'Cuando se publiquen los módulos, van a aparecer acá.'}</span>
         </aside>`;
 
       panel.querySelector('[data-school-map-close]')?.addEventListener('click', () => { closeCourseMap(panel); });
