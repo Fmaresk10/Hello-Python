@@ -49,7 +49,7 @@
     };
     try { localStorage.setItem(storageKey(), JSON.stringify(state)); }
     catch (error) {}
-    window.CafassoUserCloud?.flush?.().catch?.(() => {});
+    Promise.resolve(window.CafassoUserCloud?.flush?.()).catch(() => {});
   }
 
   function ensureStyles() {
