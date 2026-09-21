@@ -27,6 +27,8 @@
   let initPromise = null;
   let connected = false;
   let lastState = null;
+  let profileCache = null;
+  let lastError = '';
 
   function redirectUri() {
     return REDIRECT_URI;
@@ -285,8 +287,44 @@
     position:0,
     duration:0
   }) {
-    lastState = { ...detail, configured:configured(), authenticated:Boolean(token?.access_token) };
+    lastState = {
+      ...detail,
+      configured:configured(),
+      authenticated:Boolean(token?.access_token),
+      profile:profileCache,
+      error:lastError || detail?.error || ''
+    };
     window.dispatchEvent(new CustomEvent('cafasso:spotify-state', { detail:lastState }));
+  }
+
+  async function getProfile(force = false) {
+    if (profileCache && !force) return profileCache;
+    const data = await api('/me');
+    profileCache = data ? {
+      accountId:String(data.account_id || ''),
+      id:String(data.id || ''),
+      displayName:String(data.display_name || ''),
+      product:String(data.product || ''),
+      image:String(data.images?.[0]?.url || '')
+    } : null;
+    return profileCache;
+  }
+
+  async function connectionInfo(force = false) {
+    if (!configured()) return { configured:false, authenticated:false, connected:false, profile:null, error:'' };
+    if (!token?.access_token) return { configured:true, authenticated:false, connected:false, profile:null, error:lastError };
+    try { await getProfile(force); } catch (error) {
+      lastError = error?.message || 'No se pudo leer la cuenta de Spotify';
+    }
+    return {
+      configured:true,
+      authenticated:Boolean(token?.access_token),
+      connected,
+      deviceId,
+      profile:profileCache,
+      premium:String(profileCache?.product || '').toLowerCase() === 'premium',
+      error:lastError
+    };
   }
 
   async function initPlayer() {
@@ -307,6 +345,7 @@
       player.addListener('ready', async ({ device_id }) => {
         connected = true;
         deviceId = device_id;
+        lastError = '';
         try {
           await api('/me/player', {
             method:'PUT',
@@ -327,19 +366,36 @@
       });
 
       player.addListener('authentication_error', ({ message }) => {
+        lastError = message || 'Spotify rechazó la autenticación';
         console.warn('CAFASSO Spotify auth:', message);
+        emit();
       });
       player.addListener('account_error', ({ message }) => {
+        lastError = message || 'Esta cuenta no puede usar el reproductor de Spotify';
         console.warn('CAFASSO Spotify account:', message);
+        emit();
       });
       player.addListener('playback_error', ({ message }) => {
+        lastError = message || 'Spotify no pudo iniciar la reproducción';
         console.warn('CAFASSO Spotify playback:', message);
+        emit();
       });
 
-      const ok = await player.connect();
-      connected = Boolean(ok);
-      emit();
-      return ok;
+      try {
+        const ok = await player.connect();
+        connected = Boolean(ok);
+        if (!ok) {
+          initPromise = null;
+          lastError = 'Spotify no pudo preparar el reproductor';
+        }
+        emit();
+        return ok;
+      } catch (error) {
+        initPromise = null;
+        lastError = error?.message || 'Spotify no pudo preparar el reproductor';
+        emit();
+        throw error;
+      }
     })();
 
     return initPromise;
@@ -365,7 +421,10 @@
 
   async function playTrack(track) {
     if (!track?.spotifyUri) throw new Error('Este canto no tiene vínculo de Spotify');
-    await initPlayer();
+    const info = await connectionInfo();
+    if (info.profile && !info.premium) throw new Error('Spotify Premium es necesario para reproducir dentro de CAFASSO');
+    const initialized = await initPlayer();
+    if (!initialized) throw new Error(lastError || 'Spotify no pudo preparar el reproductor');
     const readyDevice = await waitForDevice();
     await api(`/me/player/play?device_id=${encodeURIComponent(readyDevice)}`, {
       method:'PUT',
@@ -466,6 +525,8 @@
     deviceId = '';
     connected = false;
     initPromise = null;
+    profileCache = null;
+    lastError = '';
     saveToken(null);
     emit();
   }
@@ -486,10 +547,14 @@
   async function boot() {
     try {
       if (configured()) await handleAuthCallback();
-      if (token?.access_token) await initPlayer();
+      if (token?.access_token) {
+        try { await getProfile(true); } catch (error) {}
+        await initPlayer();
+      }
     } catch (error) {
+      lastError = error?.message || String(error);
       console.warn('CAFASSO Spotify:', error);
-      emit({ ...getState(), error:error.message });
+      emit({ ...getState(), error:lastError });
     }
     emit();
   }
@@ -509,6 +574,8 @@
     getPlaylists,
     findCancioneroPlaylist,
     getCancioneroTracks,
+    getProfile,
+    getConnectionInfo:connectionInfo,
     getState,
     redirectUri
   };
