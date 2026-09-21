@@ -100,6 +100,25 @@
       .cafasso-school-module.is-locked{opacity:.66;filter:saturate(.5);cursor:not-allowed}
       .cafasso-school-module:nth-child(1){left:17%;top:76%}.cafasso-school-module:nth-child(2){left:39%;top:60%}.cafasso-school-module:nth-child(3){left:61%;top:42%}.cafasso-school-module:nth-child(4){left:82%;top:29%}.cafasso-school-module:nth-child(5){left:70%;top:71%}.cafasso-school-module:nth-child(6){left:88%;top:55%}
       .cafasso-school-module-note{position:absolute;z-index:5;right:4.5%;bottom:4.5%;width:min(340px,30vw);padding:17px 18px;border:1px solid rgba(115,77,39,.48);border-radius:7px;background:linear-gradient(145deg,rgba(249,235,204,.96),rgba(218,190,140,.96));box-shadow:0 13px 27px rgba(42,26,14,.3);color:#3f3022;transform:rotate(-.5deg)}
+      /* Cursos largos: conservamos el mapa inmersivo hasta 6 etapas y
+         pasamos a un recorrido extendido cuando el curso necesita más espacio. */
+      .cafasso-school-map-panel.is-long-course{overflow:auto;overscroll-behavior:contain;padding-bottom:max(28px,env(safe-area-inset-bottom))}
+      .cafasso-school-map-panel.is-long-course:before{position:fixed}
+      .cafasso-school-map-panel.is-long-course .cafasso-school-map__head{max-width:820px}
+      .cafasso-school-map-panel.is-long-course .cafasso-school-map__stations{
+        position:relative;inset:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:22px 18px;max-width:1080px;margin:0 auto;padding:52px max(34px,6vw) 22px
+      }
+      .cafasso-school-map-panel.is-long-course .cafasso-school-module,
+      .cafasso-school-map-panel.is-long-course .cafasso-school-module:nth-child(n){
+        position:relative;left:auto;top:auto;transform:none;width:100%;min-height:86px;padding:12px 13px 11px
+      }
+      .cafasso-school-map-panel.is-long-course .cafasso-school-module:hover:not(:disabled){transform:translateY(-3px)}
+      .cafasso-school-map-panel.is-long-course .cafasso-school-module i{margin:-27px 0 7px}
+      .cafasso-school-map-panel.is-long-course .cafasso-school-module-note{
+        position:relative;left:auto;right:auto;bottom:auto;width:min(680px,calc(100% - 68px));
+        margin:8px auto 0;padding:15px 17px;transform:none
+      }
       .cafasso-school-module-note strong{display:block;font:500 21px/1.1 Georgia,serif}.cafasso-school-module-note span{display:block;margin-top:6px;color:#6f563b;font:11px/1.45 Inter,system-ui,sans-serif}
 
       @media(max-width:760px){
@@ -257,6 +276,7 @@
       if (!response.ok || !result?.ok || !result?.course) throw new Error(result?.error || 'No se pudo cargar el curso.');
       const course = result.course;
       const modules = Array.isArray(course.modules) ? course.modules : [];
+      panel.classList.toggle('is-long-course', modules.length > 6);
       const progress = findProgress(meData, courseId);
       const percent = Math.max(0, Math.min(100, Number(progress?.percent || 0)));
       const completed = new Set(Array.isArray(progress?.completedModules) ? progress.completedModules.map(String) : []);
@@ -271,7 +291,7 @@
           <span class="cafasso-school-map__progress">${Math.round(percent)}% del camino completado</span>
         </header>
         <div class="cafasso-school-map__stations">
-          ${modules.slice(0,6).map((module,index) => {
+          ${modules.map((module,index) => {
             const id = moduleId(module);
             const done = completed.has(id);
             const unlocked = done || index === 0 || completed.has(moduleId(modules[index - 1]));
