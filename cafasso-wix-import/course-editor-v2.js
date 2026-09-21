@@ -52,14 +52,14 @@
       position:sticky;top:10px;z-index:16;
       grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;
       margin:0 0 14px;padding:7px;
-      background:rgba(247,239,222,.88);backdrop-filter:blur(12px);
+      background:#f3e8d3;backdrop-filter:none;
       border:1px solid rgba(112,84,48,.16);border-radius:10px;
       box-shadow:0 8px 20px rgba(67,57,42,.06)
     }
     body.cafasso-formador-editor .editor-step{
       min-height:46px;border-radius:7px;padding:8px 10px;
       background:transparent;border-color:transparent;color:#7b7569;
-      font-size:10px;letter-spacing:.025em
+      font-size:11px;letter-spacing:.018em
     }
     body.cafasso-formador-editor .editor-step b{
       width:25px;height:25px;background:#e7dcc7;color:#53645b;border-radius:6px
@@ -74,7 +74,7 @@
       background:rgba(76,126,97,.09);color:#3b6f55;font-size:10px
     }
     body.cafasso-formador-editor .save-state.dirty{background:rgba(206,169,72,.12);color:#7a6122}
-    body.cafasso-formador-editor .drag-hint{color:#898174;font-size:10px}
+    body.cafasso-formador-editor .drag-hint{color:#69665f;font-size:11px}
     body.cafasso-formador-editor .editor-extra-actions .mini{
       border-radius:6px;background:#fff9ed;border-color:#d9ccb4;color:#42594e
     }
@@ -94,7 +94,7 @@
       border-radius:7px;background:#f3e9ce;border-color:#ddc67e;color:#6f5a20
     }
     body.cafasso-formador-editor .editor-preview-wrap{
-      background:rgba(17,38,33,.58);backdrop-filter:blur(5px)
+      background:rgba(17,38,33,.72);backdrop-filter:none
     }
     body.cafasso-formador-editor .editor-preview{
       background:#eee4d2;border-radius:11px;border-color:#d2c09e
