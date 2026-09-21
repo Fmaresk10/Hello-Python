@@ -507,3 +507,92 @@ body.cafasso-formador-editor .toast{
   body.cafasso-formador-editor .fields2{grid-template-columns:1fr!important}
   body.cafasso-formador-editor .quick-content-bar{grid-template-columns:1fr 1fr!important}
 }
+
+
+/* ===== Taller de cursos · nitidez ===== */
+body.cafasso-formador-editor{
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+body.cafasso-formador-editor:before{opacity:.11!important}
+body.cafasso-formador-editor .top,
+body.cafasso-formador-editor .outline,
+body.cafasso-formador-editor .editor .section{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+body.cafasso-formador-editor .top{
+  background:#f7edda!important;
+  border-color:#cdbd9f!important;
+  box-shadow:0 8px 18px rgba(57,49,37,.07)!important;
+}
+body.cafasso-formador-editor .outline{
+  background:#f4ead6!important;
+  border-color:#cfc0a5!important;
+}
+body.cafasso-formador-editor .editor .section{
+  background:#fffaf0!important;
+  border-color:#d2c3a9!important;
+}
+body.cafasso-formador-editor .editor-panel-kicker,
+body.cafasso-formador-editor .editor-sheet-kicker{
+  font-size:9.5px!important;
+  font-weight:900!important;
+  color:#846a2f!important;
+  letter-spacing:.13em!important;
+}
+body.cafasso-formador-editor .top .eyebrow{
+  font-size:10px!important;
+  font-weight:900!important;
+  color:#846a2f!important;
+}
+body.cafasso-formador-editor .top p{color:#5f685f!important}
+body.cafasso-formador-editor .actions .btn{
+  font-size:11px!important;
+  font-weight:850!important;
+}
+body.cafasso-formador-editor #reloadBtn{opacity:1!important;color:#5c675f!important}
+body.cafasso-formador-editor .module small,
+body.cafasso-formador-editor .content small{
+  font-size:10px!important;
+  color:#6f6a61!important;
+}
+body.cafasso-formador-editor .module-actions .btn,
+body.cafasso-formador-editor .danger-zone .btn,
+body.cafasso-formador-editor .mini{
+  font-size:10px!important;
+  font-weight:850!important;
+}
+body.cafasso-formador-editor .danger-zone{opacity:1!important}
+body.cafasso-formador-editor .danger-zone strong{font-size:11px!important}
+body.cafasso-formador-editor .danger-zone p{font-size:10px!important;color:#704d46!important}
+body.cafasso-formador-editor .field label{
+  font-size:10px!important;
+  font-weight:900!important;
+  color:#4d5d54!important;
+}
+body.cafasso-formador-editor .check{
+  font-size:11px!important;
+  color:#46564d!important;
+}
+body.cafasso-formador-editor .tool span{
+  font-size:10px!important;
+  color:#eef1ec!important;
+}
+body.cafasso-formador-editor .tool{
+  background:#20443d!important;
+  border-color:#365c53!important;
+}
+body.cafasso-formador-editor .tool:hover{
+  background:#2a5249!important;
+  border-color:#b99d58!important;
+}
+body.cafasso-formador-editor input,
+body.cafasso-formador-editor textarea,
+body.cafasso-formador-editor select{
+  color:#253a31!important;
+  border-color:#cfc0a7!important;
+  background:#fffdf7!important;
+}
+body.cafasso-formador-editor input::placeholder,
+body.cafasso-formador-editor textarea::placeholder{color:#8a847a!important;opacity:1!important}
