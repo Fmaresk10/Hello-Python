@@ -470,14 +470,55 @@
     if (deviceId) await api(`/me/player/seek?position_ms=${ms}&device_id=${encodeURIComponent(deviceId)}`, { method:'PUT' });
   }
 
-  async function previous() {
-    if (player) return player.previousTrack();
-    if (deviceId) return api(`/me/player/previous?device_id=${encodeURIComponent(deviceId)}`, { method:'POST' });
+  async function ensureCancioneroTracks() {
+    if (cancioneroTracks.length) return cancioneroTracks;
+    try {
+      const result = await getCancioneroTracks();
+      return result?.tracks || [];
+    } catch (error) {
+      return [];
+    }
   }
 
-  async function next() {
-    if (player) return player.nextTrack();
-    if (deviceId) return api(`/me/player/next?device_id=${encodeURIComponent(deviceId)}`, { method:'POST' });
+  async function playAdjacent(direction, currentUri = '') {
+    const tracks = await ensureCancioneroTracks();
+    if (!tracks.length) throw new Error('No pude cargar los temas del Cancionero');
+
+    const activeUri = String(currentUri || lastState?.track?.spotifyUri || '');
+    let index = tracks.findIndex(item => item.spotifyUri === activeUri);
+    if (index < 0) index = 0;
+
+    const step = direction < 0 ? -1 : 1;
+    const targetIndex = (index + step + tracks.length) % tracks.length;
+    const target = tracks[targetIndex];
+    if (!target?.spotifyUri) throw new Error('No encontré el tema siguiente del Cancionero');
+
+    const initialized = await initPlayer();
+    if (!initialized) throw new Error(lastError || 'Spotify no pudo preparar el reproductor');
+    const readyDevice = await waitForDevice();
+
+    await api(`/me/player/play?device_id=${encodeURIComponent(readyDevice)}`, {
+      method:'PUT',
+      body:JSON.stringify({ uris:[target.spotifyUri], position_ms:0 })
+    });
+
+    emit({
+      connected:true,
+      deviceId:readyDevice,
+      track:{ ...target },
+      playing:true,
+      position:0,
+      duration:Number(target.durationMs || 0) / 1000
+    });
+    return target;
+  }
+
+  async function previous(currentUri = '') {
+    return playAdjacent(-1, currentUri);
+  }
+
+  async function next(currentUri = '') {
+    return playAdjacent(1, currentUri);
   }
 
   async function getPlaylists() {
