@@ -193,3 +193,160 @@ body.cafasso-admin-center{
 @media(max-width:420px){
   .cafasso-admin-center .kpis{grid-template-columns:1fr}
 }
+
+
+/* ===== Centro de Administración · Recursos ===== */
+body.cafasso-resource-admin .menu a{
+  display:block;color:#e6ebe8;text-decoration:none;padding:12px;border-radius:7px;
+  font-weight:750;font-size:12px;border:1px solid transparent
+}
+body.cafasso-resource-admin .menu a:hover{
+  background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.06)
+}
+body.cafasso-resource-admin .menu a.active{
+  background:linear-gradient(90deg,rgba(183,154,86,.18),rgba(255,255,255,.025));
+  border-color:rgba(183,154,86,.18);box-shadow:inset 3px 0 var(--admin-brass);color:#fff8e7
+}
+body.cafasso-resource-admin main{
+  padding:32px clamp(24px,3.2vw,50px) 58px!important;max-width:1500px!important
+}
+body.cafasso-resource-admin .head{
+  margin-bottom:14px!important;padding:24px 26px!important;border:1px solid var(--admin-line)!important;
+  border-radius:9px!important;background:#f6efe2!important;box-shadow:0 10px 26px rgba(59,52,41,.07)!important
+}
+body.cafasso-resource-admin .head h1{
+  margin:6px 0 5px!important;font:500 clamp(34px,3.3vw,46px)/1 Georgia,serif!important;color:#2c3e39!important
+}
+body.cafasso-resource-admin .head p{
+  margin:0!important;max-width:720px;color:#68716c!important;font-size:12px!important;line-height:1.5!important
+}
+body.cafasso-resource-admin .eyebrow{
+  font-size:9px!important;letter-spacing:.17em!important;color:#8a6f34!important
+}
+body.cafasso-resource-admin .status{
+  background:#ebe5d9!important;border-color:#d7c9b1!important;color:#606b65!important;
+  border-radius:6px!important;font-size:10px!important;padding:8px 10px!important
+}
+body.cafasso-resource-admin .status.ok{background:#e5eee8!important;color:#37624f!important;border-color:#c6d9ce!important}
+body.cafasso-resource-admin .status.bad{background:#f4e4e1!important;color:#8e4e45!important;border-color:#dfc0b9!important}
+
+body.cafasso-resource-admin .toolbar{
+  display:flex!important;gap:7px!important;flex-wrap:wrap!important;align-items:center!important;margin:0 0 12px!important
+}
+body.cafasso-resource-admin .toolbar .btn{
+  border-radius:6px!important;font-size:10px!important;padding:9px 11px!important
+}
+body.cafasso-resource-admin .summary{
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin-bottom:12px!important
+}
+body.cafasso-resource-admin .metric{
+  min-height:88px;padding:15px 16px!important;border-left:4px solid var(--admin-teal)!important
+}
+body.cafasso-resource-admin .metric:nth-child(2){border-left-color:#9b8756!important}
+body.cafasso-resource-admin .metric:nth-child(3){border-left-color:#607b8d!important}
+body.cafasso-resource-admin .metric small{
+  color:#77766f!important;font-size:9px!important;text-transform:uppercase;letter-spacing:.08em;font-weight:800!important
+}
+body.cafasso-resource-admin .metric strong{
+  margin-top:5px!important;font:500 30px/1 Georgia,serif!important;color:#2c443d!important
+}
+
+body.cafasso-resource-admin .box{
+  padding:18px!important;background:#f8f2e7!important;border-color:var(--admin-line)!important
+}
+body.cafasso-resource-admin .filters{
+  display:grid!important;grid-template-columns:minmax(260px,1fr) minmax(180px,.35fr)!important;gap:8px!important;margin:0 0 11px!important
+}
+body.cafasso-resource-admin .filters input,
+body.cafasso-resource-admin .filters select{
+  min-width:0!important;padding:10px 11px!important;border-radius:6px!important;
+  border-color:#d6c8ae!important;background:#fffaf0!important;color:#34463f!important
+}
+body.cafasso-resource-admin .table{
+  border-radius:6px!important;border-color:#d8ccb7!important;background:#fffaf0!important
+}
+body.cafasso-resource-admin th{
+  background:#eae1d2!important;color:#706d66!important;border-color:#ddd0bb!important
+}
+body.cafasso-resource-admin td{
+  border-color:#e7dcc9!important;color:#3e4d47!important
+}
+body.cafasso-resource-admin td strong{color:#30473e!important}
+body.cafasso-resource-admin .badge{
+  border-radius:5px!important;font-size:9px!important;padding:5px 7px!important
+}
+body.cafasso-resource-admin .tiny{
+  border-radius:5px!important;background:#fffaf0!important;border-color:#d7cab2!important;
+  color:#3b554b!important;font-size:9.5px!important
+}
+body.cafasso-resource-admin .note{
+  margin-top:11px!important;border-radius:6px!important;background:#efe5cb!important;
+  border-color:#dbc586!important;color:#675823!important;font-size:10px!important;line-height:1.5!important
+}
+
+body.cafasso-resource-admin .modal-wrap{
+  background:rgba(27,35,34,.66)!important;backdrop-filter:none!important
+}
+body.cafasso-resource-admin .modal{
+  width:min(660px,100%)!important;background:#f8f1e4!important;border-radius:9px!important;
+  border-color:#d2c4aa!important;box-shadow:0 22px 65px rgba(25,31,30,.25)!important
+}
+body.cafasso-resource-admin .modal h2{
+  font:500 28px Georgia,serif!important;color:#30473e!important
+}
+body.cafasso-resource-admin .field label{
+  font-size:10px!important;color:#4d5f56!important;text-transform:uppercase;letter-spacing:.055em;font-weight:900!important
+}
+body.cafasso-resource-admin .modal input,
+body.cafasso-resource-admin .modal select,
+body.cafasso-resource-admin .modal textarea{
+  border-radius:6px!important;border-color:#cfc0a7!important;background:#fffdf7!important;color:#2d4038!important
+}
+body.cafasso-resource-admin .check{
+  padding:8px 10px;border-radius:6px;background:#eee5d5;color:#46584f!important;font-size:11px!important
+}
+body.cafasso-resource-admin .check input{accent-color:#547663}
+body.cafasso-resource-admin .modal-actions .btn{border-radius:6px!important;font-size:10px!important}
+
+@media(max-width:900px){
+  body.cafasso-resource-admin .shell{grid-template-columns:210px minmax(0,1fr)!important}
+  body.cafasso-resource-admin .brand div{display:block!important}
+  body.cafasso-resource-admin .menu span{display:inline!important}
+  body.cafasso-resource-admin .side-foot{display:block!important}
+}
+@media(max-width:700px){
+  body.cafasso-resource-admin{padding-bottom:0!important}
+  body.cafasso-resource-admin .shell{display:block!important}
+  body.cafasso-resource-admin .side{
+    display:flex!important;position:sticky!important;top:0!important;z-index:45!important;
+    height:auto!important;padding:8px 10px!important;align-items:center!important;gap:8px!important
+  }
+  body.cafasso-resource-admin .brand{display:none!important}
+  body.cafasso-resource-admin .menu{
+    margin:0!important;display:flex!important;gap:5px!important;overflow-x:auto!important;scrollbar-width:none!important
+  }
+  body.cafasso-resource-admin .menu::-webkit-scrollbar{display:none}
+  body.cafasso-resource-admin .menu a{
+    flex:0 0 auto!important;white-space:nowrap!important;padding:9px 10px!important;font-size:10px!important
+  }
+  body.cafasso-resource-admin .side-foot{display:none!important}
+  body.cafasso-resource-admin main{padding:14px 12px 34px!important}
+  body.cafasso-resource-admin .head{padding:19px 17px!important}
+  body.cafasso-resource-admin .head h1{font-size:31px!important}
+  body.cafasso-resource-admin .toolbar{display:grid!important;grid-template-columns:1fr 1fr!important}
+  body.cafasso-resource-admin .toolbar #newResource{grid-column:1/-1}
+  body.cafasso-resource-admin .toolbar .btn{text-align:center;min-height:42px!important}
+  body.cafasso-resource-admin .summary{grid-template-columns:repeat(3,1fr)!important}
+  body.cafasso-resource-admin .metric{min-height:75px!important;padding:12px!important}
+  body.cafasso-resource-admin .metric strong{font-size:24px!important}
+  body.cafasso-resource-admin .filters{grid-template-columns:1fr!important}
+  body.cafasso-resource-admin .box{padding:13px!important}
+  body.cafasso-resource-admin tr{
+    border-radius:7px!important;background:#fffaf0!important;border-color:#d9ccb6!important;box-shadow:none!important
+  }
+  body.cafasso-resource-admin td:before{color:#716e66!important}
+  body.cafasso-resource-admin .modal{border-radius:10px 10px 7px 7px!important}
+}
+@media(max-width:420px){
+  body.cafasso-resource-admin .summary{grid-template-columns:1fr!important}
+}
