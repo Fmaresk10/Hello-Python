@@ -30,6 +30,24 @@
     return json(localStorage, 'cafassoSession')?.user || {};
   }
 
+  function invalidateSession() {
+    try {
+      if (window.parent?.CafassoInvalidateSession) {
+        window.parent.CafassoInvalidateSession();
+        return;
+      }
+    } catch (error) {}
+    localStorage.removeItem('cafassoSession');
+    localStorage.removeItem('cafassoAuth');
+    try { window.top.location.replace('./login.html?reason=session'); }
+    catch (error) { location.replace('./login.html?reason=session'); }
+  }
+
+  function isSessionFailure(response, payload) {
+    if (response?.status === 401 || response?.status === 403) return true;
+    return payload?.ok === false && /sesi[oó]n|token/i.test(String(payload?.error || ''));
+  }
+
   function ensureStyles() {
     if (document.getElementById(STYLE_ID)) return;
     const style = document.createElement('style');
@@ -172,6 +190,10 @@
     try {
       const response = await fetch(`${COURSE_API}?id=${encodeURIComponent(courseId)}`, { cache:'no-store' });
       const result = await response.json().catch(() => ({}));
+      if (isSessionFailure(response, result)) {
+        invalidateSession();
+        return;
+      }
       if (!response.ok || !result?.ok || !result?.course) throw new Error(result?.error || 'No se pudo cargar el curso.');
       const course = result.course;
       const modules = Array.isArray(course.modules) ? course.modules : [];
@@ -228,6 +250,10 @@
     try {
       const response = await fetch(ME_API, { headers, cache:'no-store' });
       const data = await response.json().catch(() => ({}));
+      if (isSessionFailure(response, data)) {
+        invalidateSession();
+        return;
+      }
       if (!response.ok || data?.ok === false) throw new Error(data?.error || 'No pudimos cargar tus cursos.');
       renderCourses(board, data);
     } catch (error) {
