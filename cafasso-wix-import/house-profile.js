@@ -425,7 +425,7 @@
       attributes:true,
       attributeFilter:['class'],
       childList:true,
-      subtree:true
+      subtree:false
     });
     window.addEventListener('cafasso:course-experience-ready', mountProfileButton);
     window.addEventListener('cafasso:mobile-layout', mountProfileButton);
