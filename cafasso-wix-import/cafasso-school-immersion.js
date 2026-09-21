@@ -1,6 +1,27 @@
 (() => {
   const params = new URLSearchParams(location.search);
-  if (params.get('space') !== 'escuela') return;
+  const currentSpace = params.get('space') || 'house';
+  const NAV_KEY = 'cafassoSpaceTransition';
+
+  function rememberSpaceTransition(event) {
+    const target = event.target instanceof Element ? event.target.closest('[data-space]') : null;
+    if (!target) return;
+    const to = target.dataset.space || 'house';
+    try {
+      sessionStorage.setItem(NAV_KEY, JSON.stringify({
+        from: currentSpace,
+        to,
+        at: Date.now()
+      }));
+    } catch (error) {}
+  }
+
+  if (!window.__cafassoSpaceTransitionTrackerInstalled) {
+    window.__cafassoSpaceTransitionTrackerInstalled = true;
+    document.addEventListener('click', rememberSpaceTransition, true);
+  }
+
+  if (currentSpace !== 'escuela') return;
   if (window.__cafassoSchoolImmersionInstalled) return;
   window.__cafassoSchoolImmersionInstalled = true;
 
@@ -19,6 +40,12 @@
   }
 
   function cameFromPatio() {
+    try {
+      const nav = json(sessionStorage, NAV_KEY);
+      const age = Date.now() - Number(nav?.at || 0);
+      if (nav?.from === 'patio' && nav?.to === 'escuela' && age >= 0 && age < 30000) return true;
+    } catch (error) {}
+
     try {
       if (!document.referrer) return false;
       const previous = new URL(document.referrer);
