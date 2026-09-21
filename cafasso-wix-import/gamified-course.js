@@ -372,6 +372,18 @@
       celebrateMission(active, module);
       return;
     }
+
+    // Si todas las misiones quedaron completas localmente pero el cierre del
+    // módulo no llegó a guardarse (por ejemplo, por pérdida de conexión),
+    // reintentamos el cierre al volver a entrar en vez de dejar al animador
+    // detenido en la última parada ya terminada.
+    const progressRecord = (state?.data?.progress || []).find(item => item.courseId === state?.course?._id);
+    const completedModuleIds = new Set(progressRecord?.completedModules || []);
+    const allMissionsDone = missions.length > 0 && missions.every(item => missionDone(item, module, state));
+    if (allMissionsDone && !completedModuleIds.has(module._id) && !celebrationRunning) {
+      celebrateMission(active, module);
+      return;
+    }
     const existingShell = root.querySelector('.cafasso-mission-shell');
     if (existingShell && existingShell.dataset.activeMission === activeId) {
       revealMission();
