@@ -139,7 +139,7 @@
       }
       .cafasso-global-music__book-display-inner{max-width:90%;width:100%}
       .cafasso-global-music__book-display-inner.has-cover{display:grid;grid-template-columns:minmax(98px,42%) minmax(0,1fr);grid-template-rows:auto auto auto;align-items:center;column-gap:18px;text-align:left;max-width:100%}
-      .cafasso-global-music__book-cover{display:block;grid-column:1;grid-row:1 / span 3;width:100%;aspect-ratio:1;margin:0;object-fit:cover;border:6px solid #ead9bb;outline:1px solid rgba(102,69,40,.17);box-shadow:0 7px 16px rgba(69,44,27,.16);background:#dfccb0}
+      .cafasso-global-music__book-cover{display:block;grid-column:1;grid-row:1 / span 3;width:100%;aspect-ratio:1;margin:0;object-fit:contain;border:6px solid #ead9bb;outline:1px solid rgba(102,69,40,.17);box-shadow:0 7px 16px rgba(69,44,27,.16);background:#dfccb0}
       .cafasso-global-music__book-display-inner.has-cover .cafasso-global-music__book-status{grid-column:2;grid-row:1;align-self:end}
       .cafasso-global-music__book-display-inner.has-cover .cafasso-global-music__book-title{grid-column:2;grid-row:2}
       .cafasso-global-music__book-display-inner.has-cover .cafasso-global-music__book-meta{grid-column:2;grid-row:3;align-self:start}
@@ -363,7 +363,7 @@
     const meta = state.track.source || state.track.subtitle || state.track.categoryLabel || 'Cancionero CAFASSO';
     const hasCover = Boolean(state.track.image);
     const cover = hasCover
-      ? `<img class="cafasso-global-music__book-cover" src="${state.track.image}" alt="">`
+      ? `<img class="cafasso-global-music__book-cover" src="${state.track.image}" alt="" decoding="async">`
       : '<span class="cafasso-global-music__book-note">♪</span>';
     attachedContainer.innerHTML = `
       <div class="cafasso-global-music__book-display" aria-hidden="true">
@@ -374,6 +374,17 @@
           <span class="cafasso-global-music__book-meta">${meta}</span>
         </div>
       </div>`;
+
+    const coverImage = attachedContainer.querySelector('.cafasso-global-music__book-cover');
+    coverImage?.addEventListener('error', () => {
+      const inner = coverImage.closest('.cafasso-global-music__book-display-inner');
+      if (!inner) return;
+      inner.classList.remove('has-cover');
+      const note = document.createElement('span');
+      note.className = 'cafasso-global-music__book-note';
+      note.textContent = '♪';
+      coverImage.replaceWith(note);
+    }, { once:true });
   }
 
   function attachVideo(container) {
@@ -410,6 +421,10 @@
       if (!detail.track) return;
       const next = cleanTrack(detail.track);
       if (!next) return;
+      if (state.track && state.track.id === next.id) {
+        if (!next.image) next.image = state.track.image || '';
+        if (!next.spotifyUrl) next.spotifyUrl = state.track.spotifyUrl || '';
+      }
       state.track = next;
       state.playing = Boolean(detail.playing);
       state.needsGesture = false;
