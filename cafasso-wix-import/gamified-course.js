@@ -546,36 +546,48 @@
       return;
     }
 
-    if (action) action.disabled = true;
-    const completion = typeof window.CafassoCompleteModule === 'function'
-      ? window.CafassoCompleteModule(module._id)
-      : Promise.reject(new Error('No se pudo guardar el cierre de la etapa.'));
+    const saveStage = () => {
+      if (!overlay.isConnected) return;
+      if (action) {
+        action.disabled = true;
+        action.textContent = 'Guardando etapa…';
+        action.onclick = null;
+      }
+      if (status) status.textContent = navigator.onLine === false
+        ? 'Sin conexión. CAFASSO va a conservar tu avance y podés reintentar cuando vuelva Internet.'
+        : 'Guardando tu avance…';
 
-    Promise.resolve(completion).then(() => {
-      if (!overlay.isConnected) return;
-      if (status) status.textContent = 'Etapa guardada en tu progreso.';
-      if (action) {
-        action.disabled = false;
-        action.textContent = nextModule ? 'Volver al mapa y continuar →' : 'Volver al mapa →';
-        action.addEventListener('click', () => {
-          closeOverlay();
-          returnToCourseScreen();
-        }, { once:true });
-        action.focus();
-      }
-    }).catch(error => {
-      if (!overlay.isConnected) return;
-      if (status) status.textContent = error?.message || 'No pudimos guardar la etapa. Volvé al mapa y reintentá.';
-      if (action) {
-        action.disabled = false;
-        action.textContent = 'Volver al mapa';
-        action.addEventListener('click', () => {
-          closeOverlay();
-          returnToCourseScreen();
-        }, { once:true });
-        action.focus();
-      }
-    });
+      const completion = typeof window.CafassoCompleteModule === 'function'
+        ? window.CafassoCompleteModule(module._id)
+        : Promise.reject(new Error('No se pudo guardar el cierre de la etapa.'));
+
+      Promise.resolve(completion).then(() => {
+        if (!overlay.isConnected) return;
+        if (status) status.textContent = 'Etapa guardada en tu progreso.';
+        if (action) {
+          action.disabled = false;
+          action.textContent = nextModule ? 'Volver al mapa y continuar →' : 'Volver al mapa →';
+          action.onclick = () => {
+            closeOverlay();
+            returnToCourseScreen();
+          };
+          action.focus();
+        }
+      }).catch(error => {
+        if (!overlay.isConnected) return;
+        if (status) status.textContent = navigator.onLine === false
+          ? 'Seguís sin conexión. Tu trabajo quedó guardado en este dispositivo.'
+          : (error?.message || 'No pudimos guardar la etapa. Podés reintentar ahora.');
+        if (action) {
+          action.disabled = false;
+          action.textContent = 'Reintentar guardado';
+          action.onclick = saveStage;
+          action.focus();
+        }
+      });
+    };
+
+    saveStage();
   }
 
   function isoWeekKey(value) {
