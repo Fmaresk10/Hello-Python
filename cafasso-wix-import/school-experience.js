@@ -235,10 +235,14 @@
       panel.querySelectorAll('[data-school-module]:not(:disabled)').forEach(button => {
         button.addEventListener('click', () => {
           const module = modules[Number(button.dataset.schoolModuleIndex || 0)];
-          const note = panel.querySelector('[data-school-module-note]');
-          if (!module || !note) return;
-          const count = Array.isArray(module.contents) ? module.contents.length : 0;
-          note.innerHTML = `<strong>${esc(module.title || 'Módulo')}</strong><span>${count ? `${count} experiencia${count === 1 ? '' : 's'} en esta etapa.` : 'Esta etapa está pronta para recibir sus experiencias.'}<br><br><b>Próximo paso:</b> convertir esta etapa en el mapa de misiones completo, manteniendo tu progreso y tus entregas.</span>`;
+          const id = moduleId(module);
+          if (!module || !id) return;
+          const target = new URL('./course-player.html', location.href);
+          target.searchParams.set('player', '1');
+          target.searchParams.set('course', String(courseId));
+          target.searchParams.set('module', id);
+          target.hash = 'modulo';
+          location.href = target.toString();
         });
       });
     } catch (error) {
