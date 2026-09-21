@@ -1,0 +1,138 @@
+:root{
+  --formador-forest:#173b36;
+  --formador-forest-deep:#0e2928;
+  --formador-paper:#f5ead3;
+  --formador-paper-soft:#fbf4e7;
+  --formador-ink:#27382f;
+  --formador-gold:#d9b45a;
+  --formador-line:rgba(99,75,43,.22);
+}
+html,body{min-height:100%}
+body.cafasso-formador-workbench{
+  background:
+    radial-gradient(circle at 86% 8%,rgba(217,180,90,.16),transparent 28%),
+    radial-gradient(circle at 9% 82%,rgba(57,105,83,.12),transparent 32%),
+    linear-gradient(135deg,#e7dcc8 0%,#f5ecdb 44%,#e8decb 100%);
+  color:var(--formador-ink);
+}
+body.cafasso-formador-workbench:before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.24;
+  background-image:repeating-linear-gradient(0deg,rgba(96,70,40,.025) 0,rgba(96,70,40,.025) 1px,transparent 1px,transparent 5px);
+}
+.cafasso-formador-workbench .shell{grid-template-columns:276px minmax(0,1fr);min-height:100vh;min-height:100dvh}
+.cafasso-formador-workbench .side{
+  position:sticky;top:0;height:100vh;height:100dvh;padding:30px 22px 24px;
+  background:radial-gradient(circle at 42% 6%,rgba(238,202,116,.13),transparent 24%),linear-gradient(180deg,var(--formador-forest),var(--formador-forest-deep));
+  box-shadow:18px 0 42px rgba(35,45,37,.13);border-right:1px solid rgba(235,209,148,.18)
+}
+.cafasso-formador-workbench .brand{gap:14px;padding-bottom:22px;border-bottom:1px solid rgba(255,255,255,.12)}
+.cafasso-formador-workbench .brand a{width:51px;height:57px;display:grid!important;place-items:center;border-radius:14px;background:rgba(255,255,255,.055);border:1px solid rgba(242,216,145,.16)}
+.cafasso-formador-workbench .brand img{width:37px;height:45px}
+.cafasso-formador-workbench .brand b{font:500 27px/1 Georgia,serif;letter-spacing:.015em;color:#fff7e5}
+.cafasso-formador-workbench .brand small{margin-top:6px;color:#dbc990;opacity:1;font:750 9px/1.2 Inter,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase}
+.cafasso-formador-workbench .menu{margin-top:29px;gap:7px}
+.cafasso-formador-workbench .menu a{position:relative;padding:13px 14px;border:1px solid transparent;border-radius:8px;color:#e9eadf;font-size:13px;letter-spacing:.015em;transition:.18s ease}
+.cafasso-formador-workbench .menu a:hover{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.08);transform:translateX(2px)}
+.cafasso-formador-workbench .menu a.active{background:linear-gradient(90deg,rgba(218,183,91,.19),rgba(255,255,255,.035));border-color:rgba(225,193,108,.25);color:#fff8df;box-shadow:inset 3px 0 #dcb75a}
+.cafasso-formador-workbench .side-foot{bottom:26px}
+.cafasso-formador-workbench .motto{color:#ead18c;font:italic 16px/1.42 Georgia,serif}
+.cafasso-formador-workbench .back{font-size:12px;color:#d9e1d9;border-color:rgba(255,255,255,.12)}
+
+.cafasso-formador-workbench main{max-width:1510px;padding:38px clamp(24px,3.4vw,54px) 64px}
+.cafasso-formador-workbench .head{
+  position:relative;overflow:hidden;margin-bottom:20px;padding:28px 30px 27px;border-radius:10px;
+  background:linear-gradient(110deg,rgba(255,251,239,.96),rgba(242,228,198,.94)),var(--formador-paper);
+  border:1px solid rgba(123,91,48,.2);box-shadow:0 15px 38px rgba(61,52,38,.10),inset 0 1px rgba(255,255,255,.8)
+}
+.cafasso-formador-workbench .head:after{content:"";position:absolute;right:-36px;bottom:-60px;width:240px;height:180px;border-radius:50%;border:1px solid rgba(81,111,89,.11);box-shadow:0 0 0 27px rgba(81,111,89,.035),0 0 0 55px rgba(81,111,89,.025);pointer-events:none}
+.cafasso-formador-workbench .eyebrow{color:#927029;font-size:10px;letter-spacing:.18em}
+.cafasso-formador-workbench .head h1{margin:7px 0 6px;color:#263d35;font:500 clamp(34px,3.2vw,48px)/1 Georgia,serif}
+.cafasso-formador-workbench .head p{color:#6d756c;font-size:13px}
+.cafasso-formador-workbench .head-actions{position:relative;z-index:2}
+.cafasso-formador-workbench .status{background:rgba(31,64,55,.06);border-color:rgba(31,64,55,.14);color:#617067;box-shadow:none}
+.cafasso-formador-workbench .status.ok{color:#2d7256;background:rgba(46,125,89,.09);border-color:rgba(46,125,89,.2)}
+
+.cafasso-formador-workbench .kpis{gap:12px;margin-bottom:14px}
+.cafasso-formador-workbench .card{border-radius:9px;background:rgba(255,250,238,.9);border-color:rgba(121,91,51,.19);box-shadow:0 9px 24px rgba(67,57,42,.065),inset 0 1px rgba(255,255,255,.72)}
+.cafasso-formador-workbench .kpi{position:relative;overflow:hidden;padding:18px 19px 17px}
+.cafasso-formador-workbench .kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#557c67}
+.cafasso-formador-workbench .kpi:nth-child(2):before{background:#b39752}
+.cafasso-formador-workbench .kpi:nth-child(3):before{background:#b66d55}
+.cafasso-formador-workbench .kpi:nth-child(4):before{background:#55738a}
+.cafasso-formador-workbench .kpi span{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#7d7669}
+.cafasso-formador-workbench .kpi strong{margin:5px 0 2px;color:#29433a;font:500 34px/1 Georgia,serif}
+.cafasso-formador-workbench .kpi small{font-size:11px;color:#888172}
+
+.cafasso-formador-workbench .quick{margin-bottom:14px;gap:8px}
+.cafasso-formador-workbench .btn{min-height:40px;border-radius:7px;padding:9px 13px;background:#d5b35e;color:#273b33;box-shadow:0 4px 10px rgba(97,75,31,.10);transition:transform .16s ease,filter .16s ease,box-shadow .16s ease}
+.cafasso-formador-workbench .btn:hover{transform:translateY(-1px);filter:brightness(1.025);box-shadow:0 6px 14px rgba(72,58,32,.13)}
+.cafasso-formador-workbench .btn.alt{background:rgba(255,251,241,.84);border-color:rgba(113,86,47,.22)}
+.cafasso-formador-workbench .btn.soft{background:rgba(75,123,96,.1);border-color:rgba(75,123,96,.2);color:#35674f}
+
+.cafasso-formador-workbench .dashboard-grid{gap:12px;margin-bottom:14px}
+.cafasso-formador-workbench .focus{position:relative;min-height:236px;padding:19px}
+.cafasso-formador-workbench .focus:before{content:"";position:absolute;left:18px;right:18px;top:0;height:3px;background:rgba(73,111,89,.54)}
+.cafasso-formador-workbench .focus:nth-child(2):before{background:rgba(190,150,70,.64)}
+.cafasso-formador-workbench .focus:nth-child(3):before{background:rgba(73,95,117,.5)}
+.cafasso-formador-workbench .focus h3{font:500 22px/1.1 Georgia,serif;color:#2d463d}
+.cafasso-formador-workbench .focus-head a{color:#6d653f}
+.cafasso-formador-workbench .focus-item{padding:11px 12px;border:1px solid rgba(117,90,53,.11);border-radius:7px;background:rgba(239,228,207,.62)}
+.cafasso-formador-workbench .focus-item strong{color:#30483f}
+.cafasso-formador-workbench .focus-item small,.cafasso-formador-workbench .focus-item .meta{color:#7a776e}
+.cafasso-formador-workbench .mini-progress{background:#ded4c3;height:5px}
+.cafasso-formador-workbench .mini-progress span{background:#527b65}
+
+.cafasso-formador-workbench .box{padding:24px;margin-top:14px}
+.cafasso-formador-workbench .title{padding-bottom:15px;border-bottom:1px solid rgba(116,87,48,.16)}
+.cafasso-formador-workbench .title h3{font:500 27px Georgia,serif;color:#2b433a}
+.cafasso-formador-workbench .filters input,.cafasso-formador-workbench .filters select,.cafasso-formador-workbench .quick-status{border-radius:7px;border-color:rgba(112,84,48,.2);background:#fffaf0;color:#33443d;outline:none}
+.cafasso-formador-workbench .filters input:focus,.cafasso-formador-workbench .filters select:focus,.cafasso-formador-workbench .quick-status:focus{border-color:#ac8c43;box-shadow:0 0 0 3px rgba(196,157,72,.12)}
+.cafasso-formador-workbench .table{border-radius:7px;border-color:rgba(112,84,48,.18);background:#fffaf0}
+.cafasso-formador-workbench th{background:#eee2ca;color:#706b60;border-color:#ded0b7}
+.cafasso-formador-workbench td{border-color:#e8ddc9;color:#3f4b45}
+.cafasso-formador-workbench tr:last-child td{border-bottom:0}
+.cafasso-formador-workbench .tiny{border-radius:6px;background:#fffaf0;border-color:#d8c9ae;color:#365349}
+.cafasso-formador-workbench .note{border-radius:7px;background:rgba(221,187,94,.12);border-color:rgba(181,143,50,.22);color:#705b24}
+
+@media(max-width:1050px){
+  .cafasso-formador-workbench .shell{grid-template-columns:224px minmax(0,1fr)}
+  .cafasso-formador-workbench .side{padding-left:17px;padding-right:17px}
+  .cafasso-formador-workbench .brand b{font-size:23px}
+  .cafasso-formador-workbench main{padding-left:25px;padding-right:25px}
+}
+@media(max-width:900px){
+  .cafasso-formador-workbench .shell{display:block}
+  .cafasso-formador-workbench .side{position:sticky;top:0;z-index:40;height:auto;min-height:0;padding:10px 14px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:14px;box-shadow:0 7px 22px rgba(25,45,39,.16)}
+  .cafasso-formador-workbench .brand{padding:0;border:0}
+  .cafasso-formador-workbench .brand a{width:38px;height:43px;border-radius:9px}
+  .cafasso-formador-workbench .brand img{width:27px;height:34px}
+  .cafasso-formador-workbench .brand b{font-size:20px}
+  .cafasso-formador-workbench .brand small{font-size:7px;margin-top:3px}
+  .cafasso-formador-workbench .menu{margin:0;display:flex;justify-content:flex-end;gap:5px}
+  .cafasso-formador-workbench .menu a{padding:9px 10px;font-size:11px;white-space:nowrap}
+  .cafasso-formador-workbench .side-foot{display:none}
+  .cafasso-formador-workbench main{padding-top:22px}
+}
+@media(max-width:650px){
+  .cafasso-formador-workbench .side{grid-template-columns:1fr;gap:8px;padding:10px 12px}
+  .cafasso-formador-workbench .brand{justify-content:center}
+  .cafasso-formador-workbench .brand div{display:none}
+  .cafasso-formador-workbench .menu{justify-content:center;overflow-x:auto;scrollbar-width:none}
+  .cafasso-formador-workbench .menu::-webkit-scrollbar{display:none}
+  .cafasso-formador-workbench .menu a{flex:0 0 auto;padding:9px 11px}
+  .cafasso-formador-workbench main{padding:16px 12px calc(36px + env(safe-area-inset-bottom))}
+  .cafasso-formador-workbench .head{padding:22px 18px 20px}
+  .cafasso-formador-workbench .head h1{font-size:35px}
+  .cafasso-formador-workbench .head-actions{width:100%;margin-top:4px}
+  .cafasso-formador-workbench .head-actions .btn{flex:1}
+  .cafasso-formador-workbench .status{flex:1;text-align:center}
+  .cafasso-formador-workbench .kpis{grid-template-columns:1fr 1fr}
+  .cafasso-formador-workbench .dashboard-grid{grid-template-columns:1fr}
+  .cafasso-formador-workbench .quick{grid-template-columns:1fr 1fr}
+  .cafasso-formador-workbench .focus{min-height:0}
+  .cafasso-formador-workbench .box{padding:17px 13px}
+  .cafasso-formador-workbench tr{border-radius:8px;background:#fffaf0;border-color:#ddceb4}
+}
+@media(max-width:420px){
+  .cafasso-formador-workbench .kpis,.cafasso-formador-workbench .quick{grid-template-columns:1fr}
+}
