@@ -8,17 +8,17 @@
     const style=document.createElement('style');
     style.id='cafassoGroupManagerStyles';
     style.textContent=`
-      #cafassoNewGroup{background:#F2C94C;color:#0F2D4D}
-      #cafassoGroupOverlay{position:fixed;inset:0;z-index:150;background:rgba(10,25,45,.5);display:none;place-items:center;padding:18px}
+      #cafassoNewGroup{background:#b99b55;color:#253933;border-radius:6px}
+      #cafassoGroupOverlay{position:fixed;inset:0;z-index:150;background:rgba(27,35,34,.66);display:none;place-items:center;padding:18px}
       #cafassoGroupOverlay.show{display:grid}
-      .cafasso-group-modal{width:min(560px,100%);background:#FFFDF9;border:1px solid #E8DCCB;border-radius:24px;padding:24px;box-shadow:0 25px 75px rgba(10,25,45,.28);color:#11233A}
-      .cafasso-group-modal h2{margin:0;color:#0F2D4D;font:30px Georgia,serif}.cafasso-group-modal p{margin:7px 0 18px;color:#687386;line-height:1.5}
-      .cafasso-group-field{display:grid;gap:7px;margin-top:14px}.cafasso-group-field label{font-weight:800;color:#0F2D4D;font-size:13px}
-      .cafasso-group-field input,.cafasso-group-field textarea{width:100%;border:1px solid #E8DCCB;border-radius:13px;background:#fff;padding:12px 13px;font:inherit;color:#11233A}.cafasso-group-field textarea{min-height:100px;resize:vertical}
-      .cafasso-group-check{display:flex;gap:10px;align-items:center;margin-top:16px;color:#526173;font-size:13px}.cafasso-group-check input{width:18px;height:18px}
-      .cafasso-group-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}.cafasso-group-actions button{border:0;border-radius:12px;padding:11px 14px;font-weight:850;cursor:pointer}.cafasso-group-cancel{background:#F2ECE3;color:#0F2D4D}.cafasso-group-save{background:#F2C94C;color:#0F2D4D}.cafasso-group-save:disabled{opacity:.55;cursor:wait}
+      .cafasso-group-modal{width:min(560px,100%);background:#f8f1e4;border:1px solid #d2c4aa;border-radius:9px;padding:22px;box-shadow:0 22px 65px rgba(25,31,30,.25);color:#2d4038}
+      .cafasso-group-modal h2{margin:0;color:#30473e;font:500 28px Georgia,serif}.cafasso-group-modal p{margin:7px 0 18px;color:#68716c;line-height:1.5;font-size:12px}
+      .cafasso-group-field{display:grid;gap:7px;margin-top:14px}.cafasso-group-field label{font-weight:900;color:#4d5f56;font-size:10px;text-transform:uppercase;letter-spacing:.05em}
+      .cafasso-group-field input,.cafasso-group-field textarea{width:100%;border:1px solid #cfc0a7;border-radius:6px;background:#fffdf7;padding:10px 11px;font:inherit;color:#2d4038}.cafasso-group-field textarea{min-height:100px;resize:vertical}
+      .cafasso-group-check{display:flex;gap:10px;align-items:center;margin-top:16px;color:#46584f;font-size:11px}.cafasso-group-check input{width:18px;height:18px}
+      .cafasso-group-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}.cafasso-group-actions button{border:0;border-radius:6px;padding:9px 12px;font-weight:850;cursor:pointer}.cafasso-group-cancel{background:#eee5d5;color:#40544b}.cafasso-group-save{background:#b99b55;color:#253933}.cafasso-group-save:disabled{opacity:.55;cursor:wait}
       .cafasso-group-message{min-height:18px;margin-top:10px;font-size:12px;font-weight:800;color:#2E7D59}.cafasso-group-message.error{color:#A64747}
-      @media(max-width:700px){.cafasso-group-modal{padding:19px;border-radius:20px}.cafasso-group-actions{display:grid;grid-template-columns:1fr 1fr}.cafasso-group-actions button{min-height:46px}}
+      @media(max-width:700px){.cafasso-group-modal{padding:18px;border-radius:9px}.cafasso-group-actions{display:grid;grid-template-columns:1fr 1fr}.cafasso-group-actions button{min-height:46px}}
     `;
     document.head.appendChild(style);
     const btn=document.createElement('button');
