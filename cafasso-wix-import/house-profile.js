@@ -299,7 +299,7 @@
 
   function render() {
     const house = document.querySelector('.cafasso-house');
-    if (!house || house.querySelector('[data-house-profile]')) return;
+    if (!house || house.querySelector('[data-house-profile-panel]')) return;
     ensureStyles();
 
     const user = readUser();
@@ -378,15 +378,11 @@
     }
 
     if (!mountProfileButton()) {
-      let profileHudAttempts = 0;
-      const waitForHud = () => {
-        if (mountProfileButton()) return;
-        if (profileHudAttempts < 40) {
-          profileHudAttempts += 1;
-          setTimeout(waitForHud, 80);
-        }
-      };
-      waitForHud();
+      const observer = new MutationObserver(() => {
+        if (mountProfileButton()) observer.disconnect();
+      });
+      observer.observe(document.body, { childList:true, subtree:true });
+      setTimeout(() => observer.disconnect(), 12000);
     }
 
     const fileInput = panel.querySelector('[data-house-profile-file]');
@@ -404,9 +400,7 @@
 
     function refreshPhoto() {
       const fresh = readUser();
-      const smallPortrait = sheet.querySelector('.cafasso-animator-sheet__portrait');
       const avatar = panel.querySelector('[data-house-profile-avatar]');
-      if (smallPortrait) smallPortrait.outerHTML = portraitMarkup(fresh, 'cafasso-animator-sheet__portrait');
       if (avatar) avatar.innerHTML = portraitMarkup(fresh, 'cafasso-profile-avatar__image');
       const oldRemove = panel.querySelector('[data-house-profile-photo-remove]');
       if (fresh.avatarData && !oldRemove) {
