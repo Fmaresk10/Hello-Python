@@ -119,21 +119,6 @@
         letter-spacing:-.015em;text-shadow:none;
       }
       .cafasso-school-screen-boot__line{display:none!important}
-
-      /* El cuaderno recibe luz ambiente, no un glow de objeto mágico. */
-      .cafasso-escuela .cafasso-school-resume{isolation:isolate}
-      .cafasso-escuela .cafasso-school-resume:before{
-        content:"";position:absolute;z-index:-1;
-        left:-10%;right:-10%;bottom:-3%;height:30%;
-        border-radius:50%;pointer-events:none;opacity:0;
-        background:radial-gradient(ellipse at center,rgba(231,194,119,.24),rgba(231,194,119,.07) 44%,transparent 72%);
-        filter:blur(5px);transform:scale(.82);
-        transition:opacity .85s ease,transform .85s ease;
-      }
-      .cafasso-escuela .cafasso-school-resume.cafasso-school-resume-ready:before{
-        opacity:.34;transform:scale(1);
-      }
-
       @media(max-width:760px){
         .cafasso-school-screen-boot{padding:6%}
         .cafasso-school-screen-boot__mark{margin-bottom:5px}
@@ -141,7 +126,7 @@
       }
       @media(prefers-reduced-motion:reduce){
         .cafasso-school-screen-boot,.cafasso-school-screen-boot__inner,
-        .cafasso-school-screen-boot:before,.cafasso-escuela .cafasso-school-resume:before{
+        .cafasso-school-screen-boot:before{
           transition:none!important;
         }
       }
@@ -149,25 +134,9 @@
     document.head.appendChild(style);
   }
 
-  function illuminateResume() {
-    let attempts = 0;
-    const find = () => {
-      const resume = document.querySelector('.cafasso-school-resume:not(.is-unavailable)');
-      if (resume) {
-        resume.classList.add('cafasso-school-resume-ready');
-        return;
-      }
-      if (attempts++ < 45) setTimeout(find, 100);
-    };
-    find();
-  }
-
   function bootScreen() {
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
-    if (reduced || !cameFromPatio()) {
-      illuminateResume();
-      return;
-    }
+    if (reduced || !cameFromPatio()) return;
 
     let attempts = 0;
     const find = () => {
@@ -199,7 +168,6 @@
         screen.classList.remove('cafasso-school-screen-booting');
       }, 2050);
       setTimeout(() => boot.remove(), 2520);
-      setTimeout(illuminateResume, 1900);
     };
     find();
   }
