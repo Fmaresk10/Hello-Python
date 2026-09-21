@@ -10,6 +10,9 @@
   let pendingBlockCompletion = false;
   let celebrationRunning = false;
   let autoCompletingModule = '';
+  let lastMissionAlmitasTotal = null;
+  let almitasDeltaTimer = null;
+  let reloadingApprovedSubmissions = false;
 
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
@@ -55,6 +58,24 @@
       .cafasso-mission-next strong{display:block;margin-bottom:3px}
       .cafasso-ruah-inline{display:flex;align-items:center;gap:9px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(244,216,137,.26);color:#F4D889;font-size:11px;position:relative;z-index:1}
       .cafasso-ruah-inline b{font-size:12px;color:#FFF9E8}
+      .cafasso-mission-almitas{
+        position:fixed;z-index:2147483290;right:max(68px,calc(env(safe-area-inset-right) + 68px));top:max(16px,env(safe-area-inset-top));
+        display:grid;grid-template-columns:28px auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;
+        min-width:118px;padding:7px 11px 7px 8px;border:1px solid rgba(244,216,137,.46);border-radius:999px;
+        background:linear-gradient(135deg,rgba(8,35,39,.88),rgba(24,62,55,.84));backdrop-filter:blur(10px);
+        box-shadow:0 8px 22px rgba(0,0,0,.26),inset 0 1px rgba(255,255,255,.07);color:#fff7e6;pointer-events:none
+      }
+      .cafasso-mission-almitas[hidden]{display:none!important}
+      .cafasso-mission-almitas__icon{grid-row:1/3;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;border:1px solid rgba(244,216,137,.5);background:rgba(244,216,137,.12);color:#f4d889;font:900 14px/1 Georgia,serif}
+      .cafasso-mission-almitas__main{display:flex;align-items:baseline;gap:5px;min-width:0}.cafasso-mission-almitas__main strong{font:850 15px/1 Inter,system-ui,sans-serif;color:#fff9e8}.cafasso-mission-almitas__main span{font:800 7px/1 Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#d7c99c}
+      .cafasso-mission-almitas__status{grid-column:2;display:block;max-width:150px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#cfe0d3;font:700 8px/1.2 Inter,system-ui,sans-serif}
+      .cafasso-mission-almitas.is-pending .cafasso-mission-almitas__status{color:#f4d889}
+      .cafasso-mission-almitas__delta{
+        position:absolute;right:8px;top:calc(100% + 7px);padding:6px 9px;border:1px solid rgba(255,232,163,.7);border-radius:999px;
+        background:#f1c85b;color:#17302f;font:900 11px/1 Inter,system-ui,sans-serif;box-shadow:0 7px 18px rgba(0,0,0,.28);
+        animation:cafassoAlmitasGain 1.7s cubic-bezier(.2,.8,.2,1) both
+      }
+      .cafasso-mission-almitas.is-gaining{box-shadow:0 0 0 5px rgba(244,216,137,.18),0 10px 26px rgba(0,0,0,.3)}
       body.cafasso-mission-mode .complete-box{display:none}
       .cafasso-celebration{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;background:rgba(5,25,30,.62);pointer-events:auto;animation:cafassoCelebrationIn .2s ease-out both}
       .cafasso-celebration-card{width:min(470px,92vw);padding:27px 30px 25px;text-align:center;border:1px solid rgba(255,235,165,.8);border-radius:22px;background:linear-gradient(145deg,#123C43,#22634F);color:#FFF9E8;box-shadow:0 18px 60px rgba(0,0,0,.42);animation:cafassoCelebrationPop .45s cubic-bezier(.2,.8,.2,1) both}
@@ -63,7 +84,7 @@
       .cafasso-world-return{position:fixed;z-index:100;left:auto;right:24px;top:20px;appearance:none;border:1px solid rgba(244,216,137,.55);background:rgba(8,35,39,.82);backdrop-filter:blur(10px);color:#FFF9E8;border-radius:999px;padding:10px 15px;font:850 11px Inter,system-ui;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.24)}.cafasso-world-return:hover{background:#F1C85B;color:#17302F}.cafasso-journey-mode .cafasso-course-map{background-image:url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png')!important}.cafasso-mission-mode{background-image:url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png')!important}
       body.cafasso-courses-mode{background:#102F35 url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png') center/cover fixed no-repeat!important;overflow-x:hidden}body.cafasso-courses-mode .shell{display:block;min-height:100vh}body.cafasso-courses-mode main{max-width:none;width:100%;min-height:100vh;padding:38px 7vw 58px;background:linear-gradient(180deg,rgba(5,27,32,.12),rgba(5,27,32,.36))}body.cafasso-courses-mode .side,body.cafasso-courses-mode .mobilebar,body.cafasso-courses-mode .mobile-nav,body.cafasso-courses-mode .mobile-head{display:none!important}body.cafasso-courses-mode .top{max-width:1100px;margin:0 auto 18px;color:#FFF9E8}body.cafasso-courses-mode .top h1{font:400 42px/1 Georgia,serif;color:#FFF9E8;text-shadow:0 2px 12px rgba(0,0,0,.45)}body.cafasso-courses-mode .top p{color:#DDE9DF}body.cafasso-courses-mode .top .pill{background:rgba(8,35,39,.7);border-color:rgba(244,216,137,.42);color:#FFF9E8}body.cafasso-courses-mode .courses{max-width:1100px;margin:0 auto;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}body.cafasso-courses-mode .card.course{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(250,238,210,.97),rgba(220,194,148,.96));border:1px solid rgba(115,77,39,.5);border-radius:10px 10px 5px 5px;box-shadow:0 12px 26px rgba(47,29,15,.3),inset 0 1px rgba(255,255,255,.6);color:#3B2B1E}body.cafasso-courses-mode .card.course:before{content:'◇  ESCUELA';display:block;color:#876020;font:850 9px Inter,system-ui;letter-spacing:.14em;margin-bottom:14px}body.cafasso-courses-mode .card.course h4{color:#3B2B1E;font:400 23px/1.1 Georgia,serif}body.cafasso-courses-mode .card.course p,body.cafasso-courses-mode .card.course small{color:#6B5137}body.cafasso-courses-mode .card.course .mini{background:rgba(107,81,55,.18)}body.cafasso-courses-mode .card.course .mini span{background:#2E7D59}body.cafasso-courses-mode .card.course .btn{background:#17302F;color:#FFF9E8;border-radius:999px}body.cafasso-courses-mode .card.course .badge{background:#2E7D59;color:#fff}body.cafasso-courses-mode .card.empty{max-width:1100px;margin:auto;background:rgba(8,35,39,.82);border-color:rgba(244,216,137,.42);color:#FFF9E8}
       body.cafasso-journey-mode .side .brand,body.cafasso-mission-mode .side .brand{display:grid;grid-template-columns:54px minmax(0,1fr);gap:10px 12px;align-items:center;padding:0 4px}body.cafasso-journey-mode .side .brand img,body.cafasso-mission-mode .side .brand img{width:54px;height:64px;object-fit:contain}body.cafasso-journey-mode .side .brand b,body.cafasso-mission-mode .side .brand b{font-size:27px;line-height:1;color:#FFF9E8}body.cafasso-journey-mode .side .brand small,body.cafasso-mission-mode .side .brand small{display:none}body.cafasso-journey-mode .side .brand:after,body.cafasso-mission-mode .side .brand:after{content:'EDUCAR  ·  TRANSFORMAR  ·  ACOMPAÑAR';grid-column:1/-1;color:#F4D889;font:850 8px/1.5 Inter,system-ui;letter-spacing:.11em;text-align:center;white-space:nowrap}
-      @keyframes cafassoCelebrationIn{from{opacity:0}to{opacity:1}}@keyframes cafassoCelebrationPop{from{transform:scale(.72) translateY(12px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}@keyframes cafassoConfetti{0%{opacity:1;transform:translate(-50%,-50%) rotate(0deg)}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(var(--r))}}
+      @keyframes cafassoCelebrationIn{from{opacity:0}to{opacity:1}}@keyframes cafassoCelebrationPop{from{transform:scale(.72) translateY(12px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}@keyframes cafassoConfetti{0%{opacity:1;transform:translate(-50%,-50%) rotate(0deg)}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(var(--r))}}@keyframes cafassoAlmitasGain{0%{opacity:0;transform:translateY(-5px) scale(.82)}20%{opacity:1;transform:translateY(0) scale(1.05)}72%{opacity:1;transform:translateY(2px) scale(1)}100%{opacity:0;transform:translateY(8px) scale(.96)}}
       @media(max-width:680px){body.cafasso-journey-mode main,body.cafasso-mission-mode main{padding:0}body.cafasso-journey-mode .side .nav button:not([data-view="inicio"]),body.cafasso-mission-mode .side .nav button:not([data-view="inicio"]),body.cafasso-journey-mode .mobilebar button:not([data-view="inicio"]),body.cafasso-mission-mode .mobilebar button:not([data-view="inicio"]),body.cafasso-journey-mode .mobile-nav button:not([data-view="inicio"]),body.cafasso-mission-mode .mobile-nav button:not([data-view="inicio"]){display:none!important}body.cafasso-journey-mode .mobilebar,body.cafasso-mission-mode .mobilebar,body.cafasso-journey-mode .mobile-nav,body.cafasso-mission-mode .mobile-nav{grid-template-columns:1fr!important}body.cafasso-journey-mode .cafasso-course-map{min-height:100svh;padding:24px 14px 20px}body.cafasso-journey-mode .cafasso-course-map-head{padding-left:0;display:block}.cafasso-course-map-title{font-size:29px}.cafasso-course-map-copy{font-size:12px;max-width:300px}.cafasso-course-map-badge{margin-top:12px}.cafasso-map-station{width:132px;min-height:64px;padding:8px;font-size:10px}.cafasso-map-station:nth-child(1){left:22%;top:75%}.cafasso-map-station:nth-child(2){left:42%;top:64%}.cafasso-map-station:nth-child(3){left:59%;top:42%}.cafasso-map-station:nth-child(4){left:73%;top:58%}.cafasso-map-station:nth-child(5){left:84%;top:30%}body.cafasso-mission-mode .module-detail{padding:18px 14px 34px}body.cafasso-mission-mode .cafasso-mission-shell{border-radius:18px;padding:18px 14px}body.cafasso-mission-mode article.block{padding:16px 14px}}
       .cafasso-home-ruah{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px;padding:14px 17px;border-radius:17px;background:linear-gradient(110deg,#E8F2ED,#F7F5E9);border:1px solid rgba(46,125,89,.18);color:#173954}
       .cafasso-home-ruah-main{display:flex;align-items:center;gap:11px}.cafasso-home-ruah-icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#2E7D59;color:#fff;font:700 18px Georgia,serif}.cafasso-home-ruah-label{font:850 10px/1.2 Inter,system-ui;letter-spacing:.12em;text-transform:uppercase;color:#2E7D59}.cafasso-home-ruah-total{font:400 24px/1 Georgia,serif;color:#173954;margin-top:3px}.cafasso-home-ruah-note{font-size:11px;line-height:1.4;color:#527064;text-align:right;max-width:250px}.cafasso-home-ruah-note strong{display:block;color:#245F48;margin-bottom:3px}@media(max-width:680px){.cafasso-mission-head{display:block}.cafasso-mission-time{display:block;margin-top:8px}.cafasso-mission-nav{grid-template-columns:repeat(5,minmax(54px,1fr));overflow-x:auto;padding-bottom:4px}.cafasso-mission-node{font-size:9px}.cafasso-home-ruah{align-items:flex-start;flex-direction:column}.cafasso-home-ruah-note{text-align:left;max-width:none}}
@@ -102,7 +123,7 @@
       body.cafasso-mission-mode .cafasso-mission-stage article.block[data-scene-kind="video"] h4,body.cafasso-mission-mode .cafasso-mission-stage article.block[data-scene-kind="video"] .block-text{color:#FFF9E8}
       body.cafasso-mission-mode .cafasso-mission-stage article.block[data-scene-kind="oracion"]{background:linear-gradient(145deg,rgba(48,73,64,.97),rgba(20,45,46,.96));color:#FFF9E8}
       body.cafasso-mission-mode .cafasso-mission-stage article.block[data-scene-kind="oracion"] h4,body.cafasso-mission-mode .cafasso-mission-stage article.block[data-scene-kind="oracion"] .block-text{color:#FFF9E8}
-      @media(max-width:680px){.cafasso-next-module{right:14px;bottom:18px;font-size:10px;padding:9px 12px}body.cafasso-mission-mode .module-detail{padding:0 14px 34px}body.cafasso-mission-mode .cafasso-mission-shell{margin:0 -14px 18px;padding:24px 14px 42px;min-height:100svh}body.cafasso-mission-mode .cafasso-mission-head{display:block}.cafasso-mission-stage{margin-top:22px}body.cafasso-mission-mode .cafasso-mission-stage article.block{padding:19px 16px}.cafasso-scene-marker{font-size:9px}}
+      @media(max-width:680px){.cafasso-next-module{right:14px;bottom:18px;font-size:10px;padding:9px 12px}.cafasso-mission-almitas{right:max(57px,calc(env(safe-area-inset-right) + 57px));top:max(12px,env(safe-area-inset-top));min-width:100px;padding:6px 8px 6px 6px;grid-template-columns:25px auto;column-gap:6px}.cafasso-mission-almitas__icon{width:25px;height:25px;font-size:12px}.cafasso-mission-almitas__main strong{font-size:13px}.cafasso-mission-almitas__main span{font-size:6px}.cafasso-mission-almitas__status{max-width:112px;font-size:7px}body.cafasso-mission-mode .module-detail{padding:0 14px 34px}body.cafasso-mission-mode .cafasso-mission-shell{margin:0 -14px 18px;padding:24px 14px 42px;min-height:100svh}body.cafasso-mission-mode .cafasso-mission-head{display:block}.cafasso-mission-stage{margin-top:22px}body.cafasso-mission-mode .cafasso-mission-stage article.block{padding:19px 16px}.cafasso-scene-marker{font-size:9px}}
     `;
     document.head.appendChild(style);
   }
@@ -209,6 +230,112 @@
 
   function setStoredMission(module, id) {
     try { localStorage.setItem(missionKey(module), id); } catch (error) { /* local storage may be unavailable */ }
+  }
+
+  function rewardInfoForMission(mission, module, state = experience()) {
+    const challengeBlocks = blocksOf(module, mission?.id).filter(block => ['desafío','desafio'].includes(String(block?.type || '').toLowerCase()));
+    return challengeBlocks.reduce((info, block) => {
+      const submission = (state?.submissions || []).find(item => item.activityId === block._id);
+      const configured = Math.max(0, Number(submission?.rewardAlmitas ?? block?.settings?.rewardAlmitas ?? 0));
+      if (!configured) return info;
+      const status = String(submission?.status || '').trim();
+      if (/^aprobad/i.test(status)) info.awarded += configured;
+      else if (['Pendiente','En revisión'].includes(status)) info.pending += configured;
+      else info.possible += configured;
+      return info;
+    }, { awarded:0, pending:0, possible:0 });
+  }
+
+  function ensureMissionAlmitasChip() {
+    let chip = document.getElementById('cafassoMissionAlmitas');
+    if (chip) return chip;
+    chip = document.createElement('div');
+    chip.id = 'cafassoMissionAlmitas';
+    chip.className = 'cafasso-mission-almitas';
+    chip.hidden = true;
+    chip.setAttribute('role','status');
+    chip.setAttribute('aria-live','polite');
+    chip.innerHTML = '<span class="cafasso-mission-almitas__icon" aria-hidden="true">✦</span><div class="cafasso-mission-almitas__main"><strong data-mission-almitas-total>—</strong><span>Almitas</span></div><small class="cafasso-mission-almitas__status" data-mission-almitas-status>Tu saldo</small>';
+    document.body.appendChild(chip);
+    return chip;
+  }
+
+  function currentMissionRewardInfo() {
+    const state = experience();
+    const module = state?.module;
+    const missions = missionsOf(module);
+    if (!module || !missions.length) return { awarded:0, pending:0, possible:0 };
+    const activeId = currentMission(module, missions, state);
+    const active = missions.find(item => item.id === activeId) || missions[0];
+    return rewardInfoForMission(active, module, state);
+  }
+
+  function rewardStatusText(info) {
+    if (info.pending > 0) return `+${info.pending} pendientes de aprobación`;
+    if (info.possible > 0) return `+${info.possible} al aprobarse`;
+    if (info.awarded > 0) return `+${info.awarded} acreditadas`;
+    return 'Tu saldo';
+  }
+
+  function animateAlmitasValue(node, from, to) {
+    if (!node || !Number.isFinite(from) || !Number.isFinite(to) || from === to) {
+      if (node) node.textContent = String(Math.max(0, Number(to || 0)));
+      return;
+    }
+    const started = performance.now();
+    const duration = 720;
+    const tick = now => {
+      const progress = Math.min(1, (now - started) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      node.textContent = String(Math.round(from + (to - from) * eased));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  function updateMissionAlmitas(metrics, { animate = true } = {}) {
+    const chip = ensureMissionAlmitasChip();
+    const inMission = document.body.classList.contains('cafasso-mission-mode') || experience()?.view === 'module';
+    chip.hidden = !inMission;
+    if (!inMission) return;
+
+    const total = Math.max(0, Number(metrics?.total ?? window.CafassoAlmitasCore?.current?.total ?? 0));
+    const totalNode = chip.querySelector('[data-mission-almitas-total]');
+    const statusNode = chip.querySelector('[data-mission-almitas-status]');
+    const rewardInfo = currentMissionRewardInfo();
+    chip.classList.toggle('is-pending', rewardInfo.pending > 0 || rewardInfo.possible > 0);
+    if (statusNode) statusNode.textContent = rewardStatusText(rewardInfo);
+
+    if (lastMissionAlmitasTotal == null) {
+      lastMissionAlmitasTotal = total;
+      if (totalNode) totalNode.textContent = String(total);
+      return;
+    }
+
+    const previous = lastMissionAlmitasTotal;
+    lastMissionAlmitasTotal = total;
+    if (animate && total > previous) {
+      const delta = total - previous;
+      animateAlmitasValue(totalNode, previous, total);
+      chip.classList.add('is-gaining');
+      chip.querySelector('.cafasso-mission-almitas__delta')?.remove();
+      const badge = document.createElement('span');
+      badge.className = 'cafasso-mission-almitas__delta';
+      badge.textContent = `+${delta}`;
+      chip.appendChild(badge);
+      clearTimeout(almitasDeltaTimer);
+      almitasDeltaTimer = setTimeout(() => {
+        chip.classList.remove('is-gaining');
+        badge.remove();
+      }, 1800);
+    } else if (totalNode) {
+      totalNode.textContent = String(total);
+    }
+  }
+
+  function hideMissionAlmitas() {
+    const chip = document.getElementById('cafassoMissionAlmitas');
+    if (chip) chip.hidden = true;
   }
 
   function prepareWorldReturnButton() {
@@ -405,13 +532,21 @@
     shell.dataset.activeMission = active.id;
     const moduleSettings = settingsOf(module);
     const badge = moduleSettings.badge || {};
+    const activeReward = rewardInfoForMission(active, module, state);
+    const rewardBanner = activeReward.pending > 0
+      ? `<div class="cafasso-ruah-inline"><span>✦</span><span><b>${activeReward.pending} Almitas</b> pendientes de aprobación del formador.</span></div>`
+      : activeReward.possible > 0
+        ? `<div class="cafasso-ruah-inline"><span>✦</span><span>Este desafío vale <b>${activeReward.possible} Almitas</b> cuando sea aprobado.</span></div>`
+        : activeReward.awarded > 0
+          ? `<div class="cafasso-ruah-inline"><span>✦</span><span>Recompensa acreditada: <b>${activeReward.awarded} Almitas</b>.</span></div>`
+          : '';
     shell.innerHTML = `<button type="button" class="cafasso-scene-back">← Volver al camino</button><div class="cafasso-mission-head"><div><div class="cafasso-mission-kicker">${esc(moduleSettings.stageLabel || 'El camino')} · Parada ${missions.indexOf(active) + 1} de ${missions.length}</div><h3 class="cafasso-mission-title">${esc(activeView.title)}</h3><p class="cafasso-mission-objective">${esc(activeView.objective || 'Avanzá un paso en tu recorrido.')}</p></div><span class="cafasso-mission-time">${Number(active.minutes || 5)} min</span></div>${activeView.prompt ? `<div class="cafasso-mission-prompt"><strong>Tu misión ahora</strong>${esc(activeView.prompt)}</div>` : ''}<div class="cafasso-mission-nav">${missions.map((mission, index) => {
       const view = presentationOf(module, mission);
       const done = doneIds.has(mission.id);
       const previousDone = index === 0 || doneIds.has(missions[index - 1].id);
       const locked = !previousDone && !done;
       return `<button class="cafasso-mission-node ${mission.id === active.id ? 'active' : ''} ${done ? 'done' : ''} ${locked ? 'locked' : ''}" data-mission-id="${esc(mission.id)}" ${locked ? 'disabled' : ''}><i>${esc(view.icon || '•')}</i><span>${esc(view.title)}</span></button>`;
-    }).join('')}</div>${active.rewardAlmitas ? `<div class="cafasso-ruah-inline"><span>✦</span><span>Recompensa de esta parada: <b>${Number(active.rewardAlmitas)} almitas</b></span></div>` : ''}${badge.name ? `<div class="cafasso-ruah-inline"><span>🏅</span><span>Logro del camino: <b>${esc(badge.name)}</b></span></div>` : ''}`;
+    }).join('')}</div>${rewardBanner}${badge.name ? `<div class="cafasso-ruah-inline"><span>🏅</span><span>Logro del camino: <b>${esc(badge.name)}</b></span></div>` : ''}`;
     const stage = document.createElement('div');
     stage.className = 'cafasso-mission-stage';
     stage.innerHTML = `<div class="cafasso-scene-marker"><span>${esc(activeView.icon || '✦')}</span><small>${esc(activeView.sceneLabel || 'Escena de la misión')} · ${activeBlockRecords.length} contenidos</small></div>`;
@@ -441,6 +576,7 @@
       if (complete) complete.insertAdjacentElement('beforebegin', box);
       else root.appendChild(box);
     }
+    updateMissionAlmitas(window.CafassoAlmitasCore?.current || window.CafassoAlmitasMetrics || null, { animate:false });
     revealMission();
   }
 
@@ -489,13 +625,19 @@
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
 
-    const reward = Number(mission.rewardAlmitas || 0);
+    const rewardInfo = rewardInfoForMission(mission, module, state);
     const nextView = nextMission ? presentationOf(module, nextMission) : null;
     const stageFinished = !nextMission && canCloseModule;
     const fallbackIncomplete = !nextMission && !canCloseModule;
 
     const headline = stageFinished ? '¡Etapa completada!' : '¡Misión completada!';
-    const rewardLine = reward > 0 ? `✦ +${reward} almitas` : 'Un paso más en tu camino';
+    const rewardLine = rewardInfo.awarded > 0
+      ? `✦ Recompensa acreditada: ${rewardInfo.awarded} Almitas`
+      : rewardInfo.pending > 0
+        ? `✦ ${rewardInfo.pending} Almitas pendientes de aprobación`
+        : rewardInfo.possible > 0
+          ? `✦ Recompensa: ${rewardInfo.possible} Almitas al aprobarse`
+          : 'Un paso más en tu camino';
     const nextCopy = nextMission
       ? `<div class="cafasso-celebration-next">Tu próxima parada es <b>${esc(nextView?.title || 'la siguiente misión')}</b>.</div>`
       : stageFinished && nextModule
@@ -661,13 +803,30 @@
     if (state?.view === 'course' || state?.view === 'module') prepareWorldReturnButton();
     else clearWorldReturnButton();
     if (state?.view !== 'course') document.body.classList.remove('cafasso-journey-mode');
-    if (state?.view !== 'module') document.body.classList.remove('cafasso-mission-mode');
+    if (state?.view !== 'module') {
+      document.body.classList.remove('cafasso-mission-mode');
+      hideMissionAlmitas();
+    } else {
+      updateMissionAlmitas(window.CafassoAlmitasCore?.current || window.CafassoAlmitasMetrics || null, { animate:false });
+    }
     decorateCourses();
     decorateHome();
   }
 
   window.addEventListener('cafasso:course-experience-ready', refresh);
   window.addEventListener('cafasso:state-ready', refresh);
+  window.addEventListener('cafasso:almitas-total', event => {
+    const before = lastMissionAlmitasTotal;
+    updateMissionAlmitas(event?.detail || null, { animate:true });
+    const after = Math.max(0, Number(event?.detail?.total || 0));
+    if (before != null && after > before && !reloadingApprovedSubmissions && typeof window.CafassoReloadCourseSubmissions === 'function') {
+      reloadingApprovedSubmissions = true;
+      Promise.resolve(window.CafassoReloadCourseSubmissions()).finally(() => {
+        reloadingApprovedSubmissions = false;
+        setTimeout(refresh, 80);
+      });
+    }
+  });
   window.addEventListener('cafasso:block-completed', () => { pendingBlockCompletion = true; setTimeout(refresh, 60); });
   window.addEventListener('hashchange', () => setTimeout(refresh, 40));
   setInterval(refresh, 1000);
