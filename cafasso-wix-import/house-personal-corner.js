@@ -74,7 +74,7 @@
     style.id = STYLE_ID;
     style.textContent = `
       .cafasso-house-corner{
-        position:absolute;left:calc(42.6% - 3cm);bottom:8.8%;z-index:13;width:116px;height:82px;padding:0;border:0;
+        position:absolute;left:calc(42.6% - 8cm);bottom:8.8%;z-index:13;width:116px;height:82px;padding:0;border:0;
         background:transparent;cursor:pointer;transform:rotate(2.8deg);transform-origin:50% 90%;
         filter:drop-shadow(0 8px 6px rgba(37,23,13,.31));transition:transform .18s ease,filter .18s ease
       }
@@ -158,7 +158,7 @@
       .cafasso-house-corner-history{position:relative;z-index:1;margin-top:17px;color:#927861;font:italic 10.5px/1.4 Georgia,serif}
 
       html.cafasso-mobile.cafasso-mobile-portrait body .cafasso-house-panorama .cafasso-house-corner{
-        left:calc(42.6% - 3cm)!important;
+        left:calc(42.6% - 8cm)!important;
         bottom:8.8%!important;
         width:clamp(94px,14.2vh,116px)!important;
         height:clamp(66px,10vh,82px)!important;
