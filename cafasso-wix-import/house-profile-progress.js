@@ -1,6 +1,5 @@
 (() => {
   const params = new URLSearchParams(location.search);
-  if ((params.get('space') || 'house') !== 'house') return;
   if (window.__cafassoHouseProfileProgressInstalled) return;
   window.__cafassoHouseProfileProgressInstalled = true;
 
