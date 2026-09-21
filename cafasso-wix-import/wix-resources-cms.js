@@ -185,6 +185,7 @@
       categoria: settings.categoria || block.categoria || '',
       tipo: settings.resourceType || block.tipo || block.type || 'Documento',
       url: content.body || content.url || block.url || block.archivo || '',
+      descripcion: settings.descripcion || block.descripcion || block.description || '',
       mostrarEnBiblioteca: showValue == null ? true : !explicitlyFalse(showValue),
       disponibleParaCursos: truthy(settings.disponibleParaCursos ?? block.disponibleParaCursos),
       bibliotecaSlot: Number(settings.bibliotecaSlot ?? block.bibliotecaSlot ?? block.slot) || null,
@@ -200,6 +201,7 @@
       categoria: resource.categoria || '',
       tipo: resource.tipo || resource.type || 'Documento',
       url: resource.url || resource.archivo || '',
+      descripcion: resource.descripcion || resource.description || '',
       mostrarEnBiblioteca: resource.mostrarEnBiblioteca == null ? true : !explicitlyFalse(resource.mostrarEnBiblioteca),
       disponibleParaCursos: truthy(resource.disponibleParaCursos),
       bibliotecaSlot: Number(resource.bibliotecaSlot ?? resource.slot) || null,
@@ -234,13 +236,248 @@
     return BOOK_SLOTS[index % BOOK_SLOTS.length];
   }
 
+  function ensureViewerStyles() {
+    if (document.getElementById('cafassoResourceViewerStyles')) return;
+    const style = document.createElement('style');
+    style.id = 'cafassoResourceViewerStyles';
+    style.textContent = `
+      .cafasso-resource-viewer{
+        position:fixed;inset:0;z-index:2147482500;display:grid;place-items:center;
+        padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));
+        background:radial-gradient(circle at 50% 32%,rgba(112,83,49,.15),rgba(5,18,19,.78) 62%,rgba(3,12,13,.9));
+        backdrop-filter:blur(8px) saturate(.78)
+      }
+      .cafasso-resource-viewer[hidden]{display:none!important}
+      .cafasso-resource-viewer__book{
+        position:relative;width:min(1120px,96vw);height:min(760px,92dvh);display:grid;
+        grid-template-columns:minmax(220px,310px) minmax(0,1fr);overflow:hidden;
+        border:1px solid rgba(111,78,45,.5);border-radius:12px;
+        background:linear-gradient(90deg,#8b4a38 0 58px,#f6ead1 58px 100%);
+        box-shadow:0 30px 90px rgba(0,0,0,.52),inset 0 1px rgba(255,255,255,.54)
+      }
+      .cafasso-resource-viewer__book:before{
+        content:"";position:absolute;left:58px;top:0;bottom:0;width:1px;background:rgba(82,53,33,.22);
+        box-shadow:5px 0 15px rgba(82,53,33,.08);pointer-events:none
+      }
+      .cafasso-resource-viewer__meta{
+        min-width:0;padding:38px 25px 28px 86px;overflow:auto;color:#3b3026;
+        background:linear-gradient(145deg,rgba(255,251,241,.52),rgba(225,201,158,.18))
+      }
+      .cafasso-resource-viewer__kicker{
+        color:#987344;font:850 9px/1.2 Inter,system-ui,sans-serif;letter-spacing:.17em;text-transform:uppercase
+      }
+      .cafasso-resource-viewer__meta h2{
+        margin:8px 0 9px;color:#31271f;font:500 34px/1.03 Georgia,serif;overflow-wrap:anywhere
+      }
+      .cafasso-resource-viewer__type{
+        display:inline-flex;margin:0 0 16px;padding:6px 8px;border:1px solid rgba(126,91,49,.25);
+        border-radius:999px;background:rgba(255,255,255,.4);color:#725a3c;
+        font:800 9px/1 Inter,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.08em
+      }
+      .cafasso-resource-viewer__description{
+        margin:0 0 18px;color:#615142;font:14px/1.58 Georgia,serif
+      }
+      .cafasso-resource-viewer__hint{
+        margin:17px 0 0;padding-top:14px;border-top:1px solid rgba(111,78,45,.18);
+        color:#7c6c5d;font:700 10px/1.45 Inter,system-ui,sans-serif
+      }
+      .cafasso-resource-viewer__actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+      .cafasso-resource-viewer__action{
+        display:inline-flex;align-items:center;justify-content:center;min-height:39px;padding:10px 13px;
+        border:1px solid rgba(103,76,44,.28);border-radius:999px;background:#fff9e9;color:#3d4f47;
+        text-decoration:none;font:850 10px/1 Inter,system-ui,sans-serif;cursor:pointer
+      }
+      .cafasso-resource-viewer__action--primary{background:#b99b55;border-color:#b99b55;color:#203631}
+      .cafasso-resource-viewer__stage{
+        position:relative;min-width:0;min-height:0;display:grid;place-items:center;padding:20px;
+        background:linear-gradient(145deg,#18383b,#0e292d)
+      }
+      .cafasso-resource-viewer__frame{
+        width:100%;height:100%;min-height:0;border:1px solid rgba(244,216,137,.28);border-radius:8px;
+        background:#f8f2e7;box-shadow:0 12px 34px rgba(0,0,0,.25)
+      }
+      iframe.cafasso-resource-viewer__frame{border:0}
+      img.cafasso-resource-viewer__frame{object-fit:contain;background:#111}
+      video.cafasso-resource-viewer__frame{object-fit:contain;background:#000}
+      .cafasso-resource-viewer__fallback{
+        width:min(520px,90%);padding:26px;text-align:center;border:1px solid rgba(244,216,137,.3);
+        border-radius:10px;background:rgba(11,37,41,.8);color:#f5ecd8
+      }
+      .cafasso-resource-viewer__fallback strong{display:block;font:500 25px/1.08 Georgia,serif}
+      .cafasso-resource-viewer__fallback span{display:block;margin-top:9px;color:#cbd9d1;font:11px/1.5 Inter,system-ui,sans-serif}
+      .cafasso-resource-viewer__close{
+        position:absolute;right:12px;top:10px;z-index:4;width:38px;height:38px;border:1px solid rgba(92,64,38,.2);
+        border-radius:50%;background:rgba(255,249,232,.78);color:#5e4a38;font:28px/1 Georgia,serif;cursor:pointer
+      }
+      @media(max-width:760px){
+        .cafasso-resource-viewer{place-items:stretch;padding:0}
+        .cafasso-resource-viewer__book{
+          width:100%;height:100dvh;border:0;border-radius:0;grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);
+          background:#f4e7ce
+        }
+        .cafasso-resource-viewer__book:before{display:none}
+        .cafasso-resource-viewer__meta{padding:22px 56px 17px 20px;max-height:39dvh}
+        .cafasso-resource-viewer__meta h2{font-size:27px}
+        .cafasso-resource-viewer__description{font-size:13px;margin-bottom:11px}
+        .cafasso-resource-viewer__hint{margin-top:11px;padding-top:10px}
+        .cafasso-resource-viewer__actions{margin-top:12px}
+        .cafasso-resource-viewer__stage{padding:10px;min-height:0}
+        .cafasso-resource-viewer__close{position:fixed;right:max(10px,env(safe-area-inset-right));top:max(10px,env(safe-area-inset-top))}
+      }
+      @media(max-height:560px) and (orientation:landscape){
+        .cafasso-resource-viewer__book{height:100dvh;width:100vw;border-radius:0;grid-template-columns:260px minmax(0,1fr)}
+        .cafasso-resource-viewer__meta{padding:24px 18px 18px 68px;max-height:none}
+        .cafasso-resource-viewer__meta h2{font-size:25px}
+        .cafasso-resource-viewer__description{font-size:12px}
+        .cafasso-resource-viewer__stage{padding:9px}
+      }
+      @media(prefers-reduced-motion:reduce){.cafasso-resource-viewer{backdrop-filter:none}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function viewerEmbedUrl(rawUrl) {
+    const url = String(rawUrl || '').trim();
+    if (!url) return '';
+    try {
+      const parsed = new URL(url, location.href);
+      const host = parsed.hostname.toLowerCase();
+      const youtube = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/);
+      if (youtube) return `https://www.youtube.com/embed/${youtube[1]}?rel=0`;
+      if (host.includes('drive.google.com')) {
+        const file = parsed.pathname.match(/\/file\/d\/([^/]+)/);
+        if (file) return `https://drive.google.com/file/d/${file[1]}/preview`;
+        const presentation = parsed.pathname.match(/\/presentation\/d\/([^/]+)/);
+        if (presentation) return `https://docs.google.com/presentation/d/${presentation[1]}/embed?start=false&loop=false&delayms=3000`;
+        const documentId = parsed.pathname.match(/\/(?:document|spreadsheets)\/d\/([^/]+)/);
+        if (documentId) return url.replace(/\/(edit|view)(?:\?.*)?$/, '/preview');
+      }
+      if (host.includes('canva.com') && !parsed.searchParams.has('embed')) {
+        parsed.searchParams.set('embed', '1');
+        return parsed.toString();
+      }
+      return parsed.toString();
+    } catch (error) {
+      return url;
+    }
+  }
+
+  function resourceViewerKind(resource) {
+    const type = String(resource?.tipo || '').toLowerCase();
+    const url = String(resource?.url || '').toLowerCase().split('?')[0].split('#')[0];
+    if (type.includes('imagen') || /\.(png|jpe?g|webp|gif|svg)$/.test(url)) return 'image';
+    if (/youtube\.com|youtu\.be/.test(String(resource?.url || '').toLowerCase())) return 'youtube';
+    if (type.includes('video') || /\.(mp4|webm|mov|m4v)$/.test(url)) return 'video';
+    if (type.includes('pdf') || /\.pdf$/.test(url)) return 'document';
+    return 'document';
+  }
+
+  function closeResourceViewer() {
+    const viewer = document.getElementById('cafassoResourceViewer');
+    if (!viewer) return;
+    viewer.hidden = true;
+    const stage = viewer.querySelector('[data-resource-viewer-stage]');
+    if (stage) stage.innerHTML = '';
+    document.body.classList.remove('cafasso-resource-viewer-open');
+    viewer._returnFocus?.focus?.();
+  }
+
+  function ensureResourceViewer() {
+    ensureViewerStyles();
+    let viewer = document.getElementById('cafassoResourceViewer');
+    if (viewer) return viewer;
+
+    viewer = document.createElement('section');
+    viewer.id = 'cafassoResourceViewer';
+    viewer.className = 'cafasso-resource-viewer';
+    viewer.hidden = true;
+    viewer.innerHTML = `
+      <article class="cafasso-resource-viewer__book" role="dialog" aria-modal="true" aria-labelledby="cafassoResourceViewerTitle">
+        <button class="cafasso-resource-viewer__close" type="button" aria-label="Cerrar recurso" data-resource-viewer-close>×</button>
+        <aside class="cafasso-resource-viewer__meta">
+          <div class="cafasso-resource-viewer__kicker" data-resource-viewer-category>Biblioteca CAFASSO</div>
+          <h2 id="cafassoResourceViewerTitle" data-resource-viewer-title>Recurso</h2>
+          <span class="cafasso-resource-viewer__type" data-resource-viewer-type>Documento</span>
+          <p class="cafasso-resource-viewer__description" data-resource-viewer-description></p>
+          <div class="cafasso-resource-viewer__actions">
+            <a class="cafasso-resource-viewer__action cafasso-resource-viewer__action--primary" data-resource-viewer-original target="_blank" rel="noopener noreferrer">Abrir original ↗</a>
+            <button class="cafasso-resource-viewer__action" type="button" data-resource-viewer-close>Volver a la Biblioteca</button>
+          </div>
+          <p class="cafasso-resource-viewer__hint">El recurso se abre dentro de CAFASSO siempre que la fuente lo permita. Algunos sitios externos bloquean la vista integrada; en ese caso podés usar “Abrir original”.</p>
+        </aside>
+        <div class="cafasso-resource-viewer__stage" data-resource-viewer-stage></div>
+      </article>`;
+
+    viewer.querySelectorAll('[data-resource-viewer-close]').forEach(button => button.addEventListener('click', closeResourceViewer));
+    viewer.addEventListener('click', event => { if (event.target === viewer) closeResourceViewer(); });
+    document.body.appendChild(viewer);
+    return viewer;
+  }
+
+  function openResourceViewer(resource, returnFocus) {
+    if (!resource?.url) return;
+    const viewer = ensureResourceViewer();
+    const stage = viewer.querySelector('[data-resource-viewer-stage]');
+    const title = viewer.querySelector('[data-resource-viewer-title]');
+    const category = viewer.querySelector('[data-resource-viewer-category]');
+    const type = viewer.querySelector('[data-resource-viewer-type]');
+    const description = viewer.querySelector('[data-resource-viewer-description]');
+    const original = viewer.querySelector('[data-resource-viewer-original]');
+    const kind = resourceViewerKind(resource);
+    const embedUrl = viewerEmbedUrl(resource.url);
+
+    if (title) title.textContent = resource.titulo || 'Recurso';
+    if (category) category.textContent = resource.categoria ? `Biblioteca · ${resource.categoria}` : 'Biblioteca CAFASSO';
+    if (type) type.textContent = resource.tipo || 'Documento';
+    if (description) {
+      description.textContent = resource.descripcion || 'Un material de la Biblioteca CAFASSO.';
+      description.hidden = !description.textContent;
+    }
+    if (original) original.href = resource.url;
+
+    if (stage) {
+      stage.innerHTML = '';
+      let content;
+      if (kind === 'image') {
+        content = document.createElement('img');
+        content.src = resource.url;
+        content.alt = resource.titulo || 'Recurso';
+      } else if (kind === 'video' && !/youtube\.com|youtu\.be/i.test(resource.url)) {
+        content = document.createElement('video');
+        content.src = resource.url;
+        content.controls = true;
+        content.playsInline = true;
+        content.preload = 'metadata';
+      } else {
+        content = document.createElement('iframe');
+        content.src = embedUrl;
+        content.title = resource.titulo || 'Recurso';
+        content.loading = 'eager';
+        content.allow = 'autoplay; clipboard-write; encrypted-media; picture-in-picture; fullscreen';
+        content.referrerPolicy = 'strict-origin-when-cross-origin';
+        content.setAttribute('allowfullscreen', '');
+      }
+      content.className = 'cafasso-resource-viewer__frame';
+      content.addEventListener('error', () => {
+        stage.innerHTML = '<div class="cafasso-resource-viewer__fallback"><strong>No pudimos mostrar este recurso acá.</strong><span>La fuente puede estar bloqueando la vista integrada. Usá “Abrir original” para verlo directamente.</span></div>';
+      }, { once:true });
+      stage.appendChild(content);
+    }
+
+    viewer._returnFocus = returnFocus || document.activeElement;
+    viewer.hidden = false;
+    document.body.classList.add('cafasso-resource-viewer-open');
+    viewer.querySelector('[data-resource-viewer-close]')?.focus();
+  }
+
   function createBook(resource, index) {
     const slot = resolveSlot(resource, index);
     const href = resource.url;
-    const book = document.createElement(href ? 'a' : 'button');
+    const book = document.createElement('button');
     const seed = resource.categoria || resource.id || resource.titulo;
 
     book.className = 'cafasso-resource-book';
+    book.type = 'button';
     book.dataset.cafassoSlot = String(slot.id);
     book.dataset.cafassoResourceId = String(resource.id || '');
     book.setAttribute('aria-label', resource.titulo || 'Recurso');
@@ -257,11 +494,11 @@
     book.style.setProperty('--book-color', resource.color || COLORS[hashText(seed) % COLORS.length]);
 
     if (href) {
-      book.href = href;
-      book.target = '_blank';
-      book.rel = 'noopener noreferrer';
+      book.addEventListener('click', event => {
+        event.preventDefault();
+        openResourceViewer(resource, book);
+      });
     } else {
-      book.type = 'button';
       book.disabled = true;
     }
 
@@ -352,6 +589,12 @@
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) loadLibrary();
   });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !document.getElementById('cafassoResourceViewer')?.hidden) {
+      closeResourceViewer();
+    }
+  });
+
   window.addEventListener('storage', event => {
     if (event.key === 'cafasso-resources-updated') loadLibrary();
   });
