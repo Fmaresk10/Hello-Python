@@ -49,6 +49,19 @@
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
+      .cafasso-profile-global-anchor{
+        position:fixed;z-index:2147483300;display:none;align-items:center;justify-content:center;
+        pointer-events:none
+      }
+      .cafasso-profile-global-anchor.is-active{display:flex}
+      .cafasso-profile-global-anchor .cafasso-profile-hud-button{margin:0;pointer-events:auto}
+      body.cafasso-school-course-open .cafasso-profile-global-anchor{
+        left:max(16px,env(safe-area-inset-left));right:auto;top:max(16px,env(safe-area-inset-top))
+      }
+      body.cafasso-mission-mode .cafasso-profile-global-anchor,
+      html[data-cafasso-player="1"] .cafasso-profile-global-anchor{
+        left:auto;right:max(16px,env(safe-area-inset-right));top:max(16px,env(safe-area-inset-top))
+      }
       .cafasso-profile-hud-button{
         position:relative;display:grid;place-items:center;align-self:center;flex:0 0 auto;
         width:42px;height:42px;margin:5px 6px 5px 0;padding:0;border:1px solid rgba(242,201,90,.38);border-radius:50%;
@@ -82,12 +95,20 @@
       }
       @media(max-width:680px){
         .cafasso-profile-hud-button{width:34px;height:34px;margin:4px 5px 4px 0;font-size:11px}
+        .cafasso-profile-global-anchor .cafasso-profile-hud-button{width:36px;height:36px;margin:0;font-size:11px}
         .cafasso-profile-hud-button__label{display:none}
+        body.cafasso-school-course-open .cafasso-profile-global-anchor{
+          left:max(12px,env(safe-area-inset-left));top:max(12px,env(safe-area-inset-top))
+        }
+        body.cafasso-mission-mode .cafasso-profile-global-anchor,
+        html[data-cafasso-player="1"] .cafasso-profile-global-anchor{
+          right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top))
+        }
       }
 
 
       .cafasso-profile-panel{
-        position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;
+        position:fixed;inset:0;z-index:2147483400;display:flex;align-items:center;justify-content:center;
         padding:clamp(10px,2.2vh,24px);overflow:hidden;
         background:radial-gradient(circle at 50% 40%,rgba(92,65,40,.10),rgba(7,18,18,.68) 64%,rgba(4,13,14,.82));
         backdrop-filter:blur(9px) saturate(.78)
@@ -366,20 +387,48 @@
 
     document.body.appendChild(panel);
 
+    function ensureGlobalAnchor() {
+      let anchor = document.getElementById('cafassoProfileGlobalAnchor');
+      if (anchor) return anchor;
+      anchor = document.createElement('div');
+      anchor.id = 'cafassoProfileGlobalAnchor';
+      anchor.className = 'cafasso-profile-global-anchor';
+      anchor.setAttribute('aria-label', 'Acceso a mi ficha CAFASSO');
+      document.body.appendChild(anchor);
+      return anchor;
+    }
+
+    function needsStandaloneProfile() {
+      return document.documentElement.dataset.cafassoPlayer === '1' ||
+        document.body.classList.contains('cafasso-school-course-open') ||
+        document.body.classList.contains('cafasso-mission-mode');
+    }
+
     function mountProfileButton() {
+      const anchor = ensureGlobalAnchor();
+      if (needsStandaloneProfile()) {
+        if (sheet.parentNode !== anchor) anchor.appendChild(sheet);
+        anchor.classList.add('is-active');
+        return true;
+      }
+
+      anchor.classList.remove('is-active');
       const hud = document.getElementById('cafassoGlobalCounters');
       if (!hud) return false;
       if (sheet.parentNode !== hud) hud.appendChild(sheet);
       return true;
     }
 
-    if (!mountProfileButton()) {
-      const observer = new MutationObserver(() => {
-        if (mountProfileButton()) observer.disconnect();
-      });
-      observer.observe(document.body, { childList:true, subtree:true });
-      setTimeout(() => observer.disconnect(), 12000);
-    }
+    mountProfileButton();
+    const mountObserver = new MutationObserver(() => mountProfileButton());
+    mountObserver.observe(document.body, {
+      attributes:true,
+      attributeFilter:['class'],
+      childList:true,
+      subtree:true
+    });
+    window.addEventListener('cafasso:course-experience-ready', mountProfileButton);
+    window.addEventListener('cafasso:mobile-layout', mountProfileButton);
 
     const fileInput = panel.querySelector('[data-house-profile-file]');
     const choose = panel.querySelector('[data-house-profile-photo]');
