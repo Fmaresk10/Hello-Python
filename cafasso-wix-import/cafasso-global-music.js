@@ -138,7 +138,11 @@
           #eadcc0;color:#6f5643;font-family:Georgia,serif
       }
       .cafasso-global-music__book-display-inner{max-width:90%;width:100%}
-      .cafasso-global-music__book-cover{display:block;width:min(190px,72%);aspect-ratio:1;margin:0 auto 14px;object-fit:cover;border:7px solid #ead9bb;outline:1px solid rgba(102,69,40,.17);box-shadow:0 8px 18px rgba(69,44,27,.16);background:#dfccb0}
+      .cafasso-global-music__book-display-inner.has-cover{display:grid;grid-template-columns:minmax(98px,42%) minmax(0,1fr);grid-template-rows:auto auto auto;align-items:center;column-gap:18px;text-align:left;max-width:100%}
+      .cafasso-global-music__book-cover{display:block;grid-column:1;grid-row:1 / span 3;width:100%;aspect-ratio:1;margin:0;object-fit:cover;border:6px solid #ead9bb;outline:1px solid rgba(102,69,40,.17);box-shadow:0 7px 16px rgba(69,44,27,.16);background:#dfccb0}
+      .cafasso-global-music__book-display-inner.has-cover .cafasso-global-music__book-status{grid-column:2;grid-row:1;align-self:end}
+      .cafasso-global-music__book-display-inner.has-cover .cafasso-global-music__book-title{grid-column:2;grid-row:2}
+      .cafasso-global-music__book-display-inner.has-cover .cafasso-global-music__book-meta{grid-column:2;grid-row:3;align-self:start}
       .cafasso-global-music__book-note{display:block;margin:0 auto 10px;color:#8b3a35;font:34px/1 Georgia,serif}
       .cafasso-global-music__book-status{display:block;margin-bottom:7px;color:#9a7650;font:700 8px/1 Georgia,serif;letter-spacing:.15em;text-transform:uppercase}
       .cafasso-global-music__book-title{display:block;color:#6f2f2c;font:600 22px/1.12 Georgia,serif}
@@ -357,12 +361,13 @@
     }
     const status = state.needsGesture ? 'Tocá el reproductor para continuar' : state.playing ? 'Reproduciendo en CAFASSO' : 'En pausa';
     const meta = state.track.source || state.track.subtitle || state.track.categoryLabel || 'Cancionero CAFASSO';
-    const cover = state.track.image
+    const hasCover = Boolean(state.track.image);
+    const cover = hasCover
       ? `<img class="cafasso-global-music__book-cover" src="${state.track.image}" alt="">`
       : '<span class="cafasso-global-music__book-note">♪</span>';
     attachedContainer.innerHTML = `
       <div class="cafasso-global-music__book-display" aria-hidden="true">
-        <div class="cafasso-global-music__book-display-inner">
+        <div class="cafasso-global-music__book-display-inner${hasCover ? ' has-cover' : ''}">
           ${cover}
           <span class="cafasso-global-music__book-status">${status}</span>
           <strong class="cafasso-global-music__book-title">${state.track.title || 'Música'}</strong>
