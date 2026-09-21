@@ -3,7 +3,7 @@
   window.__cafassoGamifiedCourseInstalled = true;
 
   const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  if (page !== 'index.html') return;
+  if (page !== 'index.html' && page !== 'course-player.html') return;
 
   const STYLE_ID = 'cafassoGamifiedCourseStylesV3';
   const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
