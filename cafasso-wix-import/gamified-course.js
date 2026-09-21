@@ -141,7 +141,9 @@
   }
 
   function missionsOf(module) {
-    const missions = settingsOf(module).missions;
+    const settings = settingsOf(module);
+    if (settings.experienceMode === 'linear') return [];
+    const missions = settings.missions;
     return Array.isArray(missions) ? missions.filter(item => item && item.id) : [];
   }
 
