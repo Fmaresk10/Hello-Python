@@ -54,6 +54,7 @@ html[data-cafasso-boot="animator"] body.cafasso-mission-mode #app.cafasso-boot-r
 html[data-cafasso-player="1"],html[data-cafasso-player="1"] body{width:100%;min-height:100%;background:#102f35}
 html[data-cafasso-player="1"] body{margin:0!important;padding:0!important;overflow-x:hidden!important}
 html[data-cafasso-player="1"] #app{min-height:100vh;min-height:100dvh}
+html[data-cafasso-player="1"] .cafasso-global-counters{display:none!important}
 html[data-cafasso-player="1"] .shell{display:block!important;min-height:100vh!important;min-height:100dvh!important}
 html[data-cafasso-player="1"] #cafassoWorldReturn{display:none!important}
 html[data-cafasso-player="1"] main{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
@@ -257,6 +258,8 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
   window.addEventListener('popstate',function(){if((location.hash||'#modulo')!=='#modulo')returnToSchool();});init();
 })();
 </script>
+<script src="./cafasso-global-counters.js?v=2"></script>
+<script src="./house-profile.js?v=8"></script>
 <script src="./gamified-course.js?v=20260921-3"></script>
 </body>
 </html>
