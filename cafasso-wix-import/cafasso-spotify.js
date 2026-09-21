@@ -433,6 +433,9 @@
     if (info.profile && !info.premium) throw new Error('Spotify Premium es necesario para reproducir dentro de CAFASSO');
     const initialized = await initPlayer();
     if (!initialized) throw new Error(lastError || 'Spotify no pudo preparar el reproductor');
+    if (!cancioneroPlaylist || !cancioneroTracks.length) {
+      try { await getCancioneroTracks(); } catch (error) {}
+    }
     const readyDevice = await waitForDevice();
     const inCancionero = cancioneroTracks.some(item => item.spotifyUri === track.spotifyUri);
     const playlistUri = cancioneroPlaylist?.uri || (cancioneroPlaylist?.id ? `spotify:playlist:${cancioneroPlaylist.id}` : '');
