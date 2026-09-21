@@ -123,7 +123,8 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
   function assignedCourses(){var uid=session.user._id,gid=session.user.groupId,ids={};(data.assignments||[]).forEach(function(a){if(a.active===false)return;if(a.targetType==='user'&&a.targetId===uid)ids[a.courseId]=true;if(a.targetType==='group'&&gid&&a.targetId===gid)ids[a.courseId]=true;});return (data.courses||[]).filter(function(c){return ids[c._id]&&(c.status==='Publicado'||isAdmin());}).map(function(c){var copy={};for(var k in c)copy[k]=c[k];copy.myProgress=getProgress(c._id);return copy;});}
   function moduleStoreKey(){return 'cafasso-module-work-'+session.user._id+'-'+selectedCourse._id+'-'+selectedModule._id;}
   function readModuleWork(){var local={done:{},answers:{}};try{local=JSON.parse(localStorage.getItem(moduleStoreKey())||'{"done":{},"answers":{}}');}catch(e){}var p=progressRecord(selectedCourse&&selectedCourse._id),done=Object.assign({},local.done||{}),answers=Object.assign({},local.answers||{});(p&&p.completedBlocks||[]).forEach(function(id){done[id]=true;});Object.assign(answers,(p&&p.blockAnswers)||{});return {done:done,answers:answers};}
-  function saveModuleWork(work){localStorage.setItem(moduleStoreKey(),JSON.stringify(work));var blockAnswers=work.answers||{},completedBlocks=Object.keys(work.done||{}).filter(function(id){return work.done[id];});fetch(PROGRESS_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:session.user._id,courseId:selectedCourse._id,moduleId:selectedModule._id,completedBlocks:completedBlocks,blockAnswers:blockAnswers})}).then(function(r){return r.json();}).then(function(j){if(j&&j.ok&&j.progress){var list=data.progress||[],found=false;for(var i=0;i<list.length;i++){if(list[i].userId===j.progress.userId&&list[i].courseId===j.progress.courseId){list[i]=Object.assign(list[i],j.progress);found=true;break;}}if(!found)list.push(j.progress);data.progress=list;publishAnimatorState();}}).catch(function(e){console.warn('No se pudo sincronizar el avance de contenidos.',e);});}
+  function storeModuleWorkLocal(work){try{localStorage.setItem(moduleStoreKey(),JSON.stringify(work));}catch(e){}}
+  function saveModuleWork(work){storeModuleWorkLocal(work);var blockAnswers=work.answers||{},completedBlocks=Object.keys(work.done||{}).filter(function(id){return work.done[id];});fetch(PROGRESS_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:session.user._id,courseId:selectedCourse._id,moduleId:selectedModule._id,completedBlocks:completedBlocks,blockAnswers:blockAnswers})}).then(function(r){return r.json();}).then(function(j){if(j&&j.ok&&j.progress){var list=data.progress||[],found=false;for(var i=0;i<list.length;i++){if(list[i].userId===j.progress.userId&&list[i].courseId===j.progress.courseId){list[i]=Object.assign(list[i],j.progress);found=true;break;}}if(!found)list.push(j.progress);data.progress=list;publishAnimatorState();}}).catch(function(e){console.warn('No se pudo sincronizar el avance de contenidos.',e);});}
   function submissionFor(blockId){return courseSubmissions.filter(function(s){return s.activityId===blockId;})[0]||null;}
   function activityAnswer(blockId,work){var s=submissionFor(blockId);return s&&s.content!=null?s.content:((work.answers||{})[blockId]||'');}
   function requiredBlocks(){return (selectedModule.contents||[]).filter(function(b){return b.required!==false;});}
@@ -170,7 +171,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
 
   function loadCourseSubmissions(courseId){return fetch(SUBMISSION_API+'?userId='+encodeURIComponent(session.user._id)+'&courseId='+encodeURIComponent(courseId),{cache:'no-store'}).then(function(r){return r.json().then(function(j){return {r:r,j:j};});}).then(function(x){if(!x.r.ok||!x.j.ok)throw new Error(x.j.error||'No se pudieron cargar las respuestas.');courseSubmissions=x.j.submissions||[];}).catch(function(e){console.warn(e);courseSubmissions=[];});}
   window.CafassoReloadCourseSubmissions=function(){if(!selectedCourse)return Promise.resolve();var before={};courseSubmissions.forEach(function(s){before[s.activityId]=s.status;});return loadCourseSubmissions(selectedCourse._id).then(function(){courseSubmissions.forEach(function(s){if(s.status==='Aprobada'&&before[s.activityId]&&before[s.activityId]!=='Aprobada'){try{window.dispatchEvent(new CustomEvent('cafasso:block-completed',{detail:{blockId:s.activityId,status:s.status}}));}catch(e){}}});if(selectedModule){publishExperience('module');renderModule();}});};
-  function openCourse(id,moduleId){var main=document.getElementById('main');var allowed=(assignedCourses()||[]).some(function(c){return String(c._id)===String(id);});if(!allowed&&!isAdmin()){main.innerHTML='<div class="error">Este curso no está asignado a tu cuenta.</div>';return;}try{sessionStorage.setItem('cafassoSelectedCourse',id);}catch(e){}main.innerHTML='<div class="loading">Cargando curso…</div>';fetch(COURSE_API+'?id='+encodeURIComponent(id),{cache:'no-store'}).then(function(r){return r.json().then(function(j){return {r:r,j:j};});}).then(function(x){if(!x.r.ok||!x.j.ok)throw new Error(x.j.error||'No se pudo cargar el curso.');selectedCourse=x.j.course;selectedCourse.myProgress=getProgress(id);selectedModule=null;return loadCourseSubmissions(id);}).then(function(){if(moduleId){var mods=publishedModules(),idx=mods.findIndex(function(m){return String(m._id)===String(moduleId);}),doneIds=completedModules(id);if(idx>=0&&moduleUnlocked(mods[idx],idx,mods,doneIds)){selectedModule=mods[idx];navigate('modulo');return;}}returnToSchool();}).catch(function(e){main.innerHTML='<div class="error"><strong>No pudimos abrir esta misión.</strong><br>'+esc(e.message)+'</div>';document.getElementById('app')?.classList.add('cafasso-boot-ready');});}
+  function openCourse(id,moduleId){var main=document.getElementById('main');var allowed=(assignedCourses()||[]).some(function(c){return String(c._id)===String(id);});if(!allowed&&!isAdmin()){main.innerHTML='<div class="error">Este curso no está asignado a tu cuenta.</div>';return;}try{sessionStorage.setItem('cafassoSelectedCourse',id);}catch(e){}main.innerHTML='<div class="loading">Cargando curso…</div>';fetch(COURSE_API+'?id='+encodeURIComponent(id),{cache:'no-store'}).then(function(r){return r.json().then(function(j){return {r:r,j:j};});}).then(function(x){if(!x.r.ok||!x.j.ok)throw new Error(x.j.error||'No se pudo cargar el curso.');selectedCourse=x.j.course;selectedCourse.myProgress=getProgress(id);selectedModule=null;return loadCourseSubmissions(id);}).then(function(){if(moduleId){var mods=publishedModules(),idx=mods.findIndex(function(m){return String(m._id)===String(moduleId);}),doneIds=completedModules(id);if(idx>=0&&moduleUnlocked(mods[idx],idx,mods,doneIds)){selectedModule=mods[idx];navigate('modulo');return;}try{sessionStorage.setItem('cafassoSchoolNotice',idx>=0?'Esta etapa todavía está bloqueada. Completá la anterior para continuar.':'No encontramos esa etapa en el curso.');}catch(e){}}returnToSchool();}).catch(function(e){main.innerHTML='<div class="error"><strong>No pudimos abrir esta misión.</strong><br>'+esc(e.message)+'</div>';document.getElementById('app')?.classList.add('cafasso-boot-ready');});}
   function publishedModules(){return (selectedCourse.modules||[]).filter(function(m){return m.status==='Publicado'||isAdmin();});}
   function moduleUnlocked(mod,index,mods,doneIds){if(index===0)return true;if(mod.unlockAfterPrevious===false)return true;return doneIds.indexOf(mods[index-1]._id)!==-1;}
   function publishExperience(view){if(selectedModule)saveModuleWork(readModuleWork());window.CafassoCourseExperience={view:view,course:selectedCourse,module:selectedModule,submissions:courseSubmissions,work:selectedModule?readModuleWork():null};try{window.dispatchEvent(new CustomEvent('cafasso:course-experience-ready'));}catch(e){}}
@@ -209,6 +210,19 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     if(complete)complete.onclick=function(){saveModuleProgress(!done);};
     Array.prototype.forEach.call(document.querySelectorAll('[data-review]'),function(b){b.onclick=function(){toggleReview(b.getAttribute('data-review'));};});
     Array.prototype.forEach.call(document.querySelectorAll('[data-save-answer]'),function(b){b.onclick=function(){saveAnswer(b.getAttribute('data-save-answer'));};});
+    Array.prototype.forEach.call(document.querySelectorAll('[data-answer]'),function(field){
+      field.addEventListener('input',function(){
+        var blockId=field.getAttribute('data-answer');
+        if(!blockId)return;
+        var work=readModuleWork();
+        work.answers=work.answers||{};
+        work.answers[blockId]=field.value;
+        storeModuleWorkLocal(work);
+        var card=field.closest('[data-block-card]');
+        var note=card&&card.querySelector('.saved-note');
+        if(note&&!submissionFor(blockId))note.textContent='Borrador guardado en este dispositivo';
+      });
+    });
     publishExperience('module');
   }
 
@@ -255,6 +269,16 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     });
   }
 
+  window.addEventListener('pagehide',function(){
+    if(!selectedCourse||!selectedModule)return;
+    var work=readModuleWork();
+    work.answers=work.answers||{};
+    Array.prototype.forEach.call(document.querySelectorAll('[data-answer]'),function(field){
+      var id=field.getAttribute('data-answer');
+      if(id)work.answers[id]=field.value;
+    });
+    storeModuleWorkLocal(work);
+  });
   window.addEventListener('popstate',function(){if((location.hash||'#modulo')!=='#modulo')returnToSchool();});init();
 })();
 </script>
