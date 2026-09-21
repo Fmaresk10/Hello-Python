@@ -624,6 +624,15 @@
     const canCloseModule = Boolean(moduleReady && nativeComplete && !nativeComplete.disabled);
 
     playMissionSound();
+    try {
+      window.dispatchEvent(new CustomEvent('cafasso:mission-completed', {
+        detail:{
+          courseId:String(state?.course?._id || ''),
+          moduleId:String(module?._id || ''),
+          missionId:String(mission?.id || '')
+        }
+      }));
+    } catch (error) {}
 
     const overlay = document.createElement('div');
     overlay.className = 'cafasso-celebration';
