@@ -2,6 +2,7 @@
   if (window.CafassoGlobalMusic) return;
 
   const STORAGE_KEY = 'cafasso-global-music-v1';
+  const UI_MODE_KEY = 'cafasso-global-music-ui-v1';
   const STYLE_ID = 'cafassoGlobalMusicStyles';
   const WIDGET_ID = 'cafassoGlobalMusicWidget';
   let state = readState();
@@ -11,6 +12,32 @@
   let widget = null;
   let attachedContainer = null;
   let progressTimer = null;
+  let uiMode = readUiMode();
+
+  function readUiMode() {
+    try {
+      const value = String(localStorage.getItem(UI_MODE_KEY) || 'open');
+      return ['open','minimized','closed'].includes(value) ? value : 'open';
+    } catch (error) {
+      return 'open';
+    }
+  }
+
+  function writeUiMode() {
+    try { localStorage.setItem(UI_MODE_KEY, uiMode); } catch (error) {}
+  }
+
+  function setUiMode(next) {
+    if (!['open','minimized','closed'].includes(next)) return;
+    uiMode = next;
+    writeUiMode();
+    renderWidget();
+  }
+
+  function toggleMinimized() {
+    if (!state.track || uiMode === 'closed') return;
+    setUiMode(uiMode === 'minimized' ? 'open' : 'minimized');
+  }
 
   function cleanTrack(track) {
     if (!track || (!track.videoId && !track.spotifyUri)) return null;
@@ -76,7 +103,8 @@
       requestedPlaying: Boolean(state.playing),
       needsGesture: Boolean(state.needsGesture),
       position: currentPosition(),
-      duration: durationSeconds()
+      duration: durationSeconds(),
+      uiMode
     };
   }
 
@@ -133,7 +161,7 @@
       .cafasso-global-music__eyebrow{display:block;margin-bottom:3px;color:#c8a77a;font:700 8px/1 Inter,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase}
       .cafasso-global-music__title{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff7e8;font:600 15px/1.15 Georgia,serif}
       .cafasso-global-music__meta{display:block;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#bea995;font:10px/1.2 Georgia,serif;font-style:italic}
-      .cafasso-global-music__toggle,.cafasso-global-music__stop,.cafasso-global-music__skip{
+      .cafasso-global-music__toggle,.cafasso-global-music__stop,.cafasso-global-music__skip,.cafasso-global-music__minimize{
         display:grid;place-items:center;padding:0;border:0;border-radius:50%;cursor:pointer
       }
       .cafasso-global-music__toggle{
@@ -142,12 +170,31 @@
       .cafasso-global-music__skip{
         width:26px;height:26px;background:transparent;color:#d7bea0;font:700 12px/1 system-ui,sans-serif
       }
-      .cafasso-global-music__stop{
+      .cafasso-global-music__stop,.cafasso-global-music__minimize{
         width:24px;height:24px;background:transparent;color:#a99682;font:18px/1 Georgia,serif
       }
+      .cafasso-global-music__minimize{font:700 15px/1 Inter,system-ui,sans-serif}
       .cafasso-global-music__toggle:hover{transform:translateY(-1px);background:#f8ebcb}
-      .cafasso-global-music__skip:hover,.cafasso-global-music__stop:hover{color:#f0d9bd;background:rgba(255,255,255,.05)}
+      .cafasso-global-music__skip:hover,.cafasso-global-music__stop:hover,.cafasso-global-music__minimize:hover{color:#f0d9bd;background:rgba(255,255,255,.05)}
       .cafasso-global-music__skip[hidden]{display:none!important}
+      .cafasso-global-music.is-minimized{
+        width:min(255px,calc(100vw - 28px));min-height:54px;
+        grid-template-columns:34px minmax(0,1fr) auto;grid-template-rows:auto;
+        gap:7px;padding:7px 8px;border-radius:12px
+      }
+      .cafasso-global-music.is-minimized .cafasso-global-music__mark{
+        grid-column:1;grid-row:1;width:34px;height:34px;font-size:17px
+      }
+      .cafasso-global-music.is-minimized .cafasso-global-music__copy{grid-column:2;grid-row:1}
+      .cafasso-global-music.is-minimized .cafasso-global-music__controls{grid-column:3;grid-row:1}
+      .cafasso-global-music.is-minimized .cafasso-global-music__eyebrow,
+      .cafasso-global-music.is-minimized .cafasso-global-music__meta,
+      .cafasso-global-music.is-minimized .cafasso-global-music__progress,
+      .cafasso-global-music.is-minimized .cafasso-global-music__skip{display:none!important}
+      .cafasso-global-music.is-minimized .cafasso-global-music__title{font-size:12px}
+      .cafasso-global-music.is-minimized .cafasso-global-music__toggle{width:30px;height:30px;font-size:12px}
+      .cafasso-global-music.is-minimized .cafasso-global-music__stop,
+      .cafasso-global-music.is-minimized .cafasso-global-music__minimize{width:22px;height:22px;font-size:14px}
       .cafasso-global-music__hidden-player{
         position:fixed!important;left:-10000px!important;top:0!important;width:2px!important;height:2px!important;
         overflow:hidden!important;opacity:.001!important;pointer-events:none!important
@@ -202,7 +249,8 @@
             <button class="cafasso-global-music__skip" type="button" data-global-music-prev aria-label="Tema anterior">◀</button>
             <button class="cafasso-global-music__toggle" type="button" data-global-music-toggle aria-label="Pausar o reanudar">▶</button>
             <button class="cafasso-global-music__skip" type="button" data-global-music-next aria-label="Tema siguiente">▶</button>
-            <button class="cafasso-global-music__stop" type="button" data-global-music-stop aria-label="Detener música">×</button>
+            <button class="cafasso-global-music__minimize" type="button" data-global-music-minimize aria-label="Minimizar reproductor">—</button>
+            <button class="cafasso-global-music__stop" type="button" data-global-music-stop aria-label="Cerrar reproductor">×</button>
           </div>
           <div class="cafasso-global-music__progress">
             <span class="cafasso-global-music__time" data-global-music-current>0:00</span>
@@ -214,6 +262,7 @@
         widget.querySelector('[data-global-music-toggle]')?.addEventListener('click', () => toggle());
         widget.querySelector('[data-global-music-prev]')?.addEventListener('click', () => previous());
         widget.querySelector('[data-global-music-next]')?.addEventListener('click', () => next());
+        widget.querySelector('[data-global-music-minimize]')?.addEventListener('click', () => toggleMinimized());
         widget.querySelector('[data-global-music-stop]')?.addEventListener('click', () => stop());
         widget.querySelector('[data-global-music-seek]')?.addEventListener('input', event => {
           const current = widget.querySelector('[data-global-music-current]');
@@ -267,20 +316,22 @@
 
   function renderWidget() {
     ensureDom();
-    if (!state.track) {
+    if (!state.track || uiMode === 'closed') {
       widget.hidden = true;
-      widget.classList.remove('is-playing');
+      widget.classList.remove('is-playing','is-minimized');
       syncProgressTimer();
       return;
     }
     widget.hidden = false;
     widget.classList.toggle('is-playing', Boolean(state.playing && !state.needsGesture));
+    widget.classList.toggle('is-minimized', uiMode === 'minimized');
     const status = widget.querySelector('[data-global-music-status]');
     const title = widget.querySelector('[data-global-music-title]');
     const meta = widget.querySelector('[data-global-music-meta]');
     const toggleButton = widget.querySelector('[data-global-music-toggle]');
     const prevButton = widget.querySelector('[data-global-music-prev]');
     const nextButton = widget.querySelector('[data-global-music-next]');
+    const minimizeButton = widget.querySelector('[data-global-music-minimize]');
     if (status) {
       const provider = state.track?.provider === 'spotify' ? 'Spotify · ' : '';
       status.textContent = provider + (state.needsGesture ? 'Tocá para continuar' : state.playing ? 'Ahora suena' : 'En pausa');
@@ -295,6 +346,12 @@
     const hasSequence = Boolean(state.track?.spotifyUri && window.CafassoSpotify?.isAuthenticated?.());
     if (prevButton) prevButton.hidden = !hasSequence;
     if (nextButton) nextButton.hidden = !hasSequence;
+    if (minimizeButton) {
+      const minimized = uiMode === 'minimized';
+      minimizeButton.textContent = minimized ? '□' : '—';
+      minimizeButton.setAttribute('aria-label', minimized ? 'Expandir reproductor' : 'Minimizar reproductor');
+      minimizeButton.setAttribute('title', minimized ? 'Expandir' : 'Minimizar');
+    }
     updateProgressUi();
     syncProgressTimer();
   }
@@ -341,6 +398,10 @@
   async function play(track) {
     const clean = cleanTrack(track || state.track);
     if (!clean) return false;
+    if (uiMode === 'closed') {
+      uiMode = 'open';
+      writeUiMode();
+    }
 
     if (clean.spotifyUri && window.CafassoSpotify?.isAuthenticated?.()) {
       state.track = clean;
@@ -436,6 +497,8 @@
   }
 
   async function stop() {
+    uiMode = 'closed';
+    writeUiMode();
     if (state.track?.spotifyUri && window.CafassoSpotify?.isAuthenticated?.()) {
       try { await window.CafassoSpotify.pause(); } catch (error) {}
     } else {
@@ -515,6 +578,7 @@
       });
     }
     window.addEventListener('cafasso:spotify-state', event => {
+      if (uiMode === 'closed') return;
       const detail = event.detail || {};
       if (!detail.track) return;
       const next = cleanTrack(detail.track);
@@ -549,7 +613,11 @@
     attachVideo,
     detachVideo,
     getState:snapshot,
-    persist:persistFromPlayer
+    persist:persistFromPlayer,
+    minimize:() => setUiMode('minimized'),
+    expand:() => setUiMode('open'),
+    close:stop,
+    getUiMode:() => uiMode
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once:true });
