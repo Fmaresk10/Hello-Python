@@ -239,6 +239,21 @@
     document.getElementById('cafassoWorldReturn')?.remove();
   }
 
+  function returnToCourseScreen() {
+    if (page === 'course-player.html') {
+      const params = new URLSearchParams(location.search);
+      const courseId = String(params.get('course') || window.CafassoCourseExperience?.course?._id || '').trim();
+      const target = new URL('./world.html', location.href);
+      target.searchParams.set('space', 'escuela');
+      if (courseId) target.searchParams.set('course', courseId);
+      target.searchParams.set('fromMission', '1');
+      location.replace(target.toString());
+      return;
+    }
+    if (typeof window.CafassoNavigate === 'function') window.CafassoNavigate('curso');
+    else document.querySelector('[data-view="curso"]')?.click();
+  }
+
   function currentMission(module, missions, state) {
     const saved = storedMission(module);
     if (saved && missions.some(item => item.id === saved)) return saved;
@@ -389,10 +404,7 @@
     stage.className = 'cafasso-mission-stage';
     stage.innerHTML = `<div class="cafasso-scene-marker"><span>${esc(activeView.icon || '✦')}</span><small>${esc(activeView.sceneLabel || 'Escena de la misión')} · ${activeBlockRecords.length} contenidos</small></div>`;
     shell.appendChild(stage);
-    shell.querySelector('.cafasso-scene-back')?.addEventListener('click', () => {
-      if (typeof window.CafassoNavigate === 'function') window.CafassoNavigate('curso');
-      else document.querySelector('[data-view="curso"]')?.click();
-    });
+    shell.querySelector('.cafasso-scene-back')?.addEventListener('click', returnToCourseScreen);
     allBlocks.forEach(card => {
       const record = activeBlockRecords.find(block => block._id === card.dataset.blockCard);
       if (!record || !activeBlocks.has(record._id)) return;
@@ -482,7 +494,8 @@
     setTimeout(() => {
       overlay.remove();
       celebrationRunning = false;
-      if (typeof window.CafassoNavigate === 'function') window.CafassoNavigate('curso');
+      if (page === 'course-player.html') returnToCourseScreen();
+      else if (typeof window.CafassoNavigate === 'function') window.CafassoNavigate('curso');
       else { history.pushState({ view: 'curso' }, '', `${location.pathname}${location.search}#curso`); window.dispatchEvent(new PopStateEvent('popstate')); }
     }, 2200);
   }
