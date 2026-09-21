@@ -81,7 +81,7 @@
 
     loadHouseScript('./school-entry.js?v=2', 'cafasso-school-entry-loader');
     loadHouseScript('./school-course-auth.js?v=1', 'cafasso-school-course-auth-loader');
-    loadHouseScript('./school-experience.js?v=6', 'cafasso-school-experience-loader');
+    loadHouseScript('./school-experience.js?v=7', 'cafasso-school-experience-loader');
     loadHouseScript('./cafasso-school-secret.js?v=1', 'cafasso-school-secret-loader');
     loadHouseScript('./school-screen-integration.js?v=4', 'cafasso-school-screen-integration-loader');
     loadHouseScript('./cafasso-school-immersion.js?v=4', 'cafasso-school-immersion-loader');
