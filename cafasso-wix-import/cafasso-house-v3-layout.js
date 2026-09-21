@@ -158,6 +158,13 @@
         backdrop-filter:blur(2px)!important;
       }
 
+      /* Mi rincón: posición final de la tarjeta personal, separada de la Bitácora. */
+      .cafasso-house .cafasso-house-corner{
+        left:calc(42.6% - 8cm)!important;
+        right:auto!important;
+        bottom:8.8%!important;
+      }
+
       /* Bitácora: vuelve a ser un objeto apoyado sobre la mesa. */
       .cafasso-house .cafasso-bitacora-object{
         left:calc(53.2% - 3cm)!important;
