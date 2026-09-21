@@ -299,13 +299,18 @@
     chip.hidden = !inMission;
     if (!inMission) return;
 
-    const total = Math.max(0, Number(metrics?.total ?? window.CafassoAlmitasCore?.current?.total ?? 0));
+    const source = metrics || window.CafassoAlmitasCore?.current || window.CafassoAlmitasMetrics || null;
     const totalNode = chip.querySelector('[data-mission-almitas-total]');
     const statusNode = chip.querySelector('[data-mission-almitas-status]');
     const rewardInfo = currentMissionRewardInfo();
     chip.classList.toggle('is-pending', rewardInfo.pending > 0 || rewardInfo.possible > 0);
     if (statusNode) statusNode.textContent = rewardStatusText(rewardInfo);
+    if (!source || !Number.isFinite(Number(source.total))) {
+      if (totalNode) totalNode.textContent = '—';
+      return;
+    }
 
+    const total = Math.max(0, Number(source.total));
     if (lastMissionAlmitasTotal == null) {
       lastMissionAlmitasTotal = total;
       if (totalNode) totalNode.textContent = String(total);
