@@ -1,19 +1,19 @@
 (()=>{
   const style=document.createElement('style');
   style.textContent=`
-    .cafasso-course-manager{margin-top:16px;border-top:1px solid #E8DCCB;padding-top:16px}
+    .cafasso-course-manager{margin-top:12px;border-top:1px solid #ded2bd;padding-top:12px}
     .cafasso-course-manager-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
-    .cafasso-course-manager-head h4{margin:0;color:#0F2D4D;font:22px Georgia,serif}
-    .cafasso-course-manager-head small{color:#687386}
+    .cafasso-course-manager-head h4{margin:0;color:#30473e;font:500 20px Georgia,serif}
+    .cafasso-course-manager-head small{color:#74766f}
     .cafasso-course-catalog{display:grid;gap:9px}
-    .cafasso-course-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:13px;border:1px solid #E8DCCB;border-radius:14px;background:#fff}
+    .cafasso-course-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px;border:1px solid #ddd0bb;border-radius:6px;background:#fffaf0}
     .cafasso-course-row strong{display:block;color:#0F2D4D;margin-bottom:3px}
-    .cafasso-course-row small{color:#687386}
-    .cafasso-course-state{display:inline-block;margin-top:7px;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:850;background:#F0F1F2;color:#687386}
+    .cafasso-course-row small{color:#74766f}
+    .cafasso-course-state{display:inline-block;margin-top:7px;padding:5px 8px;border-radius:5px;font-size:9px;font-weight:850;background:#F0F1F2;color:#74766f}
     .cafasso-course-state.on{background:#EDF5F1;color:#2E7D59}
-    .cafasso-course-action{border:1px solid #E8DCCB;background:#fff;color:#0F2D4D;border-radius:10px;padding:8px 10px;font-size:11px;font-weight:850;cursor:pointer}
-    .cafasso-course-action.assign{background:#F2C94C;border-color:#F2C94C}
-    .cafasso-course-action.remove{color:#A64747;border-color:#EBC7C7;background:#FFF8F8}
+    .cafasso-course-action{border:1px solid #d7cab2;background:#fffaf0;color:#3b554b;border-radius:5px;padding:7px 9px;font-size:9.5px;font-weight:850;cursor:pointer}
+    .cafasso-course-action.assign{background:#b99b55;border-color:#b99b55;color:#253933}
+    .cafasso-course-action.remove{color:#9e5148;border-color:#dcb9b2;background:#fff5f3}
     @media(max-width:700px){.cafasso-course-row{grid-template-columns:1fr}.cafasso-course-action{width:100%;min-height:42px}}
   `;
   document.head.appendChild(style);
