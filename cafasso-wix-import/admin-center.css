@@ -350,3 +350,241 @@ body.cafasso-resource-admin .modal-actions .btn{border-radius:6px!important;font
 @media(max-width:420px){
   body.cafasso-resource-admin .summary{grid-template-columns:1fr!important}
 }
+
+
+/* ===== Centro de Administración · herramientas operativas ===== */
+body.cafasso-admin-tool .shell{grid-template-columns:246px minmax(0,1fr)!important}
+body.cafasso-admin-tool .side{
+  height:100vh!important;height:100dvh!important;padding:26px 18px 22px!important;
+  background:linear-gradient(180deg,var(--admin-graphite),var(--admin-deep))!important;
+  border-right:1px solid rgba(255,255,255,.06)!important;
+  box-shadow:15px 0 34px rgba(35,42,40,.11)!important
+}
+body.cafasso-admin-tool .brand{padding-bottom:19px!important;border-bottom:1px solid rgba(255,255,255,.09)!important}
+body.cafasso-admin-tool .brand img{width:36px!important;height:44px!important}
+body.cafasso-admin-tool .brand b{font:500 25px/1 Georgia,serif!important;color:#fbf4e5!important}
+body.cafasso-admin-tool .brand small{
+  display:block!important;color:#c9b579!important;opacity:1!important;
+  font:800 8.5px/1.2 Inter,system-ui,sans-serif!important;letter-spacing:.14em!important;text-transform:uppercase!important
+}
+body.cafasso-admin-tool .nav,body.cafasso-admin-tool .menu{margin-top:25px!important;display:grid!important;gap:5px!important}
+body.cafasso-admin-tool .nav a,body.cafasso-admin-tool .menu a{
+  display:block!important;padding:11px 12px!important;border-radius:7px!important;
+  color:#e6ebe8!important;text-decoration:none!important;font-size:11px!important;font-weight:750!important;
+  background:transparent!important;border:1px solid transparent!important
+}
+body.cafasso-admin-tool .nav a:hover,body.cafasso-admin-tool .menu a:hover{
+  background:rgba(255,255,255,.045)!important;border-color:rgba(255,255,255,.06)!important
+}
+body.cafasso-admin-tool .nav a.active,body.cafasso-admin-tool .menu a.active{
+  background:linear-gradient(90deg,rgba(183,154,86,.18),rgba(255,255,255,.025))!important;
+  border-color:rgba(183,154,86,.18)!important;box-shadow:inset 3px 0 var(--admin-brass)!important;color:#fff8e7!important
+}
+body.cafasso-admin-tool .foot,body.cafasso-admin-tool .side-foot{
+  position:absolute!important;left:18px!important;right:18px!important;bottom:22px!important
+}
+body.cafasso-admin-tool .motto{font-size:14px!important;color:#ccb779!important}
+body.cafasso-admin-tool .back{font-size:11px!important;color:#d7dfda!important}
+
+body.cafasso-admin-tool main{
+  padding:32px clamp(24px,3.2vw,50px) 58px!important;max-width:1500px!important;width:100%!important;margin:auto!important
+}
+body.cafasso-admin-tool .head{
+  margin-bottom:13px!important;padding:23px 25px!important;border:1px solid var(--admin-line)!important;
+  border-radius:9px!important;background:#f6efe2!important;box-shadow:0 10px 26px rgba(59,52,41,.07)!important
+}
+body.cafasso-admin-tool .eyebrow{font-size:9px!important;letter-spacing:.17em!important;color:#8a6f34!important}
+body.cafasso-admin-tool .head h1{
+  margin:6px 0 5px!important;font:500 clamp(34px,3.3vw,45px)/1 Georgia,serif!important;color:#2c3e39!important
+}
+body.cafasso-admin-tool .head p{margin:0!important;color:#68716c!important;font-size:12px!important;line-height:1.5!important}
+body.cafasso-admin-tool .status{
+  background:#ebe5d9!important;border-color:#d7c9b1!important;color:#606b65!important;
+  border-radius:6px!important;font-size:10px!important;padding:8px 10px!important
+}
+body.cafasso-admin-tool .status.ok{background:#e5eee8!important;color:#37624f!important;border-color:#c6d9ce!important}
+body.cafasso-admin-tool .actions{
+  display:flex!important;gap:7px!important;flex-wrap:wrap!important;margin:0 0 11px!important
+}
+body.cafasso-admin-tool .btn{
+  border-radius:6px!important;font-size:10px!important;padding:9px 11px!important;
+  background:#b99b55!important;color:#253933!important
+}
+body.cafasso-admin-tool .btn.alt{background:#fffaf0!important;border-color:#d6c8ae!important;color:#40544b!important}
+body.cafasso-admin-tool .card,body.cafasso-admin-tool .kpi,body.cafasso-admin-tool .chip{
+  border-radius:7px!important;background:#fffaf0!important;border-color:#d8ccb7!important;
+  box-shadow:0 6px 16px rgba(65,57,44,.045)!important
+}
+body.cafasso-admin-tool .kpis,body.cafasso-admin-tool .summary{gap:8px!important;margin-bottom:11px!important}
+body.cafasso-admin-tool .kpi,body.cafasso-admin-tool .chip{
+  min-height:84px!important;padding:13px 14px!important;border-left:4px solid var(--admin-teal)!important
+}
+body.cafasso-admin-tool .kpi:nth-child(2),body.cafasso-admin-tool .chip:nth-child(2){border-left-color:#9b8756!important}
+body.cafasso-admin-tool .kpi:nth-child(3),body.cafasso-admin-tool .chip:nth-child(3){border-left-color:#607b8d!important}
+body.cafasso-admin-tool .kpi:nth-child(4),body.cafasso-admin-tool .chip:nth-child(4){border-left-color:#9b6559!important}
+body.cafasso-admin-tool .kpi small,body.cafasso-admin-tool .chip small{
+  color:#77766f!important;font-size:9px!important;text-transform:uppercase!important;letter-spacing:.07em!important;font-weight:850!important
+}
+body.cafasso-admin-tool .kpi strong,body.cafasso-admin-tool .chip strong{
+  display:block!important;margin-top:4px!important;font:500 27px/1 Georgia,serif!important;color:#2c443d!important
+}
+body.cafasso-admin-tool .box{padding:17px!important}
+body.cafasso-admin-tool .title h3{font:500 21px Georgia,serif!important;color:#30443e!important}
+body.cafasso-admin-tool .table{border-radius:6px!important;border-color:#d8ccb7!important;background:#fffaf0!important}
+body.cafasso-admin-tool th{background:#eae1d2!important;color:#706d66!important;border-color:#ddd0bb!important}
+body.cafasso-admin-tool td{border-color:#e7dcc9!important;color:#3e4d47!important}
+body.cafasso-admin-tool td strong{color:#30473e!important}
+body.cafasso-admin-tool .badge{border-radius:5px!important;font-size:9px!important}
+body.cafasso-admin-tool .tiny{
+  border-radius:5px!important;background:#fffaf0!important;border-color:#d7cab2!important;
+  color:#3b554b!important;font-size:9.5px!important;padding:6px 8px!important
+}
+body.cafasso-admin-tool .hint,body.cafasso-admin-tool .note{
+  border-radius:6px!important;background:#efe5cb!important;border-color:#dbc586!important;
+  color:#675823!important;font-size:10px!important;line-height:1.5!important
+}
+body.cafasso-admin-tool input,body.cafasso-admin-tool select,body.cafasso-admin-tool textarea{
+  border-radius:6px!important;border-color:#d6c8ae!important;background:#fffaf0!important;color:#34463f!important
+}
+body.cafasso-admin-tool .modal-wrap{background:rgba(27,35,34,.66)!important;backdrop-filter:none!important}
+body.cafasso-admin-tool .modal{
+  background:#f8f1e4!important;border-radius:9px!important;border-color:#d2c4aa!important;
+  box-shadow:0 22px 65px rgba(25,31,30,.25)!important
+}
+body.cafasso-admin-tool .modal h3,body.cafasso-admin-tool .modal h2{
+  font:500 27px Georgia,serif!important;color:#30473e!important
+}
+
+/* Personas */
+body.cafasso-admin-users .admin-filter-panel{
+  margin:0 0 10px;border:1px solid #d7cab3;border-radius:7px;background:#eee7da
+}
+body.cafasso-admin-users .admin-filter-panel summary{
+  list-style:none;display:flex;align-items:center;justify-content:space-between;
+  padding:10px 12px;cursor:pointer;color:#5f6963;font-size:10px;font-weight:850
+}
+body.cafasso-admin-users .admin-filter-panel summary::-webkit-details-marker{display:none}
+body.cafasso-admin-users .admin-filter-panel summary:after{content:"＋";font-size:15px}
+body.cafasso-admin-users .admin-filter-panel[open] summary:after{content:"−"}
+body.cafasso-admin-users .admin-filter-panel .filters{
+  display:grid!important;grid-template-columns:1.4fr repeat(4,minmax(135px,.65fr))!important;
+  gap:7px!important;margin:0!important;padding:0 10px 10px!important
+}
+body.cafasso-admin-users .admin-filter-panel .filters input,
+body.cafasso-admin-users .admin-filter-panel .filters select{min-width:0!important;padding:9px 10px!important}
+body.cafasso-admin-users .bulk{
+  border-radius:7px!important;background:#e7dec9!important;border-color:#cdbb90!important;
+  padding:9px!important;gap:6px!important
+}
+body.cafasso-admin-users .bulk strong{font-size:10px!important;color:#495b53!important}
+body.cafasso-admin-users .bulk select,body.cafasso-admin-users .bulk .btn{font-size:9.5px!important;min-height:34px!important}
+body.cafasso-admin-users .bar{height:5px!important;background:#ded5c4!important}
+body.cafasso-admin-users .bar span{background:#587869!important}
+body.cafasso-admin-users #noGroupCard{cursor:pointer}
+body.cafasso-admin-users #noGroupCard:hover{border-color:#b89e60!important;background:#f6ecd4!important}
+
+/* Asignaciones */
+body.cafasso-admin-assignments .toolbar{
+  display:grid!important;grid-template-columns:minmax(250px,1.3fr) minmax(180px,.7fr) minmax(150px,.55fr) auto!important;
+  gap:7px!important;margin:0 0 11px!important
+}
+body.cafasso-admin-assignments .toolbar input,body.cafasso-admin-assignments .toolbar select{
+  min-width:0!important;padding:9px 10px!important
+}
+body.cafasso-admin-assignments .grid{
+  display:grid!important;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr)!important;gap:11px!important
+}
+body.cafasso-admin-assignments .course-list{display:grid!important;gap:6px!important}
+body.cafasso-admin-assignments .course-card{
+  border-radius:6px!important;background:#fffaf0!important;border-color:#ddd0bb!important;padding:10px!important
+}
+body.cafasso-admin-assignments .course-card strong{font-size:11px!important;color:#30473e!important}
+body.cafasso-admin-assignments .course-card small{font-size:9px!important;color:#75766f!important}
+body.cafasso-admin-assignments .pill{border-radius:4px!important;background:#ece4d5!important;font-size:8.5px!important}
+body.cafasso-admin-assignments .target-list{border-radius:6px!important;background:#fffaf0!important;border-color:#d8ccb7!important}
+body.cafasso-admin-assignments .choice{border-color:#e4dac8!important;font-size:11px!important}
+
+/* Grupos: listado */
+body.cafasso-admin-groups .admin-groups-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px
+}
+body.cafasso-admin-groups .admin-groups-grid>.card{
+  min-height:190px;padding:15px!important;display:flex;flex-direction:column
+}
+body.cafasso-admin-groups .admin-groups-grid>.card h3{
+  margin:0 0 5px!important;font:500 21px Georgia,serif!important;color:#30473e!important
+}
+body.cafasso-admin-groups .admin-groups-grid>.card>p{
+  margin:0 0 12px!important;color:#777872!important;font-size:10px!important;line-height:1.45!important;min-height:30px
+}
+body.cafasso-admin-groups .stats{
+  display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:5px!important;margin-top:auto!important
+}
+body.cafasso-admin-groups .stat{
+  padding:8px!important;border-radius:5px!important;background:#eee6d8!important;text-align:left!important
+}
+body.cafasso-admin-groups .stat small{font-size:8px!important;text-transform:uppercase!important;color:#79766e!important}
+body.cafasso-admin-groups .stat strong{font:500 19px Georgia,serif!important;color:#344b42!important}
+body.cafasso-admin-groups .card .foot{
+  position:static!important;display:flex!important;align-items:center!important;justify-content:space-between!important;
+  gap:8px!important;margin-top:10px!important;padding-top:9px!important;border-top:1px solid #e1d6c3!important
+}
+body.cafasso-admin-groups .card>.status{
+  margin-top:8px!important;padding:7px 9px!important;background:#f2e6cc!important;color:#725e2b!important;
+  border-color:#dec68a!important
+}
+body.cafasso-admin-groups .filters{
+  display:grid!important;grid-template-columns:minmax(260px,520px)!important;margin:0 0 11px!important
+}
+body.cafasso-admin-groups .filters input{padding:9px 10px!important}
+
+/* Ficha de grupo */
+body.cafasso-admin-group .grid{
+  display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr)!important;gap:11px!important
+}
+body.cafasso-admin-group .progressline .bar{background:#ded5c4!important}
+body.cafasso-admin-group .progressline .bar span{background:#587869!important}
+body.cafasso-admin-group .course{
+  border-radius:6px!important;background:#fffaf0!important;border-color:#ddd0bb!important
+}
+body.cafasso-admin-group .cafasso-course-row{
+  border-radius:6px!important;background:#fffaf0!important;border-color:#ddd0bb!important
+}
+body.cafasso-admin-group .followup-wrap{margin-bottom:11px!important}
+body.cafasso-admin-group .followup-grid{gap:7px!important}
+body.cafasso-admin-group .follow-card{
+  padding:12px!important;border-radius:6px!important;background:#fffaf0!important;border-color:#d8ccb7!important
+}
+body.cafasso-admin-group .follow-card.attn{background:#f3ead2!important;border-color:#dac37c!important}
+body.cafasso-admin-group .follow-card.warn{background:#f5e7e3!important;border-color:#d9b6ad!important}
+body.cafasso-admin-group .follow-card.ok{background:#e8f0eb!important;border-color:#c4d6cb!important}
+body.cafasso-admin-group .follow-count{font-size:24px!important;color:#30473e!important}
+
+@media(max-width:1100px){
+  body.cafasso-admin-tool .shell{grid-template-columns:205px minmax(0,1fr)!important}
+  body.cafasso-admin-users .admin-filter-panel .filters{grid-template-columns:1fr 1fr 1fr!important}
+  body.cafasso-admin-groups .admin-groups-grid{grid-template-columns:1fr 1fr!important}
+  body.cafasso-admin-assignments .grid,body.cafasso-admin-group .grid{grid-template-columns:1fr!important}
+}
+@media(max-width:700px){
+  body.cafasso-admin-tool{padding-bottom:76px!important}
+  body.cafasso-admin-tool .side{display:none!important}
+  body.cafasso-admin-tool .shell{display:block!important}
+  body.cafasso-admin-tool main{padding:16px 12px 28px!important}
+  body.cafasso-admin-tool .head{padding:19px 17px!important}
+  body.cafasso-admin-tool .head h1{font-size:31px!important}
+  body.cafasso-admin-tool .actions{display:grid!important;grid-template-columns:1fr 1fr!important}
+  body.cafasso-admin-tool .actions .btn{text-align:center!important}
+  body.cafasso-admin-tool .kpis,body.cafasso-admin-tool .summary{grid-template-columns:1fr 1fr!important}
+  body.cafasso-admin-users .admin-filter-panel .filters{grid-template-columns:1fr!important}
+  body.cafasso-admin-users .bulk{grid-template-columns:1fr!important}
+  body.cafasso-admin-assignments .toolbar{grid-template-columns:1fr!important}
+  body.cafasso-admin-assignments .toolbar .btn{width:100%!important}
+  body.cafasso-admin-groups .admin-groups-grid{grid-template-columns:1fr!important}
+  body.cafasso-admin-groups .filters{grid-template-columns:1fr!important}
+  body.cafasso-admin-tool tr{border-radius:7px!important;background:#fffaf0!important;border-color:#d9ccb6!important;box-shadow:none!important}
+  body.cafasso-admin-tool td:before{color:#716e66!important}
+}
+@media(max-width:430px){
+  body.cafasso-admin-tool .kpis,body.cafasso-admin-tool .summary{grid-template-columns:1fr!important}
+}
