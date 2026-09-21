@@ -157,6 +157,14 @@
       .cafasso-house-corner-button--primary:hover{background:#814d41}
       .cafasso-house-corner-history{position:relative;z-index:1;margin-top:17px;color:#927861;font:italic 10.5px/1.4 Georgia,serif}
 
+      html.cafasso-mobile.cafasso-mobile-portrait body .cafasso-house-panorama .cafasso-house-corner{
+        left:42.6%!important;
+        bottom:8.8%!important;
+        width:clamp(94px,14.2vh,116px)!important;
+        height:clamp(66px,10vh,82px)!important;
+        z-index:16!important;
+      }
+
       @media(max-width:760px){
         .cafasso-house-corner-panel{padding:8px;align-items:flex-end}
         .cafasso-house-corner-sheet{width:100%;max-height:94dvh;padding:36px 22px 28px;border-radius:14px 14px 4px 4px}
