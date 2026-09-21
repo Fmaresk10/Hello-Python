@@ -62,6 +62,7 @@
     loadHouseScript('./cafasso-exploration-click-fix.js?v=1', 'cafasso-exploration-click-fix-loader');
     loadHouseScript('./cafasso-exploration-position-v2.js?v=1', 'cafasso-exploration-position-v2-loader');
     loadHouseScript('./patio-experience-v2.js?v=1', 'cafasso-patio-experience-v2-loader');
+    loadHouseScript('./cafasso-patio-encounter-alone.js?v=1', 'cafasso-patio-encounter-alone-loader');
     loadHouseScript('./cafasso-patio-secret.js?v=1', 'cafasso-patio-secret-loader');
     loadHouseScript('./cafasso-huellas-v2.js?v=1', 'cafasso-huellas-v2-loader');
 
@@ -101,7 +102,7 @@
 
     loadHouseScript('./cafasso-mobile-foundation.js?v=1', 'cafasso-mobile-foundation-loader');
     loadHouseScript('./cafasso-mobile-house.js?v=7', 'cafasso-mobile-house-loader');
-    loadHouseScript('./cafasso-mobile-patio.js?v=1', 'cafasso-mobile-patio-loader');
+    loadHouseScript('./cafasso-mobile-patio.js?v=2', 'cafasso-mobile-patio-loader');
     loadHouseScript('./cafasso-mobile-school.js?v=1', 'cafasso-mobile-school-loader');
     loadHouseScript('./cafasso-mobile-parish.js?v=4', 'cafasso-mobile-parish-loader');
     loadHouseScript('./cafasso-mobile-resources.js?v=1', 'cafasso-mobile-resources-loader');
