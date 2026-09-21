@@ -15,6 +15,7 @@
     '.cafasso-space-link--patio-escuela[data-space="escuela"]',
     '.cafasso-space-link--patio-parroquia[data-space="parroquia"]',
     '.cafasso-presencia-ball',
+    '.cafasso-patio-encounter-alone',
     '.cafasso-patio-secret',
     '.cafasso-corazon-huella',
     '.cafasso-calendar-layer'
