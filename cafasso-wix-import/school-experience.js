@@ -312,7 +312,7 @@
           if (!module || !id) return;
           const target = new URL('./course-player.html', location.href);
           target.searchParams.set('player', '1');
-          target.searchParams.set('playerBuild', '4');
+          target.searchParams.set('playerBuild', '5');
           target.searchParams.set('course', String(courseId));
           target.searchParams.set('module', id);
           target.hash = 'modulo';
