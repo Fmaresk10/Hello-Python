@@ -18,6 +18,12 @@
     catch (error) { return null; }
   }
 
+  function esc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;'
+    }[char]));
+  }
+
   function sessionUser() {
     return json(localStorage, 'cafassoSession')?.user || {};
   }
@@ -328,17 +334,17 @@
       ? 'Cada paso suma. Estás construyendo tu camino hacia ' + stage.next.title + '.'
       : 'Llegaste a la etapa más alta del camino CAFASSO. El desafío ahora es seguir haciéndola vida.';
     const stageFoot = stage.next
-      ? 'Faltan <b>' + stage.remaining + '</b> para ' + stage.next.title
+      ? 'Faltan <b>' + stage.remaining + '</b> para ' + esc(stage.next.title)
       : '<b>Etapa más alta alcanzada</b>';
     const pendingText = detail.challenges.pending ? ' · ' + detail.challenges.pending + ' en revisión' : '';
 
     panel.innerHTML =
       '<div class="cafasso-profile-journey__head">' +
-        '<div><div class="cafasso-profile-journey__eyebrow">Mi camino · etapa actual</div><h3>' + stage.current.title + '</h3><p class="cafasso-profile-journey__copy">' + stageCopy + '</p></div>' +
+        '<div><div class="cafasso-profile-journey__eyebrow">Mi camino · etapa actual</div><h3>' + esc(stage.current.title) + '</h3><p class="cafasso-profile-journey__copy">' + esc(stageCopy) + '</p></div>' +
         '<div class="cafasso-profile-journey__almitas"><strong>' + stage.total + '</strong><small>Almitas actuales</small></div>' +
       '</div>' +
       '<div class="cafasso-profile-journey__bar"><i style="width:' + stage.progress.toFixed(1) + '%"></i></div>' +
-      '<div class="cafasso-profile-journey__bar-note"><span>' + stage.current.title + '</span><span>' + stageFoot + '</span></div>' +
+      '<div class="cafasso-profile-journey__bar-note"><span>' + esc(stage.current.title) + '</span><span>' + stageFoot + '</span></div>' +
       '<div class="cafasso-profile-journey__stats">' +
         '<div class="cafasso-profile-journey__stat"><strong>' + moduleText + '</strong><span>Módulos completados</span></div>' +
         '<div class="cafasso-profile-journey__stat"><strong>' + detail.challenges.approved + '</strong><span>Desafíos aprobados' + pendingText + '</span></div>' +
@@ -346,8 +352,8 @@
       '</div>' +
       '<div class="cafasso-profile-next ' + (next.mode === 'waiting' ? 'is-waiting' : '') + '">' +
         '<span class="cafasso-profile-next__icon">' + (next.mode === 'waiting' ? '…' : next.mode === 'complete' ? '✓' : '›') + '</span>' +
-        '<div><small>' + next.eyebrow + '</small><strong>' + next.title + '</strong><span>' + next.copy + '</span></div>' +
-        '<span class="cafasso-profile-next__course">' + next.course + '</span>' +
+        '<div><small>' + esc(next.eyebrow) + '</small><strong>' + esc(next.title) + '</strong><span>' + esc(next.copy) + '</span></div>' +
+        '<span class="cafasso-profile-next__course">' + esc(next.course) + '</span>' +
       '</div>';
   }
 
