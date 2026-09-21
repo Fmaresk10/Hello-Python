@@ -176,7 +176,7 @@
   function moduleId(module) { return String(module?._id || module?.id || ''); }
 
   function closeCourseMap(panel) {
-    if (panel) closeCourseMap(panel);
+    if (panel) panel.hidden = true;
     document.body.classList.remove('cafasso-school-course-open');
   }
 
@@ -185,7 +185,7 @@
     if (!panel) {
       panel = document.createElement('section');
       panel.className = 'cafasso-school-map-panel';
-      closeCourseMap(panel);
+      panel.hidden = true;
       document.body.appendChild(panel);
     }
     panel.hidden = false;
