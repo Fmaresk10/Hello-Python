@@ -467,6 +467,101 @@
         font:italic 10px/1.45 Georgia,serif!important;
       }
 
+      .cafasso-songbook-spotify-status{
+        margin:0 0 13px!important;
+        padding:0 0 12px!important;
+        border:0!important;
+        border-bottom:1px solid rgba(126,87,52,.12)!important;
+        border-radius:0!important;
+        background:transparent!important;
+        color:#806854!important;
+        font:italic 11px/1.45 Georgia,serif!important;
+      }
+      .cafasso-songbook-spotify-badge{
+        display:inline-flex!important;
+        align-items:center!important;
+        gap:6px!important;
+        margin:0 0 7px!important;
+        color:#496b50!important;
+        font:700 8px/1 Georgia,serif!important;
+        letter-spacing:.08em!important;
+        text-transform:uppercase!important;
+      }
+      .cafasso-songbook-spotify-badge span{
+        width:7px!important;
+        height:7px!important;
+        border-radius:50%!important;
+        background:#3f7b4a!important;
+        box-shadow:0 0 0 3px rgba(63,123,74,.09)!important;
+      }
+      .cafasso-songbook-search{
+        margin:0 0 15px!important;
+        padding:0 0 14px!important;
+        border-bottom:1px solid rgba(126,87,52,.12)!important;
+      }
+      .cafasso-songbook-search label{
+        display:block!important;
+        margin:0 0 6px!important;
+        color:#9a7650!important;
+        font:700 8px/1 Georgia,serif!important;
+        letter-spacing:.11em!important;
+        text-transform:uppercase!important;
+      }
+      .cafasso-songbook-search__field{
+        display:grid!important;
+        grid-template-columns:22px minmax(0,1fr)!important;
+        align-items:center!important;
+        gap:5px!important;
+        padding:7px 9px!important;
+        border:1px solid rgba(121,79,52,.18)!important;
+        border-radius:3px!important;
+        background:rgba(255,251,240,.23)!important;
+        box-shadow:inset 0 1px rgba(255,255,255,.28)!important;
+      }
+      .cafasso-songbook-search__field span{
+        color:#9b7759!important;
+        font:18px/1 Georgia,serif!important;
+      }
+      .cafasso-songbook-search__field input{
+        width:100%!important;
+        padding:0!important;
+        border:0!important;
+        outline:0!important;
+        background:transparent!important;
+        color:#503a2f!important;
+        font:italic 12.5px/1.3 Georgia,serif!important;
+      }
+      .cafasso-songbook-search__field input::placeholder{color:#9b836e!important}
+      .cafasso-songbook-search small{
+        display:block!important;
+        margin-top:5px!important;
+        color:#a18973!important;
+        font:9.5px/1.2 Georgia,serif!important;
+      }
+      .cafasso-songbook-search-empty{
+        margin:18px 0!important;
+        color:#806854!important;
+        font:italic 12.5px/1.5 Georgia,serif!important;
+      }
+      .cafasso-songbook-track.is-active{
+        background:linear-gradient(90deg,rgba(125,57,51,.07),transparent 82%)!important;
+      }
+      .cafasso-songbook-track.is-active:before{
+        content:"♫"!important;
+        color:#7b302d!important;
+        background:rgba(123,48,45,.09)!important;
+      }
+      .cafasso-songbook-track.is-active .cafasso-songbook-track__copy strong{
+        color:#7b302d!important;
+      }
+      .cafasso-songbook-track.is-playing{
+        box-shadow:inset 2px 0 0 rgba(123,48,45,.42)!important;
+      }
+      .cafasso-songbook-play.is-active{
+        color:#8f3935!important;
+        border-bottom-color:rgba(143,57,53,.4)!important;
+      }
+
       @media(max-height:720px) and (min-width:761px){
         .cafasso-songbook-sheet{
           height:calc(100dvh - 20px)!important;
