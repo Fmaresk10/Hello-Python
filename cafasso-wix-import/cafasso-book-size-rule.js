@@ -70,7 +70,7 @@
     loadHouseScript('./cafasso-almitas-history-v2.js?v=1', 'cafasso-almitas-history-v2-loader');
     loadHouseScript('./cafasso-huella-rewards-v2.js?v=1', 'cafasso-huella-rewards-v2-loader');
     loadHouseScript('./cafasso-admin-gifts-client-v2.js?v=3', 'cafasso-admin-gifts-client-v2-loader');
-    loadHouseScript('./cafasso-levels.js?v=2', 'cafasso-levels-loader');
+    loadHouseScript('./cafasso-levels.js?v=3', 'cafasso-levels-loader');
     loadHouseScript('./cafasso-corazon-salesiano.js?v=1', 'cafasso-corazon-salesiano-loader');
     loadHouseScript('./cafasso-acompanante-bitacora.js?v=2', 'cafasso-acompanante-bitacora-loader');
     loadHouseScript('./cafasso-acompanante-marker-fix.js?v=1', 'cafasso-acompanante-marker-fix-loader');
