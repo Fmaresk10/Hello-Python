@@ -94,7 +94,12 @@ html,body,#app{margin:0;width:100%;height:100%;overflow:hidden;background:#102f3
     try {
       window.parent.postMessage({
         type:'cafasso-world-location',
-        search:location.search,
+        search:(() => {
+          const params = new URLSearchParams(location.search);
+          params.delete('__cafassoBuild');
+          const query = params.toString();
+          return query ? '?' + query : '';
+        })(),
         hash:location.hash
       }, location.origin);
     } catch (error) {}
