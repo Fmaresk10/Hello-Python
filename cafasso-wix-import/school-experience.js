@@ -79,6 +79,7 @@
       .cafasso-school-intro strong{display:block;font:400 clamp(24px,3vw,39px)/1.08 Georgia,serif}
       .cafasso-school-intro span{display:block;margin-top:7px;color:rgba(255,247,227,.67);font:700 9px/1.3 Inter,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase}
 
+      body.cafasso-school-course-open .cafasso-global-counters,body.cafasso-school-course-open .cafasso-level-pill{display:none!important}
       .cafasso-school-map-panel{position:fixed;inset:0;z-index:82;background:#102f35 center/cover no-repeat;overflow:hidden;color:#fff8e7}
       .cafasso-school-map-panel:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,27,31,.22),rgba(7,27,31,.36) 54%,rgba(4,18,21,.62));pointer-events:none}
       .cafasso-school-map-panel[hidden]{display:none!important}
@@ -174,18 +175,24 @@
 
   function moduleId(module) { return String(module?._id || module?.id || ''); }
 
+  function closeCourseMap(panel) {
+    if (panel) closeCourseMap(panel);
+    document.body.classList.remove('cafasso-school-course-open');
+  }
+
   async function openCourseMap(courseId, meData) {
     let panel = document.querySelector('.cafasso-school-map-panel');
     if (!panel) {
       panel = document.createElement('section');
       panel.className = 'cafasso-school-map-panel';
-      panel.hidden = true;
+      closeCourseMap(panel);
       document.body.appendChild(panel);
     }
     panel.hidden = false;
+    document.body.classList.add('cafasso-school-course-open');
     panel.style.backgroundImage = `url('${MAP_BG}')`;
     panel.innerHTML = '<button class="cafasso-school-map__close" type="button" data-school-map-close>← Volver a Escuela</button><div class="cafasso-school-map__head"><div class="cafasso-school-map__kicker">Abriendo tu camino…</div><h2>Preparando el curso</h2></div>';
-    panel.querySelector('[data-school-map-close]')?.addEventListener('click', () => { panel.hidden = true; });
+    panel.querySelector('[data-school-map-close]')?.addEventListener('click', () => { closeCourseMap(panel); });
 
     try {
       const response = await fetch(`${COURSE_API}?id=${encodeURIComponent(courseId)}`, { cache:'no-store' });
@@ -224,7 +231,7 @@
           <span>${modules.length ? 'Los candados respetan tu progreso real. El próximo paso es entrar a las misiones de cada módulo.' : 'Cuando se publiquen los módulos, van a aparecer acá.'}</span>
         </aside>`;
 
-      panel.querySelector('[data-school-map-close]')?.addEventListener('click', () => { panel.hidden = true; });
+      panel.querySelector('[data-school-map-close]')?.addEventListener('click', () => { closeCourseMap(panel); });
       panel.querySelectorAll('[data-school-module]:not(:disabled)').forEach(button => {
         button.addEventListener('click', () => {
           const module = modules[Number(button.dataset.schoolModuleIndex || 0)];
@@ -236,7 +243,7 @@
       });
     } catch (error) {
       panel.innerHTML = `<button class="cafasso-school-map__close" type="button" data-school-map-close>← Volver a Escuela</button><header class="cafasso-school-map__head"><div class="cafasso-school-map__kicker">Escuela</div><h2>No pudimos abrir este camino</h2><p>${esc(error?.message || 'Probá nuevamente en un momento.')}</p></header>`;
-      panel.querySelector('[data-school-map-close]')?.addEventListener('click', () => { panel.hidden = true; });
+      panel.querySelector('[data-school-map-close]')?.addEventListener('click', () => { closeCourseMap(panel); });
     }
   }
 
