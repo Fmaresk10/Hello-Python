@@ -64,11 +64,11 @@
     loadHouseScript('./patio-experience-v2.js?v=1', 'cafasso-patio-experience-v2-loader');
     loadHouseScript('./cafasso-patio-encounter-alone.js?v=2', 'cafasso-patio-encounter-alone-loader');
     loadHouseScript('./cafasso-patio-secret.js?v=1', 'cafasso-patio-secret-loader');
-    loadHouseScript('./cafasso-huellas-v2.js?v=1', 'cafasso-huellas-v2-loader');
+    loadHouseScript('./cafasso-huellas-v2.js?v=2', 'cafasso-huellas-v2-loader');
 
     loadHouseScript('./cafasso-almitas-core.js?v=1', 'cafasso-almitas-core-loader');
     loadHouseScript('./cafasso-almitas-history-v2.js?v=1', 'cafasso-almitas-history-v2-loader');
-    loadHouseScript('./cafasso-huella-rewards-v2.js?v=1', 'cafasso-huella-rewards-v2-loader');
+    loadHouseScript('./cafasso-huella-rewards-v2.js?v=2', 'cafasso-huella-rewards-v2-loader');
     loadHouseScript('./cafasso-admin-gifts-client-v2.js?v=3', 'cafasso-admin-gifts-client-v2-loader');
     loadHouseScript('./cafasso-levels.js?v=3', 'cafasso-levels-loader');
     loadHouseScript('./cafasso-corazon-salesiano.js?v=1', 'cafasso-corazon-salesiano-loader');
@@ -81,7 +81,7 @@
 
     loadHouseScript('./school-entry.js?v=2', 'cafasso-school-entry-loader');
     loadHouseScript('./school-course-auth.js?v=1', 'cafasso-school-course-auth-loader');
-    loadHouseScript('./school-experience.js?v=14', 'cafasso-school-experience-loader');
+    loadHouseScript('./school-experience.js?v=15', 'cafasso-school-experience-loader');
     loadHouseScript('./cafasso-school-secret.js?v=1', 'cafasso-school-secret-loader');
     loadHouseScript('./school-screen-integration.js?v=4', 'cafasso-school-screen-integration-loader');
     loadHouseScript('./cafasso-school-immersion.js?v=4', 'cafasso-school-immersion-loader');
