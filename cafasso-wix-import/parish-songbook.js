@@ -99,15 +99,21 @@
       if (spotify?.isConfigured?.()) {
         if (spotify.isAuthenticated?.()) {
           try {
-            const result = await spotify.getCancioneroTracks();
-            if (result?.tracks?.length) {
-              tracks = result.tracks;
-              spotifyStatus = `Conectado a “${result.playlist?.name || 'CAFASSO · Cancionero'}”.`;
-              return tracks;
+            const info = await spotify.getConnectionInfo?.(true);
+            const who = info?.profile?.displayName ? `Cuenta: ${info.profile.displayName}. ` : '';
+            if (info?.profile && !info.premium) {
+              spotifyStatus = `${who}Spotify Premium es necesario para reproducir dentro de CAFASSO.`;
+            } else {
+              const result = await spotify.getCancioneroTracks();
+              if (result?.tracks?.length) {
+                tracks = result.tracks;
+                spotifyStatus = `${who}Conectado a “${result.playlist?.name || 'CAFASSO · Cancionero'}” · ${result.tracks.length} ${result.tracks.length === 1 ? 'tema' : 'temas'}.`;
+                return tracks;
+              }
+              spotifyStatus = `${who}Spotify está conectado, pero todavía no encontré una playlist propia llamada “CAFASSO · Cancionero”.`;
             }
-            spotifyStatus = 'Spotify está conectado, pero todavía no encontré una playlist propia llamada “CAFASSO · Cancionero”.';
           } catch (error) {
-            spotifyStatus = 'No pude leer el Cancionero de Spotify. Podés seguir usando los cantos actuales.';
+            spotifyStatus = `Spotify está conectado, pero hubo un problema: ${error?.message || 'no pude leer el Cancionero'}.`;
           }
         } else {
           spotifyStatus = 'Spotify está preparado. Conectá tu cuenta para usar tu playlist “CAFASSO · Cancionero”.';
@@ -338,6 +344,12 @@
     }, true);
 
     musicHost().addEventListener('cafasso:global-music-state', event => syncSongbookUi(event.detail));
+    musicHost().addEventListener('cafasso:spotify-state', event => {
+      const detail = event.detail || {};
+      if (!detail.error) return;
+      spotifyStatus = `Spotify: ${detail.error}`;
+      if (!panel.hidden) renderTracks(panel);
+    });
 
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !panel.hidden) closePanel(panel);
