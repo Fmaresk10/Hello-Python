@@ -12,6 +12,7 @@
     '.cafasso-space-link--casa[data-space="patio"]',
     '.cafasso-space-link--house-recursos',
     '.cafasso-bitacora-object',
+    '.cafasso-house-corner',
     '.cafasso-animator-sheet',
     '.cafasso-world-compass',
     '.cafasso-explore-secret--house',
