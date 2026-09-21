@@ -52,24 +52,98 @@
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
-      .cafasso-animator-sheet{position:absolute;left:22.6%;top:20.8%;z-index:6;width:156px;height:184px;padding:0;border:0;background:transparent;cursor:pointer;transform-origin:50% 100%;transform:perspective(700px) rotateY(-4deg) rotateZ(-4.2deg);filter:drop-shadow(0 14px 10px rgba(0,0,0,.42));transition:transform .22s ease,filter .22s ease}
-      .cafasso-animator-sheet:hover{transform:perspective(700px) rotateY(-2deg) rotateZ(-2.2deg) translateY(-5px) scale(1.025);filter:drop-shadow(0 18px 14px rgba(0,0,0,.46)) brightness(1.025)}
-      .cafasso-animator-sheet:focus-visible{outline:3px solid #f2c95a;outline-offset:6px;border-radius:5px}
-      .cafasso-animator-sheet__paper{position:absolute;inset:0;overflow:hidden;border:1px solid rgba(91,66,40,.52);border-radius:3px;background:repeating-linear-gradient(0deg,rgba(92,66,39,.025) 0 1px,transparent 1px 7px),linear-gradient(145deg,#f7ecd2 0%,#ead6ad 72%,#ddc295 100%);box-shadow:inset 0 0 18px rgba(113,78,42,.11),inset 0 0 0 3px rgba(255,250,235,.34),0 3px 1px rgba(58,37,21,.12)}
-      .cafasso-animator-sheet__paper:before{content:"";position:absolute;right:-1px;bottom:-1px;width:31px;height:31px;background:linear-gradient(135deg,rgba(167,128,79,.16) 0 49%,#c9aa79 50% 53%,#f1dfbd 54% 100%);clip-path:polygon(100% 0,100% 100%,0 100%);filter:drop-shadow(-2px -2px 2px rgba(76,51,29,.12))}
-      .cafasso-animator-sheet__paper:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(118deg,rgba(255,255,255,.22),transparent 22% 72%,rgba(108,74,39,.04));mix-blend-mode:screen}
-      .cafasso-animator-sheet__clip{position:absolute;z-index:4;left:50%;top:-10px;width:56px;height:25px;transform:translateX(-50%) rotate(1deg);border:1px solid rgba(69,53,35,.58);border-radius:4px 4px 7px 7px;background:linear-gradient(180deg,#9a907e,#d0c5ad 32%,#766c5c 50%,#b9ad95 74%,#6b6254);box-shadow:0 4px 5px rgba(0,0,0,.25),inset 0 1px rgba(255,255,255,.42)}
-      .cafasso-animator-sheet__brand{position:absolute;left:13px;right:13px;top:17px;display:flex;align-items:flex-end;justify-content:space-between;gap:8px;padding-bottom:7px;border-bottom:1px solid rgba(105,75,42,.24);color:#6b4d2f;font-family:Georgia,serif}
-      .cafasso-animator-sheet__brand strong{font-size:14px;letter-spacing:.07em}
-      .cafasso-animator-sheet__brand span{font:800 7px/1 Inter,system-ui,sans-serif;letter-spacing:.15em;text-transform:uppercase;color:#937453}
-      .cafasso-animator-sheet__body{position:absolute;left:13px;right:13px;top:54px;bottom:19px;display:grid;grid-template-columns:57px minmax(0,1fr);gap:10px;align-content:start}
-      .cafasso-animator-sheet__portrait{width:57px;height:69px;display:grid;place-items:center;overflow:hidden;border:3px solid #eee1c7;background:linear-gradient(145deg,#d2b98c,#987853);box-shadow:0 0 0 1px rgba(85,58,32,.42),0 4px 8px rgba(65,42,23,.17);color:#4a3828;font:700 20px Georgia,serif}
-      .cafasso-animator-sheet__portrait img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.9) contrast(1.03)}
-      .cafasso-animator-sheet__copy{min-width:0;padding-top:2px;text-align:left}
-      .cafasso-animator-sheet__name{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;margin:0 0 5px;color:#483527;font:700 12px/1.08 Georgia,serif}
-      .cafasso-animator-sheet__role{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#85694c;font:800 7px/1.2 Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase}
-      .cafasso-animator-sheet__stamp{position:absolute;left:15px;bottom:16px;padding:3px 6px 2px;border:1px solid rgba(126,66,46,.5);border-radius:2px;color:rgba(126,66,46,.72);font:800 7px/1 Inter,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;transform:rotate(-3deg)}
-      .cafasso-animator-sheet__label{position:absolute;right:15px;bottom:17px;color:#876e54;font:700 8px/1 Georgia,serif;font-style:italic}
+      .cafasso-animator-sheet{
+        position:absolute;left:22.6%;top:20.8%;z-index:6;width:176px;height:194px;padding:0;border:0;background:transparent;cursor:pointer;
+        transform-origin:50% 100%;transform:perspective(700px) rotateY(-4deg) rotateZ(-3.2deg);
+        filter:drop-shadow(0 15px 11px rgba(0,0,0,.40));transition:transform .22s ease,filter .22s ease
+      }
+      .cafasso-animator-sheet:hover{
+        transform:perspective(700px) rotateY(-2deg) rotateZ(-1.8deg) translateY(-6px) scale(1.028);
+        filter:drop-shadow(0 20px 15px rgba(0,0,0,.47)) brightness(1.025)
+      }
+      .cafasso-animator-sheet:focus-visible{outline:3px solid #f2c95a;outline-offset:7px;border-radius:6px}
+      .cafasso-animator-sheet__back{
+        position:absolute;inset:7px -5px -7px 7px;border-radius:3px;background:#c8ad82;border:1px solid rgba(77,54,32,.30);
+        transform:rotate(2.2deg);box-shadow:0 5px 9px rgba(49,31,18,.18)
+      }
+      .cafasso-animator-sheet__paper{
+        position:absolute;inset:0;overflow:visible;border:1px solid rgba(88,62,36,.48);border-radius:4px;
+        background:
+          radial-gradient(circle at 17% 12%,rgba(255,255,255,.42),transparent 23%),
+          repeating-linear-gradient(0deg,rgba(92,66,39,.028) 0 1px,transparent 1px 8px),
+          linear-gradient(145deg,#fbf0d5 0%,#ecd7ad 72%,#dcc08e 100%);
+        box-shadow:inset 0 0 20px rgba(113,78,42,.10),inset 0 0 0 3px rgba(255,250,235,.28),0 4px 2px rgba(58,37,21,.11)
+      }
+      .cafasso-animator-sheet__paper:before{
+        content:"";position:absolute;right:-1px;bottom:-1px;width:34px;height:34px;
+        background:linear-gradient(135deg,rgba(167,128,79,.13) 0 49%,#c3a270 50% 53%,#f3e0bc 54% 100%);
+        clip-path:polygon(100% 0,100% 100%,0 100%);filter:drop-shadow(-2px -2px 2px rgba(76,51,29,.10))
+      }
+      .cafasso-animator-sheet__paper:after{
+        content:"";position:absolute;inset:0;border-radius:4px;pointer-events:none;
+        background:linear-gradient(118deg,rgba(255,255,255,.20),transparent 20% 72%,rgba(108,74,39,.045));mix-blend-mode:screen
+      }
+      .cafasso-animator-sheet__clip{
+        position:absolute;z-index:5;left:50%;top:-11px;width:59px;height:25px;transform:translateX(-50%) rotate(-1deg);
+        border:1px solid rgba(69,53,35,.58);border-radius:4px 4px 8px 8px;
+        background:linear-gradient(180deg,#8d8575,#d6ccb6 31%,#746b5d 50%,#bcb09a 73%,#625b50);
+        box-shadow:0 4px 6px rgba(0,0,0,.27),inset 0 1px rgba(255,255,255,.48)
+      }
+      .cafasso-animator-sheet__brand{
+        position:absolute;left:0;right:0;top:0;height:35px;display:flex;align-items:center;justify-content:space-between;
+        padding:8px 13px 7px 14px;border-radius:3px 3px 0 0;
+        background:linear-gradient(180deg,#82483d,#6f3b34);color:#fff2d5;
+        box-shadow:inset 0 -1px rgba(64,34,29,.34);font-family:Georgia,serif
+      }
+      .cafasso-animator-sheet__brand strong{font-size:13px;letter-spacing:.13em}
+      .cafasso-animator-sheet__brand span{font:800 6.5px/1 Inter,system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#e7cca3}
+      .cafasso-animator-sheet__body{
+        position:absolute;left:13px;right:13px;top:47px;bottom:34px;display:grid;
+        grid-template-columns:74px minmax(0,1fr);gap:12px;align-items:start
+      }
+      .cafasso-animator-sheet__portrait{
+        position:relative;width:74px;height:96px;display:grid;place-items:center;overflow:hidden;
+        border:5px solid #f6ead0;background:linear-gradient(145deg,#d5bd92,#987653);
+        box-shadow:0 0 0 1px rgba(83,57,31,.35),0 7px 12px rgba(65,42,23,.20);
+        color:#4a3828;font:700 24px Georgia,serif;transform:rotate(-1.4deg)
+      }
+      .cafasso-animator-sheet__portrait:after{
+        content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 13px rgba(78,51,28,.10)
+      }
+      .cafasso-animator-sheet__portrait img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.86) contrast(1.04)}
+      .cafasso-animator-sheet__copy{min-width:0;padding-top:8px;text-align:left}
+      .cafasso-animator-sheet__tiny{
+        display:block;margin-bottom:7px;color:#a17a56;font:800 6px/1 Inter,system-ui,sans-serif;letter-spacing:.17em;text-transform:uppercase
+      }
+      .cafasso-animator-sheet__name{
+        display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:3;margin:0 0 7px;color:#453226;
+        font:700 14px/1.05 Georgia,serif;letter-spacing:-.01em
+      }
+      .cafasso-animator-sheet__role{
+        display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#795d45;
+        font:800 7px/1.2 Inter,system-ui,sans-serif;letter-spacing:.11em;text-transform:uppercase
+      }
+      .cafasso-animator-sheet__line{
+        display:block;width:32px;height:1px;margin:10px 0 6px;background:rgba(111,75,42,.28)
+      }
+      .cafasso-animator-sheet__path{display:block;color:#92745a;font:italic 8px/1.2 Georgia,serif}
+      .cafasso-animator-sheet__stamp{
+        position:absolute;left:17px;bottom:13px;width:48px;height:48px;display:grid;place-items:center;padding:7px;
+        border:1.5px solid rgba(126,66,55,.50);border-radius:50%;color:rgba(126,66,55,.72);
+        font:800 6px/1.15 Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-align:center;
+        transform:rotate(-9deg);box-shadow:inset 0 0 0 3px rgba(126,66,55,.06)
+      }
+      .cafasso-animator-sheet__stamp:after{
+        content:"";position:absolute;inset:5px;border:1px solid rgba(126,66,55,.24);border-radius:50%
+      }
+      .cafasso-animator-sheet__tab{
+        position:absolute;z-index:4;right:-13px;bottom:17px;padding:7px 9px 6px 10px;border:1px solid rgba(78,49,33,.38);border-left:0;
+        border-radius:0 4px 4px 0;background:linear-gradient(180deg,#8a5545,#704036);color:#fff1d5;
+        box-shadow:3px 4px 7px rgba(44,27,17,.18);font:800 6.5px/1 Inter,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;
+        transform:rotate(1deg)
+      }
+      .cafasso-animator-sheet:hover .cafasso-animator-sheet__tab{background:linear-gradient(180deg,#9a604d,#7b463a)}
+
 
       .cafasso-profile-panel{
         position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;
@@ -296,18 +370,22 @@
     sheet.dataset.houseProfile = 'open';
     sheet.setAttribute('aria-label', `Abrir mi ficha CAFASSO: ${name}`);
     sheet.innerHTML = `
+      <span class="cafasso-animator-sheet__back" aria-hidden="true"></span>
       <span class="cafasso-animator-sheet__clip" aria-hidden="true"></span>
       <span class="cafasso-animator-sheet__paper">
-        <span class="cafasso-animator-sheet__brand"><strong>CAFASSO</strong><span>Mi ficha</span></span>
+        <span class="cafasso-animator-sheet__brand"><strong>CAFASSO</strong><span>Ficha personal</span></span>
         <span class="cafasso-animator-sheet__body">
           ${portraitMarkup(user, 'cafasso-animator-sheet__portrait')}
           <span class="cafasso-animator-sheet__copy">
+            <span class="cafasso-animator-sheet__tiny">Animador</span>
             <span class="cafasso-animator-sheet__name">${esc(name)}</span>
             <span class="cafasso-animator-sheet__role">${esc(role)}</span>
+            <span class="cafasso-animator-sheet__line" aria-hidden="true"></span>
+            <span class="cafasso-animator-sheet__path">en camino</span>
           </span>
         </span>
-        <span class="cafasso-animator-sheet__stamp">Animador</span>
-        <span class="cafasso-animator-sheet__label">abrir ficha</span>
+        <span class="cafasso-animator-sheet__stamp">Animador<br>CAFASSO</span>
+        <span class="cafasso-animator-sheet__tab">Mi ficha →</span>
       </span>`;
 
     const panel = document.createElement('section');
