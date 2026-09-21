@@ -297,14 +297,6 @@
     };
   }
 
-  async function sessionHash() {
-    const auth = json(nativeGet.call(localStorage, 'cafassoAuth')) || {};
-    const token = String(auth?.sessionToken || '');
-    if (!token || Number(auth.expiresAt || 0) <= Date.now()) return '';
-    const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
-    return Array.from(new Uint8Array(bytes)).map(byte => byte.toString(16).padStart(2, '0')).join('');
-  }
-
   function applyStorage(storage) {
     suppress += 1;
     try {
@@ -336,11 +328,11 @@
   }
 
   async function fetchRemote() {
-    const hash = await sessionHash();
-    if (!hash) throw new Error('auth');
+    const headers = authHeaders(false);
+    if (!headers) throw new Error('auth');
     const response = await fetch(STATE_API, {
       method:'GET',
-      headers:{ 'X-Cafasso-Session-Hash':hash },
+      headers,
       cache:'no-store'
     });
     const data = await response.json().catch(() => ({}));
@@ -350,14 +342,11 @@
   }
 
   async function persist(state) {
-    const hash = await sessionHash();
-    if (!hash || !userId()) return false;
+    const headers = authHeaders(true);
+    if (!headers || !userId()) return false;
     const response = await fetch(STATE_API, {
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'X-Cafasso-Session-Hash':hash
-      },
+      headers,
       body:JSON.stringify({ state })
     });
     const result = await response.json().catch(() => ({}));
