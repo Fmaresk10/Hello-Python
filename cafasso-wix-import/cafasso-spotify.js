@@ -258,6 +258,11 @@
     };
     const t = sdkState.track_window.current_track;
     const artist = (t.artists || []).map(item => item.name).filter(Boolean).join(', ');
+    const previous = lastState?.track || null;
+    const samePrevious = Boolean(previous && (
+      previous.spotifyUri === t.uri ||
+      previous.id === (t.id || t.uri)
+    ));
     return {
       connected,
       deviceId,
@@ -269,7 +274,8 @@
         category:'spotify',
         categoryLabel:'Spotify',
         spotifyUri:t.uri,
-        spotifyUrl:t.id ? `https://open.spotify.com/track/${t.id}` : '',
+        spotifyUrl:t.id ? `https://open.spotify.com/track/${t.id}` : (samePrevious ? previous.spotifyUrl || '' : ''),
+        image:t.album?.images?.[0]?.url || (samePrevious ? previous.image || '' : ''),
         durationMs:Number(t.duration_ms || 0),
         provider:'spotify'
       },
