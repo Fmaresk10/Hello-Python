@@ -5,8 +5,15 @@
   window.__cafassoSchoolEntryInstalled = true;
 
   const STYLE_ID = 'cafassoSchoolEntryStyles';
+  const NAV_KEY = 'cafassoSpaceTransition';
 
   function cameFromPatio() {
+    try {
+      const nav = JSON.parse(sessionStorage.getItem(NAV_KEY) || 'null');
+      const age = Date.now() - Number(nav?.at || 0);
+      if (nav?.from === 'patio' && nav?.to === 'escuela' && age >= 0 && age < 30000) return true;
+    } catch (error) {}
+
     try {
       if (!document.referrer) return false;
       const previous = new URL(document.referrer);
