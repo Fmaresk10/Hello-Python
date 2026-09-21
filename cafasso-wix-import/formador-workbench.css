@@ -284,3 +284,226 @@ body.cafasso-formador-editor .danger-zone{border-radius:7px!important;background
   body.cafasso-formador-editor .top{padding:18px 16px!important}
   body.cafasso-formador-editor .actions{display:grid!important;grid-template-columns:1fr 1fr;width:100%}
 }
+
+
+/* ===== Taller de cursos · refinamiento editorial ===== */
+body.cafasso-formador-editor .shell{
+  grid-template-columns:248px minmax(0,1fr)!important;
+  background:transparent
+}
+body.cafasso-formador-editor .side{
+  padding:24px 17px 20px!important;
+  background:
+    radial-gradient(circle at 50% 4%,rgba(235,201,113,.12),transparent 23%),
+    linear-gradient(180deg,#173c36,#102b29)!important
+}
+body.cafasso-formador-editor .brand{
+  padding-bottom:17px!important;margin-bottom:20px!important;border-bottom:1px solid rgba(255,255,255,.10)!important
+}
+body.cafasso-formador-editor .brand a{width:44px;height:49px!important;border-radius:9px!important}
+body.cafasso-formador-editor .brand img{width:31px!important;height:39px!important}
+body.cafasso-formador-editor .brand b{font-size:23px!important}
+body.cafasso-formador-editor .side h4{
+  display:block!important;margin:0 0 9px!important;color:#d8bd73!important;
+  font:800 9px/1 Inter,system-ui,sans-serif!important;letter-spacing:.15em!important
+}
+body.cafasso-formador-editor .side-tools{
+  display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px!important
+}
+body.cafasso-formador-editor .tool{
+  min-height:58px!important;padding:8px 7px!important;
+  background:rgba(255,255,255,.035)!important;border:1px solid rgba(255,255,255,.09)!important;
+  border-radius:7px!important;color:#f1efe6!important;font-size:16px!important;
+  box-shadow:none!important
+}
+body.cafasso-formador-editor .tool span{
+  display:block!important;color:#d8ded8!important;font:750 9px/1.15 Inter,system-ui,sans-serif!important
+}
+body.cafasso-formador-editor .tool:hover{
+  background:rgba(216,181,92,.12)!important;border-color:rgba(225,193,108,.22)!important;
+  transform:translateY(-1px)
+}
+body.cafasso-formador-editor .back{
+  left:17px!important;right:17px!important;bottom:19px!important;
+  color:#d8e0d9!important;font-size:11px!important
+}
+
+body.cafasso-formador-editor main{
+  padding:26px clamp(20px,2.8vw,42px) 52px!important;
+  max-width:1560px!important
+}
+body.cafasso-formador-editor .top{
+  position:relative;margin-bottom:12px!important;padding:20px 22px!important;
+  background:linear-gradient(110deg,rgba(255,251,239,.97),rgba(242,229,199,.95))!important;
+  border-color:rgba(113,84,46,.18)!important;
+  box-shadow:0 10px 28px rgba(63,53,39,.075)!important
+}
+body.cafasso-formador-editor .top:before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#b99a4e
+}
+body.cafasso-formador-editor .top .eyebrow{font-size:9px!important;letter-spacing:.17em!important}
+body.cafasso-formador-editor .top h1{
+  margin:5px 0 4px!important;font-size:clamp(31px,3vw,42px)!important;color:#294239!important
+}
+body.cafasso-formador-editor .top p{font-size:12px!important;color:#727970!important}
+body.cafasso-formador-editor .actions{
+  display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:6px!important
+}
+body.cafasso-formador-editor .actions .btn{
+  min-height:37px!important;padding:8px 11px!important;font-size:10px!important;box-shadow:none!important
+}
+body.cafasso-formador-editor #publishBtn{
+  background:#3f735a!important;border:1px solid #35654f!important;color:#fff!important
+}
+body.cafasso-formador-editor #saveBtn{border-color:#cab78f!important}
+body.cafasso-formador-editor #reloadBtn{opacity:.72}
+
+body.cafasso-formador-editor .layout{
+  grid-template-columns:minmax(245px,290px) minmax(0,1fr)!important;
+  gap:12px!important;align-items:start!important
+}
+body.cafasso-formador-editor .outline{
+  position:sticky;top:77px;
+  max-height:calc(100dvh - 96px);overflow:auto;overscroll-behavior:contain;
+  padding:17px!important;background:rgba(246,237,218,.93)!important;
+  border-color:#d7c9ae!important;box-shadow:0 9px 22px rgba(63,53,39,.05)!important
+}
+body.cafasso-formador-editor .editor-panel-kicker,
+body.cafasso-formador-editor .editor-sheet-kicker{
+  color:#a0813a;font:850 8.5px/1 Inter,system-ui,sans-serif;letter-spacing:.15em;text-transform:uppercase
+}
+body.cafasso-formador-editor .outline h3{
+  margin:5px 0 10px!important;font-size:22px!important;color:#31493f!important
+}
+body.cafasso-formador-editor .module-jump{margin-bottom:9px!important}
+body.cafasso-formador-editor .module{
+  position:relative;margin:6px 0!important;padding:11px 11px 10px 14px!important;
+  border-radius:6px!important;background:#fff9ed!important;border-color:#ded0b7!important
+}
+body.cafasso-formador-editor .module:before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#cfc0a3;border-radius:6px 0 0 6px
+}
+body.cafasso-formador-editor .module.active{
+  background:#f5e9ca!important;border-color:#cbae63!important;box-shadow:none!important
+}
+body.cafasso-formador-editor .module.active:before{background:#ad8e40}
+body.cafasso-formador-editor .module strong{font-size:12px!important;color:#344d42!important}
+body.cafasso-formador-editor .module small{font-size:9px!important;color:#888073!important}
+body.cafasso-formador-editor .addmod{min-height:38px!important;font-size:10px!important}
+body.cafasso-formador-editor .module-actions{gap:6px!important;margin-top:7px!important}
+body.cafasso-formador-editor .module-actions .btn{min-height:34px!important;padding:7px 8px!important;font-size:9px!important}
+body.cafasso-formador-editor .statusbox{
+  margin-top:10px!important;padding:10px 11px!important;font-size:9.5px!important;line-height:1.35!important
+}
+body.cafasso-formador-editor .danger-zone{
+  margin-top:14px!important;padding:11px!important;opacity:.82
+}
+body.cafasso-formador-editor .danger-zone strong{font-size:10px!important}
+body.cafasso-formador-editor .danger-zone p{font-size:9px!important;line-height:1.4!important}
+body.cafasso-formador-editor .danger-zone .btn{font-size:9px!important}
+
+body.cafasso-formador-editor .editor{
+  padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important
+}
+body.cafasso-formador-editor .editor .section{
+  position:relative;margin:0 0 10px!important;padding:20px 21px!important;
+  background:rgba(255,250,239,.92)!important;border:1px solid #d9ccb5!important;border-radius:8px!important;
+  box-shadow:0 7px 18px rgba(68,58,43,.045)!important
+}
+body.cafasso-formador-editor .editor .section:last-child{margin-bottom:0!important}
+body.cafasso-formador-editor .editor-sheet-kicker{margin-bottom:6px}
+body.cafasso-formador-editor .editor .section h3{
+  margin:0 0 15px!important;font-size:23px!important;color:#2e483e!important;font-weight:500!important
+}
+body.cafasso-formador-editor .editor-course-sheet{border-left:4px solid #718c7b!important}
+body.cafasso-formador-editor .editor-module-sheet{border-left:4px solid #c0a257!important}
+body.cafasso-formador-editor .editor-contents-sheet{border-left:4px solid #718296!important}
+body.cafasso-formador-editor .editor-block-sheet{border-left:4px solid #a97562!important}
+
+body.cafasso-formador-editor .field{margin-bottom:12px!important}
+body.cafasso-formador-editor .field label{
+  margin-bottom:5px!important;color:#59685f!important;font-size:9px!important;
+  text-transform:uppercase;letter-spacing:.055em
+}
+body.cafasso-formador-editor .field input,
+body.cafasso-formador-editor .field textarea,
+body.cafasso-formador-editor .field select{
+  border-radius:6px!important;padding:10px 11px!important;background:#fffdf7!important;
+  border-color:#ddd1bd!important;color:#31443b!important
+}
+body.cafasso-formador-editor .field textarea{min-height:86px!important;line-height:1.5}
+body.cafasso-formador-editor .check{
+  padding:8px 10px;border-radius:6px;background:#f2eadb;color:#526158!important;
+  font-size:10px!important;font-weight:750!important
+}
+body.cafasso-formador-editor .check input{accent-color:#547663}
+body.cafasso-formador-editor .fields2{gap:10px!important}
+
+body.cafasso-formador-editor .content-list{gap:6px!important;margin-top:10px!important}
+body.cafasso-formador-editor .content{
+  grid-template-columns:34px minmax(0,1fr) auto!important;gap:9px!important;
+  padding:10px!important;border-radius:6px!important;background:#fffdf7!important;border-color:#ddd1bd!important
+}
+body.cafasso-formador-editor .content .icon{
+  width:34px!important;height:34px!important;border-radius:6px!important;background:#ebe5d9!important;font-size:14px!important
+}
+body.cafasso-formador-editor .content strong{font-size:11px!important;color:#344d42!important}
+body.cafasso-formador-editor .content small{font-size:9px!important;color:#898175!important}
+body.cafasso-formador-editor .content.active{
+  background:#f5e9ca!important;border-color:#cbae63!important;box-shadow:inset 3px 0 #ad8e40!important
+}
+body.cafasso-formador-editor .mini{border-radius:5px!important;background:#fff9ed!important;font-size:9px!important}
+body.cafasso-formador-editor #blockBody{min-height:150px!important}
+
+body.cafasso-formador-editor .toast{
+  right:22px!important;bottom:22px!important;border-radius:7px!important;
+  background:#173a34!important;color:#fff7e7!important;box-shadow:0 10px 30px rgba(17,42,37,.22)!important
+}
+
+@media(max-width:1100px){
+  body.cafasso-formador-editor .shell{grid-template-columns:210px minmax(0,1fr)!important}
+  body.cafasso-formador-editor .side-tools{grid-template-columns:1fr!important}
+  body.cafasso-formador-editor .tool{min-height:45px!important;display:flex!important;justify-content:flex-start!important;gap:8px!important;padding:8px 9px!important}
+  body.cafasso-formador-editor .layout{grid-template-columns:235px minmax(0,1fr)!important}
+  body.cafasso-formador-editor .actions{max-width:330px!important}
+}
+@media(max-width:860px){
+  body.cafasso-formador-editor .shell{display:block!important}
+  body.cafasso-formador-editor .side{
+    position:sticky!important;top:0!important;z-index:50!important;height:auto!important;
+    display:flex!important;align-items:center!important;gap:8px!important;padding:8px 10px!important
+  }
+  body.cafasso-formador-editor .brand{display:none!important}
+  body.cafasso-formador-editor .side h4{display:none!important}
+  body.cafasso-formador-editor .side-tools{
+    display:flex!important;flex:1!important;overflow-x:auto!important;grid-template-columns:none!important;scrollbar-width:none
+  }
+  body.cafasso-formador-editor .side-tools::-webkit-scrollbar{display:none}
+  body.cafasso-formador-editor .tool{
+    flex:0 0 auto!important;min-width:82px!important;min-height:40px!important;
+    display:flex!important;justify-content:center!important
+  }
+  body.cafasso-formador-editor .back{
+    position:static!important;flex:0 0 auto!important;padding:9px 10px!important;border:1px solid rgba(255,255,255,.12)!important;
+    border-radius:6px!important;font-size:0!important
+  }
+  body.cafasso-formador-editor .back:after{content:"← Mesa";font-size:9px}
+  body.cafasso-formador-editor main{padding:13px 12px 32px!important}
+  body.cafasso-formador-editor .top{display:block!important}
+  body.cafasso-formador-editor .actions{margin-top:12px!important;max-width:none!important;justify-content:flex-start!important}
+  body.cafasso-formador-editor .layout{grid-template-columns:1fr!important}
+  body.cafasso-formador-editor .outline{position:static!important;max-height:none!important}
+}
+@media(max-width:560px){
+  body.cafasso-formador-editor .tool span{display:none!important}
+  body.cafasso-formador-editor .tool{min-width:44px!important;width:44px!important;font-size:15px!important}
+  body.cafasso-formador-editor .top{padding:17px 15px!important}
+  body.cafasso-formador-editor .top h1{font-size:30px!important}
+  body.cafasso-formador-editor .actions{
+    display:grid!important;grid-template-columns:1fr 1fr!important
+  }
+  body.cafasso-formador-editor .actions .btn{width:100%!important}
+  body.cafasso-formador-editor .editor .section{padding:16px 14px!important}
+  body.cafasso-formador-editor .fields2{grid-template-columns:1fr!important}
+  body.cafasso-formador-editor .quick-content-bar{grid-template-columns:1fr 1fr!important}
+}
