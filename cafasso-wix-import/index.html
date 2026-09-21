@@ -25,7 +25,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102f33}
     const url = new URL('./world.html', location.href);
     url.search = location.search;
     ['code','state','error','error_description'].forEach(key => url.searchParams.delete(key));
-    url.searchParams.set('__cafassoBuild', '1046');
+    url.searchParams.set('__cafassoBuild', '1047');
     url.hash = location.hash;
     return url.href;
   };
