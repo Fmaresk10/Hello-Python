@@ -5,27 +5,13 @@
   window.__cafassoParishSongbookInstalled = true;
 
   const STYLE_ID = 'cafassoParishSongbookStyles';
-  const COURSE_API = 'https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
-  const CATALOG_TITLE = 'CAFASSO · Cancionero parroquial';
   const SONGBOOK_IMAGE = 'https://static.wixstatic.com/media/47bf07_697589d0c0e14387bd1014e8ba3e9b5a~mv2.png';
 
-  const FALLBACK_TRACKS = [
-    { id:'gregoriano', category:'contemplacion', categoryLabel:'Contemplación', title:'Canto gregoriano', subtitle:'Oración en el silencio del monasterio', videoId:'qPWTZR-opkY', source:'Catholic Chants TV', order:1 },
-    { id:'organo', category:'contemplacion', categoryLabel:'Contemplación', title:'Órgano sacro', subtitle:'Himnos para oración y meditación', videoId:'r1P-bxExSqg', source:'The Sacred Christian Music TV', order:2 },
-    { id:'nada-te-turbe', category:'taize', categoryLabel:'Taizé', title:'Nada te turbe', subtitle:'Canto meditativo de Taizé', videoId:'go1-BoDD7CI', source:'Taizé', order:3 },
-    { id:'ubi-caritas', category:'taize', categoryLabel:'Taizé', title:'Ubi Caritas', subtitle:'Donde hay amor, allí está Dios', videoId:'F1flBOC3SxM', source:'Taizé', order:4 },
-    { id:'tu-modo', category:'salesiano', categoryLabel:'Salesiano', title:'Tu modo', subtitle:'Cristóbal Fones, SJ', videoId:'5wXCLdnOQj4', source:'Cristóbal Fones, SJ', order:5 },
-    { id:'todo', category:'salesiano', categoryLabel:'Salesiano', title:'Todo', subtitle:'Cristóbal Fones, SJ', videoId:'nP0BYSDFBZk', source:'Cristóbal Fones, SJ', order:6 }
-  ];
-
   const GROUPS = [
-    { id:'spotify', title:'Spotify · CAFASSO', copy:'Tu playlist personal del Cancionero, reproducida directamente desde Spotify.' },
-    { id:'contemplacion', title:'Contemplación', copy:'Música serena para disponerte, respirar y permanecer.' },
-    { id:'taize', title:'Taizé', copy:'Cantos breves y repetitivos para sostener la oración.' },
-    { id:'salesiano', title:'Salesiano', copy:'Canciones para rezar desde una espiritualidad joven, cercana y servicial.' }
+    { id:'spotify', title:'Spotify · CAFASSO', copy:'Tu playlist “CAFASSO · Cancionero”, reproducida directamente desde Spotify.' }
   ];
 
-  let tracks = FALLBACK_TRACKS.slice();
+  let tracks = [];
   let tracksPromise = null;
   let activeTrack = null;
   let playing = false;
@@ -50,85 +36,50 @@
     return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
   }
 
-  function videoIdFrom(value) {
-    const raw = String(value || '').trim();
-    if (!raw) return '';
-    if (/^[A-Za-z0-9_-]{11}$/.test(raw)) return raw;
-    try {
-      const url = new URL(raw);
-      if (url.hostname.includes('youtu.be')) return url.pathname.split('/').filter(Boolean)[0] || '';
-      if (url.searchParams.get('v')) return url.searchParams.get('v') || '';
-      const parts = url.pathname.split('/').filter(Boolean);
-      const embed = parts.indexOf('embed');
-      if (embed >= 0 && parts[embed + 1]) return parts[embed + 1];
-      const shorts = parts.indexOf('shorts');
-      if (shorts >= 0 && parts[shorts + 1]) return parts[shorts + 1];
-    } catch (error) {}
-    return '';
-  }
-
-  function normalizeRemoteCourse(course) {
-    const blocks = (course?.modules || []).flatMap(module => module?.contents || []);
-    return blocks
-      .filter(block => block?.settings?.cafassoParishSong === true && block?.settings?.active !== false)
-      .map((block, index) => {
-        const settings = block.settings || {};
-        const body = block?.content?.body || '';
-        const videoId = settings.videoId || videoIdFrom(body);
-        return {
-          id: String(block._id || `tema-${index + 1}`),
-          category: String(settings.category || 'salesiano'),
-          categoryLabel: String(settings.categoryLabel || GROUPS.find(group => group.id === settings.category)?.title || 'Salesiano'),
-          title: String(block.title || 'Tema'),
-          subtitle: String(settings.subtitle || ''),
-          videoId,
-          source: String(settings.source || ''),
-          order: Number(settings.order || index + 1)
-        };
-      })
-      .filter(track => track.videoId)
-      .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title, 'es'));
-  }
-
   async function loadTracks(force = false) {
     if (tracksPromise && !force) return tracksPromise;
     tracksPromise = (async () => {
+      tracks = [];
       spotifyStatus = '';
       const spotify = spotifyApi();
 
-      if (spotify?.isConfigured?.()) {
-        if (spotify.isAuthenticated?.()) {
-          try {
-            const info = await spotify.getConnectionInfo?.(true);
-            const who = info?.profile?.displayName ? `Cuenta: ${info.profile.displayName}. ` : '';
-            if (info?.profile && !info.premium) {
-              spotifyStatus = `${who}Spotify Premium es necesario para reproducir dentro de CAFASSO.`;
-            } else {
-              const result = await spotify.getCancioneroTracks();
-              if (result?.tracks?.length) {
-                tracks = result.tracks;
-                spotifyStatus = `${who}Conectado a “${result.playlist?.name || 'CAFASSO · Cancionero'}” · ${result.tracks.length} ${result.tracks.length === 1 ? 'tema' : 'temas'}.`;
-                return tracks;
-              }
-              spotifyStatus = `${who}Spotify está conectado, pero todavía no encontré una playlist propia llamada “CAFASSO · Cancionero”.`;
-            }
-          } catch (error) {
-            spotifyStatus = `Spotify está conectado, pero hubo un problema: ${error?.message || 'no pude leer el Cancionero'}.`;
-          }
-        } else {
-          spotifyStatus = 'Spotify está preparado. Conectá tu cuenta para usar tu playlist “CAFASSO · Cancionero”.';
-        }
+      if (!spotify?.isConfigured?.()) {
+        spotifyStatus = 'Spotify todavía no está configurado para este Cancionero.';
+        return tracks;
+      }
+
+      if (!spotify.isAuthenticated?.()) {
+        spotifyStatus = 'Conectá tu cuenta de Spotify para abrir “CAFASSO · Cancionero”.';
+        return tracks;
       }
 
       try {
-        const response = await fetch(`${COURSE_API}?title=${encodeURIComponent(CATALOG_TITLE)}`, { cache:'no-store' });
-        const data = await response.json().catch(() => ({}));
-        const remote = response.ok && data?.ok && data?.course ? normalizeRemoteCourse(data.course) : [];
-        tracks = remote.length ? remote : FALLBACK_TRACKS.slice();
+        const info = await spotify.getConnectionInfo?.(true);
+        const who = info?.profile?.displayName ? `Cuenta: ${info.profile.displayName}. ` : '';
+
+        if (info?.profile && !info.premium) {
+          spotifyStatus = `${who}Spotify Premium es necesario para reproducir dentro de CAFASSO.`;
+          return tracks;
+        }
+
+        const result = await spotify.getCancioneroTracks();
+        if (!result?.playlist) {
+          spotifyStatus = `${who}No encontré una playlist llamada “CAFASSO · Cancionero” en esta cuenta.`;
+          return tracks;
+        }
+
+        if (!result.tracks?.length) {
+          spotifyStatus = `${who}“${result.playlist.name || 'CAFASSO · Cancionero'}” está conectada, pero todavía no tiene temas disponibles.`;
+          return tracks;
+        }
+
+        tracks = result.tracks;
+        spotifyStatus = `${who}Conectado a “${result.playlist.name || 'CAFASSO · Cancionero'}” · ${result.tracks.length} ${result.tracks.length === 1 ? 'tema' : 'temas'}.`;
+        return tracks;
       } catch (error) {
-        tracks = FALLBACK_TRACKS.slice();
+        spotifyStatus = `Spotify está conectado, pero hubo un problema: ${error?.message || 'no pude leer el Cancionero'}.`;
+        return tracks;
       }
-      return tracks;
     })();
     return tracksPromise;
   }
@@ -240,7 +191,7 @@
   }
 
   function playTrack(track) {
-    if (!track?.videoId && !track?.spotifyUri) return;
+    if (!track?.spotifyUri) return;
     const current = musicApi()?.getState?.();
     if (current?.track?.id === track.id && current?.playing) {
       pauseCurrent();
@@ -263,7 +214,7 @@
       const list = tracks.filter(track => track.category === group.id);
       if (!list.length) return '';
       return `<section class="cafasso-songbook-group"><div class="cafasso-songbook-group__title"><strong>${esc(group.title)}</strong><span>${list.length} ${list.length === 1 ? 'tema' : 'temas'}</span></div><p class="cafasso-songbook-group__copy">${esc(group.copy)}</p>${list.map(track => `<div class="cafasso-songbook-track"><div class="cafasso-songbook-track__copy"><strong>${esc(track.title)}</strong><span>${esc(track.subtitle || track.source || '')}</span></div><button class="cafasso-songbook-play" type="button" data-track-id="${esc(track.id)}">Escuchar</button></div>`).join('')}</section>`;
-    }).join('') || '<p class="cafasso-songbook-lead">Todavía no hay temas activos en el cancionero.</p>';
+    }).join('') || '<p class="cafasso-songbook-lead">El Cancionero usa únicamente Spotify. Conectá tu cuenta y asegurate de tener la playlist “CAFASSO · Cancionero”.</p>';
 
     groups.querySelector('[data-spotify-connect]')?.addEventListener('click', async () => {
       try { await spotifyApi()?.connectAccount?.(); }
