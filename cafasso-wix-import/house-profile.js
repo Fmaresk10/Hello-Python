@@ -1,7 +1,4 @@
 (() => {
-  const params = new URLSearchParams(location.search);
-  if ((params.get('space') || 'house') !== 'house') return;
-
   const AUTH_API = 'https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoAuth';
   const STYLE_ID = 'cafassoHouseProfileStyles';
 
@@ -298,8 +295,7 @@
   }
 
   function render() {
-    const house = document.querySelector('.cafasso-house');
-    if (!house || house.querySelector('[data-house-profile-panel]')) return;
+    if (document.querySelector('[data-house-profile-panel]')) return;
     ensureStyles();
 
     const user = readUser();
@@ -368,7 +364,7 @@
         <div class="cafasso-profile-status" data-house-profile-status></div>
       </article>`;
 
-    house.appendChild(panel);
+    document.body.appendChild(panel);
 
     function mountProfileButton() {
       const hud = document.getElementById('cafassoGlobalCounters');
@@ -476,11 +472,7 @@
     });
   }
 
-  let attempts = 0;
-  const mount = () => {
-    const house = document.querySelector('.cafasso-house');
-    if (house) return render();
-    if (attempts < 20) { attempts += 1; setTimeout(mount, 80); }
-  };
-  mount();
+  const mount = () => render();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once:true });
+  else mount();
 })();
