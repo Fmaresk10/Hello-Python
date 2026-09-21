@@ -46,7 +46,7 @@
     loadHouseScript('./house-door.js?v=1', 'cafasso-house-door-loader');
     loadHouseScript('./house-prologue.js?v=1', 'cafasso-house-prologue-loader');
     loadHouseScript('./house-microinteractions.js?v=1', 'cafasso-house-micro-loader');
-    loadHouseScript('./house-personal-corner.js?v=1', 'cafasso-house-personal-corner-loader');
+    loadHouseScript('./house-personal-corner.js?v=2', 'cafasso-house-personal-corner-loader');
     loadHouseScript('./cafasso-dynamic-ambience.js?v=2', 'cafasso-dynamic-ambience-loader');
     // El reloj estacional se instala antes que cualquier variante visual.
     loadHouseScript('./cafasso-time-seasonal-fix.js?v=4', 'cafasso-time-seasonal-fix-loader');
