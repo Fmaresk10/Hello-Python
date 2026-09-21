@@ -56,10 +56,10 @@
       .cafasso-ruah-inline{display:flex;align-items:center;gap:9px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(244,216,137,.26);color:#F4D889;font-size:11px;position:relative;z-index:1}
       .cafasso-ruah-inline b{font-size:12px;color:#FFF9E8}
       body.cafasso-mission-mode .complete-box{display:none}
-      .cafasso-celebration{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:rgba(5,25,30,.34);pointer-events:none;animation:cafassoCelebrationIn .2s ease-out both}
-      .cafasso-celebration-card{padding:24px 30px;text-align:center;border:1px solid rgba(255,235,165,.8);border-radius:22px;background:linear-gradient(145deg,#123C43,#22634F);color:#FFF9E8;box-shadow:0 18px 60px rgba(0,0,0,.35);animation:cafassoCelebrationPop .45s cubic-bezier(.2,.8,.2,1) both}
-      .cafasso-celebration-card strong{display:block;font:400 30px/1.1 Georgia,serif;color:#FFE39A}.cafasso-celebration-card span{display:block;margin-top:8px;color:#E1F0E2;font-size:13px;font-weight:800}.cafasso-celebration-card .cafasso-unlock-title{margin-top:17px;font:850 18px/1.2 Inter,system-ui;color:#FFF4B0}.cafasso-celebration-card .cafasso-unlock-copy{font-size:11px;color:#D5E9D8}
-      .cafasso-confetti{position:fixed;left:50%;top:46%;width:10px;height:16px;border-radius:2px;transform:translate(-50%,-50%);animation:cafassoConfetti 1.9s cubic-bezier(.12,.72,.25,1) forwards;animation-delay:var(--delay);background:var(--color);opacity:0}
+      .cafasso-celebration{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;background:rgba(5,25,30,.62);pointer-events:auto;animation:cafassoCelebrationIn .2s ease-out both}
+      .cafasso-celebration-card{width:min(470px,92vw);padding:27px 30px 25px;text-align:center;border:1px solid rgba(255,235,165,.8);border-radius:22px;background:linear-gradient(145deg,#123C43,#22634F);color:#FFF9E8;box-shadow:0 18px 60px rgba(0,0,0,.42);animation:cafassoCelebrationPop .45s cubic-bezier(.2,.8,.2,1) both}
+      .cafasso-celebration-card strong{display:block;font:400 30px/1.1 Georgia,serif;color:#FFE39A}.cafasso-celebration-card span{display:block;margin-top:8px;color:#E1F0E2;font-size:13px;font-weight:800}.cafasso-celebration-card .cafasso-unlock-title{margin-top:17px;font:850 18px/1.2 Inter,system-ui;color:#FFF4B0}.cafasso-celebration-card .cafasso-unlock-copy{font-size:11px;color:#D5E9D8}.cafasso-celebration-next{margin:18px 0 0;padding:12px 14px;border:1px solid rgba(244,216,137,.28);border-radius:13px;background:rgba(4,26,32,.28);color:#E8F0E6;font:600 12px/1.45 Inter,system-ui}.cafasso-celebration-next b{color:#FFE39A}.cafasso-celebration-status{min-height:16px;margin-top:11px!important;color:#BED7C5!important;font-size:10px!important;font-weight:700!important}.cafasso-celebration-action{margin-top:16px;min-width:190px;min-height:43px;padding:11px 18px;border:1px solid #FFE5A1;border-radius:999px;background:#F1C85B;color:#17302F;font:850 11px/1 Inter,system-ui;cursor:pointer;box-shadow:0 7px 18px rgba(0,0,0,.22);transition:transform .16s ease,filter .16s ease}.cafasso-celebration-action:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.05)}.cafasso-celebration-action:disabled{cursor:wait;opacity:.68}
+      .cafasso-confetti{position:fixed;left:50%;top:46%;width:10px;height:16px;border-radius:2px;transform:translate(-50%,-50%);animation:cafassoConfetti 1.9s cubic-bezier(.12,.72,.25,1) forwards;animation-delay:var(--delay);background:var(--color);opacity:0;pointer-events:none}
       .cafasso-world-return{position:fixed;z-index:100;left:auto;right:24px;top:20px;appearance:none;border:1px solid rgba(244,216,137,.55);background:rgba(8,35,39,.82);backdrop-filter:blur(10px);color:#FFF9E8;border-radius:999px;padding:10px 15px;font:850 11px Inter,system-ui;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.24)}.cafasso-world-return:hover{background:#F1C85B;color:#17302F}.cafasso-journey-mode .cafasso-course-map{background-image:url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png')!important}.cafasso-mission-mode{background-image:url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png')!important}
       body.cafasso-courses-mode{background:#102F35 url('https://static.wixstatic.com/media/47bf07_0d0a5e3ec41543cbb9d6171058171b28~mv2.png') center/cover fixed no-repeat!important;overflow-x:hidden}body.cafasso-courses-mode .shell{display:block;min-height:100vh}body.cafasso-courses-mode main{max-width:none;width:100%;min-height:100vh;padding:38px 7vw 58px;background:linear-gradient(180deg,rgba(5,27,32,.12),rgba(5,27,32,.36))}body.cafasso-courses-mode .side,body.cafasso-courses-mode .mobilebar,body.cafasso-courses-mode .mobile-nav,body.cafasso-courses-mode .mobile-head{display:none!important}body.cafasso-courses-mode .top{max-width:1100px;margin:0 auto 18px;color:#FFF9E8}body.cafasso-courses-mode .top h1{font:400 42px/1 Georgia,serif;color:#FFF9E8;text-shadow:0 2px 12px rgba(0,0,0,.45)}body.cafasso-courses-mode .top p{color:#DDE9DF}body.cafasso-courses-mode .top .pill{background:rgba(8,35,39,.7);border-color:rgba(244,216,137,.42);color:#FFF9E8}body.cafasso-courses-mode .courses{max-width:1100px;margin:0 auto;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}body.cafasso-courses-mode .card.course{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(250,238,210,.97),rgba(220,194,148,.96));border:1px solid rgba(115,77,39,.5);border-radius:10px 10px 5px 5px;box-shadow:0 12px 26px rgba(47,29,15,.3),inset 0 1px rgba(255,255,255,.6);color:#3B2B1E}body.cafasso-courses-mode .card.course:before{content:'◇  ESCUELA';display:block;color:#876020;font:850 9px Inter,system-ui;letter-spacing:.14em;margin-bottom:14px}body.cafasso-courses-mode .card.course h4{color:#3B2B1E;font:400 23px/1.1 Georgia,serif}body.cafasso-courses-mode .card.course p,body.cafasso-courses-mode .card.course small{color:#6B5137}body.cafasso-courses-mode .card.course .mini{background:rgba(107,81,55,.18)}body.cafasso-courses-mode .card.course .mini span{background:#2E7D59}body.cafasso-courses-mode .card.course .btn{background:#17302F;color:#FFF9E8;border-radius:999px}body.cafasso-courses-mode .card.course .badge{background:#2E7D59;color:#fff}body.cafasso-courses-mode .card.empty{max-width:1100px;margin:auto;background:rgba(8,35,39,.82);border-color:rgba(244,216,137,.42);color:#FFF9E8}
       body.cafasso-journey-mode .side .brand,body.cafasso-mission-mode .side .brand{display:grid;grid-template-columns:54px minmax(0,1fr);gap:10px 12px;align-items:center;padding:0 4px}body.cafasso-journey-mode .side .brand img,body.cafasso-mission-mode .side .brand img{width:54px;height:64px;object-fit:contain}body.cafasso-journey-mode .side .brand b,body.cafasso-mission-mode .side .brand b{font-size:27px;line-height:1;color:#FFF9E8}body.cafasso-journey-mode .side .brand small,body.cafasso-mission-mode .side .brand small{display:none}body.cafasso-journey-mode .side .brand:after,body.cafasso-mission-mode .side .brand:after{content:'EDUCAR  ·  TRANSFORMAR  ·  ACOMPAÑAR';grid-column:1/-1;color:#F4D889;font:850 8px/1.5 Inter,system-ui;letter-spacing:.11em;text-align:center;white-space:nowrap}
@@ -458,27 +458,42 @@
   function celebrateMission(mission, module) {
     if (celebrationRunning) return;
     celebrationRunning = true;
-    // Cuando la última misión queda realmente completa, reutilizamos el
-    // guardado nativo del módulo. Así se mantiene la validación existente:
-    // los desafíos solo cuentan si el formador los aprobó y el siguiente
-    // módulo se desbloquea desde el progreso central de CAFASSO.
+
     const state = experience();
     const missions = missionsOf(module);
+    const activeIndex = missions.findIndex(item => item.id === mission.id);
+    const nextMission = activeIndex >= 0 ? missions[activeIndex + 1] : null;
     const moduleReady = missions.length > 0 && missions.every(item => missionDone(item, module, state));
     const courseModules = Array.isArray(state?.course?.modules) ? state.course.modules : [];
     const moduleIndex = courseModules.findIndex(item => item && item._id === module?._id);
     const nextModule = moduleIndex >= 0 ? courseModules[moduleIndex + 1] : null;
-    if (moduleReady) {
-      document.getElementById('completeModule')?.click();
-    }
+    const nativeComplete = document.getElementById('completeModule');
+    const canCloseModule = Boolean(moduleReady && nativeComplete && !nativeComplete.disabled);
+
     playMissionSound();
+
     const overlay = document.createElement('div');
     overlay.className = 'cafasso-celebration';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+
     const reward = Number(mission.rewardAlmitas || 0);
-    const unlockNotice = moduleReady && nextModule
-      ? `<strong class="cafasso-unlock-title">🔓 ¡${esc(nextModule.title || 'Nuevo módulo')} desbloqueado!</strong><span class="cafasso-unlock-copy">Ya podés continuar tu camino de formación.</span>`
-      : '';
-    overlay.innerHTML = `<div class="cafasso-celebration-card"><strong>¡Misión completada!</strong><span>${reward > 0 ? `✦ +${reward} almitas` : 'Un paso más en tu camino'}</span>${unlockNotice}</div>`;
+    const nextView = nextMission ? presentationOf(module, nextMission) : null;
+    const stageFinished = !nextMission && canCloseModule;
+    const fallbackIncomplete = !nextMission && !canCloseModule;
+
+    const headline = stageFinished ? '¡Etapa completada!' : '¡Misión completada!';
+    const rewardLine = reward > 0 ? `✦ +${reward} almitas` : 'Un paso más en tu camino';
+    const nextCopy = nextMission
+      ? `<div class="cafasso-celebration-next">Tu próxima parada es <b>${esc(nextView?.title || 'la siguiente misión')}</b>.</div>`
+      : stageFinished && nextModule
+        ? `<div class="cafasso-celebration-next">La etapa queda cerrada. Al volver al mapa vas a encontrar <b>${esc(nextModule.title || 'el siguiente módulo')}</b> disponible.</div>`
+        : stageFinished
+          ? '<div class="cafasso-celebration-next">Completaste todas las paradas de esta etapa.</div>'
+          : '<div class="cafasso-celebration-next">Esta misión quedó completa, pero todavía hay contenidos obligatorios pendientes antes de cerrar la etapa.</div>';
+
+    overlay.innerHTML = `<div class="cafasso-celebration-card"><strong>${headline}</strong><span>${rewardLine}</span>${nextCopy}<span class="cafasso-celebration-status" data-celebration-status></span><button class="cafasso-celebration-action" type="button" data-celebration-action>${nextMission ? 'Continuar →' : stageFinished ? 'Guardando etapa…' : 'Volver al camino'}</button></div>`;
+
     const colors = ['#F4D889', '#F28B67', '#8FD0A2', '#A5C9E8', '#FFF9E8'];
     for (let index = 0; index < 72; index += 1) {
       const piece = document.createElement('i');
@@ -490,14 +505,65 @@
       piece.style.setProperty('--delay', `${Math.round(Math.random() * 180)}ms`);
       overlay.appendChild(piece);
     }
+
     document.body.appendChild(overlay);
-    setTimeout(() => {
+    const action = overlay.querySelector('[data-celebration-action]');
+    const status = overlay.querySelector('[data-celebration-status]');
+
+    const closeOverlay = () => {
       overlay.remove();
       celebrationRunning = false;
-      if (page === 'course-player.html') returnToCourseScreen();
-      else if (typeof window.CafassoNavigate === 'function') window.CafassoNavigate('curso');
-      else { history.pushState({ view: 'curso' }, '', `${location.pathname}${location.search}#curso`); window.dispatchEvent(new PopStateEvent('popstate')); }
-    }, 2200);
+    };
+
+    if (nextMission) {
+      action?.addEventListener('click', () => {
+        setStoredMission(module, nextMission.id);
+        closeOverlay();
+        decorateModule();
+      }, { once:true });
+      requestAnimationFrame(() => action?.focus());
+      return;
+    }
+
+    if (fallbackIncomplete) {
+      action?.addEventListener('click', () => {
+        closeOverlay();
+        returnToCourseScreen();
+      }, { once:true });
+      requestAnimationFrame(() => action?.focus());
+      return;
+    }
+
+    if (action) action.disabled = true;
+    const completion = typeof window.CafassoCompleteModule === 'function'
+      ? window.CafassoCompleteModule(module._id)
+      : Promise.reject(new Error('No se pudo guardar el cierre de la etapa.'));
+
+    Promise.resolve(completion).then(() => {
+      if (!overlay.isConnected) return;
+      if (status) status.textContent = 'Etapa guardada en tu progreso.';
+      if (action) {
+        action.disabled = false;
+        action.textContent = nextModule ? 'Volver al mapa y continuar →' : 'Volver al mapa →';
+        action.addEventListener('click', () => {
+          closeOverlay();
+          returnToCourseScreen();
+        }, { once:true });
+        action.focus();
+      }
+    }).catch(error => {
+      if (!overlay.isConnected) return;
+      if (status) status.textContent = error?.message || 'No pudimos guardar la etapa. Volvé al mapa y reintentá.';
+      if (action) {
+        action.disabled = false;
+        action.textContent = 'Volver al mapa';
+        action.addEventListener('click', () => {
+          closeOverlay();
+          returnToCourseScreen();
+        }, { once:true });
+        action.focus();
+      }
+    });
   }
 
   function isoWeekKey(value) {
