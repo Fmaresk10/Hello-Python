@@ -10,6 +10,7 @@
   const INTRO_KEY = 'cafasso-school-intro-v1';
   const STYLE_ID = 'cafassoSchoolExperienceStyles';
   const RESERVED_PREFIX = '__cafasso_';
+  let returnCourseRestored = false;
 
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
     '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;'
@@ -104,6 +105,44 @@
       @media(max-width:760px){
         .cafasso-school-board{left:5%;right:5%;top:10%;width:auto;min-height:0;padding:24px 20px 19px;border-width:7px;transform:none}.cafasso-school-board h1{font-size:30px}.cafasso-school-board__copy{font-size:11px;margin-bottom:12px}.cafasso-school-course strong{font-size:14px}.cafasso-school-intro{bottom:4%;width:90vw}.cafasso-school-map__head{padding:72px 20px 0}.cafasso-school-map__head h2{font-size:35px}.cafasso-school-map__head p{font-size:11px;max-width:300px}.cafasso-school-map__close{right:12px;top:13px}.cafasso-school-module{width:132px;min-height:66px;padding:8px;font-size:10px}.cafasso-school-module strong{font-size:11px}.cafasso-school-module small{font-size:7.5px}.cafasso-school-module:nth-child(1){left:22%;top:76%}.cafasso-school-module:nth-child(2){left:43%;top:62%}.cafasso-school-module:nth-child(3){left:61%;top:45%}.cafasso-school-module:nth-child(4){left:80%;top:31%}.cafasso-school-module-note{left:14px;right:14px;bottom:14px;width:auto;padding:12px 14px}.cafasso-school-module-note strong{font-size:17px}
       }
+      /* Curso responsive: cambia de mapa libre a recorrido legible según espacio real. */
+      @media(max-width:1100px) and (min-width:761px){
+        .cafasso-school-map__head{padding:34px 5vw 0;max-width:64vw}
+        .cafasso-school-map__head h2{font-size:clamp(31px,4.2vw,46px)}
+        .cafasso-school-module{width:clamp(142px,16vw,176px);min-height:74px}
+        .cafasso-school-module-note{width:min(300px,28vw);padding:14px 15px}
+      }
+      @media(max-width:820px),(max-height:600px){
+        .cafasso-school-map-panel{overflow:auto;overscroll-behavior:contain;padding-bottom:max(22px,env(safe-area-inset-bottom))}
+        .cafasso-school-map-panel:before{position:fixed}
+        .cafasso-school-map__close{position:fixed;right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));min-height:42px}
+        .cafasso-school-map__head{padding:calc(64px + env(safe-area-inset-top)) max(18px,5vw) 0;max-width:none}
+        .cafasso-school-map__head h2{font-size:clamp(30px,8vw,42px);max-width:calc(100vw - 90px)}
+        .cafasso-school-map__head p{max-width:680px;font-size:clamp(11px,2.8vw,13px)}
+        .cafasso-school-map__progress{margin-top:11px}
+        .cafasso-school-map__stations{position:relative;inset:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 14px;padding:34px max(18px,5vw) 18px}
+        .cafasso-school-module,.cafasso-school-module:nth-child(n){position:relative!important;left:auto!important;top:auto!important;transform:none!important;width:100%;min-height:78px;padding:11px 11px 10px}
+        .cafasso-school-module:hover:not(:disabled){transform:translateY(-2px)!important}
+        .cafasso-school-module i{margin:-24px 0 6px}
+        .cafasso-school-module strong{font-size:clamp(12px,3vw,15px)}
+        .cafasso-school-module small{font-size:clamp(8px,2.2vw,10px)}
+        .cafasso-school-module-note{position:relative;left:auto;right:auto;bottom:auto;width:auto;margin:8px max(18px,5vw) 0;padding:14px 15px;transform:none}
+      }
+      @media(max-width:520px){
+        .cafasso-school-map__stations{grid-template-columns:1fr;gap:19px;padding-top:36px}
+        .cafasso-school-module{min-height:72px}
+        .cafasso-school-module-note strong{font-size:18px}
+      }
+      @media(max-height:600px) and (orientation:landscape){
+        .cafasso-school-map__head{padding-top:18px;padding-right:150px}
+        .cafasso-school-map__head h2{font-size:clamp(25px,5.5vh,36px);margin:4px 0 5px}
+        .cafasso-school-map__head p{font-size:10px;line-height:1.35}
+        .cafasso-school-map__progress{margin-top:7px;padding:6px 9px}
+        .cafasso-school-map__stations{grid-template-columns:repeat(3,minmax(0,1fr));gap:15px 12px;padding-top:28px}
+        .cafasso-school-module{min-height:64px;padding:8px 9px}
+        .cafasso-school-module i{width:27px;height:27px;margin:-21px 0 4px}
+        .cafasso-school-module-note{margin-top:2px}
+      }
       @media(prefers-reduced-motion:reduce){.cafasso-school-course,.cafasso-school-intro,.cafasso-school-module{transition:none!important}}
     `;
     document.head.appendChild(style);
@@ -164,6 +203,12 @@
     host.querySelectorAll('[data-school-course]').forEach(button => {
       button.addEventListener('click', () => openCourseMap(button.dataset.schoolCourse, data));
     });
+
+    const requestedCourse = String(params.get('course') || '').trim();
+    if (requestedCourse && !returnCourseRestored && courses.some(course => String(course?._id || course?.id || '') === requestedCourse)) {
+      returnCourseRestored = true;
+      requestAnimationFrame(() => openCourseMap(requestedCourse, data));
+    }
   }
 
   function findProgress(data, courseId) {
@@ -178,6 +223,14 @@
   function closeCourseMap(panel) {
     if (panel) panel.hidden = true;
     document.body.classList.remove('cafasso-school-course-open');
+    try {
+      const url = new URL(location.href);
+      if (url.searchParams.has('course') || url.searchParams.has('fromMission')) {
+        url.searchParams.delete('course');
+        url.searchParams.delete('fromMission');
+        history.replaceState(history.state, '', url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : '') + url.hash);
+      }
+    } catch (error) {}
   }
 
   async function openCourseMap(courseId, meData) {
