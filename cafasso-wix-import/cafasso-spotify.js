@@ -29,6 +29,8 @@
   let lastState = null;
   let profileCache = null;
   let lastError = '';
+  let cancioneroPlaylist = null;
+  let cancioneroTracks = [];
 
   function redirectUri() {
     return REDIRECT_URI;
@@ -432,9 +434,14 @@
     const initialized = await initPlayer();
     if (!initialized) throw new Error(lastError || 'Spotify no pudo preparar el reproductor');
     const readyDevice = await waitForDevice();
+    const inCancionero = cancioneroTracks.some(item => item.spotifyUri === track.spotifyUri);
+    const playlistUri = cancioneroPlaylist?.uri || (cancioneroPlaylist?.id ? `spotify:playlist:${cancioneroPlaylist.id}` : '');
+    const body = inCancionero && playlistUri
+      ? { context_uri:playlistUri, offset:{ uri:track.spotifyUri }, position_ms:0 }
+      : { uris:[track.spotifyUri], position_ms:0 };
     await api(`/me/player/play?device_id=${encodeURIComponent(readyDevice)}`, {
       method:'PUT',
-      body:JSON.stringify({ uris:[track.spotifyUri] })
+      body:JSON.stringify(body)
     });
     return true;
   }
@@ -458,6 +465,16 @@
     const ms = Math.max(0, Math.floor(Number(seconds || 0) * 1000));
     if (player) return player.seek(ms);
     if (deviceId) await api(`/me/player/seek?position_ms=${ms}&device_id=${encodeURIComponent(deviceId)}`, { method:'PUT' });
+  }
+
+  async function previous() {
+    if (player) return player.previousTrack();
+    if (deviceId) return api(`/me/player/previous?device_id=${encodeURIComponent(deviceId)}`, { method:'POST' });
+  }
+
+  async function next() {
+    if (player) return player.nextTrack();
+    if (deviceId) return api(`/me/player/next?device_id=${encodeURIComponent(deviceId)}`, { method:'POST' });
   }
 
   async function getPlaylists() {
@@ -520,8 +537,14 @@
 
   async function getCancioneroTracks() {
     const playlist = await findCancioneroPlaylist();
-    if (!playlist) return { playlist:null, tracks:[] };
+    if (!playlist) {
+      cancioneroPlaylist = null;
+      cancioneroTracks = [];
+      return { playlist:null, tracks:[] };
+    }
     const tracks = await getPlaylistTracks(playlist.id);
+    cancioneroPlaylist = playlist;
+    cancioneroTracks = tracks;
     return { playlist, tracks };
   }
 
@@ -533,6 +556,8 @@
     initPromise = null;
     profileCache = null;
     lastError = '';
+    cancioneroPlaylist = null;
+    cancioneroTracks = [];
     saveToken(null);
     emit();
   }
@@ -577,6 +602,8 @@
     resume,
     toggle,
     seek,
+    previous,
+    next,
     getPlaylists,
     findCancioneroPlaylist,
     getCancioneroTracks,
