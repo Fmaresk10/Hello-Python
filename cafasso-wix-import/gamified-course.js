@@ -822,9 +822,10 @@
   window.addEventListener('cafasso:state-ready', refresh);
   window.addEventListener('cafasso:almitas-total', event => {
     const before = lastMissionAlmitasTotal;
+    const rewardBefore = currentMissionRewardInfo();
     updateMissionAlmitas(event?.detail || null, { animate:true });
     const after = Math.max(0, Number(event?.detail?.total || 0));
-    if (before != null && after > before && !reloadingApprovedSubmissions && typeof window.CafassoReloadCourseSubmissions === 'function') {
+    if (before != null && after > before && rewardBefore.pending > 0 && !reloadingApprovedSubmissions && typeof window.CafassoReloadCourseSubmissions === 'function') {
       reloadingApprovedSubmissions = true;
       Promise.resolve(window.CafassoReloadCourseSubmissions()).finally(() => {
         reloadingApprovedSubmissions = false;
