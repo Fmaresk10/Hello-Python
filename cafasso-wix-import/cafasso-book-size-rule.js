@@ -62,7 +62,7 @@
     loadHouseScript('./cafasso-exploration-click-fix.js?v=1', 'cafasso-exploration-click-fix-loader');
     loadHouseScript('./cafasso-exploration-position-v2.js?v=1', 'cafasso-exploration-position-v2-loader');
     loadHouseScript('./patio-experience-v2.js?v=1', 'cafasso-patio-experience-v2-loader');
-    loadHouseScript('./cafasso-patio-encounter-alone.js?v=1', 'cafasso-patio-encounter-alone-loader');
+    loadHouseScript('./cafasso-patio-encounter-alone.js?v=2', 'cafasso-patio-encounter-alone-loader');
     loadHouseScript('./cafasso-patio-secret.js?v=1', 'cafasso-patio-secret-loader');
     loadHouseScript('./cafasso-huellas-v2.js?v=1', 'cafasso-huellas-v2-loader');
 
