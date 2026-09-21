@@ -88,39 +88,10 @@
     return String(u?._id || u?.id || u?.email || u?.name || 'local').trim();
   }
 
-  function authToken() {
+  function authHeaders(withJson = false) {
     const auth = json(nativeGet.call(localStorage, 'cafassoAuth')) || {};
-    if (!auth?.sessionToken || Number(auth.expiresAt || 0) <= Date.now()) return '';
-    return String(auth.sessionToken);
-  }
-
-  function hasValidAuth() {
-    return Boolean(authToken());
-  }
-
-  let cachedToken = '';
-  let cachedTokenHash = '';
-
-  async function sessionHash() {
-    const token = authToken();
-    if (!token) return '';
-    if (token === cachedToken && cachedTokenHash) return cachedTokenHash;
-    if (!globalThis.crypto?.subtle || typeof TextEncoder === 'undefined') {
-      throw new Error('No se pudo preparar la sesión segura de CAFASSO.');
-    }
-    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
-    const hash = [...new Uint8Array(digest)]
-      .map(byte => byte.toString(16).padStart(2, '0'))
-      .join('');
-    cachedToken = token;
-    cachedTokenHash = hash;
-    return hash;
-  }
-
-  async function stateHeaders(withJson = false) {
-    const hash = await sessionHash();
-    if (!hash) return null;
-    const headers = { 'X-Cafasso-Session-Hash': hash };
+    if (!auth?.sessionToken || Number(auth.expiresAt || 0) <= Date.now()) return null;
+    const headers = { Authorization: `Bearer ${auth.sessionToken}` };
     if (withJson) headers['Content-Type'] = 'application/json';
     return headers;
   }
@@ -357,7 +328,7 @@
   }
 
   async function fetchRemote() {
-    const headers = await stateHeaders(false);
+    const headers = authHeaders(false);
     if (!headers) throw new Error('auth');
     const response = await fetch(STATE_API, {
       method:'GET',
@@ -365,13 +336,17 @@
       cache:'no-store'
     });
     const data = await response.json().catch(() => ({}));
+    if (response.status === 401 || response.status === 403) {
+      try { window.CafassoInvalidateSession?.(); } catch (error) {}
+      throw new Error('Sesión CAFASSO inválida o vencida.');
+    }
     if (!response.ok || data?.ok === false) throw new Error(data?.error || 'No se pudo leer el estado CAFASSO');
     lastRemoteData = data;
     return data;
   }
 
   async function persist(state) {
-    const headers = await stateHeaders(true);
+    const headers = authHeaders(true);
     if (!headers || !userId()) return false;
     const response = await fetch(STATE_API, {
       method:'POST',
@@ -379,6 +354,10 @@
       body:JSON.stringify({ state })
     });
     const result = await response.json().catch(() => ({}));
+    if (response.status === 401 || response.status === 403) {
+      try { window.CafassoInvalidateSession?.(); } catch (error) {}
+      throw new Error('Sesión CAFASSO inválida o vencida.');
+    }
     if (!response.ok || result?.ok === false) {
       throw new Error(result?.error || 'No se pudo guardar el perfil CAFASSO');
     }
@@ -389,7 +368,7 @@
     clearTimeout(saveTimer);
     saveTimer = 0;
     if (savePromise) return savePromise;
-    if (!userId() || !hasValidAuth()) return false;
+    if (!userId() || !authHeaders(false)) return false;
 
     savePromise = (async () => {
       try {
@@ -445,7 +424,13 @@
   }
 
   async function hydrate() {
-    if (!userId() || !hasValidAuth()) return { ok:false, reason:'no-session' };
+    try {
+      if (window.CafassoSessionReady) {
+        const health = await window.CafassoSessionReady;
+        if (health?.ok === false) return { ok:false, reason:health.reason || 'invalid-session' };
+      }
+    } catch (error) {}
+    if (!userId() || !authHeaders(false)) return { ok:false, reason:'no-session' };
 
     const migrated = migrateLegacyBitacora();
     try {
