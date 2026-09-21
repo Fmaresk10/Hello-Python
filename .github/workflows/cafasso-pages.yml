@@ -47,6 +47,15 @@ jobs:
               raise SystemExit('No encontré la referencia a cafasso-book-size-rule.js')
           updated = updated_loader
 
+          updated_counter = re.sub(
+              r'cafasso-global-counters\.js\?v=[^"\']+',
+              f'cafasso-global-counters.js?v={version}',
+              updated
+          )
+          if updated_counter == updated:
+              raise SystemExit('No encontré la referencia a cafasso-global-counters.js')
+          updated = updated_counter
+
           ruah_tag = f'<script src="./cafasso-ruah-fix.js?v={version}"></script>'
           if 'cafasso-ruah-fix.js' in updated:
               updated = re.sub(
@@ -55,7 +64,7 @@ jobs:
                   updated
               )
           else:
-              marker = '<script src="./cafasso-global-counters.js?v=1"></script>'
+              marker = f'<script src="./cafasso-global-counters.js?v={version}"></script>'
               if marker not in updated:
                   raise SystemExit('No encontré el contador global para insertar RUAH fix')
               updated = updated.replace(marker, marker + ruah_tag, 1)
