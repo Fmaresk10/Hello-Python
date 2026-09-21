@@ -10,6 +10,7 @@
   let hiddenSlot = null;
   let widget = null;
   let attachedContainer = null;
+  let progressTimer = null;
 
   function cleanTrack(track) {
     if (!track || (!track.videoId && !track.spotifyUri)) return null;
@@ -44,12 +45,24 @@
     }
   }
 
+  function durationSeconds() {
+    return Math.max(0, Number(state.track?.durationMs || 0) / 1000);
+  }
+
   function currentPosition() {
     if (!state.track) return 0;
-    if (state.playing && !state.needsGesture) {
-      return Math.max(0, Number(state.position || 0) + (Date.now() - Number(state.updatedAt || Date.now())) / 1000);
-    }
-    return Math.max(0, Number(state.position || 0));
+    const raw = state.playing && !state.needsGesture
+      ? Math.max(0, Number(state.position || 0) + (Date.now() - Number(state.updatedAt || Date.now())) / 1000)
+      : Math.max(0, Number(state.position || 0));
+    const duration = durationSeconds();
+    return duration > 0 ? Math.min(raw, duration) : raw;
+  }
+
+  function formatTime(seconds) {
+    const value = Math.max(0, Math.floor(Number(seconds || 0)));
+    const minutes = Math.floor(value / 60);
+    const secs = String(value % 60).padStart(2, '0');
+    return `${minutes}:${secs}`;
   }
 
   function writeState() {
@@ -62,7 +75,8 @@
       playing: Boolean(state.playing && !state.needsGesture),
       requestedPlaying: Boolean(state.playing),
       needsGesture: Boolean(state.needsGesture),
-      position: currentPosition()
+      position: currentPosition(),
+      duration: durationSeconds()
     };
   }
 
@@ -86,8 +100,8 @@
     style.textContent = `
       .cafasso-global-music{
         position:fixed;right:18px;bottom:18px;z-index:2147483000;
-        display:grid;grid-template-columns:42px minmax(0,1fr) 38px 30px;align-items:center;gap:10px;
-        width:min(354px,calc(100vw - 28px));min-height:66px;padding:10px 9px 10px 10px;
+        display:grid;grid-template-columns:42px minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;gap:8px 10px;
+        width:min(430px,calc(100vw - 28px));min-height:82px;padding:10px 10px 9px 10px;
         border:1px solid rgba(205,167,105,.26);border-radius:13px;
         background:
           linear-gradient(90deg,rgba(111,37,43,.96) 0 7px,transparent 7px),
@@ -109,21 +123,31 @@
       .cafasso-global-music.is-playing .cafasso-global-music__bars i:nth-child(2){animation:cafassoMusicBar .52s ease-in-out .1s infinite alternate}
       .cafasso-global-music.is-playing .cafasso-global-music__bars i:nth-child(3){animation:cafassoMusicBar .8s ease-in-out .2s infinite alternate}
       @keyframes cafassoMusicBar{from{height:2px}to{height:8px}}
-      .cafasso-global-music__copy{min-width:0}
+      .cafasso-global-music__mark{grid-column:1;grid-row:1 / span 2}
+      .cafasso-global-music__copy{grid-column:2;grid-row:1;min-width:0}
+      .cafasso-global-music__controls{grid-column:3;grid-row:1;display:flex;align-items:center;gap:4px}
+      .cafasso-global-music__progress{grid-column:2 / 4;grid-row:2;display:grid;grid-template-columns:31px minmax(0,1fr) 31px;align-items:center;gap:7px}
+      .cafasso-global-music__time{color:#aa9681;font:8.5px/1 Inter,system-ui,sans-serif;font-variant-numeric:tabular-nums;text-align:center}
+      .cafasso-global-music__seek{width:100%;height:14px;margin:0;accent-color:#d7b06e;cursor:pointer;background:transparent}
+      .cafasso-global-music__seek:disabled{opacity:.35;cursor:default}
       .cafasso-global-music__eyebrow{display:block;margin-bottom:3px;color:#c8a77a;font:700 8px/1 Inter,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase}
       .cafasso-global-music__title{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff7e8;font:600 15px/1.15 Georgia,serif}
       .cafasso-global-music__meta{display:block;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#bea995;font:10px/1.2 Georgia,serif;font-style:italic}
-      .cafasso-global-music__toggle,.cafasso-global-music__stop{
+      .cafasso-global-music__toggle,.cafasso-global-music__stop,.cafasso-global-music__skip{
         display:grid;place-items:center;padding:0;border:0;border-radius:50%;cursor:pointer
       }
       .cafasso-global-music__toggle{
-        width:38px;height:38px;background:#efe0bd;color:#5a2c2b;box-shadow:0 3px 10px rgba(0,0,0,.18);font:700 15px/1 system-ui,sans-serif
+        width:36px;height:36px;background:#efe0bd;color:#5a2c2b;box-shadow:0 3px 10px rgba(0,0,0,.18);font:700 14px/1 system-ui,sans-serif
+      }
+      .cafasso-global-music__skip{
+        width:26px;height:26px;background:transparent;color:#d7bea0;font:700 12px/1 system-ui,sans-serif
       }
       .cafasso-global-music__stop{
-        width:28px;height:28px;background:transparent;color:#a99682;font:19px/1 Georgia,serif
+        width:24px;height:24px;background:transparent;color:#a99682;font:18px/1 Georgia,serif
       }
       .cafasso-global-music__toggle:hover{transform:translateY(-1px);background:#f8ebcb}
-      .cafasso-global-music__stop:hover{color:#f0d9bd;background:rgba(255,255,255,.05)}
+      .cafasso-global-music__skip:hover,.cafasso-global-music__stop:hover{color:#f0d9bd;background:rgba(255,255,255,.05)}
+      .cafasso-global-music__skip[hidden]{display:none!important}
       .cafasso-global-music__hidden-player{
         position:fixed!important;left:-10000px!important;top:0!important;width:2px!important;height:2px!important;
         overflow:hidden!important;opacity:.001!important;pointer-events:none!important
@@ -148,8 +172,9 @@
       .cafasso-global-music__book-title{display:block;color:#6f2f2c;font:600 22px/1.12 Georgia,serif}
       .cafasso-global-music__book-meta{display:block;margin-top:7px;color:#8a725f;font:italic 11px/1.35 Georgia,serif}
       @media(max-width:680px){
-        .cafasso-global-music{right:8px;bottom:max(8px,env(safe-area-inset-bottom));width:calc(100vw - 16px);grid-template-columns:38px minmax(0,1fr) 36px 28px;min-height:60px;padding:8px 8px 8px 9px}
-        .cafasso-global-music__mark{width:38px;height:38px}.cafasso-global-music__toggle{width:36px;height:36px}
+        .cafasso-global-music{right:8px;bottom:max(8px,env(safe-area-inset-bottom));width:calc(100vw - 16px);grid-template-columns:38px minmax(0,1fr) auto;min-height:78px;padding:8px 8px 7px 9px}
+        .cafasso-global-music__mark{width:38px;height:38px}.cafasso-global-music__toggle{width:34px;height:34px}.cafasso-global-music__skip{width:23px;height:23px}
+        .cafasso-global-music__progress{grid-template-columns:29px minmax(0,1fr) 29px;gap:5px}
       }
       @media(prefers-reduced-motion:reduce){.cafasso-global-music__bars i{animation:none!important}}
     `;
@@ -173,12 +198,28 @@
             <strong class="cafasso-global-music__title" data-global-music-title>Música</strong>
             <span class="cafasso-global-music__meta" data-global-music-meta></span>
           </div>
-          <button class="cafasso-global-music__toggle" type="button" data-global-music-toggle aria-label="Pausar o reanudar">▶</button>
-          <button class="cafasso-global-music__stop" type="button" data-global-music-stop aria-label="Detener música">×</button>
+          <div class="cafasso-global-music__controls">
+            <button class="cafasso-global-music__skip" type="button" data-global-music-prev aria-label="Tema anterior">◀</button>
+            <button class="cafasso-global-music__toggle" type="button" data-global-music-toggle aria-label="Pausar o reanudar">▶</button>
+            <button class="cafasso-global-music__skip" type="button" data-global-music-next aria-label="Tema siguiente">▶</button>
+            <button class="cafasso-global-music__stop" type="button" data-global-music-stop aria-label="Detener música">×</button>
+          </div>
+          <div class="cafasso-global-music__progress">
+            <span class="cafasso-global-music__time" data-global-music-current>0:00</span>
+            <input class="cafasso-global-music__seek" data-global-music-seek type="range" min="0" max="0" step="0.1" value="0" aria-label="Posición de reproducción">
+            <span class="cafasso-global-music__time" data-global-music-duration>0:00</span>
+          </div>
         `;
         document.body.appendChild(widget);
         widget.querySelector('[data-global-music-toggle]')?.addEventListener('click', () => toggle());
+        widget.querySelector('[data-global-music-prev]')?.addEventListener('click', () => previous());
+        widget.querySelector('[data-global-music-next]')?.addEventListener('click', () => next());
         widget.querySelector('[data-global-music-stop]')?.addEventListener('click', () => stop());
+        widget.querySelector('[data-global-music-seek]')?.addEventListener('input', event => {
+          const current = widget.querySelector('[data-global-music-current]');
+          if (current) current.textContent = formatTime(event.target?.value || 0);
+        });
+        widget.querySelector('[data-global-music-seek]')?.addEventListener('change', event => seekTo(Number(event.target?.value || 0)));
       }
     }
 
@@ -199,11 +240,37 @@
     }
   }
 
+  function syncProgressTimer() {
+    const shouldRun = Boolean(state.track && state.playing && !state.needsGesture);
+    if (shouldRun && !progressTimer) progressTimer = setInterval(updateProgressUi, 500);
+    if (!shouldRun && progressTimer) {
+      clearInterval(progressTimer);
+      progressTimer = null;
+    }
+  }
+
+  function updateProgressUi() {
+    if (!widget || !state.track) return;
+    const seek = widget.querySelector('[data-global-music-seek]');
+    const current = widget.querySelector('[data-global-music-current]');
+    const duration = widget.querySelector('[data-global-music-duration]');
+    const total = durationSeconds();
+    const position = currentPosition();
+    if (seek) {
+      seek.max = String(Math.max(0, total));
+      seek.value = String(Math.min(position, total || position));
+      seek.disabled = total <= 0;
+    }
+    if (current) current.textContent = formatTime(position);
+    if (duration) duration.textContent = formatTime(total);
+  }
+
   function renderWidget() {
     ensureDom();
     if (!state.track) {
       widget.hidden = true;
       widget.classList.remove('is-playing');
+      syncProgressTimer();
       return;
     }
     widget.hidden = false;
@@ -212,6 +279,8 @@
     const title = widget.querySelector('[data-global-music-title]');
     const meta = widget.querySelector('[data-global-music-meta]');
     const toggleButton = widget.querySelector('[data-global-music-toggle]');
+    const prevButton = widget.querySelector('[data-global-music-prev]');
+    const nextButton = widget.querySelector('[data-global-music-next]');
     if (status) {
       const provider = state.track?.provider === 'spotify' ? 'Spotify · ' : '';
       status.textContent = provider + (state.needsGesture ? 'Tocá para continuar' : state.playing ? 'Ahora suena' : 'En pausa');
@@ -223,6 +292,11 @@
       toggleButton.textContent = actualPlaying ? 'Ⅱ' : '▶';
       toggleButton.setAttribute('aria-label', actualPlaying ? 'Pausar música' : 'Reanudar música');
     }
+    const hasSequence = Boolean(state.track?.spotifyUri && window.CafassoSpotify?.isAuthenticated?.());
+    if (prevButton) prevButton.hidden = !hasSequence;
+    if (nextButton) nextButton.hidden = !hasSequence;
+    updateProgressUi();
+    syncProgressTimer();
   }
 
   function playerUrl(track, { autoplay = false, start = 0 } = {}) {
@@ -337,6 +411,30 @@
     else play(state.track);
   }
 
+  async function seekTo(seconds) {
+    if (!state.track) return;
+    const target = Math.max(0, Math.min(Number(seconds || 0), durationSeconds() || Number(seconds || 0)));
+    if (state.track.spotifyUri && window.CafassoSpotify?.isAuthenticated?.()) {
+      try { await window.CafassoSpotify.seek(target); } catch (error) { return; }
+    } else {
+      return;
+    }
+    state.position = target;
+    state.updatedAt = Date.now();
+    writeState();
+    emit();
+  }
+
+  async function previous() {
+    if (!state.track?.spotifyUri || !window.CafassoSpotify?.isAuthenticated?.()) return;
+    try { await window.CafassoSpotify.previous(); } catch (error) {}
+  }
+
+  async function next() {
+    if (!state.track?.spotifyUri || !window.CafassoSpotify?.isAuthenticated?.()) return;
+    try { await window.CafassoSpotify.next(); } catch (error) {}
+  }
+
   async function stop() {
     if (state.track?.spotifyUri && window.CafassoSpotify?.isAuthenticated?.()) {
       try { await window.CafassoSpotify.pause(); } catch (error) {}
@@ -445,6 +543,9 @@
     pause,
     toggle,
     stop,
+    seek:seekTo,
+    previous,
+    next,
     attachVideo,
     detachVideo,
     getState:snapshot,
