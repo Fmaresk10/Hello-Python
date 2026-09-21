@@ -88,10 +88,39 @@
     return String(u?._id || u?.id || u?.email || u?.name || 'local').trim();
   }
 
-  function authHeaders(withJson = false) {
+  function authToken() {
     const auth = json(nativeGet.call(localStorage, 'cafassoAuth')) || {};
-    if (!auth?.sessionToken || Number(auth.expiresAt || 0) <= Date.now()) return null;
-    const headers = { Authorization: `Bearer ${auth.sessionToken}` };
+    if (!auth?.sessionToken || Number(auth.expiresAt || 0) <= Date.now()) return '';
+    return String(auth.sessionToken);
+  }
+
+  function hasValidAuth() {
+    return Boolean(authToken());
+  }
+
+  let cachedToken = '';
+  let cachedTokenHash = '';
+
+  async function sessionHash() {
+    const token = authToken();
+    if (!token) return '';
+    if (token === cachedToken && cachedTokenHash) return cachedTokenHash;
+    if (!globalThis.crypto?.subtle || typeof TextEncoder === 'undefined') {
+      throw new Error('No se pudo preparar la sesión segura de CAFASSO.');
+    }
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
+    const hash = [...new Uint8Array(digest)]
+      .map(byte => byte.toString(16).padStart(2, '0'))
+      .join('');
+    cachedToken = token;
+    cachedTokenHash = hash;
+    return hash;
+  }
+
+  async function stateHeaders(withJson = false) {
+    const hash = await sessionHash();
+    if (!hash) return null;
+    const headers = { 'X-Cafasso-Session-Hash': hash };
     if (withJson) headers['Content-Type'] = 'application/json';
     return headers;
   }
@@ -328,7 +357,7 @@
   }
 
   async function fetchRemote() {
-    const headers = authHeaders(false);
+    const headers = await stateHeaders(false);
     if (!headers) throw new Error('auth');
     const response = await fetch(STATE_API, {
       method:'GET',
@@ -342,7 +371,7 @@
   }
 
   async function persist(state) {
-    const headers = authHeaders(true);
+    const headers = await stateHeaders(true);
     if (!headers || !userId()) return false;
     const response = await fetch(STATE_API, {
       method:'POST',
@@ -360,7 +389,7 @@
     clearTimeout(saveTimer);
     saveTimer = 0;
     if (savePromise) return savePromise;
-    if (!userId() || !authHeaders(false)) return false;
+    if (!userId() || !hasValidAuth()) return false;
 
     savePromise = (async () => {
       try {
@@ -416,7 +445,7 @@
   }
 
   async function hydrate() {
-    if (!userId() || !authHeaders(false)) return { ok:false, reason:'no-session' };
+    if (!userId() || !hasValidAuth()) return { ok:false, reason:'no-session' };
 
     const migrated = migrateLegacyBitacora();
     try {
