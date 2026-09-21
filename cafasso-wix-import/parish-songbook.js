@@ -197,7 +197,10 @@
     if (copy) copy.textContent = activeTrack.subtitle || activeTrack.categoryLabel || '';
     if (source) {
       const label = activeTrack.source || activeTrack.categoryLabel || 'Cancionero CAFASSO';
-      source.innerHTML = `<span>${esc(label)}</span><span>Reproducción integrada en CAFASSO</span>`;
+      const spotifyLink = activeTrack.spotifyUrl
+        ? `<a href="${esc(activeTrack.spotifyUrl)}" target="_blank" rel="noopener noreferrer">Abrir en Spotify ↗</a>`
+        : '<span>Spotify</span>';
+      source.innerHTML = `<span>${esc(label)}</span>${spotifyLink}`;
     }
     if (frame && panel && !panel.hidden) musicApi()?.attachVideo?.(frame);
   }
