@@ -34,22 +34,69 @@
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
-      .cafasso-school-resume{position:absolute;z-index:9;right:27.5%;bottom:9.4%;width:200px;height:132px;padding:0;border:0;background:transparent;cursor:pointer;filter:drop-shadow(0 16px 12px rgba(0,0,0,.52));transform:rotate(-3deg);transition:transform .2s ease,filter .2s ease,opacity .2s ease}
-      .cafasso-school-resume:hover{transform:rotate(-2deg) translateY(-5px) scale(1.025);filter:drop-shadow(0 20px 15px rgba(0,0,0,.58))}
-      .cafasso-school-resume:focus-visible{outline:3px solid #f2c95a;outline-offset:7px;border-radius:9px}
-      .cafasso-school-resume.is-opening{transform:rotate(-1.5deg) translateY(-8px) scale(1.04);opacity:1}
-      .cafasso-school-resume.is-unavailable{opacity:1;pointer-events:none;filter:drop-shadow(0 15px 11px rgba(0,0,0,.48)) saturate(.9) brightness(.94)}
-      .cafasso-school-resume__book{position:absolute;inset:3px 5px 8px 2px;overflow:hidden;border-radius:6px 10px 9px 5px;border:2px solid #382018;background:linear-gradient(90deg,rgba(255,255,255,.09),transparent 13%,transparent 73%,rgba(0,0,0,.16)),repeating-linear-gradient(0deg,rgba(255,255,255,.02) 0 1px,transparent 1px 4px),linear-gradient(145deg,#8a573d 0%,#6a3e2f 54%,#4d2a21 100%);box-shadow:inset 8px 0 10px rgba(33,16,11,.28),inset -3px -4px 8px rgba(26,13,10,.3),inset 0 0 0 2px rgba(231,199,153,.11),0 5px 3px rgba(0,0,0,.32);transform:perspective(700px) rotateX(7deg);transform-origin:50% 100%;opacity:1}
-      .cafasso-school-resume__book:before{content:"";position:absolute;left:8px;top:0;bottom:0;width:4px;background:linear-gradient(90deg,#2d1712,#8f6248 50%,#321a14);box-shadow:3px 0 5px rgba(0,0,0,.2)}
-      .cafasso-school-resume__book:after{content:"";position:absolute;left:8px;right:2px;bottom:-2px;height:10px;border-radius:0 0 6px 3px;background:repeating-linear-gradient(180deg,#f2e8d2 0 1px,#d1c0a3 1px 2px);box-shadow:0 2px 3px rgba(0,0,0,.28)}
-      .cafasso-school-resume__label{position:absolute;left:29px;right:19px;top:20px;min-height:78px;padding:10px 11px 8px;border:1px solid #9c7b55;border-radius:2px;background:repeating-linear-gradient(180deg,rgba(111,79,46,.08) 0 1px,transparent 1px 16px),linear-gradient(145deg,#fff4d9,#ead7ae);box-shadow:0 3px 5px rgba(35,19,12,.22),inset 0 0 0 1px rgba(255,255,255,.55),inset 0 0 13px rgba(125,93,58,.08);color:#3d2d22;text-align:left;transform:rotate(.4deg);opacity:1}
-      .cafasso-school-resume__kicker{display:block;color:#7a5335;font:900 8px/1.1 Inter,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase}
-      .cafasso-school-resume__title{display:-webkit-box;margin-top:5px;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;color:#2d2119;font:700 14px/1.08 Georgia,serif;text-shadow:0 1px rgba(255,255,255,.5)}
-      .cafasso-school-resume__meta{display:block;margin-top:6px;color:#65462f;font:800 8.5px/1.2 Inter,system-ui,sans-serif}
-      .cafasso-school-resume__pencil{position:absolute;right:-4px;top:18px;width:9px;height:101px;border-radius:4px 4px 2px 2px;background:linear-gradient(90deg,#a77d36,#ebc76e 45%,#8e6128);box-shadow:0 4px 5px rgba(0,0,0,.34);transform:rotate(7deg);opacity:1}
-      .cafasso-school-resume__pencil:before{content:"";position:absolute;left:1px;right:1px;top:-10px;height:12px;clip-path:polygon(50% 0,100% 100%,0 100%);background:linear-gradient(90deg,#d7b784,#f2d5a2,#b98755)}
-      .cafasso-school-resume__pencil:after{content:"";position:absolute;left:2px;right:2px;top:-9px;height:4px;clip-path:polygon(50% 0,100% 100%,0 100%);background:#211914}
-      @media(max-width:760px){.cafasso-school-resume{right:22%;bottom:9.5%;width:136px;height:94px}.cafasso-school-resume__label{left:21px;right:13px;top:14px;min-height:57px;padding:7px 8px 5px}.cafasso-school-resume__kicker{font-size:6px}.cafasso-school-resume__title{margin-top:3px;font-size:10px}.cafasso-school-resume__meta{margin-top:4px;font-size:6.5px}.cafasso-school-resume__pencil{height:74px;width:7px;top:12px}}
+      .cafasso-school-resume{
+        position:absolute;z-index:9;right:27.5%;bottom:9.4%;
+        width:180px;height:118px;padding:0;border:0;background:transparent;
+        cursor:pointer;filter:drop-shadow(0 10px 8px rgba(0,0,0,.40));
+        transform:rotate(-2deg);
+        transition:transform .22s ease,filter .22s ease,opacity .22s ease;
+      }
+      .cafasso-school-resume:hover{
+        transform:rotate(-1.4deg) translateY(-2px);
+        filter:drop-shadow(0 12px 9px rgba(0,0,0,.46));
+      }
+      .cafasso-school-resume:focus-visible{outline:2px solid rgba(242,201,90,.86);outline-offset:6px;border-radius:8px}
+      .cafasso-school-resume.is-opening{transform:rotate(-1deg) translateY(-3px);opacity:1}
+      .cafasso-school-resume.is-unavailable{opacity:.82;pointer-events:none;filter:drop-shadow(0 9px 7px rgba(0,0,0,.35)) saturate(.9)}
+
+      /* Objeto fotográfico real del Media Manager de Wix. */
+      .cafasso-school-resume__book{
+        position:absolute;inset:-8% -8% -10% -8%;
+        overflow:visible;border:0!important;border-radius:0!important;
+        background:url("https://static.wixstatic.com/media/47bf07_20750dc35c6f4678b865413ce34ec1fe~mv2.png") center/contain no-repeat!important;
+        box-shadow:none!important;
+        transform:perspective(900px) rotateX(4deg) rotateZ(-1.2deg);
+        transform-origin:50% 75%;
+        opacity:.98;
+        mix-blend-mode:multiply;
+        filter:saturate(.90) contrast(1.02) brightness(.98);
+      }
+      .cafasso-school-resume__book:before,
+      .cafasso-school-resume__book:after{display:none!important}
+
+      /* Solo una pequeña etiqueta física: la información completa sigue en aria-label. */
+      .cafasso-school-resume__label{
+        position:absolute;
+        left:auto;right:8px;top:12px;
+        width:auto;min-width:58px;min-height:0;
+        padding:5px 7px 4px;
+        border:1px solid rgba(104,78,48,.48);
+        border-radius:2px;
+        background:linear-gradient(180deg,rgba(244,235,212,.96),rgba(222,207,174,.95));
+        box-shadow:0 2px 4px rgba(31,20,12,.22),inset 0 1px rgba(255,255,255,.5);
+        color:#3c3025;text-align:center;
+        transform:rotate(1deg);
+        opacity:.94;
+        pointer-events:none;
+      }
+      .cafasso-school-resume__kicker{
+        display:block;color:#5b4531;
+        font:800 7px/1 Inter,system-ui,sans-serif;
+        letter-spacing:.11em;text-transform:uppercase;text-shadow:none;
+      }
+      .cafasso-school-resume__title,
+      .cafasso-school-resume__meta{
+        position:absolute!important;width:1px!important;height:1px!important;
+        padding:0!important;margin:-1px!important;overflow:hidden!important;
+        clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
+      }
+      .cafasso-school-resume__pencil{display:none!important}
+
+      @media(max-width:760px){
+        .cafasso-school-resume{right:22%;bottom:9.5%;width:128px;height:86px}
+        .cafasso-school-resume__label{right:6px;top:8px;min-width:48px;padding:4px 5px 3px}
+        .cafasso-school-resume__kicker{font-size:5.8px}
+      }
       @media(prefers-reduced-motion:reduce){.cafasso-school-resume{transition:none!important}}
     `;
     document.head.appendChild(style);
