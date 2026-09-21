@@ -186,8 +186,8 @@
         right:auto!important;
         top:24.8%!important;
         bottom:auto!important;
-        width:142px!important;
-        height:168px!important;
+        width:166px!important;
+        height:188px!important;
         transform:perspective(700px) rotateY(-3deg) rotateZ(-2.8deg)!important;
         filter:drop-shadow(0 10px 8px rgba(31,20,13,.31))!important;
       }
@@ -232,8 +232,8 @@
       html.cafasso-mobile.cafasso-mobile-portrait body .cafasso-house-panorama .cafasso-animator-sheet{
         left:19.8%!important;
         top:24.8%!important;
-        width:clamp(108px,17vh,142px)!important;
-        height:clamp(128px,20vh,168px)!important;
+        width:clamp(124px,19.5vh,166px)!important;
+        height:clamp(140px,22vh,188px)!important;
         transform:perspective(700px) rotateY(-3deg) rotateZ(-2.8deg)!important;
       }
       html.cafasso-mobile.cafasso-mobile-portrait body .cafasso-house-panorama .cafasso-bitacora-object{
