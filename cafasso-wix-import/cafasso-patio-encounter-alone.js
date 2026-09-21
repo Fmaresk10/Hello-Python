@@ -65,34 +65,33 @@
       .cafasso-patio-encounter-alone:hover,.cafasso-patio-encounter-alone:focus-visible{
         transform:translateY(-3px) scale(1.025);filter:drop-shadow(0 15px 10px rgba(0,0,0,.42)) brightness(1.06);outline:none;
       }
-      .cafasso-patio-encounter-alone__bench{
-        position:absolute;left:4px;right:3px;bottom:8px;height:9px;border-radius:2px;
-        background:linear-gradient(180deg,#73553a,#493522);box-shadow:0 5px 5px rgba(0,0,0,.24);
+      .cafasso-patio-encounter-alone:before{
+        content:"";position:absolute;left:13%;right:7%;bottom:5px;height:13px;border-radius:50%;
+        background:radial-gradient(ellipse at center,rgba(20,18,14,.34),rgba(20,18,14,.16) 48%,transparent 74%);
+        filter:blur(3px);pointer-events:none;transform:rotate(-4deg);
       }
-      .cafasso-patio-encounter-alone__bench:before,.cafasso-patio-encounter-alone__bench:after{
-        content:"";position:absolute;bottom:-13px;width:6px;height:15px;border-radius:1px;background:#443120;
+      .cafasso-patio-encounter-alone__photo{
+        position:absolute;left:0;right:0;bottom:4px;width:100%;height:calc(100% - 4px);object-fit:contain;object-position:center bottom;
+        display:block;pointer-events:none;transform:translateZ(0);
+        filter:drop-shadow(0 7px 5px rgba(0,0,0,.26)) saturate(.92) contrast(1.02);
+        transition:filter .2s ease;
       }
-      .cafasso-patio-encounter-alone__bench:before{left:13px}.cafasso-patio-encounter-alone__bench:after{right:13px}
-      .cafasso-patio-encounter-alone__person{
-        position:absolute;left:28px;bottom:16px;width:41px;height:91px;transform:rotate(2deg);
+      html[data-cafasso-period="morning"] .cafasso-patio-encounter-alone__photo{
+        filter:drop-shadow(0 7px 5px rgba(0,0,0,.25)) saturate(.88) brightness(1.03) contrast(1.01);
       }
-      .cafasso-patio-encounter-alone__head{
-        position:absolute;left:12px;top:0;width:24px;height:25px;border-radius:48% 52% 45% 48%;
-        background:linear-gradient(145deg,#59473d,#2f2d2b);box-shadow:inset 3px 2px rgba(255,255,255,.035);
+      html[data-cafasso-period="afternoon"] .cafasso-patio-encounter-alone__photo{
+        filter:drop-shadow(0 7px 5px rgba(0,0,0,.27)) saturate(.90) brightness(.98) contrast(1.03);
       }
-      .cafasso-patio-encounter-alone__body{
-        position:absolute;left:8px;top:22px;width:30px;height:42px;border-radius:13px 13px 8px 8px;
-        background:linear-gradient(155deg,#4b655f,#263b39);
+      html[data-cafasso-period="sunset"] .cafasso-patio-encounter-alone__photo{
+        filter:drop-shadow(0 8px 6px rgba(0,0,0,.34)) saturate(.82) sepia(.10) brightness(.88) contrast(1.05);
       }
-      .cafasso-patio-encounter-alone__arm{
-        position:absolute;left:3px;top:36px;width:30px;height:8px;border-radius:999px;background:#334a47;
-        transform:rotate(35deg);transform-origin:right center;
+      html[data-cafasso-period="night"] .cafasso-patio-encounter-alone__photo{
+        filter:drop-shadow(0 8px 7px rgba(0,0,0,.48)) saturate(.58) brightness(.56) contrast(1.10);
       }
-      .cafasso-patio-encounter-alone__leg{
-        position:absolute;top:59px;width:10px;height:34px;border-radius:7px;background:#2f3736;transform-origin:top center;
+      .cafasso-patio-encounter-alone:hover .cafasso-patio-encounter-alone__photo,
+      .cafasso-patio-encounter-alone:focus-visible .cafasso-patio-encounter-alone__photo{
+        filter:drop-shadow(0 9px 7px rgba(0,0,0,.32)) saturate(.96) brightness(1.025) contrast(1.03);
       }
-      .cafasso-patio-encounter-alone__leg--a{left:11px;transform:rotate(18deg)}
-      .cafasso-patio-encounter-alone__leg--b{left:26px;transform:rotate(-13deg)}
       .cafasso-patio-encounter-alone__hint{
         position:absolute;left:50%;bottom:-19px;transform:translateX(-50%) translateY(3px);width:max-content;
         padding:5px 8px;border:1px solid rgba(234,200,128,.28);border-radius:999px;
@@ -264,14 +263,7 @@
     person.dataset.patioEncounterAlone = '1';
     person.setAttribute('aria-label', 'Acercarme al gurí que está solo');
     person.innerHTML = `
-      <span class="cafasso-patio-encounter-alone__person" aria-hidden="true">
-        <span class="cafasso-patio-encounter-alone__head"></span>
-        <span class="cafasso-patio-encounter-alone__body"></span>
-        <span class="cafasso-patio-encounter-alone__arm"></span>
-        <span class="cafasso-patio-encounter-alone__leg cafasso-patio-encounter-alone__leg--a"></span>
-        <span class="cafasso-patio-encounter-alone__leg cafasso-patio-encounter-alone__leg--b"></span>
-      </span>
-      <span class="cafasso-patio-encounter-alone__bench" aria-hidden="true"></span>
+      <img class="cafasso-patio-encounter-alone__photo" src="https://static.wixstatic.com/media/47bf07_43f6a7d900034fe09fbaded2852ef6c5~mv2.png" alt="" aria-hidden="true">
       <span class="cafasso-patio-encounter-alone__hint">Acercarme</span>`;
     if (readState()[ENCOUNTER_ID]?.choice) person.classList.add('is-met');
     person.addEventListener('click', () => openEncounter(person));
