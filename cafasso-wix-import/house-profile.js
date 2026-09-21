@@ -52,97 +52,41 @@
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
-      .cafasso-animator-sheet{
-        position:absolute;left:22.6%;top:20.8%;z-index:6;width:176px;height:194px;padding:0;border:0;background:transparent;cursor:pointer;
-        transform-origin:50% 100%;transform:perspective(700px) rotateY(-4deg) rotateZ(-3.2deg);
-        filter:drop-shadow(0 15px 11px rgba(0,0,0,.40));transition:transform .22s ease,filter .22s ease
-      }
-      .cafasso-animator-sheet:hover{
-        transform:perspective(700px) rotateY(-2deg) rotateZ(-1.8deg) translateY(-6px) scale(1.028);
-        filter:drop-shadow(0 20px 15px rgba(0,0,0,.47)) brightness(1.025)
-      }
-      .cafasso-animator-sheet:focus-visible{outline:3px solid #f2c95a;outline-offset:7px;border-radius:6px}
-      .cafasso-animator-sheet__back{
-        position:absolute;inset:7px -5px -7px 7px;border-radius:3px;background:#c8ad82;border:1px solid rgba(77,54,32,.30);
-        transform:rotate(2.2deg);box-shadow:0 5px 9px rgba(49,31,18,.18)
-      }
-      .cafasso-animator-sheet__paper{
-        position:absolute;inset:0;overflow:visible;border:1px solid rgba(88,62,36,.48);border-radius:4px;
+      .cafasso-profile-hud-button{
+        position:relative;display:grid;place-items:center;align-self:center;flex:0 0 auto;
+        width:42px;height:42px;margin:5px 6px 5px 0;padding:0;border:1px solid rgba(242,201,90,.38);border-radius:50%;
         background:
-          radial-gradient(circle at 17% 12%,rgba(255,255,255,.42),transparent 23%),
-          repeating-linear-gradient(0deg,rgba(92,66,39,.028) 0 1px,transparent 1px 8px),
-          linear-gradient(145deg,#fbf0d5 0%,#ecd7ad 72%,#dcc08e 100%);
-        box-shadow:inset 0 0 20px rgba(113,78,42,.10),inset 0 0 0 3px rgba(255,250,235,.28),0 4px 2px rgba(58,37,21,.11)
+          radial-gradient(circle at 36% 30%,rgba(255,255,255,.10),transparent 33%),
+          linear-gradient(145deg,rgba(130,70,59,.96),rgba(91,47,43,.96));
+        box-shadow:inset 0 1px rgba(255,255,255,.10),0 4px 12px rgba(0,0,0,.20);
+        color:#fff4dc;font:800 13px/1 Inter,system-ui,sans-serif;letter-spacing:.03em;
+        cursor:pointer;pointer-events:auto;transition:transform .16s ease,filter .16s ease,background .16s ease
       }
-      .cafasso-animator-sheet__paper:before{
-        content:"";position:absolute;right:-1px;bottom:-1px;width:34px;height:34px;
-        background:linear-gradient(135deg,rgba(167,128,79,.13) 0 49%,#c3a270 50% 53%,#f3e0bc 54% 100%);
-        clip-path:polygon(100% 0,100% 100%,0 100%);filter:drop-shadow(-2px -2px 2px rgba(76,51,29,.10))
+      .cafasso-profile-hud-button:before{
+        content:"";position:absolute;inset:4px;border:1px solid rgba(242,201,90,.16);border-radius:50%;pointer-events:none
       }
-      .cafasso-animator-sheet__paper:after{
-        content:"";position:absolute;inset:0;border-radius:4px;pointer-events:none;
-        background:linear-gradient(118deg,rgba(255,255,255,.20),transparent 20% 72%,rgba(108,74,39,.045));mix-blend-mode:screen
+      .cafasso-profile-hud-button:hover{
+        transform:translateY(-1px) scale(1.035);filter:brightness(1.08);
+        background:
+          radial-gradient(circle at 36% 30%,rgba(255,255,255,.12),transparent 33%),
+          linear-gradient(145deg,rgba(145,78,65,.98),rgba(101,52,47,.98))
       }
-      .cafasso-animator-sheet__clip{
-        position:absolute;z-index:5;left:50%;top:-11px;width:59px;height:25px;transform:translateX(-50%) rotate(-1deg);
-        border:1px solid rgba(69,53,35,.58);border-radius:4px 4px 8px 8px;
-        background:linear-gradient(180deg,#8d8575,#d6ccb6 31%,#746b5d 50%,#bcb09a 73%,#625b50);
-        box-shadow:0 4px 6px rgba(0,0,0,.27),inset 0 1px rgba(255,255,255,.48)
+      .cafasso-profile-hud-button:focus-visible{outline:2px solid #f2c95a;outline-offset:2px}
+      .cafasso-profile-hud-button__label{
+        position:absolute;left:50%;top:calc(100% + 7px);transform:translateX(-50%) translateY(-2px);
+        width:max-content;max-width:120px;padding:5px 7px;border-radius:999px;background:rgba(8,37,40,.94);
+        border:1px solid rgba(242,201,90,.24);box-shadow:0 5px 13px rgba(0,0,0,.22);
+        color:#eadcae;font:800 6.5px/1 Inter,system-ui,sans-serif;letter-spacing:.09em;text-transform:uppercase;
+        opacity:0;pointer-events:none;transition:opacity .16s ease,transform .16s ease
       }
-      .cafasso-animator-sheet__brand{
-        position:absolute;left:0;right:0;top:0;height:35px;display:flex;align-items:center;justify-content:space-between;
-        padding:8px 13px 7px 14px;border-radius:3px 3px 0 0;
-        background:linear-gradient(180deg,#82483d,#6f3b34);color:#fff2d5;
-        box-shadow:inset 0 -1px rgba(64,34,29,.34);font-family:Georgia,serif
+      .cafasso-profile-hud-button:hover .cafasso-profile-hud-button__label,
+      .cafasso-profile-hud-button:focus-visible .cafasso-profile-hud-button__label{
+        opacity:1;transform:translateX(-50%) translateY(0)
       }
-      .cafasso-animator-sheet__brand strong{font-size:13px;letter-spacing:.13em}
-      .cafasso-animator-sheet__brand span{font:800 6.5px/1 Inter,system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#e7cca3}
-      .cafasso-animator-sheet__body{
-        position:absolute;left:13px;right:13px;top:47px;bottom:34px;display:grid;
-        grid-template-columns:74px minmax(0,1fr);gap:12px;align-items:start
+      @media(max-width:680px){
+        .cafasso-profile-hud-button{width:34px;height:34px;margin:4px 5px 4px 0;font-size:11px}
+        .cafasso-profile-hud-button__label{display:none}
       }
-      .cafasso-animator-sheet__portrait{
-        position:relative;width:74px;height:96px;display:grid;place-items:center;overflow:hidden;
-        border:5px solid #f6ead0;background:linear-gradient(145deg,#d5bd92,#987653);
-        box-shadow:0 0 0 1px rgba(83,57,31,.35),0 7px 12px rgba(65,42,23,.20);
-        color:#4a3828;font:700 24px Georgia,serif;transform:rotate(-1.4deg)
-      }
-      .cafasso-animator-sheet__portrait:after{
-        content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 13px rgba(78,51,28,.10)
-      }
-      .cafasso-animator-sheet__portrait img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.86) contrast(1.04)}
-      .cafasso-animator-sheet__copy{min-width:0;padding-top:8px;text-align:left}
-      .cafasso-animator-sheet__tiny{
-        display:block;margin-bottom:7px;color:#a17a56;font:800 6px/1 Inter,system-ui,sans-serif;letter-spacing:.17em;text-transform:uppercase
-      }
-      .cafasso-animator-sheet__name{
-        display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:3;margin:0 0 7px;color:#453226;
-        font:700 14px/1.05 Georgia,serif;letter-spacing:-.01em
-      }
-      .cafasso-animator-sheet__role{
-        display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#795d45;
-        font:800 7px/1.2 Inter,system-ui,sans-serif;letter-spacing:.11em;text-transform:uppercase
-      }
-      .cafasso-animator-sheet__line{
-        display:block;width:32px;height:1px;margin:10px 0 6px;background:rgba(111,75,42,.28)
-      }
-      .cafasso-animator-sheet__path{display:block;color:#92745a;font:italic 8px/1.2 Georgia,serif}
-      .cafasso-animator-sheet__stamp{
-        position:absolute;left:17px;bottom:13px;width:48px;height:48px;display:grid;place-items:center;padding:7px;
-        border:1.5px solid rgba(126,66,55,.50);border-radius:50%;color:rgba(126,66,55,.72);
-        font:800 6px/1.15 Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-align:center;
-        transform:rotate(-9deg);box-shadow:inset 0 0 0 3px rgba(126,66,55,.06)
-      }
-      .cafasso-animator-sheet__stamp:after{
-        content:"";position:absolute;inset:5px;border:1px solid rgba(126,66,55,.24);border-radius:50%
-      }
-      .cafasso-animator-sheet__tab{
-        position:absolute;z-index:4;right:-13px;bottom:17px;padding:7px 9px 6px 10px;border:1px solid rgba(78,49,33,.38);border-left:0;
-        border-radius:0 4px 4px 0;background:linear-gradient(180deg,#8a5545,#704036);color:#fff1d5;
-        box-shadow:3px 4px 7px rgba(44,27,17,.18);font:800 6.5px/1 Inter,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;
-        transform:rotate(1deg)
-      }
-      .cafasso-animator-sheet:hover .cafasso-animator-sheet__tab{background:linear-gradient(180deg,#9a604d,#7b463a)}
 
 
       .cafasso-profile-panel{
@@ -366,27 +310,10 @@
 
     const sheet = document.createElement('button');
     sheet.type = 'button';
-    sheet.className = 'cafasso-animator-sheet';
+    sheet.className = 'cafasso-profile-hud-button';
     sheet.dataset.houseProfile = 'open';
     sheet.setAttribute('aria-label', `Abrir mi ficha CAFASSO: ${name}`);
-    sheet.innerHTML = `
-      <span class="cafasso-animator-sheet__back" aria-hidden="true"></span>
-      <span class="cafasso-animator-sheet__clip" aria-hidden="true"></span>
-      <span class="cafasso-animator-sheet__paper">
-        <span class="cafasso-animator-sheet__brand"><strong>CAFASSO</strong><span>Ficha personal</span></span>
-        <span class="cafasso-animator-sheet__body">
-          ${portraitMarkup(user, 'cafasso-animator-sheet__portrait')}
-          <span class="cafasso-animator-sheet__copy">
-            <span class="cafasso-animator-sheet__tiny">Animador</span>
-            <span class="cafasso-animator-sheet__name">${esc(name)}</span>
-            <span class="cafasso-animator-sheet__role">${esc(role)}</span>
-            <span class="cafasso-animator-sheet__line" aria-hidden="true"></span>
-            <span class="cafasso-animator-sheet__path">en camino</span>
-          </span>
-        </span>
-        <span class="cafasso-animator-sheet__stamp">Animador<br>CAFASSO</span>
-        <span class="cafasso-animator-sheet__tab">Mi ficha →</span>
-      </span>`;
+    sheet.innerHTML = `<span aria-hidden="true">${esc(initials(name))}</span><span class="cafasso-profile-hud-button__label">Mi ficha</span>`;
 
     const panel = document.createElement('section');
     panel.className = 'cafasso-profile-panel';
@@ -441,8 +368,26 @@
         <div class="cafasso-profile-status" data-house-profile-status></div>
       </article>`;
 
-    house.appendChild(sheet);
     house.appendChild(panel);
+
+    function mountProfileButton() {
+      const hud = document.getElementById('cafassoGlobalCounters');
+      if (!hud) return false;
+      if (sheet.parentNode !== hud) hud.appendChild(sheet);
+      return true;
+    }
+
+    if (!mountProfileButton()) {
+      let profileHudAttempts = 0;
+      const waitForHud = () => {
+        if (mountProfileButton()) return;
+        if (profileHudAttempts < 40) {
+          profileHudAttempts += 1;
+          setTimeout(waitForHud, 80);
+        }
+      };
+      waitForHud();
+    }
 
     const fileInput = panel.querySelector('[data-house-profile-file]');
     const choose = panel.querySelector('[data-house-profile-photo]');
