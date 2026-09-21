@@ -21,7 +21,7 @@
         /* Pantalla física: vidrio negro, bisel fino e interfaz digital. */
         .cafasso-escuela .cafasso-school-board--screen{
           left:6.85%!important;
-          top:16.65%!important;
+          top:19.65%!important;
           width:27.1vw!important;
           aspect-ratio:16/9;
           height:auto!important;
@@ -166,7 +166,7 @@
         @media(max-width:760px){
           .cafasso-escuela .cafasso-school-board--screen{
             left:7.5%!important;
-            top:15.5%!important;
+            top:18.5%!important;
             width:58vw!important;
             aspect-ratio:16/9!important;
             padding:10px 11px 8px!important;
