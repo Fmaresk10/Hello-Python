@@ -1,0 +1,195 @@
+:root{
+  --admin-graphite:#202a2d;
+  --admin-deep:#172123;
+  --admin-panel:#f4efe5;
+  --admin-paper:#fffaf0;
+  --admin-line:#d8ccb7;
+  --admin-ink:#263633;
+  --admin-muted:#6f7772;
+  --admin-brass:#b79a56;
+  --admin-teal:#4f7569;
+  --admin-red:#9e5148;
+}
+html,body{min-height:100%}
+body.cafasso-admin-center{
+  background:
+    radial-gradient(circle at 85% 7%,rgba(183,154,86,.11),transparent 27%),
+    linear-gradient(135deg,#e8e1d4,#f3eee4 48%,#e6ded0);
+  color:var(--admin-ink);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+.cafasso-admin-center .shell{grid-template-columns:246px minmax(0,1fr);min-height:100vh;min-height:100dvh}
+.cafasso-admin-center .side{
+  height:100vh;height:100dvh;padding:26px 18px 22px;
+  background:linear-gradient(180deg,var(--admin-graphite),var(--admin-deep));
+  border-right:1px solid rgba(255,255,255,.06);
+  box-shadow:15px 0 34px rgba(35,42,40,.11)
+}
+.cafasso-admin-center .brand{padding-bottom:19px;border-bottom:1px solid rgba(255,255,255,.09)}
+.cafasso-admin-center .brand img{width:36px;height:44px}
+.cafasso-admin-center .brand b{font:500 25px/1 Georgia,serif;color:#fbf4e5}
+.cafasso-admin-center .brand small{
+  color:#c9b579;opacity:1!important;font:800 8.5px/1.2 Inter,system-ui,sans-serif;
+  letter-spacing:.14em;text-transform:uppercase;margin-top:5px
+}
+.cafasso-admin-center .menu{margin-top:25px;gap:6px}
+.cafasso-admin-center .menu button{
+  padding:12px 12px;border-radius:7px;color:#e6ebe8;font-size:12px;
+  border:1px solid transparent
+}
+.cafasso-admin-center .menu button:hover{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.06)}
+.cafasso-admin-center .menu button.active{
+  background:linear-gradient(90deg,rgba(183,154,86,.18),rgba(255,255,255,.025));
+  border-color:rgba(183,154,86,.18);box-shadow:inset 3px 0 var(--admin-brass);color:#fff8e7
+}
+.cafasso-admin-center .motto{font-size:14px;color:#ccb779}
+.cafasso-admin-center .back,.cafasso-admin-center .admin-logout{font-size:11px;color:#d7dfda}
+
+.cafasso-admin-center main{padding:32px clamp(24px,3.2vw,50px) 58px;max-width:1500px}
+.cafasso-admin-center .head{
+  margin-bottom:18px;padding:24px 26px;border:1px solid var(--admin-line);border-radius:9px;
+  background:#f6efe2;box-shadow:0 10px 26px rgba(59,52,41,.07)
+}
+.cafasso-admin-center .eyebrow{font-size:9px;letter-spacing:.17em;color:#8a6f34}
+.cafasso-admin-center .head h1{margin:6px 0 5px;font:500 clamp(34px,3.3vw,46px)/1 Georgia,serif;color:#2c3e39}
+.cafasso-admin-center .head p{font-size:12px;color:#68716c}
+.cafasso-admin-center .status{
+  background:#ebe5d9;border-color:#d7c9b1;color:#606b65;border-radius:6px;font-size:10px;padding:8px 10px
+}
+.cafasso-admin-center .status.ok{background:#e5eee8;color:#37624f;border-color:#c6d9ce}
+
+.cafasso-admin-center .kpis{
+  grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px
+}
+.cafasso-admin-center .card{
+  background:var(--admin-paper);border-color:var(--admin-line);border-radius:8px;
+  box-shadow:0 6px 16px rgba(65,57,44,.045)
+}
+.cafasso-admin-center .kpi{
+  min-height:92px;padding:15px 16px 14px;border-left:4px solid var(--admin-teal)
+}
+.cafasso-admin-center .kpi:nth-child(2){border-left-color:#9b8756}
+.cafasso-admin-center .kpi:nth-child(3){border-left-color:#607b8d}
+.cafasso-admin-center .kpi:nth-child(4){border-left-color:#9b6559}
+.cafasso-admin-center .kpi span{
+  color:#77766f;font-size:9px;text-transform:uppercase;letter-spacing:.08em
+}
+.cafasso-admin-center .kpi strong{font:500 31px/1 Georgia,serif;color:#2c443d;margin:5px 0 2px}
+.cafasso-admin-center .kpi small{font-size:10px;color:#787c76!important}
+
+.cafasso-admin-center .admin-overview-grid{
+  display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:12px;margin-top:12px
+}
+.cafasso-admin-center .box{padding:18px}
+.cafasso-admin-center .title{margin-bottom:11px}
+.cafasso-admin-center .title h3{font:500 22px/1.1 Georgia,serif;color:#30443e}
+.cafasso-admin-center .admin-section-copy{
+  margin:-5px 0 13px;color:#7a7a73;font-size:10px;line-height:1.45
+}
+
+/* Atención: una lista, no cuatro tarjetas compitiendo */
+.cafasso-admin-center .alerts{display:grid!important;grid-template-columns:1fr!important;gap:0!important}
+.cafasso-admin-center .alert{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;
+  padding:11px 2px!important;border-radius:0!important;background:transparent!important;
+  border-bottom:1px solid #e2d7c5
+}
+.cafasso-admin-center .alert:last-child{border-bottom:0}
+.cafasso-admin-center .alert strong{font-size:11px;color:#344b43}
+.cafasso-admin-center .alert small{display:block;margin-top:2px;font-size:9.5px;color:#777872}
+.cafasso-admin-center .alert>div:last-child{margin:0!important}
+.cafasso-admin-center .alert .tiny{white-space:nowrap}
+
+/* Gestión agrupada en tres áreas */
+.cafasso-admin-center .quick-links{
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important
+}
+.cafasso-admin-center .admin-domain{
+  min-height:154px;padding:15px;border:1px solid #d8ccb7;border-radius:7px;
+  background:#fbf5e9
+}
+.cafasso-admin-center .admin-domain__head{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.cafasso-admin-center .admin-domain__ico{
+  width:31px;height:31px;display:grid;place-items:center;border-radius:6px;
+  background:#e7dfd0;color:#385248;font-size:15px
+}
+.cafasso-admin-center .admin-domain strong{display:block;color:#30473e;font:500 17px Georgia,serif}
+.cafasso-admin-center .admin-domain small{display:block;margin-top:2px;color:#787970;font-size:9px}
+.cafasso-admin-center .admin-domain__links{display:grid;gap:5px}
+.cafasso-admin-center .admin-domain__links a{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:8px 9px;border-radius:5px;background:#fffaf0;border:1px solid #dfd3bf;
+  color:#3e554c;text-decoration:none;font-size:10px;font-weight:800
+}
+.cafasso-admin-center .admin-domain__links a:hover{border-color:#bca468;background:#f5ead0}
+
+/* mantenimiento queda fuera del flujo normal */
+.cafasso-admin-center .admin-maintenance{
+  margin-top:12px;border:1px solid #d7c9b7;border-radius:7px;background:#eee8dd
+}
+.cafasso-admin-center .admin-maintenance summary{
+  list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 14px;cursor:pointer;color:#6f665d;font-size:10px;font-weight:850
+}
+.cafasso-admin-center .admin-maintenance summary::-webkit-details-marker{display:none}
+.cafasso-admin-center .admin-maintenance summary:after{content:"＋";font-size:16px;color:#7e7468}
+.cafasso-admin-center .admin-maintenance[open] summary:after{content:"−"}
+.cafasso-admin-center .admin-maintenance__body{
+  padding:0 14px 14px;border-top:1px solid #ddd2c2;color:#726d67
+}
+.cafasso-admin-center .admin-maintenance__body p{font-size:10px;line-height:1.5}
+.cafasso-admin-center .admin-maintenance .btn.red{font-size:10px;border-radius:5px;padding:8px 10px}
+
+/* Cursos como herramienta independiente */
+.cafasso-admin-center #cursos{
+  padding:20px;background:#f8f2e7;border:1px solid var(--admin-line);border-radius:9px
+}
+.cafasso-admin-center #cursos>.title{padding-bottom:13px;border-bottom:1px solid #ddd1bd}
+.cafasso-admin-center #cursos>.title h3{font-size:27px}
+.cafasso-admin-center .btn{border-radius:6px;font-size:10px;padding:9px 11px;background:#b99b55;color:#253933}
+.cafasso-admin-center .btn.alt{background:#fffaf0;border-color:#d6c8ae}
+.cafasso-admin-center .course-summary{gap:7px;margin:11px 0 13px}
+.cafasso-admin-center .course-chip{padding:11px;border-radius:6px;background:#fffaf0;border-color:#ddd0bb}
+.cafasso-admin-center .course-chip small{font-size:9px}
+.cafasso-admin-center .course-chip strong{font-size:23px;color:#30473e}
+.cafasso-admin-center .filters input,.cafasso-admin-center .filters select,.cafasso-admin-center .quick-status{
+  border-radius:6px;border-color:#d6c8ae;background:#fffaf0
+}
+.cafasso-admin-center .table{border-radius:6px;border-color:#d8ccb7;background:#fffaf0}
+.cafasso-admin-center th{background:#eae1d2;color:#706d66;border-color:#ddd0bb}
+.cafasso-admin-center td{border-color:#e7dcc9;color:#3e4d47}
+.cafasso-admin-center .tiny{border-radius:5px;background:#fffaf0;border-color:#d7cab2;color:#3b554b;font-size:9.5px}
+.cafasso-admin-center .note{border-radius:6px;background:#efe5cb;border-color:#dbc586;color:#675823;font-size:10px}
+
+/* Móvil */
+.cafasso-admin-center .admin-mobile-head{
+  background:linear-gradient(180deg,var(--admin-graphite),var(--admin-deep))!important
+}
+.cafasso-admin-center .admin-mobile-brand small{color:#c9b579!important;opacity:1!important}
+.cafasso-admin-center .admin-mobile-home{background:#b99b55!important;color:#253933!important}
+.cafasso-admin-center .admin-mobile-nav{
+  background:#f7f0e4!important;border-color:#d7cbb8!important;backdrop-filter:none!important
+}
+.cafasso-admin-center .admin-mobile-nav .active{background:#e9dfc7!important;color:#30473e!important}
+.cafasso-admin-center .admin-mobile-sheet{background:#faf4e8!important;border-radius:10px!important}
+
+@media(max-width:1050px){
+  .cafasso-admin-center .shell{grid-template-columns:210px minmax(0,1fr)}
+  .cafasso-admin-center .quick-links{grid-template-columns:1fr 1fr!important}
+  .cafasso-admin-center .admin-overview-grid{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+  .cafasso-admin-center main{padding:16px 12px calc(88px + env(safe-area-inset-bottom))}
+  .cafasso-admin-center .head{padding:19px 17px}
+  .cafasso-admin-center .head h1{font-size:31px}
+  .cafasso-admin-center .kpis{grid-template-columns:1fr 1fr}
+  .cafasso-admin-center .kpi{min-height:84px;padding:13px}
+  .cafasso-admin-center .kpi strong{font-size:26px}
+  .cafasso-admin-center .quick-links{grid-template-columns:1fr!important}
+  .cafasso-admin-center .admin-domain{min-height:0}
+  .cafasso-admin-center #cursos{padding:14px}
+}
+@media(max-width:420px){
+  .cafasso-admin-center .kpis{grid-template-columns:1fr}
+}
