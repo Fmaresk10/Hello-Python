@@ -12,52 +12,52 @@
 
   const DEFINITIONS = [
     {
-      id: 'primera-huella', icon: '✦', title: 'Primera huella',
-      clue: 'El mundo empezó a responderte.',
-      description: 'Encontraste tu primer secreto escondido en CAFASSO.',
-      test: ctx => ctx.explorationCount >= 1
+      id:'primer-paso', icon:'›', title:'Primer paso',
+      clue:'Todo camino empieza con una primera parada.',
+      description:'Completaste tu primera misión dentro de la Escuela CAFASSO.',
+      test:ctx => ctx.hasCompletedMission
     },
     {
-      id: 'ojos-atentos', icon: '◉', title: 'Ojos atentos',
-      clue: 'Hay algo más escondido en cada rincón.',
-      description: 'Encontraste los cuatro secretos del mundo CAFASSO.',
-      test: ctx => ctx.explorationCount >= 4
+      id:'en-camino', icon:'◇', title:'En camino',
+      clue:'Una etapa completa empieza a dibujar un recorrido.',
+      description:'Completaste tu primer módulo de formación.',
+      test:ctx => ctx.hasCompletedModule
     },
     {
-      id: 'ruah-encendido', icon: 'R', title: 'RUAH encendido',
-      clue: 'La constancia también deja marca.',
-      description: 'Sostuviste una racha RUAH de 10 días.',
-      test: ctx => ctx.ruahStreak >= 10
+      id:'ruah-encendido', icon:'R', title:'Constancia',
+      clue:'Volver también es una forma de crecer.',
+      description:'Sostuviste una racha RUAH de 7 días.',
+      test:ctx => ctx.ruahStreak >= 7
     },
     {
-      id: 'primer-paso', icon: '›', title: 'Primer paso',
-      clue: 'Todo camino empieza entrando en la Escuela.',
-      description: 'Registraste progreso real en tu primer módulo de formación.',
-      test: ctx => ctx.hasCourseProgress
+      id:'me-anime', icon:'✎', title:'Me animé',
+      clue:'Aprender también implica ponerse en juego.',
+      description:'Enviaste tu primer desafío para ser acompañado por un formador.',
+      test:ctx => ctx.hasSubmittedChallenge
     },
     {
-      id: 'con-el-corazon', icon: '♡', title: 'Con el corazón',
-      clue: 'Hay cosas del camino que vale la pena guardar.',
-      description: 'Escribiste y guardaste por primera vez una página en tu Bitácora.',
-      test: ctx => ctx.hasBitacora
+      id:'no-alcanza-con-saber', icon:'✓', title:'Misión cumplida',
+      clue:'Lo aprendido se vuelve camino cuando se hace vida.',
+      description:'Tu primer desafío fue aprobado por un formador.',
+      test:ctx => ctx.hasApprovedSubmission
     },
     {
-      id: 'no-alcanza-con-saber', icon: '✓', title: 'No alcanza con saber',
-      clue: 'Lo aprendido se vuelve camino cuando se pone en juego.',
-      description: 'Completaste una actividad de entrega y fue aprobada.',
-      test: ctx => ctx.hasApprovedSubmission
+      id:'caminante', icon:'✧', title:'Caminante',
+      clue:'Las primeras Almitas ya empiezan a cambiar tu etapa.',
+      description:'Alcanzaste la etapa Caminante del recorrido CAFASSO.',
+      test:ctx => ctx.totalAlmitas >= 100
     },
     {
-      id: 'camino-recorrido', icon: '◇', title: 'Camino recorrido',
-      clue: 'Algún recorrido espera ser llevado hasta el final.',
-      description: 'Completaste un curso entero dentro de la Escuela CAFASSO.',
-      test: ctx => ctx.hasCompletedCourse
+      id:'camino-recorrido', icon:'▣', title:'Recorrido completo',
+      clue:'Un recorrido espera ser llevado hasta el final.',
+      description:'Completaste un curso entero dentro de la Escuela CAFASSO.',
+      test:ctx => ctx.hasCompletedCourse
     },
     {
-      id: 'casa-habitada', icon: '⌂', title: 'Casa habitada',
-      clue: 'CAFASSO tiene varios lugares. ¿Ya los hiciste tuyos?',
-      description: 'Visitaste Casa, Patio, Escuela y Parroquia.',
-      test: ctx => WORLD_SPACES.every(space => ctx.visitedSpaces.includes(space))
+      id:'corazon-salesiano', icon:'♡', title:'Corazón salesiano',
+      clue:'Casa, patio, escuela y parroquia pueden volverse una forma de estar.',
+      description:'Alcanzaste la etapa Corazón salesiano del camino CAFASSO.',
+      test:ctx => ctx.totalAlmitas >= 1600
     }
   ];
 
@@ -166,6 +166,32 @@
     );
   }
 
+  function hasCompletedModule(data, userId) {
+    return usableProgressRows(data, userId).some(row =>
+      row?.completed === true ||
+      (Array.isArray(row?.completedModules) && row.completedModules.length > 0)
+    );
+  }
+
+  function hasSubmittedChallenge(data, userId) {
+    return (Array.isArray(data?.submissions) ? data.submissions : []).some(row => {
+      if (userId && row?.userId && String(row.userId) !== userId) return false;
+      const courseId = String(row?.courseId || '');
+      if (courseId.startsWith(RESERVED_PREFIX)) return false;
+      const type = String(row?.type || '').toLowerCase();
+      return type.includes('desaf') || row?.requiresReview === true || Number(row?.rewardAlmitas || 0) > 0;
+    });
+  }
+
+  function canonicalAlmitas() {
+    const values = [
+      Number(window.CafassoAlmitasMetrics?.total),
+      Number(window.CafassoLevel?.totalAlmitas),
+      Number(window.CafassoProfileMetrics?.almitas?.total)
+    ].filter(Number.isFinite);
+    return values.length ? Math.max(0, ...values) : 0;
+  }
+
   function hasCompletedCourse(data, userId) {
     return usableProgressRows(data, userId).some(row => row?.completed === true || Number(row?.percent || 0) >= 100);
   }
@@ -256,12 +282,15 @@
       summary = document.createElement('section');
       summary.className = 'cafasso-huellas-summary';
       summary.dataset.cafassoHuellasSummary = '1';
-      path.insertAdjacentElement('afterend', summary);
     }
+    const journey = document.querySelector('[data-profile-journey]');
+    const level = document.querySelector('[data-cafasso-level-panel]');
+    const anchor = journey || level || path;
+    if (summary.previousElementSibling !== anchor) anchor.insertAdjacentElement('afterend', summary);
     const unlocked = new Set(state.unlocked || []);
     summary.innerHTML = `
       <div class="cafasso-huellas-summary__head">
-        <span class="cafasso-huellas-summary__title">Mis Huellas</span>
+        <span class="cafasso-huellas-summary__title">Huellas del camino</span>
         <span class="cafasso-huellas-summary__count">${DEFINITIONS.filter(item => unlocked.has(item.id)).length}/${DEFINITIONS.length}</span>
       </div>
       <div class="cafasso-huellas-summary__row">
@@ -283,7 +312,7 @@
         <button class="cafasso-huellas-close" type="button" aria-label="Cerrar álbum">×</button>
         <div class="cafasso-huellas-kicker">Las marcas de tu camino</div>
         <h2 id="cafasso-huellas-title">Mis Huellas</h2>
-        <p class="cafasso-huellas-intro">No son medallas para juntar. Son pequeñas marcas de lo que fuiste viviendo, descubriendo, aprendiendo y sosteniendo dentro de CAFASSO.</p>
+        <p class="cafasso-huellas-intro">No son medallas para juntar. Son marcas de momentos importantes de tu recorrido: empezar, sostener, animarte, completar y crecer.</p>
         <div class="cafasso-huellas-grid">
           ${DEFINITIONS.map(item => {
             const found = unlocked.has(item.id);
@@ -295,7 +324,7 @@
             </article>`;
           }).join('')}
         </div>
-        <div class="cafasso-huellas-footer">Algunas Huellas aparecen por explorar; otras, por aprender, escribir, entregar o sostener un hábito. El álbum se completa a medida que caminás.</div>
+        <div class="cafasso-huellas-footer">Estas ocho Huellas acompañan los primeros grandes hitos de tu camino formativo. Se marcan solas cuando CAFASSO reconoce que ese paso ya ocurrió.</div>
       </article>`;
     document.body.appendChild(layer);
     const close = () => {
@@ -353,6 +382,26 @@
     }
   }
 
+  async function unlockById(id, { announce = true } = {}) {
+    const definition = DEFINITIONS.find(item => item.id === String(id || ''));
+    if (!definition) return readLocal();
+    const local = readLocal();
+    if (local.unlocked.includes(definition.id)) {
+      renderSummary(local);
+      return local;
+    }
+    local.unlocked.push(definition.id);
+    local.updatedAt = new Date().toISOString();
+    writeLocal(local);
+    renderSummary(local);
+    if (announce) showUnlock(definition);
+    await persist(local);
+    window.dispatchEvent(new CustomEvent('cafasso:huellas-update', {
+      detail:{ unlocked:[...local.unlocked], newlyUnlocked:[definition.id] }
+    }));
+    return local;
+  }
+
   function evaluate(state, context, announce = false) {
     const next = normalizeState(state);
     const previouslyUnlocked = new Set(next.unlocked);
@@ -372,17 +421,23 @@
         delay += 3650;
       });
     }
+    if (newlyUnlocked.length) {
+      window.dispatchEvent(new CustomEvent('cafasso:huellas-update', {
+        detail:{ unlocked:[...next.unlocked], newlyUnlocked:newlyUnlocked.map(item => item.id) }
+      }));
+    }
     return { state: next, changed: newlyUnlocked.length > 0 };
   }
 
   async function fetchContext(state) {
     const base = {
-      explorationCount: localExplorationCount(),
       ruahStreak: Number(window.CafassoProfileMetrics?.ruah?.streak || 0),
-      hasCourseProgress: false,
+      hasCompletedMission: false,
+      hasCompletedModule: false,
       hasCompletedCourse: false,
+      hasSubmittedChallenge: false,
       hasApprovedSubmission: false,
-      hasBitacora: hasBitacora(),
+      totalAlmitas: canonicalAlmitas(),
       visitedSpaces: [...(state?.visitedSpaces || [])]
     };
     const headers = authHeaders(false);
@@ -392,11 +447,13 @@
       const response = await fetch(ME_API, { headers, cache: 'no-store' });
       const data = await response.json().catch(() => ({}));
       if (!response.ok || data?.ok === false) return { context: base, remoteState: null };
-      base.explorationCount = Math.max(base.explorationCount, remoteExplorationCount(data, userId));
       base.ruahStreak = Math.max(base.ruahStreak, ruahStreak(data, userId));
-      base.hasCourseProgress = hasCourseProgress(data, userId);
+      base.hasCompletedModule = hasCompletedModule(data, userId);
+      base.hasCompletedMission = base.hasCompletedModule || hasApprovedSubmission(data, userId);
       base.hasCompletedCourse = hasCompletedCourse(data, userId);
+      base.hasSubmittedChallenge = hasSubmittedChallenge(data, userId);
       base.hasApprovedSubmission = hasApprovedSubmission(data, userId);
+      base.totalAlmitas = Math.max(base.totalAlmitas, canonicalAlmitas());
       return { context: base, remoteState: remoteHuellasState(data, userId) };
     } catch (error) {
       return { context: base, remoteState: null };
@@ -411,7 +468,7 @@
     if (remoteState) working = mergeStates(working, remoteState);
     const markedMerged = markCurrentSpace(working);
     working = markedMerged.state;
-    const context = { ...initialContext, visitedSpaces: [...working.visitedSpaces], hasBitacora: hasBitacora() };
+    const context = { ...initialContext, visitedSpaces: [...working.visitedSpaces], totalAlmitas:Math.max(initialContext.totalAlmitas, canonicalAlmitas()) };
     const result = evaluate(working, context, announce && !backfill);
     const needsPersist = result.changed || markedLocal.changed || markedMerged.changed || (remoteState && JSON.stringify(working) !== JSON.stringify(local));
     if (needsPersist) await persist(result.state);
@@ -447,9 +504,13 @@
     renderSummary(state);
     bindBitacora();
 
-    window.addEventListener('cafasso:exploration-update', () => refresh({ announce: true }));
+    window.addEventListener('cafasso:mission-completed', () => unlockById('primer-paso', { announce:true }));
+    window.addEventListener('cafasso:module-completed', () => unlockById('en-camino', { announce:true }));
+    window.addEventListener('cafasso:challenge-submitted', () => unlockById('me-anime', { announce:true }));
     window.addEventListener('cafasso:profile-metrics', () => refresh({ announce: true }));
     window.addEventListener('cafasso:progress-update', () => refresh({ announce: true }));
+    window.addEventListener('cafasso:almitas-total', () => refresh({ announce: true }));
+    window.addEventListener('cafasso:level-update', () => refresh({ announce: true }));
     window.addEventListener('focus', () => refresh({ announce: true }));
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') refresh({ announce: true });
@@ -457,6 +518,7 @@
     setInterval(() => refresh({ announce: true }), 75000);
   }
 
+  window.CafassoHuellas = { refresh, unlock:unlockById, definitions:DEFINITIONS.map(({ test, ...item }) => item) };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
   else boot();
 })();
