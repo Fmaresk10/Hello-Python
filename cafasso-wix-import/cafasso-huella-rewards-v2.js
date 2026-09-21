@@ -11,7 +11,9 @@
     { id:'casa-habitada', amount:30, title:'Casa habitada' }
   ];
   const REWARD_BY_ID = new Map(REWARDS.map(item => [item.id, item.amount]));
-  const HUELLAS_ORDER = ['primera-huella','ojos-atentos','ruah-encendido','primer-paso','con-el-corazon','no-alcanza-con-saber','camino-recorrido','casa-habitada'];
+  // El mapa de recompensas conserva IDs históricos para no restar Almitas ya ganadas.
+  // El álbum visible, en cambio, sigue la nueva colección de ocho Huellas formativas.
+  const HUELLAS_ORDER = ['primer-paso','en-camino','ruah-encendido','me-anime','no-alcanza-con-saber','caminante','camino-recorrido','corazon-salesiano'];
   let running = false;
 
   function json(storage, key) { try { return JSON.parse(storage.getItem(key) || 'null'); } catch (e) { return null; } }
