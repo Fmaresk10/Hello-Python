@@ -176,7 +176,7 @@
         .cafasso-patio-encounter-scene,.cafasso-patio-encounter-result p{font-size:14px}
       }
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-patio-panorama .cafasso-patio-encounter-alone{
-        left:72.5%!important;bottom:8.4%!important;width:92px!important;height:118px!important;z-index:16!important;
+        left:69%!important;bottom:9.4%!important;width:92px!important;height:118px!important;z-index:16!important;
       }
       @media(prefers-reduced-motion:reduce){
         .cafasso-patio-encounter-alone,.cafasso-patio-encounter-hint,.cafasso-patio-encounter-layer,.cafasso-patio-encounter-option{transition:none!important}
