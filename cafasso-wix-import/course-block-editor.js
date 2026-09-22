@@ -100,7 +100,7 @@
     if(type==='Reflexión'){s.responseGuidance=value('typedResponseGuidance',s.responseGuidance||'').trim();s.responsePlaceholder=value('typedResponsePlaceholder',s.responsePlaceholder||'').trim();}
     if(type==='Entrega'){s.expectedDelivery=value('typedExpectedDelivery',s.expectedDelivery||'').trim();s.reviewCriteria=value('typedReviewCriteria',s.reviewCriteria||'').trim();s.responsePlaceholder=value('typedResponsePlaceholder',s.responsePlaceholder||'').trim();s.requiresReview=true;}
     if(type==='Desafío'){s.rewardAlmitas=Math.max(0,Math.min(10000,Math.round(numberValue('typedReward',Number(s.rewardAlmitas||10)))));s.reviewCriteria=value('typedReviewCriteria',s.reviewCriteria||'').trim();s.responsePlaceholder=value('typedResponsePlaceholder',s.responsePlaceholder||'').trim();s.requiresReview=true;}
-    if(type==='Evaluación'){s.evaluationMode='open';s.minimumCharacters=Math.max(0,Math.min(10000,Math.round(numberValue('typedMinimumCharacters',Number(s.minimumCharacters||0)))));s.reviewCriteria=value('typedReviewCriteria',s.reviewCriteria||'').trim();s.responsePlaceholder=value('typedResponsePlaceholder',s.responsePlaceholder||'').trim();s.requiresReview=true;}
+    if(type==='Evaluación'){if(s.evaluationMode!=='quiz')s.evaluationMode='open';s.minimumCharacters=Math.max(0,Math.min(10000,Math.round(numberValue('typedMinimumCharacters',Number(s.minimumCharacters||0)))));s.reviewCriteria=value('typedReviewCriteria',s.reviewCriteria||'').trim();s.responsePlaceholder=value('typedResponsePlaceholder',s.responsePlaceholder||'').trim();s.requiresReview=true;}
   }
 
   function refreshPreview(type,val){
