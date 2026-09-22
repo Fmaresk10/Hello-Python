@@ -200,6 +200,131 @@
         ){
           touch-action:manipulation;
         }
+
+        /* HUD compacto: mantiene Almitas, RUAH y perfil sin tapar la escena. */
+        html.cafasso-mobile-fluid body:not(.cafasso-mission-mode):not(.cafasso-journey-mode) .cafasso-global-counters{
+          left:max(8px,calc(env(safe-area-inset-left) + 6px))!important;
+          top:max(8px,calc(env(safe-area-inset-top) + 6px))!important;
+          display:flex!important;
+          align-items:center!important;
+          gap:2px!important;
+          padding:3px!important;
+          border-radius:999px!important;
+          transform:none!important;
+          backdrop-filter:blur(6px)!important;
+          -webkit-backdrop-filter:blur(6px)!important;
+          transition:opacity .16s ease,transform .16s ease!important;
+        }
+        html.cafasso-mobile-fluid body:not(.cafasso-mission-mode):not(.cafasso-journey-mode) .cafasso-global-counter{
+          display:flex!important;
+          align-items:center!important;
+          gap:5px!important;
+          min-width:0!important;
+          padding:5px 7px!important;
+        }
+        html.cafasso-mobile-fluid body:not(.cafasso-mission-mode):not(.cafasso-journey-mode) .cafasso-global-counter+.cafasso-global-counter{
+          border-left:1px solid rgba(242,201,90,.20)!important;
+        }
+        html.cafasso-mobile-fluid body:not(.cafasso-mission-mode):not(.cafasso-journey-mode) .cafasso-global-counter__icon{
+          display:grid!important;
+          place-items:center!important;
+          width:19px!important;
+          height:19px!important;
+          flex:0 0 19px!important;
+          font-size:10px!important;
+        }
+        html.cafasso-mobile-fluid body:not(.cafasso-mission-mode):not(.cafasso-journey-mode) .cafasso-global-counter__label,
+        html.cafasso-mobile-fluid body:not(.cafasso-mission-mode):not(.cafasso-journey-mode) .cafasso-global-counter__unit{
+          display:none!important;
+        }
+        html.cafasso-mobile-fluid body:not(.cafasso-mission-mode):not(.cafasso-journey-mode) .cafasso-global-counter__value{
+          margin:0!important;
+          font-size:12px!important;
+          line-height:1!important;
+        }
+        html.cafasso-mobile-fluid body:not(.cafasso-mission-mode):not(.cafasso-journey-mode) #cafassoGlobalCounters .cafasso-profile-hud-button{
+          width:36px!important;
+          height:36px!important;
+          min-width:36px!important;
+          min-height:36px!important;
+          margin:0!important;
+          flex:0 0 36px!important;
+          font-size:11px!important;
+        }
+
+        /* Cuando hay un panel abierto, el mundo deja de competir visualmente. */
+        html.cafasso-mobile-fluid body.cafasso-mobile-overlay-open :is(
+          .cafasso-global-counters,
+          .cafasso-admin-home-link,
+          .cafasso-ambience-toggle,
+          .cafasso-calendar-admin-trigger
+        ){
+          opacity:0!important;
+          pointer-events:none!important;
+        }
+
+        /* Cierre siempre a mano, incluso después de hacer scroll dentro de una hoja. */
+        html.cafasso-mobile-fluid :is(
+          .cafasso-profile-close,
+          .cafasso-bitacora-close,
+          .cafasso-bitacora-acompanante-close,
+          .cafasso-parish-close,
+          .cafasso-songbook-close,
+          .cafasso-candle-intention__close
+        ){
+          position:fixed!important;
+          top:max(12px,calc(env(safe-area-inset-top) + 8px))!important;
+          right:max(12px,calc(env(safe-area-inset-right) + 8px))!important;
+          left:auto!important;
+          width:44px!important;
+          height:44px!important;
+          min-width:44px!important;
+          min-height:44px!important;
+          z-index:2147483600!important;
+          display:grid!important;
+          place-items:center!important;
+          transform:none!important;
+        }
+
+        /* Acciones cómodas para pulgar. */
+        html.cafasso-mobile-fluid :is(
+          .cafasso-profile-action,
+          .cafasso-bitacora-save,
+          .cafasso-parish-action,
+          .cafasso-songbook-track,
+          .cafasso-candle-intention__action
+        ){
+          min-height:46px!important;
+        }
+        html.cafasso-mobile-fluid .cafasso-parish-actions{
+          gap:9px!important;
+        }
+        html.cafasso-mobile-fluid .cafasso-bitacora-footer{
+          align-items:stretch!important;
+          gap:10px!important;
+        }
+        html.cafasso-mobile-fluid .cafasso-bitacora-save{
+          width:100%!important;
+          min-width:0!important;
+        }
+
+        /* Pequeña señal de hoja móvil; no altera la estética del contenido. */
+        html.cafasso-mobile-fluid .cafasso-mobile-sheet-grip{
+          position:sticky;
+          top:5px;
+          z-index:20;
+          display:block;
+          width:38px;
+          height:4px;
+          margin:-20px auto 14px;
+          border-radius:999px;
+          background:rgba(77,58,39,.26);
+          box-shadow:0 1px rgba(255,255,255,.28);
+          pointer-events:none;
+        }
+        html.cafasso-mobile-fluid .cafasso-profile-card .cafasso-mobile-sheet-grip{
+          background:rgba(104,73,45,.24);
+        }
       }
 
       /* Player: la experiencia de curso debe sentirse como parte del mundo móvil. */
@@ -374,17 +499,143 @@
     showPanHint();
   }
 
+  const OVERLAY_SELECTORS=[
+    '.cafasso-profile-panel',
+    '.cafasso-bitacora-panel',
+    '.cafasso-bitacora-acompanante-panel',
+    '.cafasso-parish-panel',
+    '.cafasso-songbook-panel',
+    '.cafasso-candle-intention',
+    '.cafasso-school-map-panel',
+    '.cafasso-world-object-layer',
+    '.cafasso-discovery-layer',
+    '.cafasso-corazon-layer',
+    '.cafasso-servidor-layer',
+    '.cafasso-parish-secret-layer'
+  ];
+
+  const SHEET_SELECTORS=[
+    '.cafasso-profile-card',
+    '.cafasso-bitacora-book',
+    '.cafasso-bitacora-acompanante-book',
+    '.cafasso-parish-sheet',
+    '.cafasso-songbook-sheet',
+    '.cafasso-candle-intention__sheet',
+    '.cafasso-world-object-note',
+    '.cafasso-discovery-note',
+    '.cafasso-corazon-note'
+  ];
+
+  function visible(node){
+    if(!node||node.hidden)return false;
+    const style=getComputedStyle(node);
+    return style.display!=='none'&&style.visibility!=='hidden';
+  }
+
+  function syncOverlayState(){
+    if(!mobileLike())return;
+    const open=OVERLAY_SELECTORS.some(selector=>[...document.querySelectorAll(selector)].some(visible));
+    document.body.classList.toggle('cafasso-mobile-overlay-open',open);
+  }
+
+  function decorateSheets(){
+    if(!mobileLike())return;
+    SHEET_SELECTORS.forEach(selector=>{
+      document.querySelectorAll(selector).forEach(sheet=>{
+        if(sheet.querySelector(':scope > .cafasso-mobile-sheet-grip'))return;
+        const grip=document.createElement('span');
+        grip.className='cafasso-mobile-sheet-grip';
+        grip.setAttribute('aria-hidden','true');
+        sheet.insertBefore(grip,sheet.firstChild);
+      });
+    });
+  }
+
+  function installSheetObserver(){
+    const refresh=()=>{
+      decorateSheets();
+      syncOverlayState();
+    };
+    refresh();
+    const observer=new MutationObserver(refresh);
+    observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class']});
+  }
+
+  function installKeyboardAssist(){
+    document.addEventListener('focusin',event=>{
+      if(!mobileLike())return;
+      const field=event.target;
+      if(!(field instanceof HTMLElement)||!field.matches('input,textarea,select'))return;
+      if(!field.closest(OVERLAY_SELECTORS.join(','))&&!document.documentElement.dataset.cafassoPlayer)return;
+      setTimeout(()=>{
+        try{field.scrollIntoView({block:'center',inline:'nearest',behavior:'smooth'});}catch(error){}
+      },180);
+    });
+  }
+
+  function installTouchAssist(){
+    if(!mobileLike())return;
+    const selector=[
+      '.cafasso-resource-book',
+      '.cafasso-world-compass',
+      '.cafasso-explore-secret--house',
+      '.cafasso-corazon-huella',
+      '.cafasso-calendar-admin-trigger',
+      '.cafasso-ambience-toggle',
+      '.cafasso-parish-candle',
+      '.cafasso-parish-songbook',
+      '.cafasso-parish-lectionary',
+      '.cafasso-bitacora-object'
+    ].join(',');
+    let down=null;
+
+    document.addEventListener('pointerdown',event=>{
+      if(event.pointerType==='mouse')return;
+      down={x:event.clientX,y:event.clientY,id:event.pointerId};
+    },true);
+
+    document.addEventListener('pointerup',event=>{
+      if(!down||down.id!==event.pointerId){down=null;return}
+      const dx=event.clientX-down.x,dy=event.clientY-down.y;
+      down=null;
+      if(Math.hypot(dx,dy)>4.5)return;
+      if(event.target instanceof Element&&event.target.closest('button,a,input,textarea,select,[role="button"]'))return;
+      if(document.body.classList.contains('cafasso-mobile-overlay-open'))return;
+
+      let best=null,bestScore=Infinity;
+      document.querySelectorAll(selector).forEach(node=>{
+        if(!(node instanceof HTMLElement)||!visible(node)||node.disabled)return;
+        const r=node.getBoundingClientRect();
+        const pad=node.matches('.cafasso-resource-book')?10:12;
+        if(event.clientX<r.left-pad||event.clientX>r.right+pad||event.clientY<r.top-pad||event.clientY>r.bottom+pad)return;
+        const cx=Math.max(r.left,Math.min(event.clientX,r.right));
+        const cy=Math.max(r.top,Math.min(event.clientY,r.bottom));
+        const score=Math.hypot(event.clientX-cx,event.clientY-cy);
+        if(score<bestScore){best=node;bestScore=score}
+      });
+      if(best){
+        event.preventDefault();
+        requestAnimationFrame(()=>best.click());
+      }
+    },true);
+  }
+
   function init(){
     ensureStyles();
     updateViewport();
     ensureTransition();
     reveal();
     if(!document.documentElement.dataset.cafassoPlayer)watchPanorama();
+    installSheetObserver();
+    installKeyboardAssist();
+    installTouchAssist();
 
     window.addEventListener('pageshow',()=>{
       leaving=false;
       document.documentElement.classList.remove('cafasso-mobile-fluid-leaving');
       reveal();
+      decorateSheets();
+      syncOverlayState();
     });
     window.addEventListener('resize',scheduleViewport,{passive:true});
     window.addEventListener('orientationchange',scheduleViewport,{passive:true});
