@@ -176,7 +176,25 @@
         .cafasso-patio-encounter-scene,.cafasso-patio-encounter-result p{font-size:14px}
       }
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-patio-panorama .cafasso-patio-encounter-alone{
-        left:69%!important;bottom:9.4%!important;width:92px!important;height:118px!important;z-index:16!important;
+        left:65%!important;
+        bottom:31%!important;
+        width:60px!important;
+        height:77px!important;
+        z-index:16!important;
+      }
+
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-patio-panorama .cafasso-patio-encounter-alone:before{
+        left:18%!important;
+        right:12%!important;
+        bottom:3px!important;
+        height:8px!important;
+        filter:blur(2px)!important;
+        opacity:.62!important;
+      }
+
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-patio-panorama .cafasso-patio-encounter-alone__hint{
+        bottom:-15px!important;
+        transform:translateX(-50%) translateY(2px) scale(.86)!important;
       }
       @media(prefers-reduced-motion:reduce){
         .cafasso-patio-encounter-alone,.cafasso-patio-encounter-hint,.cafasso-patio-encounter-layer,.cafasso-patio-encounter-option{transition:none!important}
