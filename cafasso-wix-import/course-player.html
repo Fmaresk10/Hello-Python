@@ -102,7 +102,10 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
  html[data-cafasso-player="1"] body.cafasso-mission-mode .cafasso-mission-node span{font-size:8px!important}
  html[data-cafasso-player="1"] body.cafasso-mission-mode .cafasso-mission-stage{margin-top:10px!important}
 }
-</style></head>
+
+<style id="cafassoEvaluationPlayerStyles">
+.eval-quiz{margin-top:14px}.eval-summary{margin:12px 0;padding:12px 13px;border:1px solid #d8c98f;border-radius:12px;background:#fff8df;color:#5f552f;font-size:12px;line-height:1.5}.eval-summary.ok{background:#eaf5ed;border-color:#b9d5c1;color:#2f5a41}.eval-summary.bad{background:#fff0ec;border-color:#e0b8ae;color:#834d42}.eval-summary.pending{background:#eef3f0;border-color:#c4d4cb;color:#456055}.eval-meta{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 13px}.eval-pill{display:inline-flex;padding:5px 8px;border-radius:999px;background:#eef1ee;color:#52635b;font-size:10px;font-weight:800}.eval-question-player{margin:12px 0;padding:14px;border:1px solid #dfe4df;border-radius:13px;background:#fff}.eval-question-player legend{padding:0 5px;color:#294b3f;font-weight:850;font-size:13px}.eval-question-player .points{float:right;color:#7c7f78;font-size:10px;font-weight:800}.eval-options-player{display:grid;gap:7px;margin-top:10px}.eval-option-player{display:flex;gap:9px;align-items:flex-start;padding:9px 10px;border:1px solid #e2e5e1;border-radius:9px;background:#fafcfb;color:#41544b;font-size:12px;cursor:pointer}.eval-option-player input{margin-top:2px}.eval-question-player textarea{width:100%;min-height:100px;margin-top:10px;border:1px solid #d8ded9;border-radius:10px;padding:10px;font:inherit;resize:vertical}.eval-feedback{margin-top:9px;padding:9px 10px;border-radius:9px;background:#f3f6f4;color:#4d6157;font-size:11px;line-height:1.45}.eval-feedback.correct{background:#edf7ef;color:#2e6040}.eval-feedback.wrong{background:#fff0ed;color:#824f44}.eval-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}.eval-result-list{display:grid;gap:7px;margin-top:10px}.eval-result-item{padding:9px 10px;border-radius:9px;background:#f7f8f7;color:#536159;font-size:11px}.eval-result-item b{color:#304a40}
+</style></style></head>
 <body>
 <div id="app" class="loading">Cargando tu espacio CAFASSO…</div>
 <script>
@@ -128,7 +131,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
   function submissionFor(blockId){return courseSubmissions.filter(function(s){return s.activityId===blockId;})[0]||null;}
   function activityAnswer(blockId,work){var s=submissionFor(blockId);return s&&s.content!=null?s.content:((work.answers||{})[blockId]||'');}
   function requiredBlocks(){return (selectedModule.contents||[]).filter(function(b){return b.required!==false;});}
-  function isBlockDone(block,work){if(block.required===false)return true;var t=String(block.type||'').toLowerCase(),submission=submissionFor(block._id),approved=submission&&/^aprobad/i.test(String(submission.status||'').trim());if(approved)return true;if(t==='desafío')return !!approved;if(t==='reflexión'||t==='entrega'||t==='evaluación')return !!String(activityAnswer(block._id,work)||'').trim();return !!(work.done||{})[block._id];}
+  function isBlockDone(block,work){if(block.required===false)return true;var t=String(block.type||'').toLowerCase(),submission=submissionFor(block._id),approved=submission&&/^aprobad/i.test(String(submission.status||'').trim());if(approved)return true;if(t==='desafío')return !!approved;if(t==='evaluación'&&String(block.settings&&block.settings.evaluationMode||'open')==='quiz'){var st=evaluationState(block._id,work);return !!(st&&st.passed&&!st.pendingReview);}if(t==='reflexión'||t==='entrega'||t==='evaluación')return !!String(activityAnswer(block._id,work)||'').trim();return !!(work.done||{})[block._id];}
   function requiredStatus(){var work=readModuleWork(),req=requiredBlocks(),done=req.filter(function(b){return isBlockDone(b,work);}).length;return {work:work,total:req.length,done:done,ready:req.length===0||done===req.length};}
   function layout(){
     var app=document.getElementById('app');
@@ -179,11 +182,90 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
   function youtubeEmbed(url){var s=String(url||''),m=s.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/);return m?'https://www.youtube.com/embed/'+m[1]:'';}
   function googleEmbed(url){var s=String(url||''),m=s.match(/drive\.google\.com\/file\/d\/([^/]+)/i);if(m)return'https://drive.google.com/file/d/'+m[1]+'/preview';m=s.match(/docs\.google\.com\/(document|presentation|spreadsheets)\/d\/([^/]+)/i);return m?'https://docs.google.com/'+m[1]+'/d/'+m[2]+'/preview':'';}
   function safeUrl(value){var s=String(value||'').trim();return /^https?:\/\//i.test(s)?s:'';}
+  function evaluationSchema(block){
+    var ev=block&&block.settings&&block.settings.evaluation||{},qs=Array.isArray(ev.questions)?ev.questions:[];
+    return {passingScore:Math.max(0,Math.min(100,Number(ev.passingScore==null?70:ev.passingScore))),maxAttempts:Math.max(0,Number(ev.maxAttempts==null?3:ev.maxAttempts)),showCorrectAnswers:['after-submit','after-pass','never'].indexOf(ev.showCorrectAnswers)>=0?ev.showCorrectAnswers:'after-submit',questions:qs};
+  }
+  function evaluationState(blockId,work){
+    var raw=work&&work.answers&&work.answers[blockId];if(!raw)return null;
+    try{var st=typeof raw==='string'?JSON.parse(raw):raw;return st&&st._cafassoEval===1?st:null;}catch(e){return null;}
+  }
+  function evaluationHasOpen(block){return evaluationSchema(block).questions.some(function(q){return q&&q.type==='open';});}
+  function evaluationShowSolutions(block,state){
+    var mode=evaluationSchema(block).showCorrectAnswers;
+    if(mode==='never')return false;
+    if(mode==='after-submit')return !!state;
+    return !!(state&&state.passed&&!state.pendingReview);
+  }
+  function evaluationAnswerLabel(q,value){
+    if(q.type==='choice'){var i=Number(value);return Array.isArray(q.options)&&q.options[i]!=null?String(q.options[i]):'';}
+    if(q.type==='boolean')return String(value)==='true'?'Verdadero':'Falso';
+    return String(value||'');
+  }
+  function renderEvaluationQuiz(block,work,submission){
+    var ev=evaluationSchema(block),state=evaluationState(block._id,work),status=String(submission&&submission.status||''),approved=/^aprobad/i.test(status),redo=/^rehacer/i.test(status),pending=!!(state&&state.pendingReview&&!redo&&!approved),passed=approved||!!(state&&state.passed&&!state.pendingReview),attempts=Number(state&&state.attempts||0),limit=Number(ev.maxAttempts||0),canTry=limit===0||attempts<limit,showSolutions=evaluationShowSolutions(block,state),html='<div class="eval-quiz">';
+    if(state){
+      var cls=approved||passed?'ok':pending?'pending':'bad',title=approved?'✓ Evaluación aprobada':pending?'⏳ Pendiente de revisión':state.passed?'✓ Evaluación aprobada':'Todavía no alcanzaste el puntaje mínimo';
+      html+='<div class="eval-summary '+cls+'"><strong>'+title+'</strong><br>Resultado automático: '+esc(state.autoPercent==null?0:state.autoPercent)+'% · intento '+esc(attempts)+(limit?' de '+esc(limit):'')+(redo?'<br>El formador pidió rehacer esta evaluación. Podés intentar nuevamente.':'')+'</div>';
+      if(showSolutions&&Array.isArray(state.results)&&state.results.length){
+        html+='<div class="eval-result-list">'+state.results.filter(function(r){return r.type!=='open';}).map(function(r){return '<div class="eval-result-item"><b>'+esc(r.prompt||'Pregunta')+'</b><br>Tu respuesta: '+esc(r.answerLabel||'—')+' · '+(r.correct?'✓ correcta':'✗ incorrecta')+(r.explanation?'<br>'+esc(r.explanation):'')+'</div>';}).join('')+'</div>';
+      }
+    }
+    if(approved||pending||passed){return html+'</div>';}
+    if(!canTry){return html+'<div class="eval-summary bad"><strong>Sin intentos disponibles.</strong><br>Pedile al equipo formador que revise tu situación.</div></div>';}
+    if(!ev.questions.length)return html+'<div class="eval-summary bad">Esta evaluación todavía no tiene preguntas configuradas.</div></div>';
+    html+='<div class="eval-meta"><span class="eval-pill">Aprobación: '+esc(ev.passingScore)+'%</span><span class="eval-pill">'+(limit?esc(Math.max(0,limit-attempts))+' intento'+(Math.max(0,limit-attempts)===1?'':'s')+' disponible'+(Math.max(0,limit-attempts)===1?'':'s'):'Intentos ilimitados')+'</span>'+(evaluationHasOpen(block)?'<span class="eval-pill">Incluye revisión del formador</span>':'<span class="eval-pill">Autocorrección</span>')+'</div>';
+    ev.questions.forEach(function(q,i){
+      var qid=String(q.id||('q'+i)),points=Math.max(1,Number(q.points||1));
+      html+='<fieldset class="eval-question-player" data-eval-question="'+esc(qid)+'"><legend>'+(i+1)+'. '+esc(q.prompt||'Pregunta')+'</legend><span class="points">'+esc(points)+' pt'+(points===1?'':'s')+'</span>';
+      if(q.type==='choice'){
+        html+='<div class="eval-options-player">'+(q.options||[]).map(function(opt,oi){return '<label class="eval-option-player"><input type="radio" name="eval-'+esc(block._id)+'-'+esc(qid)+'" value="'+oi+'"><span>'+esc(opt)+'</span></label>';}).join('')+'</div>';
+      }else if(q.type==='boolean'){
+        html+='<div class="eval-options-player"><label class="eval-option-player"><input type="radio" name="eval-'+esc(block._id)+'-'+esc(qid)+'" value="true"><span>Verdadero</span></label><label class="eval-option-player"><input type="radio" name="eval-'+esc(block._id)+'-'+esc(qid)+'" value="false"><span>Falso</span></label></div>';
+      }else{
+        html+='<textarea data-eval-open="'+esc(block._id)+'" data-question-id="'+esc(qid)+'" placeholder="Escribí tu respuesta…"></textarea>'+(Number(q.minChars||0)>0?'<div class="eval-feedback">Mínimo: '+esc(Number(q.minChars))+' caracteres.</div>':'');
+      }
+      html+='</fieldset>';
+    });
+    html+='<div class="eval-actions"><button class="btn" data-submit-evaluation="'+esc(block._id)+'">Finalizar intento</button></div></div>';
+    return html;
+  }
+  function evaluationSubmissionText(block,state,answers){
+    var ev=evaluationSchema(block),lines=['Evaluación: '+String(block.title||'Evaluación'),'Resultado automático: '+String(state.autoPercent||0)+'%','Intento: '+String(state.attempts||1),''];
+    ev.questions.forEach(function(q,i){var v=answers[q.id],label=evaluationAnswerLabel(q,v);lines.push((i+1)+'. '+String(q.prompt||'Pregunta'));lines.push('Respuesta: '+label);if(q.type==='open'&&q.reviewCriteria)lines.push('Criterio: '+String(q.reviewCriteria));lines.push('');});
+    return lines.join('\n');
+  }
+  function submitEvaluation(blockId){
+    var block=(selectedModule.contents||[]).filter(function(b){return b._id===blockId;})[0];if(!block)return;
+    var ev=evaluationSchema(block),work=readModuleWork(),previous=evaluationState(blockId,work),attempts=Number(previous&&previous.attempts||0),limit=Number(ev.maxAttempts||0),existing=submissionFor(blockId),approved=existing&&/^aprobad/i.test(String(existing.status||'')),pending=existing&&!/^rehacer/i.test(String(existing.status||''))&&!approved&&previous&&previous.pendingReview;
+    if(approved||pending){alert('Esta evaluación ya fue enviada.');return;}
+    if(limit&&attempts>=limit){alert('Ya usaste todos los intentos disponibles.');return;}
+    var answers={},missing='',results=[],earned=0,closedMax=0,hasOpen=false;
+    for(var i=0;i<ev.questions.length;i++){
+      var q=ev.questions[i],qid=String(q.id||('q'+i)),value='';
+      if(q.type==='open'){var ta=document.querySelector('[data-eval-open="'+CSS.escape(blockId)+'"][data-question-id="'+CSS.escape(qid)+'"]');value=ta?ta.value.trim():'';hasOpen=true;if(!value){missing='Respondé la pregunta '+(i+1)+'.';break;}if(Number(q.minChars||0)>0&&value.length<Number(q.minChars)){missing='La pregunta '+(i+1)+' necesita al menos '+Number(q.minChars)+' caracteres.';break;}results.push({id:qid,type:'open',prompt:q.prompt||'',answerLabel:value,points:Number(q.points||1)});}
+      else {var checked=document.querySelector('input[name="eval-'+CSS.escape(blockId)+'-'+CSS.escape(qid)+'"]:checked');if(!checked){missing='Respondé la pregunta '+(i+1)+'.';break;}value=checked.value;var correct=q.type==='choice'?Number(value)===Number(q.correctIndex):String(value)===String(q.correctBoolean!==false);var pts=Math.max(1,Number(q.points||1));closedMax+=pts;if(correct)earned+=pts;results.push({id:qid,type:q.type,prompt:q.prompt||'',answerLabel:evaluationAnswerLabel(q,value),correct:correct,points:pts,explanation:q.explanation||''});}
+      answers[qid]=value;
+    }
+    if(missing){alert(missing);return;}
+    var autoPercent=closedMax?Math.round(earned/closedMax*100):100,closedPassed=autoPercent>=Number(ev.passingScore||0),state={_cafassoEval:1,attempts:attempts+1,answers:answers,results:results,autoPercent:autoPercent,earned:earned,closedMax:closedMax,pendingReview:false,passed:false,submittedAt:new Date().toISOString()};
+    if(!closedPassed){state.passed=false;}
+    else if(hasOpen){state.pendingReview=true;}
+    else state.passed=true;
+    work.answers=work.answers||{};work.answers[blockId]=JSON.stringify(state);saveModuleWork(work);
+    if(hasOpen&&closedPassed){
+      var btn=document.querySelector('[data-submit-evaluation="'+CSS.escape(blockId)+'"]');if(btn){btn.disabled=true;btn.textContent='Enviando…';}
+      fetch(SUBMISSION_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:session.user._id,courseId:selectedCourse._id,moduleId:selectedModule._id,activityId:blockId,type:'Evaluación',content:evaluationSubmissionText(block,state,answers)})}).then(function(r){return r.json().then(function(j){return {r:r,j:j};});}).then(function(x){if(!x.r.ok||!x.j.ok)throw new Error(x.j.error||'No se pudo enviar la evaluación.');var s=x.j.submission,found=false;for(var n=0;n<courseSubmissions.length;n++){if(courseSubmissions[n].activityId===blockId){courseSubmissions[n]=s;found=true;break;}}if(!found)courseSubmissions.push(s);renderModule();}).catch(function(e){alert('El intento quedó guardado, pero no pudimos enviarlo al formador: '+(e.message||'error de conexión'));state.pendingReview=false;work.answers[blockId]=JSON.stringify(state);saveModuleWork(work);renderModule();});
+    }else{
+      renderModule();if(state.passed){try{window.dispatchEvent(new CustomEvent('cafasso:block-completed',{detail:{blockId:blockId,status:'Aprobada'}}));}catch(e){}}
+    }
+  }
   function renderBlock(block,work){var type=String(block.type||'Texto'),low=type.toLowerCase(),body=blockText(block),required=block.required!==false,done=isBlockDone(block,work),submission=submissionFor(block._id),settings=block.settings||{},reward=Math.max(0,Number(settings.rewardAlmitas||0)),criteria=String(settings.reviewCriteria||'').trim(),html='<article class="card block" data-block-card="'+esc(block._id)+'"><div class="block-meta"><div class="block-type">'+esc(type)+'</div>'+(required?'<span class="required">OBLIGATORIO</span>':'<span class="optional">Opcional</span>')+(required&&done?'<span class="badge">✓ LISTO</span>':'')+(submission?'<span class="badge '+(submission.status==='Aprobada'?'':'gold')+'">'+esc(submission.status||'Pendiente')+'</span>':'')+'</div><h4>'+esc(block.title||type||'Contenido')+'</h4>';
     if(low==='imagen'){var img=safeUrl(body),alt=String(settings.altText||block.title||'Imagen del módulo'),caption=String(settings.caption||'').trim();html+=img?'<img class="media-img" src="'+esc(img)+'" alt="'+esc(alt)+'">':'<div class="block-text">'+esc(body||'Agregá la URL de la imagen desde el editor del curso.')+'</div>';if(caption)html+='<div class="challenge-criteria" style="margin-top:10px">'+esc(caption)+'</div>';}
     else if(low==='video'){var emb=youtubeEmbed(body)||googleEmbed(body),url=safeUrl(body),caption=String(settings.caption||'').trim();if(emb)html+='<div class="video-frame"><iframe src="'+esc(emb)+'" title="'+esc(block.title||'Video')+'" allowfullscreen></iframe></div>';else if(url)html+='<a class="btn alt resource-link" href="'+esc(url)+'" target="_blank" rel="noopener">Abrir video ↗</a>';else html+='<div class="block-text">'+esc(body||'Agregá la URL del video desde el editor del curso.')+'</div>';if(caption)html+='<div class="challenge-criteria" style="margin-top:10px">'+esc(caption)+'</div>';}
     else if(low==='documento'){var doc=safeUrl(body),docEmbed=googleEmbed(body),label=String(settings.linkLabel||'Abrir material'),desc=String(settings.resourceDescription||'').trim();if(desc)html+='<div class="block-text" style="margin-bottom:10px">'+esc(desc)+'</div>';if(docEmbed)html+='<div class="video-frame"><iframe src="'+esc(docEmbed)+'" title="'+esc(block.title||'Documento')+'"></iframe></div>';else html+=doc?'<a class="btn alt resource-link" href="'+esc(doc)+'" target="_blank" rel="noopener">'+esc(label)+' ↗</a>':'<div class="block-text">'+esc(body||'Agregá el enlace al documento desde el editor del curso.')+'</div>';}
     else if(low==='desafío'){var challengeAnswer=activityAnswer(block._id,work),approved=submission&&submission.status==='Aprobada',challengeReward=Number(submission?.rewardAlmitas||reward||0),placeholder=String(settings.responsePlaceholder||'').trim();html+='<div class="challenge-reward">⭐ '+esc(challengeReward||reward||0)+' almitas · aprobación del formador</div>'+(criteria?'<div class="challenge-criteria"><strong>Qué va a mirar el formador</strong><br>'+esc(criteria)+'</div>':'')+'<div class="block-text" style="margin-top:12px">'+esc(body||'Realizá el desafío y entregá tu evidencia para continuar.')+'</div>'+(approved?'<div class="activity challenge-approved"><strong>✓ Desafío aprobado</strong><br>Las almitas ya fueron acreditadas. ¡Gracias por poner el corazón en la misión!</div>':'<div class="activity"><label>Tu entrega</label><textarea data-answer="'+esc(block._id)+'" placeholder="'+esc(placeholder||'Contá qué hiciste y cómo lo realizaste…')+'">'+esc(challengeAnswer)+'</textarea><div class="activity-actions"><span class="saved-note">'+(submission?'✓ Entrega enviada · '+esc(submission.status||'Pendiente'):challengeAnswer?'✓ Guardada en este dispositivo':'')+'</span><button class="btn" data-save-answer="'+esc(block._id)+'">'+(submission?'Actualizar entrega':'Enviar desafío')+'</button></div></div>')+(submission&&submission.feedback?'<div class="feedback"><strong>Devolución del equipo formador</strong><p>'+esc(submission.feedback)+'</p></div>':'');}
+    else if(low==='evaluación'&&String(settings.evaluationMode||'open')==='quiz'){html+=renderEvaluationQuiz(block,work,submission);}
     else if(low==='reflexión'||low==='entrega'||low==='evaluación'){var answer=activityAnswer(block._id,work),placeholder=String(settings.responsePlaceholder||'').trim(),guidance=String(settings.responseGuidance||'').trim(),expected=String(settings.expectedDelivery||'').trim(),minimum=low==='evaluación'?Math.max(0,Number(settings.minimumCharacters||0)):0,labelAnswer=low==='entrega'?'Tu entrega':'Tu respuesta';html+='<div class="block-text">'+esc(body||'Respondé la consigna para continuar.')+'</div>';if(guidance)html+='<div class="challenge-criteria"><strong>Una pista para responder</strong><br>'+esc(guidance)+'</div>';if(expected)html+='<div class="challenge-criteria"><strong>Qué se espera</strong><br>'+esc(expected)+'</div>';if(criteria)html+='<div class="challenge-criteria"><strong>Criterio de revisión</strong><br>'+esc(criteria)+'</div>';if(minimum)html+='<div class="challenge-criteria"><strong>Extensión mínima</strong><br>'+esc(minimum)+' caracteres.</div>';html+='<div class="activity"><label>'+labelAnswer+'</label><textarea data-answer="'+esc(block._id)+'" placeholder="'+esc(placeholder||(low==='entrega'?'Escribí o pegá acá tu entrega…':'Escribí acá…'))+'">'+esc(answer)+'</textarea><div class="activity-actions"><span class="saved-note">'+(submission?'✓ Guardada en CAFASSO':answer?'✓ Guardada en este dispositivo':'')+'</span><button class="btn" data-save-answer="'+esc(block._id)+'">'+(submission?'Actualizar respuesta':low==='entrega'?'Enviar entrega':'Guardar respuesta')+'</button></div></div>'+(submission&&submission.feedback?'<div class="feedback"><strong>Devolución del equipo formador</strong><p>'+esc(submission.feedback)+'</p></div>':'');}
     else {var textStyle=String(settings.textStyle||'normal'),style=textStyle==='highlight'?'padding:14px;border-radius:12px;background:#fff6d9;border:1px solid #ead38a;font-weight:700':textStyle==='quiet'?'padding:14px;border-radius:12px;background:#f3f7f4;border-left:4px solid #7ba08e':'';html+='<div class="block-text"'+(style?' style="'+style+'"':'')+'>'+esc(body||'Este contenido se completará desde el editor del curso.')+'</div>';}
     if(required&&!(low==='reflexión'||low==='entrega'||low==='evaluación'||low==='desafío'))html+='<div class="review-row"><small>'+(done?'Este contenido ya cuenta como revisado.':'Marcá este contenido cuando hayas terminado de revisarlo.')+'</small><button class="btn '+(done?'done':'alt')+'" data-review="'+esc(block._id)+'">'+(done?'✓ Revisado':'Marcar como revisado')+'</button></div>';return html+'</article>';}
@@ -211,6 +293,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     if(complete)complete.onclick=function(){saveModuleProgress(!done);};
     Array.prototype.forEach.call(document.querySelectorAll('[data-review]'),function(b){b.onclick=function(){toggleReview(b.getAttribute('data-review'));};});
     Array.prototype.forEach.call(document.querySelectorAll('[data-save-answer]'),function(b){b.onclick=function(){saveAnswer(b.getAttribute('data-save-answer'));};});
+    Array.prototype.forEach.call(document.querySelectorAll('[data-submit-evaluation]'),function(b){b.onclick=function(){submitEvaluation(b.getAttribute('data-submit-evaluation'));};});
     Array.prototype.forEach.call(document.querySelectorAll('[data-answer]'),function(field){
       field.addEventListener('input',function(){
         var blockId=field.getAttribute('data-answer');
