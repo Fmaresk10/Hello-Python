@@ -27,15 +27,15 @@
 
     @media(max-width:760px){
       html body .cafasso-parroquia .cafasso-parish-candle{
-        left:34%!important;
-        bottom:56%!important;
-        width:68px!important;
-        height:126px!important;
-        transform:translateX(-50%) perspective(700px) rotateX(1.4deg) scale(.54)!important;
+        left:calc(61.0% - .2cm)!important;
+        bottom:calc(51.0% - 1cm)!important;
+        width:92px!important;
+        height:166px!important;
+        transform:translateX(-50%) perspective(700px) rotateX(1.4deg) scale(.47)!important;
         transform-origin:50% 100%!important;
       }
       html body .cafasso-parroquia .cafasso-parish-candle:hover{
-        transform:translateX(-50%) perspective(700px) rotateX(1deg) translateY(-1px) scale(.555)!important;
+        transform:translateX(-50%) perspective(700px) rotateX(1deg) translateY(-1px) scale(.485)!important;
       }
     }
   `;
