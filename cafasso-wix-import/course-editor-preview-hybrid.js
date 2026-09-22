@@ -75,8 +75,8 @@
     return /^https?:\/\//i.test(text)?text:'';
   }
   function blockMedia(block){
-    const type=String(block?.type||'Texto'),url=safeUrl(block?.content?.body);
-    if(type==='Imagen'&&url)return `<div class="hybrid-preview-media"><img src="${esc(url)}" alt="${esc(block.title||'Imagen')}"></div>`;
+    const type=String(block?.type||'Texto'),url=safeUrl(block?.content?.body),settings=block?.settings||{};
+    if(type==='Imagen'&&url)return `<div class="hybrid-preview-media"><img src="${esc(url)}" alt="${esc(settings.altText||block.title||'Imagen')}"></div>`;
     if(type==='Video'&&url){
       const embed=youtubeEmbed(url)||googleEmbed(url);
       if(embed)return `<div class="hybrid-preview-media"><iframe src="${esc(embed)}" loading="lazy" allowfullscreen></iframe></div>`;
@@ -85,26 +85,33 @@
     if(type==='Documento'&&url){
       const embed=googleEmbed(url);
       if(embed)return `<div class="hybrid-preview-media"><iframe src="${esc(embed)}" loading="lazy"></iframe></div>`;
-      return `<div class="hybrid-preview-media"><a class="hybrid-preview-link" href="${esc(url)}" target="_blank" rel="noopener"><span>Abrir material</span><span>↗</span></a></div>`;
+      return `<div class="hybrid-preview-media"><a class="hybrid-preview-link" href="${esc(url)}" target="_blank" rel="noopener"><span>${esc(settings.linkLabel||'Abrir material')}</span><span>↗</span></a></div>`;
     }
     return'';
   }
   function renderBlock(block){
-    const type=String(block?.type||'Texto'),body=String(block?.content?.body||'');
+    const type=String(block?.type||'Texto'),body=String(block?.content?.body||''),settings=block?.settings||{};
     const interactive=['Reflexión','Entrega','Desafío','Evaluación'].includes(type);
     const media=blockMedia(block);
-    const linked=block?.settings?.libraryResourceId?' · 📚 Biblioteca':'';
+    const linked=settings.libraryResourceId?' · 📚 Biblioteca':'';
     let bodyHtml='';
     if(['Video','Imagen','Documento'].includes(type)){
-      bodyHtml=media||`<div class="hybrid-preview-block__body">${esc(body||'Recurso sin enlace todavía.')}</div>`;
+      const before=type==='Documento'&&settings.resourceDescription?`<div class="hybrid-preview-block__body" style="margin-bottom:10px">${esc(settings.resourceDescription)}</div>`:'';
+      const after=(type==='Video'||type==='Imagen')&&settings.caption?`<div class="hybrid-preview-response">${esc(settings.caption)}</div>`:'';
+      bodyHtml=before+(media||`<div class="hybrid-preview-block__body">${esc(body||'Recurso sin enlace todavía.')}</div>`)+after;
     }else{
-      bodyHtml=`<div class="hybrid-preview-block__body">${esc(body)}</div>`;
+      const style=settings.textStyle==='highlight'?'padding:13px;border-radius:8px;background:#fff3cf;border:1px solid #e4cb7e;font-weight:700':settings.textStyle==='quiet'?'padding:13px;border-radius:8px;background:#eef5f0;border-left:4px solid #7b9d8b':'';
+      bodyHtml=`<div class="hybrid-preview-block__body"${style?` style="${style}"`:''}>${esc(body)}</div>`;
     }
     let extra='';
-    if(type==='Desafío'&&Number(block?.settings?.rewardAlmitas||0)>0){
-      extra+=`<div class="hybrid-preview-response">⭐ Al aprobarse: <strong>+${Number(block.settings.rewardAlmitas)} Almitas</strong>${block.settings?.reviewCriteria?`<div style="margin-top:5px">Criterio de revisión: ${esc(block.settings.reviewCriteria)}</div>`:''}</div>`;
+    if(type==='Desafío'){
+      extra+=`<div class="hybrid-preview-response">⭐ Al aprobarse: <strong>+${Number(settings.rewardAlmitas||0)} Almitas</strong>${settings.reviewCriteria?`<div style="margin-top:5px">Criterio de revisión: ${esc(settings.reviewCriteria)}</div>`:''}<textarea disabled placeholder="${esc(settings.responsePlaceholder||'Contá qué hiciste y cómo lo realizaste…')}"></textarea></div>`;
     }else if(interactive){
-      extra='<div class="hybrid-preview-response">Así verá el animador el espacio para responder.<textarea disabled placeholder="Respuesta del animador…"></textarea></div>';
+      if(settings.responseGuidance)extra+=`<div class="hybrid-preview-response"><strong>Orientación:</strong> ${esc(settings.responseGuidance)}</div>`;
+      if(settings.expectedDelivery)extra+=`<div class="hybrid-preview-response"><strong>Qué se espera:</strong> ${esc(settings.expectedDelivery)}</div>`;
+      if(settings.reviewCriteria)extra+=`<div class="hybrid-preview-response"><strong>Criterio de revisión:</strong> ${esc(settings.reviewCriteria)}</div>`;
+      if(type==='Evaluación'&&Number(settings.minimumCharacters||0)>0)extra+=`<div class="hybrid-preview-response">Extensión mínima: <strong>${Number(settings.minimumCharacters)} caracteres</strong></div>`;
+      extra+=`<div class="hybrid-preview-response">Así verá el animador el espacio para responder.<textarea disabled placeholder="${esc(settings.responsePlaceholder||(type==='Entrega'?'Escribí o pegá acá tu entrega…':'Respuesta del animador…'))}"></textarea></div>`;
     }
     return `<section class="hybrid-preview-block"><div class="hybrid-preview-block__type"><span>${icon(type)}</span><span>${esc(type)}${block?.required?' · OBLIGATORIO':''}${linked}</span></div><h4>${esc(block?.title||type)}</h4>${bodyHtml}${extra}</section>`;
   }
