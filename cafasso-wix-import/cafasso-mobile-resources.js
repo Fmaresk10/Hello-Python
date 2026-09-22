@@ -1,6 +1,7 @@
 (() => {
   const params = new URLSearchParams(location.search);
   if (params.get('space') !== 'recursos') return;
+  if (!window.matchMedia?.('(max-width: 820px), (pointer: coarse)').matches) return;
   if (window.__cafassoMobileResourcesInstalled) return;
   window.__cafassoMobileResourcesInstalled = true;
 
