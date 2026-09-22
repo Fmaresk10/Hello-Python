@@ -147,7 +147,8 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     target.searchParams.set('space','escuela');
     if(courseId)target.searchParams.set('course',courseId);
     target.searchParams.set('fromMission','1');
-    location.replace(target.toString());
+    if(window.CafassoMobileFluid?.active)window.CafassoMobileFluid.navigate(target.toString(),{replace:true});
+    else location.replace(target.toString());
   }
   function navigate(view,replace){
     if(view!=='modulo'){
@@ -366,7 +367,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
   window.addEventListener('popstate',function(){if((location.hash||'#modulo')!=='#modulo')returnToSchool();});init();
 })();
 </script>
-<script src="./cafasso-mobile-fluid.js?v=20260922-1"></script>
+<script src="./cafasso-mobile-fluid.js?v=20260922-2"></script>
 <script src="./cafasso-global-counters.js?v=2"></script>
 <script src="./cafasso-almitas-core.js?v=1"></script>
 <script src="./cafasso-levels.js?v=4"></script>
@@ -374,6 +375,6 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
 <script src="./house-profile-progress.js?v=5"></script>
 <script src="./cafasso-huellas-v2.js?v=3"></script>
 <script src="./cafasso-huella-rewards-v2.js?v=2"></script>
-<script src="./gamified-course.js?v=20260921-7"></script>
+<script src="./gamified-course.js?v=20260922-1"></script>
 </body>
 </html>
