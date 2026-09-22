@@ -7,7 +7,7 @@
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102f33}
 *{box-sizing:border-box}
-#cafassoWorld{position:fixed;inset:0;width:100vw;height:100dvh;border:0;background:#102f33;display:block}
+#cafassoWorld{position:fixed;left:0;top:0;width:100vw;height:var(--cafasso-shell-vh,100dvh);border:0;background:#102f33;display:block}
 </style>
 </head>
 <body>
@@ -19,6 +19,17 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102f33}
 <script src="./cafasso-global-music.js?v=10"></script>
 <script>
 (() => {
+  const root=document.documentElement;
+  const syncViewport=()=>{
+    const vv=window.visualViewport;
+    const h=Math.max(320,Math.round(vv?.height||window.innerHeight||root.clientHeight||320));
+    root.style.setProperty('--cafasso-shell-vh',h+'px');
+  };
+  syncViewport();
+  window.addEventListener('resize',syncViewport,{passive:true});
+  window.addEventListener('orientationchange',syncViewport,{passive:true});
+  window.visualViewport?.addEventListener('resize',syncViewport,{passive:true});
+
   const frame = document.getElementById('cafassoWorld');
   if (!frame) return;
 
@@ -26,7 +37,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102f33}
     const url = new URL('./world.html', location.href);
     url.search = location.search;
     ['code','state','error','error_description'].forEach(key => url.searchParams.delete(key));
-    url.searchParams.set('__cafassoBuild', '1069');
+    url.searchParams.set('__cafassoBuild', '1070');
     url.hash = location.hash;
     return url.href;
   };
