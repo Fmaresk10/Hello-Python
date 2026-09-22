@@ -13,16 +13,23 @@
     /* Geometría final aplicada antes de crear la vela: evita el salto al recargar. */
     @media(min-width:761px){
       html body .cafasso-parroquia .cafasso-parish-candle{
-        left:47.8%!important;
-        bottom:57.2%!important;
-        width:92px!important;
-        height:166px!important;
-        transform:translateX(-50%) perspective(700px) rotateX(1.6deg) scale(.64)!important;
+        left:calc(61.0% - .2cm)!important;
+        bottom:calc(51.0% - 1cm)!important;
+        width:84px!important;
+        height:152px!important;
+        transform:translateX(-50%) perspective(700px) rotateX(1.6deg) scale(.47)!important;
         transform-origin:50% 100%!important;
       }
       html body .cafasso-parroquia .cafasso-parish-candle:hover{
-        transform:translateX(-50%) perspective(700px) rotateX(1deg) translateY(-2px) scale(.655)!important;
+        transform:translateX(-50%) perspective(700px) rotateX(1deg) translateY(-2px) scale(.485)!important;
       }
+    }
+
+    html body .cafasso-parroquia .cafasso-parish-candle__holder,
+    html body .cafasso-parroquia .cafasso-parish-candle__holder:before,
+    html body .cafasso-parroquia .cafasso-parish-candle__holder:after{
+      display:none!important;
+      content:none!important;
     }
 
     @media(max-width:760px){
