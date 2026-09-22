@@ -322,7 +322,8 @@
           target.searchParams.set('course', String(courseId));
           target.searchParams.set('module', id);
           target.hash = 'modulo';
-          location.href = target.toString();
+          if (window.CafassoMobileFluid?.active) window.CafassoMobileFluid.navigate(target.toString());
+          else location.href = target.toString();
         });
       });
     } catch (error) {
