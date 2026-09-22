@@ -116,11 +116,14 @@
   if(!document.querySelector('script[data-cafasso-status-guide]')){
     const s=document.createElement('script');s.src='./course-editor-status.js?v=20260904-1';s.defer=true;s.dataset.cafassoStatusGuide='1';document.body.appendChild(s);
   }
-  if(!document.querySelector('script[data-cafasso-typed-blocks]')){
-    const s=document.createElement('script');s.src='./course-block-editor.js?v=20260921-3';s.defer=true;s.dataset.cafassoTypedBlocks='1';document.body.appendChild(s);
-  }
-  if(!document.querySelector('script[data-cafasso-evaluation-editor]')){
+  const loadEvaluationEditor=()=>{
+    if(document.querySelector('script[data-cafasso-evaluation-editor]'))return;
     const s=document.createElement('script');s.src='./course-evaluation-editor.js?v=20260921-2';s.defer=true;s.dataset.cafassoEvaluationEditor='1';document.body.appendChild(s);
+  };
+  if(!document.querySelector('script[data-cafasso-typed-blocks]')){
+    const s=document.createElement('script');s.src='./course-block-editor.js?v=20260921-3';s.defer=true;s.dataset.cafassoTypedBlocks='1';s.onload=loadEvaluationEditor;document.body.appendChild(s);
+  }else{
+    loadEvaluationEditor();
   }
   if(!document.querySelector('script[data-cafasso-block-transfer]')){
     const s=document.createElement('script');s.src='./course-block-transfer.js?v=20260904-1';s.defer=true;s.dataset.cafassoBlockTransfer='1';document.body.appendChild(s);
