@@ -329,12 +329,16 @@
     requestAnimationFrame(()=>document.documentElement.classList.add('cafasso-mobile-fluid-ready'));
   }
 
-  function navigate(url){
+  function navigate(url,options={}){
     if(leaving)return true;
     leaving=true;
     document.documentElement.classList.remove('cafasso-mobile-fluid-ready');
     document.documentElement.classList.add('cafasso-mobile-fluid-leaving');
-    setTimeout(()=>location.assign(String(url)),TRANSITION_MS);
+    const target=String(url);
+    setTimeout(()=>{
+      if(options&&options.replace)location.replace(target);
+      else location.assign(target);
+    },TRANSITION_MS);
     return true;
   }
 
