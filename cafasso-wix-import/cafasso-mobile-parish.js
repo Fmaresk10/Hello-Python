@@ -152,18 +152,18 @@
 
       /* Vela: sobre el lado izquierdo del altar, como en escritorio. */
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle{
-        left:47.8%!important;
+        left:calc(61.0% - .2cm)!important;
         right:auto!important;
-        bottom:57.2%!important;
+        bottom:calc(51.0% - 1cm)!important;
         width:92px!important;
         height:166px!important;
-        transform:translateX(-50%) perspective(700px) rotateX(1.6deg) scale(.64)!important;
+        transform:translateX(-50%) perspective(700px) rotateX(1.6deg) scale(.47)!important;
         transform-origin:50% 100%!important;
         z-index:15!important;
       }
 
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle:hover{
-        transform:translateX(-50%) perspective(700px) rotateX(1deg) translateY(-2px) scale(.655)!important;
+        transform:translateX(-50%) perspective(700px) rotateX(1deg) translateY(-2px) scale(.485)!important;
       }
 
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle__wax{
