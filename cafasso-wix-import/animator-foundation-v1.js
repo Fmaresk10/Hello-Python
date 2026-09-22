@@ -148,7 +148,8 @@
       const next = new URL(location.href);
       if (button.dataset.space === 'house') next.searchParams.delete('space');
       else next.searchParams.set('space', button.dataset.space);
-      location.href = next.toString();
+      if (window.CafassoMobileFluid?.active) window.CafassoMobileFluid.navigate(next.toString());
+      else location.href = next.toString();
     });
   });
 
