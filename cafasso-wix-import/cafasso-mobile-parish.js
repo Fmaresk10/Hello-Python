@@ -154,7 +154,7 @@
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle{
         left:calc(61.0% - .2cm)!important;
         right:auto!important;
-        bottom:calc(51.0% - 1cm)!important;
+        bottom:54.7%!important;
         width:84px!important;
         height:152px!important;
         transform:translateX(-50%) perspective(700px) rotateX(1.6deg) scale(.47)!important;
@@ -167,10 +167,19 @@
       }
 
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle__wax{
-        left:29px!important;
-        bottom:43px!important;
-        width:35px!important;
-        height:80px!important;
+        left:34px!important;
+        bottom:17px!important;
+        width:16px!important;
+        height:92px!important;
+      }
+
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle__wax:before{
+        left:2px!important;
+        right:2px!important;
+      }
+
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle__wax:after{
+        left:7px!important;
       }
 
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle__holder{
@@ -181,10 +190,10 @@
       }
 
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle__flame{
-        left:34px!important;
-        bottom:122px!important;
-        width:24px!important;
-        height:37px!important;
+        left:38px!important;
+        bottom:110px!important;
+        width:8px!important;
+        height:16px!important;
       }
 
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle__glow{
