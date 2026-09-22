@@ -89,6 +89,19 @@
     }
     return'';
   }
+  function renderEvaluationQuizPreview(block){
+    const ev=block?.settings?.evaluation||{},questions=Array.isArray(ev.questions)?ev.questions:[],passing=Math.max(0,Math.min(100,Number(ev.passingScore??70))),attempts=Math.max(0,Number(ev.maxAttempts??3));
+    if(!questions.length)return '<div class="hybrid-preview-response">Este cuestionario todavía no tiene preguntas.</div>';
+    return `<div class="hybrid-preview-response"><strong>Cuestionario · aprobación ${passing}% · ${attempts?attempts+' intento'+(attempts===1?'':'s'):'intentos ilimitados'}</strong></div>`+
+      questions.map((q,i)=>{
+        const pts=Math.max(1,Number(q.points||1));
+        let input='';
+        if(q.type==='choice')input=`<div style="display:grid;gap:6px;margin-top:8px">${(q.options||[]).map(opt=>`<label style="display:flex;gap:7px;align-items:flex-start"><input type="radio" disabled><span>${esc(opt)}</span></label>`).join('')}</div>`;
+        else if(q.type==='boolean')input='<div style="display:grid;gap:6px;margin-top:8px"><label><input type="radio" disabled> Verdadero</label><label><input type="radio" disabled> Falso</label></div>';
+        else input=`<textarea disabled placeholder="Respuesta abierta…"${Number(q.minChars||0)>0?` data-min="${Number(q.minChars)}"`:''}></textarea>`;
+        return `<div class="hybrid-preview-response"><strong>${i+1}. ${esc(q.prompt||'Pregunta')}</strong> <span style="opacity:.68">· ${pts} pt${pts===1?'':'s'}</span>${input}${q.type==='open'&&Number(q.minChars||0)>0?`<div style="margin-top:5px;font-size:9px">Mínimo: ${Number(q.minChars)} caracteres · revisión del formador</div>`:''}</div>`;
+      }).join('');
+  }
   function renderBlock(block){
     const type=String(block?.type||'Texto'),body=String(block?.content?.body||''),settings=block?.settings||{};
     const interactive=['Reflexión','Entrega','Desafío','Evaluación'].includes(type);
@@ -106,6 +119,8 @@
     let extra='';
     if(type==='Desafío'){
       extra+=`<div class="hybrid-preview-response">⭐ Al aprobarse: <strong>+${Number(settings.rewardAlmitas||0)} Almitas</strong>${settings.reviewCriteria?`<div style="margin-top:5px">Criterio de revisión: ${esc(settings.reviewCriteria)}</div>`:''}<textarea disabled placeholder="${esc(settings.responsePlaceholder||'Contá qué hiciste y cómo lo realizaste…')}"></textarea></div>`;
+    }else if(type==='Evaluación'&&settings.evaluationMode==='quiz'){
+      extra+=renderEvaluationQuizPreview(block);
     }else if(interactive){
       if(settings.responseGuidance)extra+=`<div class="hybrid-preview-response"><strong>Orientación:</strong> ${esc(settings.responseGuidance)}</div>`;
       if(settings.expectedDelivery)extra+=`<div class="hybrid-preview-response"><strong>Qué se espera:</strong> ${esc(settings.expectedDelivery)}</div>`;
