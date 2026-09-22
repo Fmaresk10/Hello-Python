@@ -381,7 +381,8 @@
       target.searchParams.set('space', 'escuela');
       if (courseId) target.searchParams.set('course', courseId);
       target.searchParams.set('fromMission', '1');
-      location.replace(target.toString());
+      if (window.CafassoMobileFluid?.active) window.CafassoMobileFluid.navigate(target.toString(), { replace:true });
+      else location.replace(target.toString());
       return;
     }
     if (typeof window.CafassoNavigate === 'function') window.CafassoNavigate('curso');
