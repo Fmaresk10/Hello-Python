@@ -15,7 +15,7 @@
     '.cafasso-space-link--casa[data-space="patio"]',
     '.cafasso-space-link--house-recursos',
     '.cafasso-bitacora-object',
-    '.cafasso-admin-monitor',
+    '.cafasso-admin-button',
     '.cafasso-house-corner',
     '.cafasso-animator-sheet',
     '.cafasso-world-compass',
@@ -122,15 +122,15 @@
         z-index:14!important;
       }
 
-      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house-panorama .cafasso-admin-monitor{
-        left:73.4%!important;
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house-panorama .cafasso-admin-button{
+        left:2.6%!important;
         right:auto!important;
         top:auto!important;
-        bottom:9.4%!important;
-        width:clamp(132px,20.4vh,174px)!important;
+        bottom:3.2%!important;
+        width:auto!important;
+        min-width:0!important;
         height:auto!important;
-        transform:rotate(.1deg)!important;
-        transform-origin:50% 100%!important;
+        transform:none!important;
         z-index:16!important;
       }
 
@@ -476,7 +476,7 @@
     house.addEventListener('pointerdown', event => {
       if (!isPortraitMobile()) return;
       if (event.button != null && event.button !== 0) return;
-      if (event.target.closest('.cafasso-admin-monitor,.cafasso-profile-panel,.cafasso-bitacora-panel,.cafasso-bitacora-acompanante-panel,[role="dialog"]')) return;
+      if (event.target.closest('.cafasso-admin-button,.cafasso-profile-panel,.cafasso-bitacora-panel,.cafasso-bitacora-acompanante-panel,[role="dialog"]')) return;
 
       stopInertia();
       dragging = true;
