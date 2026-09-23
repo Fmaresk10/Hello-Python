@@ -124,10 +124,10 @@
 
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house-panorama .cafasso-admin-monitor{
         left:69.2%!important;
-        top:52.6%!important;
+        top:56.7%!important;
         width:clamp(112px,17.3vh,146px)!important;
         height:clamp(99px,15.3vh,129px)!important;
-        transform:perspective(900px) rotateX(2.5deg) rotateY(-6deg) rotateZ(.6deg)!important;
+        transform:perspective(900px) rotateX(3.5deg) rotateY(-6deg) rotateZ(.35deg)!important;
         z-index:16!important;
       }
 
