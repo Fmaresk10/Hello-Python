@@ -6,239 +6,184 @@
 <title>CAFASSO · Ingreso</title>
 <style>
 :root{
-  --paper:#f1e2bd;
-  --paper-2:#e8d1a2;
-  --paper-ink:#43362a;
-  --paper-muted:#7b654e;
-  --wood:#4a2f1f;
-  --wood-dark:#271a13;
-  --green:#173e3b;
-  --gold:#d8b866;
-  --cream:#fff4d8;
-  --red:#9a3f3f;
+  --deep:#102f33;
+  --deep-2:#0b272a;
+  --paper:#f3e5c6;
+  --paper-edge:#dfc89c;
+  --ink:#3a3028;
+  --muted:#786650;
+  --gold:#d5b566;
+  --green:#31594e;
+  --red:#8f3f3f;
 }
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;background:#132f31}
-body{overflow:hidden;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+html,body{margin:0;width:100%;height:100%;background:var(--deep)}
+body{
+  overflow:hidden;
+  color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
 button,input{font:inherit}
 button{cursor:pointer}
 .hidden{display:none!important}
 
-.login-scene{
+.login-shell{
   position:fixed;
   inset:0;
   overflow:hidden;
-  background:#153234;
-  perspective:1200px;
-}
-.scene-image{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center;
-  transform:scale(1.002);
-  transition:transform .55s ease,filter .55s ease;
-}
-.login-scene:before{
-  content:"";
-  position:absolute;
-  inset:0;
-  z-index:1;
-  pointer-events:none;
+  display:grid;
+  place-items:center;
+  padding:clamp(22px,4vw,54px);
   background:
-    radial-gradient(ellipse 28% 32% at 52% 39%,rgba(255,221,144,.14),transparent 68%),
-    linear-gradient(180deg,rgba(6,24,25,.08),rgba(6,24,25,.02) 48%,rgba(6,21,22,.38));
+    radial-gradient(ellipse 54% 46% at 56% 42%,rgba(223,188,110,.11),transparent 68%),
+    radial-gradient(circle at 18% 12%,rgba(255,255,255,.025),transparent 24%),
+    linear-gradient(145deg,#173b3c 0%,#102f33 48%,#0a2427 100%);
 }
-.login-scene:after{
+.login-shell:before{
   content:"";
   position:absolute;
   inset:-8%;
-  z-index:1;
   pointer-events:none;
-  box-shadow:inset 0 0 130px 55px rgba(4,18,19,.45);
+  box-shadow:inset 0 0 150px 72px rgba(3,17,19,.32);
 }
-
-.wall-plaque{
-  position:absolute;
-  z-index:3;
-  left:4.6%;
-  top:5.2%;
-  width:clamp(155px,16vw,235px);
-  padding:13px 18px 12px;
-  border:1px solid rgba(234,201,134,.34);
-  border-radius:4px;
-  background:
-    linear-gradient(180deg,rgba(72,47,30,.92),rgba(40,27,20,.94)),
-    repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 1px,transparent 1px 9px);
-  box-shadow:0 8px 18px rgba(0,0,0,.28),inset 0 1px rgba(255,239,194,.12),inset 0 0 0 3px rgba(30,18,12,.16);
-  transform:rotate(-1.4deg);
-}
-.wall-plaque img{display:block;width:100%;height:auto;filter:brightness(0) invert(1);opacity:.92}
-.wall-plaque small{
-  display:block;
-  margin-top:6px;
-  color:rgba(255,239,202,.58);
-  font-size:7px;
-  font-weight:850;
-  letter-spacing:.15em;
-  text-align:center;
-  text-transform:uppercase;
-}
-
-.door-glow{
-  position:absolute;
-  z-index:2;
-  left:49.2%;
-  top:28%;
-  width:9%;
-  height:31%;
-  border-radius:48% 48% 4px 4px;
-  background:radial-gradient(ellipse at 50% 40%,rgba(255,229,156,.19),rgba(255,198,92,.04) 58%,transparent 74%);
-  filter:blur(7px);
-  opacity:.8;
-  pointer-events:none;
-  transition:opacity .45s ease,transform .55s ease;
-}
-
-.table{
-  position:absolute;
-  z-index:3;
-  left:-7%;
-  right:-7%;
-  bottom:-12%;
-  height:39%;
-  transform:perspective(900px) rotateX(65deg);
-  transform-origin:50% 100%;
-  background:
-    linear-gradient(90deg,rgba(255,255,255,.025),transparent 12% 88%,rgba(255,255,255,.02)),
-    repeating-linear-gradient(90deg,rgba(255,255,255,.028) 0 2px,transparent 2px 54px),
-    linear-gradient(180deg,#5a3925,#3b261b 68%,#271912);
-  box-shadow:0 -12px 38px rgba(0,0,0,.36),inset 0 8px 18px rgba(255,215,153,.055);
-}
-
-.login-book-wrap{
-  position:absolute;
-  z-index:5;
-  left:50%;
-  bottom:4.2%;
-  width:min(860px,72vw);
-  height:min(505px,61vh);
-  transform:translateX(-50%) perspective(1000px) rotateX(7deg) rotateZ(-.7deg);
-  transform-origin:50% 100%;
-  transition:transform .45s ease,opacity .35s ease;
-}
-.login-book{
+.login-shell:after{
+  content:"";
   position:absolute;
   inset:0;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  filter:drop-shadow(0 28px 24px rgba(0,0,0,.43));
-}
-.book-page{
-  position:relative;
-  min-width:0;
-  overflow:hidden;
-  color:var(--paper-ink);
+  pointer-events:none;
+  opacity:.22;
   background:
-    repeating-linear-gradient(180deg,rgba(112,85,55,.048) 0 1px,transparent 1px 31px),
-    linear-gradient(90deg,#ead5a8,#f5e8c8 16%,#f0dfb9 100%);
-  border:1px solid rgba(92,62,36,.30);
-  box-shadow:inset 0 0 42px rgba(95,64,34,.10);
+    repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 1px,transparent 1px 5px),
+    repeating-linear-gradient(90deg,rgba(0,0,0,.015) 0 1px,transparent 1px 7px);
 }
-.book-page--left{
-  border-radius:10px 2px 3px 15px;
-  padding:clamp(34px,5vh,57px) clamp(32px,4.4vw,54px);
-  background:
-    radial-gradient(circle at 20% 16%,rgba(255,255,255,.22),transparent 32%),
-    repeating-linear-gradient(180deg,rgba(112,85,55,.045) 0 1px,transparent 1px 31px),
-    linear-gradient(90deg,#e6cea0,#f1dfba 90%);
-}
-.book-page--right{
-  border-radius:2px 13px 15px 3px;
-  padding:clamp(30px,4.7vh,48px) clamp(32px,4.2vw,52px);
-  background:
-    radial-gradient(circle at 80% 14%,rgba(255,255,255,.25),transparent 30%),
-    repeating-linear-gradient(180deg,rgba(112,85,55,.045) 0 1px,transparent 1px 31px),
-    linear-gradient(90deg,#f0dfba,#f6e9cc 82%,#e9d4aa);
-}
-.login-book:before{
-  content:"";
+
+.cafasso-mark{
   position:absolute;
   z-index:4;
-  left:50%;
-  top:2.2%;
-  bottom:2.2%;
-  width:2px;
-  transform:translateX(-50%);
-  background:linear-gradient(180deg,transparent,rgba(78,51,29,.24) 8% 92%,transparent);
-  box-shadow:-7px 0 18px rgba(79,51,28,.08),7px 0 18px rgba(255,255,255,.16);
-  pointer-events:none;
+  left:max(22px,calc(env(safe-area-inset-left) + 18px));
+  top:max(22px,calc(env(safe-area-inset-top) + 16px));
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:6px;
 }
-.login-book:after{
-  content:"";
-  position:absolute;
-  z-index:-1;
-  left:2.5%;
-  right:2.5%;
-  bottom:-9px;
-  height:18px;
-  border-radius:0 0 10px 10px;
-  background:linear-gradient(#8f623e,#563922);
-  box-shadow:0 7px 12px rgba(0,0,0,.28);
+.cafasso-mark img{
+  display:block;
+  width:clamp(155px,18vw,235px);
+  height:auto;
+  filter:brightness(0) invert(1);
+  opacity:.92;
 }
-
-.book-kicker{
-  color:#9a7448;
-  font-size:9px;
-  font-weight:900;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-}
-.book-page--left h1{
-  margin:13px 0 15px;
-  color:#3c3026;
-  font:500 clamp(36px,4.4vw,61px)/.98 Georgia,serif;
-  letter-spacing:-.035em;
-}
-.book-page--left p{
-  max-width:330px;
-  margin:0;
-  color:#6f5943;
-  font:15px/1.6 Georgia,serif;
-}
-.book-path{
-  position:absolute;
-  left:clamp(32px,4.4vw,54px);
-  right:clamp(32px,4.4vw,54px);
-  bottom:clamp(31px,4.5vh,46px);
-  padding-top:15px;
-  border-top:1px solid rgba(111,83,50,.18);
-  color:#8b6b48;
+.cafasso-mark span{
+  color:rgba(255,241,207,.43);
   font-size:8px;
   font-weight:850;
-  letter-spacing:.13em;
+  letter-spacing:.15em;
   text-transform:uppercase;
 }
-.book-path span+span:before{content:" · ";color:#b48d58}
 
-.book-page--right h2{
-  margin:7px 0 4px;
-  color:#3d3127;
-  font:500 clamp(28px,3vw,39px)/1 Georgia,serif;
-  letter-spacing:-.025em;
+.login-object{
+  position:relative;
+  z-index:2;
+  width:min(930px,88vw);
+  height:min(620px,78vh);
+  display:grid;
+  place-items:center;
 }
-.book-lead{
-  margin:0 0 18px;
-  color:#7a654f;
-  font:13px/1.45 Georgia,serif;
+.bitacora-prop{
+  position:absolute;
+  left:3%;
+  top:15%;
+  width:min(460px,47vw);
+  aspect-ratio:1.1/1;
+  transform:rotate(-7deg);
+  filter:drop-shadow(0 28px 26px rgba(0,0,0,.42));
+  transition:transform .36s ease,opacity .32s ease;
 }
-.field{margin:12px 0}
+.bitacora-prop img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:contain;
+  object-position:center;
+}
+.bitacora-label{
+  position:absolute;
+  left:9%;
+  bottom:6%;
+  color:rgba(255,239,204,.46);
+  font:italic 13px/1.4 Georgia,serif;
+  transform:rotate(-2deg);
+}
+
+.login-sheet{
+  position:absolute;
+  right:2%;
+  top:7%;
+  width:min(560px,55vw);
+  min-height:500px;
+  padding:48px 52px 42px 68px;
+  border:1px solid rgba(92,63,37,.34);
+  border-radius:5px 14px 16px 6px;
+  color:var(--ink);
+  background:
+    linear-gradient(90deg,rgba(106,75,43,.08) 0 3%,transparent 3% 100%),
+    repeating-linear-gradient(180deg,rgba(120,94,62,.075) 0 1px,transparent 1px 31px),
+    linear-gradient(100deg,#ecd8ae 0%,#f4e6c5 17%,#f6e9cd 78%,#ead5aa 100%);
+  box-shadow:
+    0 30px 70px rgba(0,0,0,.38),
+    inset 18px 0 30px rgba(94,63,36,.10),
+    inset -8px 0 18px rgba(118,84,47,.055);
+  transform:rotate(.8deg);
+  transition:transform .36s ease,opacity .32s ease;
+}
+.login-sheet:before{
+  content:"";
+  position:absolute;
+  left:26px;
+  top:20px;
+  bottom:20px;
+  width:1px;
+  background:rgba(144,74,62,.23);
+}
+.login-sheet:after{
+  content:"";
+  position:absolute;
+  left:8px;
+  right:7px;
+  bottom:-8px;
+  height:9px;
+  border-radius:0 0 6px 6px;
+  background:linear-gradient(180deg,#d4b987,#b89664);
+  box-shadow:0 7px 10px rgba(0,0,0,.18);
+  z-index:-1;
+}
+
+.sheet-kicker{
+  color:#8a6748;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.17em;
+  text-transform:uppercase;
+}
+.login-sheet h1{
+  margin:8px 0 7px;
+  color:#3c3026;
+  font:500 clamp(34px,3.6vw,48px)/1.02 Georgia,serif;
+  letter-spacing:-.03em;
+}
+.sheet-lead{
+  margin:0 0 24px;
+  color:#6a5745;
+  font:14px/1.5 Georgia,serif;
+}
+
+.field{margin:14px 0}
 .field label{
   display:block;
-  margin-bottom:3px;
-  color:#8e6f4e;
+  margin:0 0 2px;
+  color:#8a6748;
   font-size:8px;
   font-weight:900;
   letter-spacing:.13em;
@@ -247,57 +192,64 @@ button{cursor:pointer}
 .field input{
   width:100%;
   min-height:42px;
-  padding:7px 2px 8px;
+  padding:6px 2px 8px;
   border:0;
-  border-bottom:1px solid rgba(87,62,39,.32);
+  border-bottom:1px solid rgba(100,70,43,.32);
   border-radius:0;
-  outline:none;
+  outline:0;
   background:transparent;
   color:#3b3027;
-  caret-color:#6c4d31;
-  font:15px/1.3 Georgia,serif;
+  caret-color:#725033;
+  font:16px/1.35 Georgia,serif;
 }
-.field input::placeholder{color:rgba(91,70,50,.43)}
+.field input::placeholder{color:rgba(93,72,51,.42)}
 .field input:focus{
-  border-bottom-color:#8e653b;
-  box-shadow:0 1px 0 rgba(142,101,59,.18);
+  border-bottom-color:#78552f;
+  box-shadow:0 1px 0 rgba(120,85,47,.16);
 }
 
 #go,#change{
   width:100%;
-  min-height:43px;
-  margin-top:11px;
-  border:1px solid rgba(36,69,62,.46);
+  min-height:44px;
+  margin-top:13px;
+  padding:10px 16px;
+  border:1px solid #84613d;
   border-radius:4px;
-  color:#f8ebcd;
-  background:
-    linear-gradient(180deg,rgba(32,76,68,.96),rgba(22,57,53,.98));
-  box-shadow:0 5px 10px rgba(64,43,24,.14),inset 0 1px rgba(255,255,255,.08);
-  font-family:Georgia,serif;
-  font-weight:700;
+  color:#fff7e7;
+  background:#725033;
+  box-shadow:0 4px 10px rgba(77,51,29,.16);
+  font:700 14px/1 Georgia,serif;
   letter-spacing:.02em;
 }
-#go:hover,#change:hover{filter:brightness(1.04)}
+#go:hover,#change:hover{background:#5e412a}
 #go:disabled,#change:disabled{opacity:.55;cursor:wait}
 
 .message{
   display:none;
-  margin-top:9px;
+  margin-top:10px;
   padding:8px 10px;
   border-radius:3px;
   font:11px/1.45 Georgia,serif;
 }
 .message.show{display:block}
-.message.err{color:#7d3434;background:rgba(170,70,70,.08);border-left:3px solid rgba(145,58,58,.52)}
-.message.ok{color:#356048;background:rgba(69,118,86,.08);border-left:3px solid rgba(57,104,76,.48)}
+.message.err{
+  color:#7d3434;
+  background:rgba(170,70,70,.08);
+  border-left:3px solid rgba(145,58,58,.50);
+}
+.message.ok{
+  color:#356048;
+  background:rgba(69,118,86,.08);
+  border-left:3px solid rgba(57,104,76,.46);
+}
 
 .secure{
   display:flex;
   gap:9px;
   align-items:flex-start;
   margin:12px 0 15px;
-  padding:10px 11px;
-  border:1px solid rgba(111,82,48,.16);
+  padding:9px 10px;
+  border:1px solid rgba(111,82,48,.15);
   background:rgba(255,249,233,.20);
 }
 .secure b{display:block;color:#594633;font:700 12px Georgia,serif}
@@ -305,21 +257,51 @@ button{cursor:pointer}
 
 .session-note{
   display:none;
-  margin-top:11px;
-  padding:9px 10px 10px;
-  border:1px solid rgba(64,96,72,.17);
+  margin-top:12px;
+  padding:9px 10px;
+  border:1px solid rgba(64,96,72,.16);
   background:rgba(219,232,209,.22);
 }
 .session-note.show{display:block}
-.session-note-text{display:flex;align-items:center;gap:7px;color:#48614f;font:11px/1.35 Georgia,serif}
-.session-note-dot{width:6px;height:6px;border-radius:50%;background:#6f9478}
-.session-note-actions{display:flex;gap:8px;align-items:center;margin-top:8px}
+.session-note-text{
+  display:flex;
+  gap:7px;
+  align-items:center;
+  color:#48614f;
+  font:11px/1.35 Georgia,serif;
+}
+.session-note-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#6f9478;
+}
+.session-note-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:8px;
+}
 .session-note-actions button{
-  border:0;background:transparent;color:#405f52;padding:0;
-  font:700 10px Georgia,serif;text-decoration:underline;text-underline-offset:2px;
+  border:0;
+  padding:0;
+  background:transparent;
+  color:#405f52;
+  font:700 10px Georgia,serif;
+  text-decoration:underline;
+  text-underline-offset:2px;
 }
 .session-note-actions #continueSession{
-  padding:6px 9px;border:1px solid rgba(55,91,74,.28);text-decoration:none;background:rgba(255,255,255,.17)
+  padding:6px 9px;
+  border:1px solid rgba(55,91,74,.28);
+  text-decoration:none;
+  background:rgba(255,255,255,.17);
+}
+
+.sheet-signature{
+  position:absolute;
+  right:48px;
+  bottom:24px;
+  color:rgba(106,83,58,.48);
+  font:italic 12px Georgia,serif;
 }
 
 .login-transition{
@@ -331,162 +313,161 @@ button{cursor:pointer}
   opacity:0;
   visibility:hidden;
   pointer-events:none;
-  background:rgba(6,22,23,.12);
-  transition:opacity .4s ease,visibility .4s ease;
+  background:rgba(7,25,27,.82);
+  transition:opacity .32s ease,visibility .32s ease;
 }
 .login-transition__inner{
-  transform:translateY(18px);
-  opacity:0;
   color:#fff1cf;
   text-align:center;
-  text-shadow:0 3px 16px rgba(0,0,0,.4);
-  transition:transform .4s ease,opacity .4s ease;
+  transform:translateY(8px);
+  opacity:0;
+  transition:transform .32s ease,opacity .32s ease;
 }
-.login-transition strong{display:block;font:500 clamp(28px,4.6vw,46px)/1 Georgia,serif}
-.login-transition span{display:block;margin-top:8px;font-size:8px;font-weight:850;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,240,205,.66)}
-.login-scene.entering .login-book-wrap{
-  transform:translateX(-50%) perspective(1000px) rotateX(14deg) translateY(150px) scale(.92);
+.login-transition strong{display:block;font:500 clamp(29px,4.8vw,46px)/1 Georgia,serif}
+.login-transition span{
+  display:block;
+  margin-top:8px;
+  color:rgba(255,240,205,.58);
+  font-size:8px;
+  font-weight:850;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+.login-shell.entering .login-sheet{
+  transform:rotate(.8deg) translateY(90px) scale(.97);
   opacity:0;
 }
-.login-scene.entering .scene-image{transform:scale(1.075);filter:brightness(.88)}
-.login-scene.entering .door-glow{opacity:1;transform:scale(1.25)}
-.login-scene.entering .login-transition{opacity:1;visibility:visible}
-.login-scene.entering .login-transition__inner{opacity:1;transform:none}
+.login-shell.entering .bitacora-prop{
+  transform:rotate(-7deg) translateY(65px) scale(.96);
+  opacity:.18;
+}
+.login-shell.entering .login-transition{opacity:1;visibility:visible}
+.login-shell.entering .login-transition__inner{opacity:1;transform:none}
 
 @media(max-width:760px){
-  body{overflow:hidden}
-  .scene-image{
-    width:auto;
-    min-width:100%;
+  .login-shell{
+    place-items:end center;
+    padding:
+      max(78px,calc(env(safe-area-inset-top) + 66px))
+      12px
+      max(12px,calc(env(safe-area-inset-bottom) + 8px));
+  }
+  .cafasso-mark{left:18px}
+  .cafasso-mark img{width:155px}
+  .cafasso-mark span{display:none}
+  .login-object{
+    width:100%;
     height:100%;
+    max-height:760px;
+    display:block;
+  }
+  .bitacora-prop{
     left:50%;
-    transform:translateX(-50%) scale(1.001);
-    object-fit:cover;
-    object-position:center;
+    top:0;
+    width:min(300px,70vw);
+    height:240px;
+    transform:translateX(-50%) rotate(-5deg);
+    opacity:.92;
   }
-  .login-scene.entering .scene-image{transform:translateX(-50%) scale(1.07)}
-  .wall-plaque{
-    left:18px;
-    top:max(18px,calc(env(safe-area-inset-top) + 12px));
-    width:145px;
-    padding:9px 12px 8px;
+  .bitacora-label{display:none}
+  .login-sheet{
+    left:50%;
+    right:auto;
+    top:auto;
+    bottom:0;
+    width:min(520px,96vw);
+    min-height:440px;
+    padding:36px 27px 25px 43px;
+    transform:translateX(-50%) rotate(.25deg);
   }
-  .wall-plaque small{display:none}
-  .door-glow{left:43%;top:19%;width:23%;height:28%}
-  .table{
-    left:-24%;
-    right:-24%;
-    bottom:-5%;
-    height:43%;
+  .login-sheet:before{left:20px}
+  .login-sheet h1{font-size:34px}
+  .sheet-lead{font-size:13px;margin-bottom:17px}
+  .field{margin:11px 0}
+  .field input{font-size:16px}
+  .sheet-signature{right:26px;bottom:15px;font-size:10px}
+  .login-shell.entering .login-sheet{
+    transform:translateX(-50%) translateY(100px) scale(.97);
   }
-  .login-book-wrap{
-    width:94vw;
-    height:min(465px,61vh);
-    bottom:max(10px,calc(env(safe-area-inset-bottom) + 4px));
-    transform:translateX(-50%) perspective(900px) rotateX(4.5deg) rotateZ(-.3deg);
-  }
-  .login-book{grid-template-columns:1fr}
-  .book-page--left{display:none}
-  .book-page--right{
-    border-radius:8px 14px 14px 8px;
-    padding:33px 25px 24px;
-  }
-  .login-book:before{
-    left:13px;top:4%;bottom:4%;width:1px;transform:none;
-    background:rgba(92,61,35,.18);box-shadow:7px 0 13px rgba(74,50,29,.08);
-  }
-  .login-book:after{left:3%;right:2%}
-  .book-page--right h2{font-size:31px}
-  .book-lead{font-size:12px;margin-bottom:14px}
-  .field{margin:9px 0}
-  .field input{font-size:16px;min-height:39px}
-  #go,#change{min-height:44px}
-  .login-scene.entering .login-book-wrap{
-    transform:translateX(-50%) perspective(900px) rotateX(12deg) translateY(130px) scale(.92);
+  .login-shell.entering .bitacora-prop{
+    transform:translateX(-50%) rotate(-5deg) translateY(50px) scale(.96);
   }
 }
 @media(max-height:650px) and (min-width:761px){
-  .login-book-wrap{height:82vh;bottom:1.5%}
-  .book-page--left,.book-page--right{padding-top:29px;padding-bottom:27px}
+  .login-object{height:86vh}
+  .login-sheet{top:2%;min-height:460px;padding-top:35px}
+  .bitacora-prop{top:9%}
 }
 @media(prefers-reduced-motion:reduce){
-  .login-book-wrap,.scene-image,.door-glow,.login-transition,.login-transition__inner{transition:none!important}
+  .login-sheet,.bitacora-prop,.login-transition,.login-transition__inner{transition:none!important}
 }
 </style>
 </head>
 <body>
-<main class="login-scene" id="loginScene">
-  <img id="sceneImage" class="scene-image" alt="" aria-hidden="true">
-
-  <div class="wall-plaque" aria-hidden="true">
+<main class="login-shell" id="loginShell">
+  <div class="cafasso-mark" aria-hidden="true">
     <img src="./cafasso-logo.svg" alt="">
-    <small>Formación salesiana</small>
+    <span>Formación salesiana</span>
   </div>
 
-  <div class="door-glow" aria-hidden="true"></div>
-  <div class="table" aria-hidden="true"></div>
-
-  <section class="login-book-wrap" aria-label="Ingreso a CAFASSO">
-    <div class="login-book">
-      <div class="book-page book-page--left">
-        <div class="book-kicker">CAFASSO</div>
-        <h1>Bienvenido.</h1>
-        <p>Antes de seguir el camino, dejá tu nombre en este libro y entrá.</p>
-        <div class="book-path" aria-hidden="true">
-          <span>Casa</span><span>Patio</span><span>Escuela</span><span>Parroquia</span>
-        </div>
-      </div>
-
-      <div class="book-page book-page--right">
-        <div class="book-kicker">Libro de ingreso</div>
-        <h2 id="title">Identificate</h2>
-        <p id="lead" class="book-lead">Usá tus credenciales de CAFASSO.</p>
-
-        <div id="loginBox">
-          <div class="field">
-            <label for="email">Correo</label>
-            <input id="email" type="email" autocomplete="username" inputmode="email" placeholder="tu@correo.com">
-          </div>
-          <div class="field">
-            <label for="password">Contraseña</label>
-            <input id="password" type="password" autocomplete="current-password" placeholder="Tu contraseña">
-          </div>
-          <button id="go" type="button">Entrar →</button>
-        </div>
-
-        <div id="changeBox" class="hidden">
-          <div class="secure">
-            <div>✦</div>
-            <div>
-              <b>Elegí tu contraseña definitiva</b>
-              <small>La contraseña temporal dejará de servir cuando completes este paso.</small>
-            </div>
-          </div>
-          <div class="field">
-            <label for="newPassword">Nueva contraseña</label>
-            <input id="newPassword" type="password" autocomplete="new-password" placeholder="Al menos 10 caracteres">
-          </div>
-          <div class="field">
-            <label for="repeatPassword">Repetir contraseña</label>
-            <input id="repeatPassword" type="password" autocomplete="new-password" placeholder="Repetila">
-          </div>
-          <button id="change" type="button">Guardar y entrar →</button>
-        </div>
-
-        <div id="msg" class="message"></div>
-
-        <div id="sessionNote" class="session-note">
-          <div class="session-note-text">
-            <span class="session-note-dot"></span>
-            <span>Ya hay una sesión iniciada en este dispositivo.</span>
-          </div>
-          <div class="session-note-actions">
-            <button id="continueSession" type="button">Continuar</button>
-            <button id="newLogin" type="button">Ingresar de nuevo</button>
-          </div>
-        </div>
-      </div>
+  <section class="login-object" aria-label="Ingreso a CAFASSO">
+    <div class="bitacora-prop" aria-hidden="true">
+      <img src="https://static.wixstatic.com/media/47bf07_20750dc35c6f4678b865413ce34ec1fe~mv2.png" alt="">
     </div>
+    <div class="bitacora-label" aria-hidden="true">Tu camino empieza por identificarte.</div>
+
+    <article class="login-sheet">
+      <div class="sheet-kicker">Ficha de ingreso · CAFASSO</div>
+      <h1 id="title">Bienvenido.</h1>
+      <p id="lead" class="sheet-lead">Identificate para continuar.</p>
+
+      <div id="loginBox">
+        <div class="field">
+          <label for="email">Correo</label>
+          <input id="email" type="email" autocomplete="username" inputmode="email" placeholder="tu@correo.com">
+        </div>
+        <div class="field">
+          <label for="password">Contraseña</label>
+          <input id="password" type="password" autocomplete="current-password" placeholder="Tu contraseña">
+        </div>
+        <button id="go" type="button">Entrar →</button>
+      </div>
+
+      <div id="changeBox" class="hidden">
+        <div class="secure">
+          <div>✦</div>
+          <div>
+            <b>Elegí tu contraseña definitiva</b>
+            <small>La contraseña temporal dejará de servir cuando completes este paso.</small>
+          </div>
+        </div>
+        <div class="field">
+          <label for="newPassword">Nueva contraseña</label>
+          <input id="newPassword" type="password" autocomplete="new-password" placeholder="Al menos 10 caracteres">
+        </div>
+        <div class="field">
+          <label for="repeatPassword">Repetir contraseña</label>
+          <input id="repeatPassword" type="password" autocomplete="new-password" placeholder="Repetila">
+        </div>
+        <button id="change" type="button">Guardar y entrar →</button>
+      </div>
+
+      <div id="msg" class="message"></div>
+
+      <div id="sessionNote" class="session-note">
+        <div class="session-note-text">
+          <span class="session-note-dot"></span>
+          <span>Ya hay una sesión iniciada en este dispositivo.</span>
+        </div>
+        <div class="session-note-actions">
+          <button id="continueSession" type="button">Continuar</button>
+          <button id="newLogin" type="button">Ingresar de nuevo</button>
+        </div>
+      </div>
+
+      <div class="sheet-signature" aria-hidden="true">Casa · Patio · Escuela · Parroquia</div>
+    </article>
   </section>
 
   <div class="login-transition" id="loginTransition" aria-hidden="true">
@@ -499,28 +480,10 @@ button{cursor:pointer}
 
 <script>
 const AUTH_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoAuth';
-const SETTINGS_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoLoginSettings';
-
-const HOUSE_IMAGES={
-  morning:'https://static.wixstatic.com/media/47bf07_a80080c806984cfaaa53b5d16aa89731~mv2.jpg',
-  afternoon:'https://static.wixstatic.com/media/47bf07_9bc5db4bdd144670b58b89d62684b300~mv2.jpg',
-  sunset:'https://static.wixstatic.com/media/47bf07_32fab0f8b4a444808b0f577cf89e2196~mv2.png',
-  night:'https://static.wixstatic.com/media/47bf07_35127a444ffb4f3ab1f669abc21c067d~mv2.jpg'
-};
-
 const $=id=>document.getElementById(id);
 const go=$('go'),change=$('change'),msg=$('msg'),sessionNote=$('sessionNote');
 let pending=null;
 const loginReason=new URLSearchParams(location.search).get('reason');
-
-function currentPeriod(){
-  const hour=new Date().getHours()+new Date().getMinutes()/60;
-  if(hour<7.2)return 'night';
-  if(hour<12.1)return 'morning';
-  if(hour<17.7)return 'afternoon';
-  if(hour<20.0)return 'sunset';
-  return 'night';
-}
 
 function message(text,type){
   msg.textContent=text;
@@ -559,7 +522,7 @@ function clearLocalSession(){
 
 function route(user){
   const role=String(user.role||'Animador').toLowerCase();
-  const scene=$('loginScene');
+  const shell=$('loginShell');
   const title=$('transitionTitle');
   let target='./';
   let copy='Entrando a Casa…';
@@ -573,9 +536,9 @@ function route(user){
   }
 
   title.textContent=copy;
-  scene.classList.add('entering');
+  shell.classList.add('entering');
   $('loginTransition').setAttribute('aria-hidden','false');
-  setTimeout(()=>location.replace(target),500);
+  setTimeout(()=>location.replace(target),420);
 }
 
 async function login(){
@@ -605,7 +568,7 @@ async function login(){
 
     save(j);
     message('Bienvenido/a, '+(j.user.name||'')+'.','ok');
-    setTimeout(()=>route(j.user),160);
+    setTimeout(()=>route(j.user),140);
   }catch(e){
     message(e.message,'err');
   }finally{
@@ -633,33 +596,12 @@ async function changePassword(){
     const j=await api({action:'changePassword',newPassword:a},pending.token);
     save(j);
     message('Contraseña guardada.','ok');
-    setTimeout(()=>route(j.user),160);
+    setTimeout(()=>route(j.user),140);
   }catch(e){
     message(e.message,'err');
   }finally{
     change.disabled=false;
     change.textContent='Guardar y entrar →';
-  }
-}
-
-async function loadScene(){
-  const img=$('sceneImage');
-  const fallback=HOUSE_IMAGES[currentPeriod()]||HOUSE_IMAGES.afternoon;
-
-  const show=url=>{
-    const finalUrl=String(url||'').trim()||fallback;
-    img.onerror=()=>{
-      if(img.src!==fallback)img.src=fallback;
-    };
-    img.src=finalUrl;
-  };
-
-  try{
-    const r=await fetch(SETTINGS_API,{cache:'no-store'});
-    const j=r.ok?await r.json():null;
-    show(j?.imageUrl);
-  }catch(e){
-    show('');
   }
 }
 
@@ -693,8 +635,6 @@ $('repeatPassword').addEventListener('keydown',e=>{if(e.key==='Enter')changePass
     clearLocalSession();
   }
 })();
-
-loadScene();
 </script>
 </body>
 </html>
