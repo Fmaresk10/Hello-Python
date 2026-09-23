@@ -199,6 +199,80 @@
     }else{const b=document.createElement('button');b.id='cafasso-role-preview-btn';b.textContent='👁 Ver como…';b.onclick=open;document.body.appendChild(b)}
   }
 
+  function installGlobalLogout(){
+    if(document.getElementById('cafassoGlobalLogout'))return;
+
+    const style=document.createElement('style');
+    style.id='cafassoGlobalLogoutStyles';
+    style.textContent=`
+      #cafassoGlobalLogout{
+        position:fixed;
+        top:max(14px,calc(env(safe-area-inset-top) + 10px));
+        right:max(14px,calc(env(safe-area-inset-right) + 10px));
+        z-index:10000;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        gap:7px;
+        min-height:38px;
+        padding:9px 12px;
+        border:1px solid rgba(255,255,255,.20);
+        border-radius:999px;
+        background:rgba(15,45,77,.92);
+        color:#fff;
+        box-shadow:0 7px 20px rgba(8,25,43,.24);
+        font:800 11px/1 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+        letter-spacing:.01em;
+        cursor:pointer;
+        -webkit-tap-highlight-color:transparent;
+        backdrop-filter:blur(8px);
+      }
+      #cafassoGlobalLogout:hover{background:#0b2743}
+      #cafassoGlobalLogout:focus-visible{outline:3px solid #F2C94C;outline-offset:3px}
+      #cafassoGlobalLogout .cafasso-global-logout-icon{font-size:14px;line-height:1}
+      html[data-cafasso-preview-role] #cafassoGlobalLogout,
+      html[data-cafasso-exact-preview] #cafassoGlobalLogout{
+        top:max(58px,calc(env(safe-area-inset-top) + 54px));
+      }
+      @media(max-width:680px){
+        #cafassoGlobalLogout{
+          top:max(10px,calc(env(safe-area-inset-top) + 7px));
+          right:max(10px,calc(env(safe-area-inset-right) + 7px));
+          min-height:40px;
+          min-width:40px;
+          padding:9px 10px;
+        }
+        #cafassoGlobalLogout .cafasso-global-logout-label{display:none}
+        html[data-cafasso-preview-role] #cafassoGlobalLogout,
+        html[data-cafasso-exact-preview] #cafassoGlobalLogout{
+          top:max(58px,calc(env(safe-area-inset-top) + 54px));
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    const button=document.createElement('button');
+    button.id='cafassoGlobalLogout';
+    button.type='button';
+    button.setAttribute('aria-label','Cerrar sesión');
+    button.title='Cerrar sesión';
+    button.innerHTML='<span class="cafasso-global-logout-icon" aria-hidden="true">↪</span><span class="cafasso-global-logout-label">Cerrar sesión</span>';
+
+    button.addEventListener('click',()=>{
+      try{
+        sessionStorage.removeItem('cafassoPreviewReturn');
+        sessionStorage.removeItem('cafassoExactPreviewUser');
+      }catch(e){}
+      try{
+        localStorage.removeItem('cafassoSession');
+        localStorage.removeItem('cafassoAuth');
+      }catch(e){}
+      location.replace('./login.html');
+    });
+
+    document.body.appendChild(button);
+  }
+
   function installAdminDashboard(){
     if(page!=='admin.html'||!isAdmin||document.getElementById('cafassoAdminDashboardLoader'))return;
     const s=document.createElement('script');
@@ -213,7 +287,8 @@
   if(document.readyState==='loading'){
     document.addEventListener('DOMContentLoaded',installReadOnly,{once:true});
     document.addEventListener('DOMContentLoaded',installPreviewUI,{once:true});
+    document.addEventListener('DOMContentLoaded',installGlobalLogout,{once:true});
     document.addEventListener('DOMContentLoaded',installAdminDashboard,{once:true});
-  }else{installReadOnly();installPreviewUI();installAdminDashboard()}
+  }else{installReadOnly();installPreviewUI();installGlobalLogout();installAdminDashboard()}
 })();
 // CAFASSO deploy marker: admin-dashboard-loader-v3
