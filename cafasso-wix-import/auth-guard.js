@@ -34,7 +34,7 @@
 
   // CAFASSO es el mundo compartido. El rol define herramientas y permisos, no el acceso al mundo.
 
-  const adminOnly=new Set(['admin.html','animadores.html','grupos.html','grupo.html','asignaciones.html','importar-usuarios.html','animador.html']);
+  const adminOnly=new Set(['admin.html','animadores.html','grupos.html','grupo.html','asignaciones.html','importar-usuarios.html','animador.html','resource-admin.html','parish-songbook-admin.html']);
   const courseStaff=new Set(['formador.html','curso-editor.html','entregas.html','reportes.html']);
   if(adminOnly.has(page)&&!isAdmin){location.replace(isFormador?'./formador.html':'./');return;}
   if(courseStaff.has(page)&&!(isAdmin||isFormador)){location.replace('./');return;}
