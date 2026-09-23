@@ -226,6 +226,7 @@
       const course = item.course, id = item.id, percent = item.percent, done = item.done;
       return `<button class="cafasso-school-course ${done ? 'is-done' : ''}" type="button" data-school-course="${esc(id)}"><span><strong>${esc(course.title || 'Curso')}</strong><small>${done ? 'Camino completado' : percent > 0 ? 'Seguí desde donde quedaste' : 'Un camino nuevo te espera'}</small></span><span class="cafasso-school-course__progress">${Math.round(percent)}%</span></button>`;
     }).join('');
+  }
 
   function findProgress(data, courseId) {
     const userId = String(sessionUser()?._id || sessionUser()?.id || '');
