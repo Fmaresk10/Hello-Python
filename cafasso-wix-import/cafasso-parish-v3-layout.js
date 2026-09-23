@@ -274,8 +274,8 @@
   }
 
   function boot() {
-    ensureStyles();
     if (isMobile()) return;
+    ensureStyles();
     if (!mountDesktopScene()) setTimeout(boot, 80);
   }
 
