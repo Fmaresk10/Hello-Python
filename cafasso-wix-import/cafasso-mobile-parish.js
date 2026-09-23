@@ -154,7 +154,7 @@
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle{
         left:calc(61.0% - .2cm)!important;
         right:auto!important;
-        bottom:54.7%!important;
+        bottom:67.5%!important;
         width:84px!important;
         height:152px!important;
         transform:translateX(-50%) perspective(700px) rotateX(1.6deg) scale(.47)!important;
