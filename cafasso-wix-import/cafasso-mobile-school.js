@@ -14,6 +14,7 @@
     '.cafasso-escuela__image',
     '.cafasso-space-link--escuela-patio[data-space="patio"]',
     '.cafasso-school-board',
+    '.cafasso-formador-school-link',
     '.cafasso-school-resume',
     '.cafasso-corazon-huella',
     '.cafasso-calendar-layer'
@@ -152,6 +153,27 @@
         width:clamp(27px,4.1vh,34px)!important;
         height:clamp(27px,4.1vh,34px)!important;
         font-size:clamp(7px,1vh,9px)!important;
+      }
+
+      /* Formador: acceso integrado en la pantalla física de Escuela. */
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-school-panorama .cafasso-formador-school-link{
+        left:12.1%!important;
+        top:39.8%!important;
+        width:17.2%!important;
+        min-width:0!important;
+        padding:6px 7px!important;
+        gap:4px!important;
+        transform:perspective(900px) rotateY(2deg) rotateZ(-.2deg)!important;
+        z-index:15!important;
+      }
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-school-panorama .cafasso-formador-school-link small{
+        font-size:5.8px!important;
+      }
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-school-panorama .cafasso-formador-school-link span{
+        font-size:9px!important;
+      }
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-school-panorama .cafasso-formador-school-link b{
+        font-size:10px!important;
       }
 
       /* Retomar: recupera la ubicación del escritorio, no la reducción móvil anterior. */
