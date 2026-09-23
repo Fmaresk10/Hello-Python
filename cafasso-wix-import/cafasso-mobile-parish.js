@@ -13,6 +13,7 @@
   const SPATIAL_SELECTORS = [
     '.cafasso-parroquia__image',
     '.cafasso-space-link--parroquia-patio[data-space="patio"]',
+    '.cafasso-role-tool',
     '.cafasso-parish-lectionary',
     '.cafasso-parish-songbook',
     '.cafasso-parish-candle',
