@@ -12,6 +12,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102f33}
 </head>
 <body>
 <iframe id="cafassoWorld" title="CAFASSO" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>
+<script src="./auth-guard.js?v=20260923-2"></script>
 <script src="./cafasso-session-health.js?v=1"></script>
 <script src="./cafasso-user-cloud.js?v=8"></script>
 <script>window.CAFASSO_SPOTIFY_CLIENT_ID='464bbfd0f27d4b1fb743c6767d4a6620';</script>
@@ -37,7 +38,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102f33}
     const url = new URL('./world.html', location.href);
     url.search = location.search;
     ['code','state','error','error_description'].forEach(key => url.searchParams.delete(key));
-    url.searchParams.set('__cafassoBuild', '1078');
+    url.searchParams.set('__cafassoBuild', '1079');
     url.hash = location.hash;
     return url.href;
   };
