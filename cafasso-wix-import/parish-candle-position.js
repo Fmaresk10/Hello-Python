@@ -35,7 +35,7 @@
     @media(max-width:760px){
       html body .cafasso-parroquia .cafasso-parish-candle{
         left:calc(61.0% - .2cm)!important;
-        bottom:54.7%!important;
+        bottom:67.5%!important;
         width:84px!important;
         height:152px!important;
         transform:translateX(-50%) perspective(700px) rotateX(1.4deg) scale(.47)!important;
