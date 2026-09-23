@@ -93,23 +93,42 @@
     }
   }
 
-  const isAdmin = (() => {
-    const datasetRole = String(document.documentElement.dataset.cafassoRole || '').toLowerCase();
-    if (datasetRole.includes('admin')) return true;
+  const worldRole = (() => {
+    let realRole = 'animador';
     try {
       const session = JSON.parse(localStorage.getItem('cafassoSession') || '{}');
-      return String(session?.user?.role || '').toLowerCase().includes('admin');
-    } catch (error) {
-      return false;
-    }
+      realRole = String(session?.user?.role || 'Animador').toLowerCase();
+    } catch (error) {}
+    const requested = String(new URLSearchParams(location.search).get('previewRole') || '').toLowerCase();
+    const previewUser = String(new URLSearchParams(location.search).get('previewUser') || '').trim();
+    let effectiveRole = realRole;
+    const realAdmin = realRole.includes('admin');
+    const realFormador = realRole.includes('formador');
+    if ((realAdmin || realFormador) && requested === 'animador') effectiveRole = 'animador';
+    else if ((realAdmin || realFormador) && requested === 'formador') effectiveRole = 'formador';
+    else if (realAdmin && requested === 'admin') effectiveRole = 'admin';
+    if (realAdmin && previewUser) effectiveRole = 'animador';
+    document.documentElement.dataset.cafassoRole = realAdmin ? 'admin' : realFormador ? 'formador' : 'animador';
+    document.documentElement.dataset.cafassoWorldRole = effectiveRole.includes('admin') ? 'admin' : effectiveRole.includes('formador') ? 'formador' : 'animador';
+    return {
+      realRole,
+      effectiveRole,
+      isAdmin:effectiveRole.includes('admin'),
+      isFormador:effectiveRole.includes('formador'),
+      isAnimator:!effectiveRole.includes('admin')&&!effectiveRole.includes('formador')
+    };
   })();
+
+  const isAdmin = worldRole.isAdmin;
+  const isFormador = worldRole.isFormador;
+  window.CafassoWorldRole = worldRole;
 
   if (space === 'patio') {
     app.innerHTML = '<main class="cafasso-patio"><img class="cafasso-patio__image" src="${PATIO_BG}" alt="Patio salesiano CAFASSO"><button class="cafasso-space-link cafasso-space-link--patio-home" data-space="house" type="button">Casa</button><button class="cafasso-space-link cafasso-space-link--patio-escuela" data-space="escuela" type="button">Escuela</button><button class="cafasso-space-link cafasso-space-link--patio-parroquia" data-space="parroquia" type="button">Parroquia</button></main>';
   } else if (space === 'parroquia') {
     app.innerHTML = `<main class="cafasso-parroquia"><img class="cafasso-parroquia__image" src="${PARROQUIA_BG}" alt="Espacio Parroquia de CAFASSO"><button class="cafasso-space-link cafasso-space-link--parroquia-patio" data-space="patio" type="button">Patio</button></main>`;
   } else if (space === 'escuela') {
-    app.innerHTML = `<main class="cafasso-escuela"><img class="cafasso-escuela__image" src="${ESCUELA_BG}" alt="Espacio Escuela de CAFASSO"><button class="cafasso-space-link cafasso-space-link--escuela-patio" data-space="patio" type="button">Patio</button></main>`;
+    app.innerHTML = `<main class="cafasso-escuela"><img class="cafasso-escuela__image" src="${ESCUELA_BG}" alt="Espacio Escuela de CAFASSO"><button class="cafasso-space-link cafasso-space-link--escuela-patio" data-space="patio" type="button">Patio</button>${isFormador ? '<a class="cafasso-formador-school-link" href="./formador.html" aria-label="Abrir Mesa del Formador"><small>FORMADOR</small><span>Mesa de trabajo</span><b>→</b></a>' : ''}</main>`;
   } else if (space === 'recursos') {
     app.innerHTML = `
       <main class="cafasso-recursos">
