@@ -398,9 +398,13 @@
       return anchor;
     }
 
+    function isLinearCoursePlayer() {
+      return document.documentElement.dataset.cafassoPlayer === '1' &&
+        !document.body.classList.contains('cafasso-mission-mode');
+    }
+
     function needsStandaloneProfile() {
-      return document.documentElement.dataset.cafassoPlayer === '1' ||
-        document.body.classList.contains('cafasso-school-course-open') ||
+      return document.body.classList.contains('cafasso-school-course-open') ||
         document.body.classList.contains('cafasso-mission-mode');
     }
 
@@ -413,6 +417,16 @@
       }
 
       anchor.classList.remove('is-active');
+
+      // En un módulo lineal el contenido tiene prioridad absoluta.
+      // La ficha permanece disponible en Escuela y en Misiones, pero no
+      // participa del reproductor lineal para evitar aperturas involuntarias.
+      if (isLinearCoursePlayer()) {
+        panel.hidden = true;
+        if (sheet.parentNode !== anchor) anchor.appendChild(sheet);
+        return false;
+      }
+
       const hud = document.getElementById('cafassoGlobalCounters');
       if (!hud) return false;
       if (sheet.parentNode !== hud) hud.appendChild(sheet);
@@ -479,7 +493,13 @@
       button.addEventListener('click', () => removePhoto(button));
     }
 
-    sheet.addEventListener('click', () => {
+    sheet.addEventListener('click', event => {
+      if (isLinearCoursePlayer()) {
+        event.preventDefault();
+        event.stopPropagation();
+        panel.hidden = true;
+        return;
+      }
       refreshJourney();
       panel.hidden = false;
       panel.querySelector('[data-house-profile-close]')?.focus();
