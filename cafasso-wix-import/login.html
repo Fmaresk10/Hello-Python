@@ -413,7 +413,9 @@ button{cursor:pointer}
   */
   .login-scene-stage{
     left:34%;
-    top:50%;
+    top:49%;
+    width:145.75svh;
+    height:82svh;
   }
 
   #loginBox .field input{
@@ -481,11 +483,11 @@ button{cursor:pointer}
     width:24.1%;
   }
 }
-@supports(height:100svh){
+@supports not (height:100svh){
   @media(max-width:760px) and (orientation:portrait){
     .login-scene-stage{
-      width:max(100vw,177.68svh);
-      height:max(100svh,56.28vw);
+      width:145.75vh;
+      height:82vh;
     }
   }
 }
