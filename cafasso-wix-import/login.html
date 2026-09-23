@@ -114,14 +114,14 @@ button{cursor:pointer}
 }
 #loginBox .field{
   position:absolute;
-  left:40.15%;
-  width:26.10%;
-  height:6.10%;
+  left:41.567%;
+  width:25.299%;
+  height:6.376%;
   margin:0;
   pointer-events:auto;
 }
-#loginBox .field:nth-child(1){top:54.75%}
-#loginBox .field:nth-child(2){top:62.70%}
+#loginBox .field:nth-child(1){top:55.367%}
+#loginBox .field:nth-child(2){top:63.337%}
 
 .field label{
   position:absolute;
@@ -135,29 +135,26 @@ button{cursor:pointer}
   border:0;
 }
 #loginBox .field input{
-  width:100%;
-  height:100%;
+  width:calc(100% - .26cqw);
+  height:calc(100% - .26cqw);
   min-height:0;
-  margin:0;
+  margin:.13cqw;
   padding:0 1.05cqw;
-  border:1px solid rgba(232,207,164,.22);
-  border-radius:.62cqw;
+  border:0;
+  border-radius:.66cqw;
   outline:0;
-  background:rgba(55,31,19,.92);
+  background:rgba(49,28,18,.96);
   color:#f2e1c0;
   caret-color:#f2e1c0;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.04),
-    0 .24cqw .55cqw rgba(36,18,9,.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
   font:500 .93cqw/1 Inter,system-ui,sans-serif;
   letter-spacing:.005em;
 }
 #loginBox .field input::placeholder{color:rgba(242,225,192,.52)}
 #loginBox .field input:focus{
-  border-color:rgba(246,221,171,.72);
   box-shadow:
-    0 0 0 .18cqw rgba(229,199,143,.13),
-    inset 0 1px 0 rgba(255,255,255,.08);
+    0 0 0 .13cqw rgba(229,199,143,.12),
+    inset 0 1px 0 rgba(255,255,255,.04);
 }
 #loginBox .field input:-webkit-autofill,
 #loginBox .field input:-webkit-autofill:hover,
@@ -166,46 +163,43 @@ button{cursor:pointer}
   -webkit-text-fill-color:#f2e1c0!important;
   caret-color:#f2e1c0!important;
   -webkit-box-shadow:
-    0 0 0 1000px rgb(55,31,19) inset,
-    0 .24cqw .55cqw rgba(36,18,9,.12)!important;
+    0 0 0 1000px rgb(49,28,18) inset!important;
   box-shadow:
-    0 0 0 1000px rgb(55,31,19) inset,
-    0 .24cqw .55cqw rgba(36,18,9,.12)!important;
-  border-color:rgba(232,207,164,.22)!important;
+    0 0 0 1000px rgb(49,28,18) inset!important;
+  border-color:transparent!important;
   transition:background-color 9999s ease-out 0s!important;
 }
 
 #go{
   position:absolute;
-  left:40.15%;
-  top:71.28%;
-  width:26.10%;
-  height:7.35%;
+  left:41.507%;
+  top:72.051%;
+  width:25.359%;
+  height:7.970%;
   min-height:0;
   margin:0;
-  padding:0 1.1cqw;
-  border:1px solid rgba(236,218,166,.34);
-  border-radius:.70cqw;
-  color:#fff3d6;
-  background:linear-gradient(180deg,rgba(111,121,74,.96),rgba(77,88,54,.98));
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.12),
-    0 .38cqw .90cqw rgba(31,26,13,.20);
+  padding:0;
+  border:0;
+  border-radius:.8cqw;
+  color:transparent;
+  background:transparent;
+  box-shadow:none;
   font:600 1.34cqw/1 Georgia,serif;
   letter-spacing:.01em;
   pointer-events:auto;
   transition:transform .15s ease,filter .15s ease;
 }
-#go:hover{filter:brightness(1.08);transform:translateY(-1px)}
-#go:active{transform:translateY(1px)}
-#go:disabled{opacity:.65;cursor:wait}
+#go:hover{background:rgba(255,255,255,.035);filter:brightness(1.03)}
+#go:active{background:rgba(0,0,0,.045)}
+#go:focus-visible{outline:.13cqw solid rgba(255,239,199,.52);outline-offset:.08cqw}
+#go:disabled{opacity:.58;cursor:wait}
 
 .message{
   position:absolute;
   z-index:6;
-  left:40.15%;
-  top:79.45%;
-  width:26.10%;
+  left:41.507%;
+  top:80.65%;
+  width:25.359%;
   display:none;
   margin:0;
   padding:.55cqw .7cqw;
@@ -229,9 +223,9 @@ button{cursor:pointer}
 .session-note{
   position:absolute;
   z-index:6;
-  left:40.15%;
-  top:80.9%;
-  width:26.10%;
+  left:41.507%;
+  top:81.15%;
+  width:25.359%;
   display:none;
   padding:.55cqw .7cqw;
   border:1px solid rgba(233,216,176,.28);
