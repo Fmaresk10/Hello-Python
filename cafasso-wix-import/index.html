@@ -4,10 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <title>CAFASSO</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#102f33">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="CAFASSO">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="CAFASSO">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="./cafasso-icon-192.png">
+<link rel="icon" href="./cafasso-app-icon.svg" type="image/svg+xml">
+<script defer src="./pwa-register.js?v=20260923-1"></script>
 <style>
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102f33}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102f33;overscroll-behavior:none}
 *{box-sizing:border-box}
 #cafassoWorld{position:fixed;left:0;top:0;width:100vw;height:var(--cafasso-shell-vh,100dvh);border:0;background:#102f33;display:block}
+html[data-cafasso-standalone="true"] #cafassoWorld{
+  left:env(safe-area-inset-left);
+  top:env(safe-area-inset-top);
+  width:calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right));
+  height:calc(var(--cafasso-shell-vh,100dvh) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+}
 </style>
 </head>
 <body>

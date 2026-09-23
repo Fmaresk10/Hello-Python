@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102f33">
+<title>CAFASSO · Sin conexión</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#102f33;color:#fff}
+body{min-height:100svh;display:grid;place-items:center;padding:calc(26px + env(safe-area-inset-top)) 24px calc(26px + env(safe-area-inset-bottom));font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+main{width:min(430px,100%);text-align:center}
+img{width:92px;height:110px;object-fit:contain;margin-bottom:20px}
+h1{font:700 34px/1.05 Georgia,serif;margin:0 0 11px}
+p{margin:0 auto 22px;color:rgba(255,255,255,.72);line-height:1.55;max-width:340px}
+button{border:0;border-radius:14px;padding:13px 18px;background:#F2C94C;color:#0F2D4D;font:800 14px Inter,system-ui;cursor:pointer}
+small{display:block;margin-top:20px;color:rgba(255,255,255,.44);font-size:11px}
+</style>
+</head>
+<body>
+<main>
+  <img src="./cafasso-mark.svg" alt="CAFASSO">
+  <h1>Seguimos caminando.</h1>
+  <p>Ahora mismo no hay conexión. Cuando vuelva internet, CAFASSO puede continuar desde donde estabas.</p>
+  <button type="button" onclick="location.reload()">Volver a intentar</button>
+  <small>CAFASSO · Formación salesiana</small>
+</main>
+</body>
+</html>

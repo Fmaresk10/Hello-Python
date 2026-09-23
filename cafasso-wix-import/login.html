@@ -4,6 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>CAFASSO · Ingreso</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#102f33">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="CAFASSO">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="CAFASSO">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="./cafasso-icon-192.png">
+<link rel="icon" href="./cafasso-app-icon.svg" type="image/svg+xml">
+<script defer src="./pwa-register.js?v=20260923-1" data-install-ui="off"></script>
 <style>
 :root{
   --deep:#102f33;
@@ -17,6 +27,7 @@
 html,body{margin:0;width:100%;height:100%;background:#17271f}
 body{
   overflow:hidden;
+  overscroll-behavior:none;
   color:var(--ink);
   font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
   -webkit-font-smoothing:antialiased;

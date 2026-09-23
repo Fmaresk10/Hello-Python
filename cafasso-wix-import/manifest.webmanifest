@@ -1,0 +1,53 @@
+{
+  "id": "./",
+  "name": "CAFASSO",
+  "short_name": "CAFASSO",
+  "description": "Plataforma de formación y acompañamiento pastoral salesiano.",
+  "lang": "es-UY",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#102f33",
+  "theme_color": "#102f33",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "./cafasso-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./cafasso-app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./cafasso-app-icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Casa",
+      "short_name": "Casa",
+      "url": "./"
+    },
+    {
+      "name": "Escuela",
+      "short_name": "Escuela",
+      "url": "./?space=escuela"
+    },
+    {
+      "name": "Parroquia",
+      "short_name": "Parroquia",
+      "url": "./?space=parroquia"
+    }
+  ]
+}
