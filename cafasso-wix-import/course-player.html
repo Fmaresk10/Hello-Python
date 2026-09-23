@@ -59,6 +59,25 @@ html[data-cafasso-player="1"] .shell{display:block!important;min-height:100vh!im
 html[data-cafasso-player="1"] #cafassoWorldReturn{display:none!important}
 html[data-cafasso-player="1"] main{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
 html[data-cafasso-player="1"] .module-detail{width:100%!important;max-width:none!important;padding:0!important}
+html[data-cafasso-player="1"] body.cafasso-linear-module-mode{background:#102f35!important}
+html[data-cafasso-player="1"] body.cafasso-linear-module-mode .module-detail{
+ box-sizing:border-box!important;max-width:980px!important;margin:0 auto!important;
+ padding:clamp(74px,9vh,104px) clamp(18px,4vw,42px) 56px!important
+}
+html[data-cafasso-player="1"] body.cafasso-linear-module-mode .module-progress{
+ position:relative;background:rgba(255,253,249,.98);box-shadow:0 14px 34px rgba(0,0,0,.18)
+}
+html[data-cafasso-player="1"] body.cafasso-linear-module-mode article.block{
+ box-shadow:0 10px 28px rgba(0,0,0,.14)
+}
+html[data-cafasso-player="1"] body.cafasso-linear-module-mode .complete-box{
+ box-shadow:0 10px 28px rgba(0,0,0,.12)
+}
+@media(max-width:680px){
+ html[data-cafasso-player="1"] body.cafasso-linear-module-mode .module-detail{
+  padding:66px 12px 34px!important
+ }
+}
 html[data-cafasso-player="1"] body.cafasso-mission-mode{min-height:100vh!important;min-height:100dvh!important;padding:0!important;background:#102f35!important}
 html[data-cafasso-player="1"] body.cafasso-mission-mode .cafasso-mission-shell{
  box-sizing:border-box!important;width:100%!important;min-height:100vh!important;min-height:100dvh!important;
@@ -150,6 +169,11 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     if(window.CafassoMobileFluid?.active)window.CafassoMobileFluid.navigate(target.toString(),{replace:true});
     else location.replace(target.toString());
   }
+  function moduleUsesMissions(module){
+    var settings=module&&module.settings&&typeof module.settings==='object'?module.settings:{};
+    if(settings.experienceMode==='linear')return false;
+    return settings.experienceMode==='missions'||(Array.isArray(settings.missions)&&settings.missions.length>0);
+  }
   function navigate(view,replace){
     if(view!=='modulo'){
       returnToSchool();
@@ -158,9 +182,13 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     var url=location.pathname+location.search+'#modulo';
     if(replace)history.replaceState({view:'modulo'},'',url);
     else if(location.hash!=='#modulo')history.pushState({view:'modulo'},'',url);
-    document.body.classList.add('cafasso-mission-mode');
-    document.getElementById('app')?.classList.remove('cafasso-boot-ready');
+    var missionMode=moduleUsesMissions(selectedModule);
+    document.body.classList.toggle('cafasso-mission-mode',missionMode);
+    document.body.classList.toggle('cafasso-linear-module-mode',!missionMode);
+    var app=document.getElementById('app');
+    if(missionMode)app?.classList.remove('cafasso-boot-ready');
     render('modulo');
+    if(!missionMode)app?.classList.add('cafasso-boot-ready');
   }
   window.CafassoNavigate=navigate;
   function render(view){
@@ -273,6 +301,9 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
   function renderModule(){
     var c=selectedCourse,m=selectedModule,main=document.getElementById('main');
     if(!c||!m||!main){returnToSchool();return;}
+    var missionMode=moduleUsesMissions(m);
+    document.body.classList.toggle('cafasso-mission-mode',missionMode);
+    document.body.classList.toggle('cafasso-linear-module-mode',!missionMode);
     var doneIds=completedModules(c._id);
     var done=doneIds.indexOf(m._id)!==-1;
     var status=requiredStatus();
@@ -309,6 +340,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
       });
     });
     publishExperience('module');
+    if(!missionMode)document.getElementById('app')?.classList.add('cafasso-boot-ready');
   }
 
   function toggleReview(blockId){var work=readModuleWork();work.done=work.done||{};work.done[blockId]=!work.done[blockId];saveModuleWork(work);renderModule();if(work.done[blockId]){try{window.dispatchEvent(new CustomEvent('cafasso:block-completed',{detail:{blockId:blockId}}));}catch(e){}}}
@@ -371,10 +403,10 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
 <script src="./cafasso-global-counters.js?v=2"></script>
 <script src="./cafasso-almitas-core.js?v=1"></script>
 <script src="./cafasso-levels.js?v=4"></script>
-<script src="./house-profile.js?v=8"></script>
+<script src="./house-profile.js?v=9"></script>
 <script src="./house-profile-progress.js?v=5"></script>
 <script src="./cafasso-huellas-v2.js?v=3"></script>
 <script src="./cafasso-huella-rewards-v2.js?v=2"></script>
-<script src="./gamified-course.js?v=20260922-1"></script>
+<script src="./gamified-course.js?v=20260923-2"></script>
 </body>
 </html>
