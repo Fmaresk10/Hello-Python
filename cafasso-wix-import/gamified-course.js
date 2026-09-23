@@ -59,7 +59,7 @@
       .cafasso-ruah-inline{display:flex;align-items:center;gap:9px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(244,216,137,.26);color:#F4D889;font-size:11px;position:relative;z-index:1}
       .cafasso-ruah-inline b{font-size:12px;color:#FFF9E8}
       .cafasso-mission-almitas{
-        position:fixed;z-index:2147483290;right:max(68px,calc(env(safe-area-inset-right) + 68px));top:max(16px,env(safe-area-inset-top));
+        position:fixed;z-index:2147483290;left:max(18px,calc(env(safe-area-inset-left) + 14px));right:auto;top:auto;bottom:max(72px,calc(env(safe-area-inset-bottom) + 72px));
         display:grid;grid-template-columns:28px auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;
         min-width:118px;padding:7px 11px 7px 8px;border:1px solid rgba(244,216,137,.46);border-radius:999px;
         background:linear-gradient(135deg,rgba(8,35,39,.88),rgba(24,62,55,.84));backdrop-filter:blur(10px);
@@ -71,7 +71,7 @@
       .cafasso-mission-almitas__status{grid-column:2;display:block;max-width:150px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#cfe0d3;font:700 8px/1.2 Inter,system-ui,sans-serif}
       .cafasso-mission-almitas.is-pending .cafasso-mission-almitas__status{color:#f4d889}
       .cafasso-mission-almitas__delta{
-        position:absolute;right:8px;top:calc(100% + 7px);padding:6px 9px;border:1px solid rgba(255,232,163,.7);border-radius:999px;
+        position:absolute;left:8px;right:auto;top:auto;bottom:calc(100% + 7px);padding:6px 9px;border:1px solid rgba(255,232,163,.7);border-radius:999px;
         background:#f1c85b;color:#17302f;font:900 11px/1 Inter,system-ui,sans-serif;box-shadow:0 7px 18px rgba(0,0,0,.28);
         animation:cafassoAlmitasGain 1.7s cubic-bezier(.2,.8,.2,1) both
       }
