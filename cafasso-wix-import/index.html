@@ -18,16 +18,39 @@
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102f33;overscroll-behavior:none}
 *{box-sizing:border-box}
-#cafassoWorld{position:fixed;left:0;top:0;width:100vw;height:var(--cafasso-shell-vh,100dvh);border:0;background:#102f33;display:block}
-html[data-cafasso-standalone="true"] #cafassoWorld{
-  left:env(safe-area-inset-left);
-  top:env(safe-area-inset-top);
-  width:calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right));
-  height:calc(var(--cafasso-shell-vh,100dvh) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+#cafassoWorld{position:fixed;inset:0;width:100vw;height:var(--cafasso-shell-vh,100dvh);border:0;background:#102f33;display:block}
+#cafassoLaunch{
+  display:none;position:fixed;inset:0;z-index:2147483500;place-items:center;
+  padding:max(24px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));
+  background:
+    radial-gradient(circle at 50% 34%,rgba(242,201,76,.10),transparent 30%),
+    #102f33;
+  color:#fff;text-align:center;opacity:1;visibility:visible;
+  transition:opacity .28s ease,visibility .28s ease
+}
+#cafassoLaunch img{width:78px;height:94px;object-fit:contain;filter:drop-shadow(0 12px 24px rgba(0,0,0,.16))}
+#cafassoLaunch strong{display:block;margin-top:15px;font:700 28px/1 Georgia,serif;letter-spacing:.02em}
+#cafassoLaunch small{display:block;margin-top:7px;color:rgba(255,255,255,.55);font:800 9px/1.2 Inter,system-ui;letter-spacing:.16em;text-transform:uppercase}
+#cafassoNetworkState{
+  position:fixed;z-index:2147483450;left:50%;top:max(10px,calc(env(safe-area-inset-top) + 8px));
+  transform:translate(-50%,-12px);opacity:0;pointer-events:none;
+  padding:8px 11px;border:1px solid rgba(255,255,255,.14);border-radius:999px;
+  background:rgba(50,55,51,.92);color:#fff;font:800 10px/1 Inter,system-ui;
+  box-shadow:0 7px 20px rgba(0,0,0,.18);transition:opacity .2s ease,transform .2s ease
+}
+html.cafasso-offline #cafassoNetworkState{opacity:1;transform:translate(-50%,0)}
+@media(display-mode:standalone){
+  #cafassoLaunch{display:grid}
+}
+html.cafasso-app-ready #cafassoLaunch{opacity:0;visibility:hidden;pointer-events:none}
+@media(prefers-reduced-motion:reduce){
+  #cafassoLaunch,#cafassoNetworkState{transition:none!important}
 }
 </style>
 </head>
 <body>
+<div id="cafassoLaunch" aria-hidden="true"><div><img src="./cafasso-mark.svg" alt=""><strong>CAFASSO</strong><small>Caminamos juntos</small></div></div>
+<div id="cafassoNetworkState" role="status" aria-live="polite">Sin conexión · trabajando con lo disponible</div>
 <iframe id="cafassoWorld" title="CAFASSO" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>
 <script src="./auth-guard.js?v=20260923-3"></script>
 <script src="./cafasso-session-health.js?v=1"></script>
@@ -38,53 +61,72 @@ html[data-cafasso-standalone="true"] #cafassoWorld{
 <script>
 (() => {
   const root=document.documentElement;
+  const frame=document.getElementById('cafassoWorld');
+  if(!frame)return;
+
   const syncViewport=()=>{
     const vv=window.visualViewport;
     const h=Math.max(320,Math.round(vv?.height||window.innerHeight||root.clientHeight||320));
     root.style.setProperty('--cafasso-shell-vh',h+'px');
   };
+  const syncNetwork=()=>root.classList.toggle('cafasso-offline',navigator.onLine===false);
+  const markReady=()=>root.classList.add('cafasso-app-ready');
+
   syncViewport();
+  syncNetwork();
+  history.replaceState({cafassoWorld:true},'',location.href);
+
   window.addEventListener('resize',syncViewport,{passive:true});
   window.addEventListener('orientationchange',syncViewport,{passive:true});
   window.visualViewport?.addEventListener('resize',syncViewport,{passive:true});
+  window.addEventListener('online',syncNetwork,{passive:true});
+  window.addEventListener('offline',syncNetwork,{passive:true});
 
-  const frame = document.getElementById('cafassoWorld');
-  if (!frame) return;
-
-  const worldUrl = () => {
-    const url = new URL('./world.html', location.href);
-    url.search = location.search;
-    ['code','state','error','error_description'].forEach(key => url.searchParams.delete(key));
-    url.searchParams.set('__cafassoBuild', '1106');
-    url.hash = location.hash;
+  const worldUrl=()=>{
+    const url=new URL('./world.html',location.href);
+    url.search=location.search;
+    ['code','state','error','error_description'].forEach(key=>url.searchParams.delete(key));
+    url.searchParams.set('__cafassoBuild','1107');
+    url.hash=location.hash;
     return url.href;
   };
 
-  let syncingFromFrame = false;
   Promise.resolve(window.CafassoUserCloud?.ready)
-    .catch(() => null)
-    .finally(() => { frame.src = worldUrl(); });
+    .catch(()=>null)
+    .finally(()=>{frame.src=worldUrl()});
 
-  window.addEventListener('message', event => {
-    if (event.origin !== location.origin) return;
-    const data = event.data || {};
-    if (data.type !== 'cafasso-world-location') return;
-    const next = new URL(location.href);
-    next.search = data.search || '';
-    next.hash = data.hash || '';
-    if (next.href === location.href) return;
-    syncingFromFrame = true;
-    history.replaceState({ cafassoWorld:true }, '', next.href);
-    queueMicrotask(() => { syncingFromFrame = false; });
+  frame.addEventListener('load',()=>{
+    try{
+      const doc=frame.contentDocument;
+      doc?.addEventListener('click',event=>{
+        if(!root.matches('[data-cafasso-standalone="true"]'))return;
+        const link=event.target instanceof Element?event.target.closest('a[href]'):null;
+        if(!link)return;
+        const url=new URL(link.href,location.href);
+        if(url.origin===location.origin&&link.target==='_blank')link.target='_top';
+      },true);
+    }catch(error){}
+    setTimeout(markReady,90);
+  });
+  setTimeout(markReady,2600);
+
+  window.addEventListener('message',event=>{
+    if(event.origin!==location.origin)return;
+    const data=event.data||{};
+    if(data.type!=='cafasso-world-location')return;
+    const next=new URL(location.href);
+    next.search=data.search||'';
+    next.hash=data.hash||'';
+    if(next.href===location.href)return;
+    history.pushState({cafassoWorld:true},'',next.href);
   });
 
-  window.addEventListener('popstate', () => {
-    if (syncingFromFrame) return;
-    const target = worldUrl();
-    try {
-      if (frame.contentWindow?.location?.href !== target) frame.src = target;
-    } catch (error) {
-      frame.src = target;
+  window.addEventListener('popstate',()=>{
+    const target=worldUrl();
+    try{
+      if(frame.contentWindow?.location?.href!==target)frame.src=target;
+    }catch(error){
+      frame.src=target;
     }
   });
 })();
