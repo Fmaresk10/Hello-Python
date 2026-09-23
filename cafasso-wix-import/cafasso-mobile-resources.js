@@ -13,6 +13,7 @@
   const SPATIAL_SELECTORS = [
     '.cafasso-recursos__image',
     '.cafasso-space-link--recursos-home[data-space="house"]',
+    '.cafasso-role-tool',
     '.cafasso-recursos__shelf'
   ];
 
