@@ -42,7 +42,7 @@
     if (!desktopScene || isMobile()) return;
     const viewport = viewportSize();
     const base = referenceSize();
-    const scale = Math.min(viewport.width / base.width, viewport.height / base.height);
+    const scale = Math.max(viewport.width / base.width, viewport.height / base.height);
     const renderedWidth = base.width * scale;
     const renderedHeight = base.height * scale;
     desktopScene.style.setProperty('--cafasso-parish-base-w', base.width + 'px');
