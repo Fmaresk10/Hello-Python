@@ -32,11 +32,7 @@
   const exactAnimatorPreview=isAdmin&&!!requestedPreviewUser;
   if(staffAnimatorPreview)document.documentElement.dataset.cafassoPreviewRole='animador';
 
-  // Cada rol tiene su propia casa. Admin/Formador solo ven la home de Animador mediante "Ver como…".
-  if(page==='index.html'&&!staffAnimatorPreview&&!exactAnimatorPreview){
-    if(isAdmin){location.replace('./admin.html');return;}
-    if(isFormador){location.replace('./formador.html');return;}
-  }
+  // CAFASSO es el mundo compartido. El rol define herramientas y permisos, no el acceso al mundo.
 
   const adminOnly=new Set(['admin.html','animadores.html','grupos.html','grupo.html','asignaciones.html','importar-usuarios.html','animador.html']);
   const courseStaff=new Set(['formador.html','curso-editor.html','entregas.html','reportes.html']);
