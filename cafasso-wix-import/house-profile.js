@@ -60,7 +60,12 @@
       }
       body.cafasso-mission-mode .cafasso-profile-global-anchor,
       html[data-cafasso-player="1"] .cafasso-profile-global-anchor{
-        left:auto;right:max(16px,env(safe-area-inset-right));top:max(16px,env(safe-area-inset-top))
+        left:max(18px,calc(env(safe-area-inset-left) + 14px));right:auto;top:auto;
+        bottom:max(18px,calc(env(safe-area-inset-bottom) + 14px))
+      }
+      body.cafasso-mission-mode .cafasso-profile-global-anchor .cafasso-profile-hud-button__label,
+      html[data-cafasso-player="1"] .cafasso-profile-global-anchor .cafasso-profile-hud-button__label{
+        top:auto;bottom:calc(100% + 7px)
       }
       .cafasso-profile-hud-button{
         position:relative;display:grid;place-items:center;align-self:center;flex:0 0 auto;
@@ -102,7 +107,8 @@
         }
         body.cafasso-mission-mode .cafasso-profile-global-anchor,
         html[data-cafasso-player="1"] .cafasso-profile-global-anchor{
-          right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top))
+          left:max(12px,calc(env(safe-area-inset-left) + 8px));right:auto;top:auto;
+          bottom:max(12px,calc(env(safe-area-inset-bottom) + 8px))
         }
       }
 
