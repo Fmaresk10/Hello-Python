@@ -429,9 +429,11 @@
     patchRenders();
     observeLists();
     refreshWorkspace();
-    setTimeout(()=>{patchRenders();refreshWorkspace()},900);
+    document.documentElement.classList.remove('cafasso-workspace-booting');
+    document.documentElement.classList.add('cafasso-workspace-ready');
+    setTimeout(()=>{patchRenders();refreshWorkspace()},120);
   }
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,700),{once:true});
-  else setTimeout(init,700);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
 })();
