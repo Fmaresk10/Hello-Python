@@ -90,6 +90,8 @@
       .cafasso-school-map__head h2{margin:7px 0 8px;font:400 clamp(34px,4vw,54px)/1 Georgia,serif;text-shadow:0 3px 17px rgba(0,0,0,.42)}
       .cafasso-school-map__head p{max-width:560px;margin:0;color:#e1ebe2;font:13px/1.5 Inter,system-ui,sans-serif}
       .cafasso-school-map__progress{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:8px 11px;border:1px solid rgba(244,216,137,.42);border-radius:999px;background:rgba(7,32,36,.55);color:#fff4c7;font:800 10px/1 Inter,system-ui,sans-serif;backdrop-filter:blur(7px)}
+      .cafasso-school-map-panel.is-course-complete .cafasso-school-map__progress{border-color:rgba(185,222,200,.56);background:rgba(36,95,72,.72);color:#e8f6e9}
+      .cafasso-school-map-panel.is-course-complete .cafasso-school-module-note{background:linear-gradient(145deg,rgba(225,239,220,.97),rgba(172,205,176,.96));border-color:rgba(213,237,214,.72);color:#294b39}
       .cafasso-school-map__stations{position:absolute;inset:0;z-index:4}
       .cafasso-school-module{position:absolute;transform:translate(-50%,-50%);width:185px;min-height:82px;padding:12px 12px 10px;border:1px solid rgba(115,77,39,.56);border-radius:7px 7px 4px 4px;background:linear-gradient(145deg,#f4e6c8,#d9bd8b);box-shadow:0 11px 22px rgba(42,26,14,.33),inset 0 1px rgba(255,255,255,.56);color:#3b2b1e;text-align:left;cursor:pointer;transition:transform .17s ease,filter .17s ease}
       .cafasso-school-module:hover:not(:disabled){transform:translate(-50%,-54%);filter:brightness(1.035)}
@@ -206,29 +208,24 @@
     });
 
     if (!courses.length) {
+      delete document.documentElement.dataset.cafassoSchoolAllComplete;
       host.innerHTML = '<div class="cafasso-school-empty">Todavía no tenés cursos asignados. Cuando se abra uno para vos, va a aparecer escrito acá.</div>';
       return;
     }
 
-    host.innerHTML = courses.map(course => {
+    const courseStates = courses.map(course => {
       const id = String(course._id || course.id || '');
       const row = byCourse.get(id);
       const direct = Number(course.myProgress);
       const percent = Math.max(0, Math.min(100, row ? Number(row.percent || 0) : (Number.isFinite(direct) ? direct : 0)));
-      const done = percent >= 100;
+      return { course, id, percent, done:percent >= 100 };
+    });
+    document.documentElement.dataset.cafassoSchoolAllComplete = courseStates.every(item => item.done) ? '1' : '0';
+
+    host.innerHTML = courseStates.map(item => {
+      const course = item.course, id = item.id, percent = item.percent, done = item.done;
       return `<button class="cafasso-school-course ${done ? 'is-done' : ''}" type="button" data-school-course="${esc(id)}"><span><strong>${esc(course.title || 'Curso')}</strong><small>${done ? 'Camino completado' : percent > 0 ? 'Seguí desde donde quedaste' : 'Un camino nuevo te espera'}</small></span><span class="cafasso-school-course__progress">${Math.round(percent)}%</span></button>`;
     }).join('');
-
-    host.querySelectorAll('[data-school-course]').forEach(button => {
-      button.addEventListener('click', () => openCourseMap(button.dataset.schoolCourse, data));
-    });
-
-    const requestedCourse = String(params.get('course') || '').trim();
-    if (requestedCourse && !returnCourseRestored && courses.some(course => String(course?._id || course?.id || '') === requestedCourse)) {
-      returnCourseRestored = true;
-      requestAnimationFrame(() => openCourseMap(requestedCourse, data));
-    }
-  }
 
   function findProgress(data, courseId) {
     const userId = String(sessionUser()?._id || sessionUser()?.id || '');
@@ -281,6 +278,8 @@
       const percent = Math.max(0, Math.min(100, Number(progress?.percent || 0)));
       const completed = new Set(Array.isArray(progress?.completedModules) ? progress.completedModules.map(String) : []);
       const firstPending = modules.findIndex(module => !completed.has(moduleId(module)));
+      const courseComplete = percent >= 100 || (modules.length > 0 && modules.every(module => completed.has(moduleId(module))));
+      panel.classList.toggle('is-course-complete', courseComplete);
 
       let routeNotice = '';
       try {
@@ -294,7 +293,7 @@
           <div class="cafasso-school-map__kicker">Tu recorrido en Escuela</div>
           <h2>${esc(course.title || 'Curso')}</h2>
           <p>${esc(course.description || 'Cada módulo abre una etapa nueva del camino. Avanzá a tu ritmo y retomá siempre desde donde quedaste.')}</p>
-          <span class="cafasso-school-map__progress">${Math.round(percent)}% del camino completado</span>
+          <span class="cafasso-school-map__progress">${courseComplete ? '✓ Camino completado · 100%' : Math.round(percent) + '% del camino completado'}</span>
         </header>
         <div class="cafasso-school-map__stations">
           ${modules.map((module,index) => {
@@ -306,8 +305,8 @@
           }).join('')}
         </div>
         <aside class="cafasso-school-module-note" data-school-module-note>
-          <strong>${routeNotice ? 'Todavía no podés entrar ahí' : modules.length ? 'Elegí una etapa del camino' : 'Este curso todavía no tiene módulos'}</strong>
-          <span>${routeNotice ? esc(routeNotice) : modules.length ? 'Los candados respetan tu progreso real. El próximo paso es entrar a las misiones de cada módulo.' : 'Cuando se publiquen los módulos, van a aparecer acá.'}</span>
+          <strong>${routeNotice ? 'Todavía no podés entrar ahí' : courseComplete ? 'Camino completado' : modules.length ? 'Elegí una etapa del camino' : 'Este curso todavía no tiene módulos'}</strong>
+          <span>${routeNotice ? esc(routeNotice) : courseComplete ? 'Este recorrido ya quedó completo. Podés volver a cualquiera de sus etapas para revisar lo vivido.' : modules.length ? 'Los candados respetan tu progreso real. Entrá a la próxima etapa disponible para seguir avanzando.' : 'Cuando se publiquen los módulos, van a aparecer acá.'}</span>
         </aside>`;
 
       panel.querySelector('[data-school-map-close]')?.addEventListener('click', () => { closeCourseMap(panel); });
@@ -318,7 +317,7 @@
           if (!module || !id) return;
           const target = new URL('./course-player.html', location.href);
           target.searchParams.set('player', '1');
-          target.searchParams.set('playerBuild', '21');
+          target.searchParams.set('playerBuild', '22');
           target.searchParams.set('course', String(courseId));
           target.searchParams.set('module', id);
           target.hash = 'modulo';

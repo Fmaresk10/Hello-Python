@@ -167,6 +167,63 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
 
 
 .eval-quiz{margin-top:14px}.eval-summary{margin:12px 0;padding:12px 13px;border:1px solid #d8c98f;border-radius:12px;background:#fff8df;color:#5f552f;font-size:12px;line-height:1.5}.eval-summary.ok{background:#eaf5ed;border-color:#b9d5c1;color:#2f5a41}.eval-summary.bad{background:#fff0ec;border-color:#e0b8ae;color:#834d42}.eval-summary.pending{background:#eef3f0;border-color:#c4d4cb;color:#456055}.eval-meta{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 13px}.eval-pill{display:inline-flex;padding:5px 8px;border-radius:999px;background:#eef1ee;color:#52635b;font-size:10px;font-weight:800}.eval-question-player{margin:12px 0;padding:14px;border:1px solid #dfe4df;border-radius:13px;background:#fff}.eval-question-player legend{padding:0 5px;color:#294b3f;font-weight:850;font-size:13px}.eval-question-player .points{float:right;color:#7c7f78;font-size:10px;font-weight:800}.eval-options-player{display:grid;gap:7px;margin-top:10px}.eval-option-player{display:flex;gap:9px;align-items:flex-start;padding:9px 10px;border:1px solid #e2e5e1;border-radius:9px;background:#fafcfb;color:#41544b;font-size:12px;cursor:pointer}.eval-option-player input{margin-top:2px}.eval-question-player textarea{width:100%;min-height:100px;margin-top:10px;border:1px solid #d8ded9;border-radius:10px;padding:10px;font:inherit;resize:vertical}.eval-feedback{margin-top:9px;padding:9px 10px;border-radius:9px;background:#f3f6f4;color:#4d6157;font-size:11px;line-height:1.45}.eval-feedback.correct{background:#edf7ef;color:#2e6040}.eval-feedback.wrong{background:#fff0ed;color:#824f44}.eval-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}.eval-result-list{display:grid;gap:7px;margin-top:10px}.eval-result-item{padding:9px 10px;border-radius:9px;background:#f7f8f7;color:#536159;font-size:11px}.eval-result-item b{color:#304a40}
+
+.cafasso-course-finale{
+ position:fixed;inset:0;z-index:2147483380;display:grid;place-items:center;
+ padding:clamp(18px,4vw,44px);overflow:auto;
+ background:
+  radial-gradient(circle at 50% 24%,rgba(242,201,76,.16),transparent 34%),
+  linear-gradient(180deg,rgba(7,30,33,.92),rgba(8,42,39,.97));
+ color:#fff8e8;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif
+}
+.cafasso-course-finale__card{
+ position:relative;width:min(680px,94vw);padding:clamp(28px,5vw,52px);
+ border:1px solid rgba(244,216,137,.58);border-radius:22px;
+ background:
+  linear-gradient(145deg,rgba(255,249,230,.96),rgba(226,204,158,.97));
+ box-shadow:0 28px 78px rgba(0,0,0,.45),inset 0 1px rgba(255,255,255,.7);
+ color:#3f3022;text-align:center;overflow:hidden
+}
+.cafasso-course-finale__card:before{
+ content:"";position:absolute;inset:10px;border:1px solid rgba(116,79,43,.15);
+ border-radius:15px;pointer-events:none
+}
+.cafasso-course-finale__eyebrow{
+ color:#82602e;font:850 9px/1.2 Inter,system-ui,sans-serif;letter-spacing:.17em;text-transform:uppercase
+}
+.cafasso-course-finale__seal{
+ display:grid;place-items:center;width:68px;height:68px;margin:18px auto 16px;
+ border:1px solid rgba(84,112,82,.35);border-radius:50%;
+ background:radial-gradient(circle at 35% 30%,#dce9d8,#78a17b 72%);
+ color:#244b39;font:800 30px/1 Georgia,serif;box-shadow:0 8px 20px rgba(66,86,59,.18)
+}
+.cafasso-course-finale h2{margin:0;color:#4a3424;font:500 clamp(34px,5vw,52px)/1.02 Georgia,serif}
+.cafasso-course-finale__lead{max-width:540px;margin:14px auto 0;color:#6c543d;font:14px/1.65 Inter,system-ui,sans-serif}
+.cafasso-course-finale__lead strong{color:#4f3827}
+.cafasso-course-finale__summary{
+ display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:22px auto 0
+}
+.cafasso-course-finale__summary span{
+ display:inline-flex;align-items:center;min-height:32px;padding:7px 11px;border:1px solid rgba(105,75,44,.18);
+ border-radius:999px;background:rgba(255,252,242,.52);color:#6d5238;font:800 10px/1 Inter,system-ui,sans-serif
+}
+.cafasso-course-finale__reflection{
+ max-width:520px;margin:22px auto 0;padding:16px 18px;border-top:1px solid rgba(111,79,48,.16);
+ border-bottom:1px solid rgba(111,79,48,.16);color:#755d47;font:italic 14px/1.55 Georgia,serif
+}
+.cafasso-course-finale__action{
+ position:relative;z-index:1;margin-top:24px;min-height:46px;padding:12px 22px;border:1px solid #173f38;
+ border-radius:999px;background:#173f38;color:#fff7df;font:850 12px/1 Inter,system-ui,sans-serif;
+ cursor:pointer;box-shadow:0 8px 18px rgba(34,63,53,.22)
+}
+.cafasso-course-finale__action:hover{transform:translateY(-1px);background:#245a4b}
+@media(max-width:680px){
+ .cafasso-course-finale{padding:14px}
+ .cafasso-course-finale__card{padding:30px 21px 26px;border-radius:18px}
+ .cafasso-course-finale__seal{width:58px;height:58px;font-size:25px}
+ .cafasso-course-finale__lead{font-size:13px}
+ .cafasso-course-finale__action{width:100%;min-height:48px}
+}
 </style></head>
 <body>
 <div id="app" class="loading">Cargando tu espacio CAFASSO…</div>
@@ -255,11 +312,44 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     var doneIds=completedModules(selectedCourse&&selectedCourse._id),currentDone=index>=0&&doneIds.indexOf(mods[index]._id)!==-1;
     return {mods:mods,index:index,prev:index>0?mods[index-1]:null,next:index>=0&&index<mods.length-1?mods[index+1]:null,currentDone:currentDone};
   }
+  function selectedModuleIndex(){
+    var mods=publishedModules();
+    return mods.findIndex(function(m){return String(m&&m._id)===String(selectedModule&&selectedModule._id);});
+  }
+  function selectedModuleIsFinal(){
+    var mods=publishedModules(),idx=selectedModuleIndex();
+    return idx>=0&&idx===mods.length-1;
+  }
+  function showCourseCompletion(){
+    if(!selectedCourse)return;
+    var existing=document.querySelector('.cafasso-course-finale');
+    if(existing){existing.querySelector('[data-course-finale-back]')?.focus();return;}
+    var mods=publishedModules();
+    var overlay=document.createElement('section');
+    overlay.className='cafasso-course-finale';
+    overlay.setAttribute('role','dialog');
+    overlay.setAttribute('aria-modal','true');
+    overlay.setAttribute('aria-label','Curso completado');
+    overlay.innerHTML='<article class="cafasso-course-finale__card">'+
+      '<div class="cafasso-course-finale__eyebrow">CAFASSO · Camino completado</div>'+
+      '<div class="cafasso-course-finale__seal" aria-hidden="true">✓</div>'+
+      '<h2>El camino no termina acá.</h2>'+
+      '<p class="cafasso-course-finale__lead">Completaste <strong>'+esc(selectedCourse.title||'este recorrido')+'</strong>. Todo lo que trabajaste queda guardado en tu camino CAFASSO y ahora puede volverse presencia, criterio y cuidado al acompañar a otros.</p>'+
+      '<div class="cafasso-course-finale__summary"><span>✓ '+esc(mods.length)+' módulo'+(mods.length===1?'':'s')+' completado'+(mods.length===1?'':'s')+'</span><span>100% del recorrido</span></div>'+
+      '<div class="cafasso-course-finale__reflection">Lo aprendido no se archiva: se vuelve gesto, vínculo y misión.</div>'+
+      '<button type="button" class="cafasso-course-finale__action" data-course-finale-back>Volver a Escuela</button>'+
+    '</article>';
+    document.body.appendChild(overlay);
+    overlay.querySelector('[data-course-finale-back]').onclick=returnToSchool;
+    try{window.dispatchEvent(new CustomEvent('cafasso:course-completed',{detail:{courseId:selectedCourse._id,title:selectedCourse.title||'',modules:mods.length}}));}catch(e){}
+    requestAnimationFrame(function(){overlay.querySelector('[data-course-finale-back]')?.focus();});
+  }
+  window.CafassoShowCourseCompletion=showCourseCompletion;
   function openPlayerModule(moduleId){
     if(!moduleId||!selectedCourse)return;
     var target=new URL(location.href);
     target.searchParams.set('player','1');
-    target.searchParams.set('playerBuild','21');
+    target.searchParams.set('playerBuild','22');
     target.searchParams.set('course',String(selectedCourse._id));
     target.searchParams.set('module',String(moduleId));
     target.hash='modulo';
@@ -399,14 +489,14 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
       '<div class="complete-box '+(status.ready?'ready':'')+'"><div><strong>'+
       (done?'Módulo completado':status.ready?'¡Módulo listo para completar!':'Todavía faltan contenidos obligatorios')+
       '</strong><p>'+(done?'El progreso de esta etapa ya quedó guardado.':status.ready?'CAFASSO cerrará esta etapa cuando completes la última misión.':'Cuando completes los contenidos obligatorios se habilitará el cierre de la etapa.')+
-      '</p></div><button id="completeModule" class="btn '+(done?'done':'')+'" '+(!done&&!status.ready?'disabled':'')+'>'+
+      '</p></div><button id="completeModule" class="btn '+(done?'done':'')+'" '+(done||!status.ready?'disabled':'')+'>'+
       (done?'✓ Completado':'Completar etapa')+'</button></div>'+
       (!missionMode?renderLinearNav('bottom'):'')+
       '</div>';
 
     if(!missionMode)bindLinearNav();
     var complete=document.getElementById('completeModule');
-    if(complete)complete.onclick=function(){saveModuleProgress(!done);};
+    if(complete&&!done)complete.onclick=function(){saveModuleProgress(true);};
     Array.prototype.forEach.call(document.querySelectorAll('[data-review]'),function(b){b.onclick=function(){toggleReview(b.getAttribute('data-review'));};});
     Array.prototype.forEach.call(document.querySelectorAll('[data-save-answer]'),function(b){b.onclick=function(){saveAnswer(b.getAttribute('data-save-answer'));};});
     Array.prototype.forEach.call(document.querySelectorAll('[data-submit-evaluation]'),function(b){b.onclick=function(){submitEvaluation(b.getAttribute('data-submit-evaluation'));};});
@@ -429,8 +519,48 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
 
   function toggleReview(blockId){var work=readModuleWork();work.done=work.done||{};work.done[blockId]=!work.done[blockId];saveModuleWork(work);renderModule();if(work.done[blockId]){try{window.dispatchEvent(new CustomEvent('cafasso:block-completed',{detail:{blockId:blockId}}));}catch(e){}}}
   function saveAnswer(blockId){var el=document.querySelector('[data-answer="'+CSS.escape(blockId)+'"]'),value=el?el.value.trim():'';if(!value){alert('Escribí una respuesta antes de guardarla.');return;}var block=(selectedModule.contents||[]).filter(function(b){return b._id===blockId;})[0];if(!block)return;var minimum=String(block.type||'').toLowerCase()==='evaluación'?Math.max(0,Number(block.settings&&block.settings.minimumCharacters||0)):0;if(minimum&&value.length<minimum){alert('Esta evaluación necesita una respuesta de al menos '+minimum+' caracteres. Ahora tiene '+value.length+'.');return;}var existing=submissionFor(blockId);if(String(block.type||'').toLowerCase()==='desafío'&&existing&&existing.status==='Aprobada'){alert('Este desafío ya fue aprobado y sus almitas ya fueron acreditadas.');return;}var work=readModuleWork();work.answers=work.answers||{};work.answers[blockId]=value;saveModuleWork(work);var btn=document.querySelector('[data-save-answer="'+CSS.escape(blockId)+'"]');if(btn){btn.disabled=true;btn.textContent='Enviando…';}fetch(SUBMISSION_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:session.user._id,courseId:selectedCourse._id,moduleId:selectedModule._id,activityId:blockId,type:block.type||'Entrega',content:value})}).then(function(r){return r.json().then(function(j){return {r:r,j:j};});}).then(function(x){if(!x.r.ok||!x.j.ok)throw new Error(x.j.error||'No se pudo guardar la respuesta.');var s=x.j.submission,found=false;for(var i=0;i<courseSubmissions.length;i++){if(courseSubmissions[i].activityId===blockId){courseSubmissions[i]=s;found=true;break;}}if(!found)courseSubmissions.push(s);if(window.CafassoAnimatorState){window.CafassoAnimatorState.data= data;window.dispatchEvent(new CustomEvent('cafasso:state-ready'));}renderModule();try{window.dispatchEvent(new CustomEvent('cafasso:block-completed',{detail:{blockId:blockId,status:s.status||'Pendiente'}}));}catch(e){}try{if(String(block.type||'').toLowerCase().includes('desaf'))window.dispatchEvent(new CustomEvent('cafasso:challenge-submitted',{detail:{courseId:selectedCourse._id,moduleId:selectedModule._id,blockId:blockId,status:s.status||'Pendiente'}}));}catch(e){}}).catch(function(e){alert('La respuesta quedó guardada en este dispositivo, pero no pudimos enviarla a CAFASSO: '+(e.message||'error de conexión'));renderModule();});}
-  function saveModuleProgress(completed){if(completed&&!requiredStatus().ready){alert('Todavía faltan contenidos obligatorios por completar.');return;}var btn=document.getElementById('completeModule');if(btn){btn.disabled=true;btn.textContent='Guardando…';}fetch(PROGRESS_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:session.user._id,courseId:selectedCourse._id,moduleId:selectedModule._id,completed:completed})}).then(function(r){return r.json().then(function(j){return {r:r,j:j};});}).then(function(x){if(!x.r.ok||!x.j.ok)throw new Error(x.j.error||'No se pudo guardar el progreso.');var record=x.j.progress||{},list=data.progress||[],found=false;for(var i=0;i<list.length;i++){if(list[i].userId===record.userId&&list[i].courseId===record.courseId){list[i]=record;found=true;break;}}if(!found)list.push(record);data.progress=list;selectedCourse.myProgress=Number(record.percent||0);publishAnimatorState();renderModule();}).catch(function(e){alert(e.message||'No se pudo guardar el progreso.');renderModule();});}
-  window.CafassoCompleteModule=function(moduleId){if(!selectedCourse||!moduleId)return Promise.resolve();return fetch(PROGRESS_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:session.user._id,courseId:selectedCourse._id,moduleId:moduleId,completed:true})}).then(function(r){return r.json();}).then(function(j){if(!j||!j.ok)throw new Error(j&&j.error||'No se pudo completar el módulo.');var record=j.progress||{},list=data.progress||[],found=false;for(var i=0;i<list.length;i++){if(list[i].userId===record.userId&&list[i].courseId===record.courseId){list[i]=record;found=true;break;}}if(!found)list.push(record);data.progress=list;publishAnimatorState();try{window.dispatchEvent(new CustomEvent('cafasso:module-completed',{detail:{courseId:selectedCourse._id,moduleId:moduleId}}));}catch(e){}return j;});};
+  function saveModuleProgress(completed){
+    if(!completed)return;
+    if(!requiredStatus().ready){alert('Todavía faltan contenidos obligatorios por completar.');return;}
+    var btn=document.getElementById('completeModule');
+    if(btn){btn.disabled=true;btn.textContent='Guardando…';}
+    fetch(PROGRESS_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:session.user._id,courseId:selectedCourse._id,moduleId:selectedModule._id,completed:true})})
+      .then(function(r){return r.json().then(function(j){return {r:r,j:j};});})
+      .then(function(x){
+        if(!x.r.ok||!x.j.ok)throw new Error(x.j.error||'No se pudo guardar el progreso.');
+        var record=x.j.progress||{},list=data.progress||[],found=false;
+        for(var i=0;i<list.length;i++){
+          if(list[i].userId===record.userId&&list[i].courseId===record.courseId){list[i]=record;found=true;break;}
+        }
+        if(!found)list.push(record);
+        data.progress=list;
+        selectedCourse.myProgress=Number(record.percent||0);
+        publishAnimatorState();
+        try{window.dispatchEvent(new CustomEvent('cafasso:module-completed',{detail:{courseId:selectedCourse._id,moduleId:selectedModule._id}}));}catch(e){}
+        var courseDone=Number(record.percent||0)>=100&&selectedModuleIsFinal();
+        if(courseDone){showCourseCompletion();return;}
+        renderModule();
+      })
+      .catch(function(e){alert(e.message||'No se pudo guardar el progreso.');renderModule();});
+  }
+  window.CafassoCompleteModule=function(moduleId){
+    if(!selectedCourse||!moduleId)return Promise.resolve();
+    return fetch(PROGRESS_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:session.user._id,courseId:selectedCourse._id,moduleId:moduleId,completed:true})})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(!j||!j.ok)throw new Error(j&&j.error||'No se pudo completar el módulo.');
+        var record=j.progress||{},list=data.progress||[],found=false;
+        for(var i=0;i<list.length;i++){
+          if(list[i].userId===record.userId&&list[i].courseId===record.courseId){list[i]=record;found=true;break;}
+        }
+        if(!found)list.push(record);
+        data.progress=list;
+        selectedCourse.myProgress=Number(record.percent||0);
+        publishAnimatorState();
+        try{window.dispatchEvent(new CustomEvent('cafasso:module-completed',{detail:{courseId:selectedCourse._id,moduleId:moduleId}}));}catch(e){}
+        return j;
+      });
+  };
   function fail(message){document.documentElement.dataset.cafassoPlayerReady='1';var app=document.getElementById('app');if(!app)return;app.className='cafasso-boot-ready';app.innerHTML='<div class="error"><strong>No pudimos cargar tu espacio.</strong><br>'+esc(message)+'</div>';}
   function publishAnimatorState(){
     window.CafassoAnimatorState={data:data,session:session};
@@ -491,6 +621,6 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
 <script src="./house-profile-progress.js?v=5"></script>
 <script src="./cafasso-huellas-v2.js?v=3"></script>
 <script src="./cafasso-huella-rewards-v2.js?v=2"></script>
-<script src="./gamified-course.js?v=20260923-5"></script>
+<script src="./gamified-course.js?v=20260923-6"></script>
 </body>
 </html>

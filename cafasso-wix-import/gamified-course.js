@@ -620,7 +620,8 @@
     const activeIndex = missions.findIndex(item => item.id === mission.id);
     const nextMission = activeIndex >= 0 ? missions[activeIndex + 1] : null;
     const moduleReady = missions.length > 0 && missions.every(item => missionDone(item, module, state));
-    const courseModules = Array.isArray(state?.course?.modules) ? state.course.modules : [];
+    const admin = String(state?.session?.user?.role || '').toLowerCase().includes('admin');
+    const courseModules = (Array.isArray(state?.course?.modules) ? state.course.modules : []).filter(item => item && (item.status === 'Publicado' || admin));
     const moduleIndex = courseModules.findIndex(item => item && item._id === module?._id);
     const nextModule = moduleIndex >= 0 ? courseModules[moduleIndex + 1] : null;
     const nativeComplete = document.getElementById('completeModule');
@@ -722,10 +723,15 @@
 
       Promise.resolve(completion).then(() => {
         if (!overlay.isConnected) return;
+        if (!nextModule && typeof window.CafassoShowCourseCompletion === 'function') {
+          closeOverlay();
+          window.CafassoShowCourseCompletion();
+          return;
+        }
         if (status) status.textContent = 'Etapa guardada en tu progreso.';
         if (action) {
           action.disabled = false;
-          action.textContent = nextModule ? 'Volver al mapa y continuar →' : 'Volver al mapa →';
+          action.textContent = 'Volver al mapa y continuar →';
           action.onclick = () => {
             closeOverlay();
             returnToCourseScreen();

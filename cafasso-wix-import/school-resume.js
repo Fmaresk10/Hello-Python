@@ -123,32 +123,51 @@
     return [...document.querySelectorAll('[data-school-course]')];
   }
 
+  function buttonProgress(button) {
+    const text = button?.querySelector('.cafasso-school-course__progress')?.textContent?.trim() || '0%';
+    return Number.parseInt(text, 10) || 0;
+  }
+
   function chooseCourse() {
     const buttons = courseButtons();
     if (!buttons.length) return null;
+    const pending = buttons.filter(button => buttonProgress(button) < 100);
+    if (!pending.length) return null;
     const memory = readMemory();
-    const remembered = buttons.find(button => String(button.dataset.schoolCourse || '') === String(memory.courseId || ''));
+    const remembered = pending.find(button => String(button.dataset.schoolCourse || '') === String(memory.courseId || ''));
     if (remembered) return remembered;
-    return buttons.find(button => /Seguí desde donde quedaste/i.test(button.textContent || '')) || buttons[0];
+    return pending.find(button => /Seguí desde donde quedaste/i.test(button.textContent || '')) || pending[0];
   }
 
   function hydrate(button, attempts = 0) {
+    const buttons = courseButtons();
     const target = chooseCourse();
     if (!target) {
-      if (attempts < 45) setTimeout(() => hydrate(button, attempts + 1), 100);
+      if (!buttons.length && attempts < 45) {
+        setTimeout(() => hydrate(button, attempts + 1), 100);
+        return;
+      }
+      if (buttons.length) {
+        button.dataset.courseId = '';
+        button.dataset.moduleId = '';
+        button.classList.add('is-unavailable');
+        button.querySelector('.cafasso-school-resume__kicker').textContent = 'Al día';
+        button.querySelector('.cafasso-school-resume__title').textContent = 'Camino completado';
+        button.querySelector('.cafasso-school-resume__meta').textContent = 'No tenés recorridos pendientes';
+        button.setAttribute('aria-label', 'Camino al día. No tenés recorridos pendientes.');
+      }
       return;
     }
     const title = target.querySelector('strong')?.textContent?.trim() || 'Curso';
-    const progressText = target.querySelector('.cafasso-school-course__progress')?.textContent?.trim() || '0%';
-    const progress = Number.parseInt(progressText, 10) || 0;
+    const progress = buttonProgress(target);
     const memory = readMemory();
     button.dataset.courseId = String(target.dataset.schoolCourse || '');
-    button.dataset.moduleId = String(memory.moduleId || '');
+    button.dataset.moduleId = String(memory.courseId || '') === String(target.dataset.schoolCourse || '') ? String(memory.moduleId || '') : '';
     button.classList.remove('is-unavailable');
-    button.querySelector('.cafasso-school-resume__kicker').textContent = progress >= 100 ? 'Revisar' : progress > 0 ? 'Continuar' : 'Empezar';
+    button.querySelector('.cafasso-school-resume__kicker').textContent = progress > 0 ? 'Continuar' : 'Empezar';
     button.querySelector('.cafasso-school-resume__title').textContent = title;
-    button.querySelector('.cafasso-school-resume__meta').textContent = progress >= 100 ? 'Camino completado' : progress > 0 ? `${progress}% · retomá tu último paso` : 'Tu primer paso está pronto';
-    button.setAttribute('aria-label', `${progress > 0 && progress < 100 ? 'Continuar' : progress >= 100 ? 'Revisar' : 'Empezar'} ${title}`);
+    button.querySelector('.cafasso-school-resume__meta').textContent = progress > 0 ? `${progress}% · retomá tu último paso` : 'Tu primer paso está pronto';
+    button.setAttribute('aria-label', `${progress > 0 ? 'Continuar' : 'Empezar'} ${title}`);
   }
 
   function rememberInteractions() {
