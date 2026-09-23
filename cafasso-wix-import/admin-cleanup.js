@@ -31,7 +31,7 @@
     card.innerHTML=`
       <div class="title"><h3>Accesos rápidos</h3></div>
       <div class="cafasso-admin-quick-links">
-        <a class="cafasso-admin-quick-link" href="./animadores.html"><span class="ico">👥</span><span>Animadores<small>Usuarios y perfiles</small></span></a>
+        <a class="cafasso-admin-quick-link" href="./animadores.html"><span class="ico">👥</span><span>Personas<small>Usuarios y perfiles</small></span></a>
         <a class="cafasso-admin-quick-link" href="./admin.html#cursos"><span class="ico">📚</span><span>Cursos<small>Editar y publicar</small></span></a>
         <a class="cafasso-admin-quick-link" href="./asignaciones.html"><span class="ico">↗</span><span>Asignaciones<small>Cursos y grupos</small></span></a>
         <a class="cafasso-admin-quick-link" href="./entregas.html"><span class="ico">📥</span><span>Entregas<small>Revisar pendientes</small></span></a>
