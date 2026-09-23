@@ -128,7 +128,7 @@
   } else if (space === 'parroquia') {
     app.innerHTML = `<main class="cafasso-parroquia"><img class="cafasso-parroquia__image" src="${PARROQUIA_BG}" alt="Espacio Parroquia de CAFASSO"><button class="cafasso-space-link cafasso-space-link--parroquia-patio" data-space="patio" type="button">Patio</button></main>`;
   } else if (space === 'escuela') {
-    app.innerHTML = `<main class="cafasso-escuela"><img class="cafasso-escuela__image" src="${ESCUELA_BG}" alt="Espacio Escuela de CAFASSO"><button class="cafasso-space-link cafasso-space-link--escuela-patio" data-space="patio" type="button">Patio</button>${isFormador ? '<a class="cafasso-formador-school-link" href="./formador.html" aria-label="Abrir Mesa del Formador"><small>FORMADOR</small><span>Mesa de trabajo</span><b>→</b></a>' : ''}</main>`;
+    app.innerHTML = `<main class="cafasso-escuela"><img class="cafasso-escuela__image" src="${ESCUELA_BG}" alt="Espacio Escuela de CAFASSO"><button class="cafasso-space-link cafasso-space-link--escuela-patio" data-space="patio" type="button">Patio</button>${isFormador ? '<a class="cafasso-formador-school-link" href="./formador.html" target="_top" aria-label="Abrir Mesa del Formador"><small>FORMADOR</small><span>Mesa de trabajo</span><b>→</b></a>' : ''}</main>`;
   } else if (space === 'recursos') {
     app.innerHTML = `
       <main class="cafasso-recursos">
@@ -140,7 +140,7 @@
     app.innerHTML = `
       <main class="cafasso-house">
         <img class="cafasso-house__image" src="${HOUSE_BG}" alt="Casa CAFASSO, espacio cálido de encuentro y acompañamiento">
-        ${isAdmin ? '<a class="cafasso-admin-home-link" href="./admin.html" aria-label="Ir al perfil de administrador">⚙ Administrador</a>' : ''}
+        ${isAdmin ? '<a class="cafasso-admin-home-link" href="./admin.html" target="_top" aria-label="Ir al perfil de administrador">⚙ Administrador</a>' : ''}
         <button class="cafasso-space-link cafasso-space-link--casa" data-space="patio" type="button">Patio</button>
         <button class="cafasso-space-link cafasso-space-link--house-recursos" data-space="recursos" type="button">Recursos</button>
         <button class="cafasso-bitacora-object" data-action="bitacora-open" type="button" aria-label="Abrir Bitácora">
