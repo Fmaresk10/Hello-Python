@@ -14,7 +14,7 @@
     '.cafasso-escuela__image',
     '.cafasso-space-link--escuela-patio[data-space="patio"]',
     '.cafasso-school-board',
-    '.cafasso-formador-school-link',
+    '.cafasso-role-tool',
     '.cafasso-school-resume',
     '.cafasso-corazon-huella',
     '.cafasso-calendar-layer'
@@ -156,7 +156,7 @@
       }
 
       /* Formador: acceso integrado en la pantalla física de Escuela. */
-      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-school-panorama .cafasso-formador-school-link{
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-school-panorama .cafasso-role-tool--school{
         left:12.1%!important;
         top:39.8%!important;
         width:17.2%!important;
@@ -166,13 +166,13 @@
         transform:perspective(900px) rotateY(2deg) rotateZ(-.2deg)!important;
         z-index:15!important;
       }
-      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-school-panorama .cafasso-formador-school-link small{
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-school-panorama .cafasso-role-tool--school small{
         font-size:5.8px!important;
       }
-      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-school-panorama .cafasso-formador-school-link span{
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-school-panorama .cafasso-role-tool--school span{
         font-size:9px!important;
       }
-      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-school-panorama .cafasso-formador-school-link b{
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-school-panorama .cafasso-role-tool--school b{
         font-size:10px!important;
       }
 
