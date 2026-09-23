@@ -47,5 +47,5 @@ $('trackForm').onsubmit=async e=>{e.preventDefault();if(busy)return;const title=
 document.addEventListener('click',async e=>{const edit=e.target.closest('[data-edit]');if(edit){openForm(edit.dataset.edit);return}const del=e.target.closest('[data-delete]');if(del){const t=tracks().find(x=>x.id===del.dataset.delete);if(!t||!confirm(`¿Eliminar “${t.title}”?`))return;const list=blocks(),i=list.findIndex(x=>x._id===t.id);if(i>=0)list.splice(i,1);await save();return}const up=e.target.closest('[data-up]');const down=e.target.closest('[data-down]');const move=up||down;if(move){const list=blocks().sort((a,b)=>Number(a.settings?.order||0)-Number(b.settings?.order||0));const i=list.findIndex(x=>x._id===(up?.dataset.up||down?.dataset.down));const j=up?i-1:i+1;if(i<0||j<0||j>=list.length)return;const temp=list[i].settings.order;list[i].settings.order=list[j].settings.order;list[j].settings.order=temp;await save()}});
 $('newTrack').onclick=()=>openForm();$('cancel').onclick=closeForm;$('reload').onclick=load;$('modalWrap').onclick=e=>{if(e.target===$('modalWrap'))closeForm()};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeForm()});load();
 </script>
-<script src="./admin-shared-nav.js?v=20260923-1"></script></body>
+<script src="./admin-shared-nav.js?v=20260923-2"></script></body>
 </html>

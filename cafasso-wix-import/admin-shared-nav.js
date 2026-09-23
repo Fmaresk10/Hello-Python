@@ -23,7 +23,7 @@
     if(page==='admin.html'||page==='')return location.hash==='#cursos'?'courses':'home';
     if(page==='animadores.html')return'people';
     if(page==='entregas.html')return'submissions';
-    if(page==='grupos.html')return'groups';
+    if(page==='grupos.html'||page==='grupo.html')return'groups';
     if(page==='asignaciones.html')return'assignments';
     if(page==='resource-admin.html')return'resources';
     if(page==='parish-songbook-admin.html')return'songbook';
