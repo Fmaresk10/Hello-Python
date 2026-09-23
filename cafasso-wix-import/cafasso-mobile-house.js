@@ -15,6 +15,7 @@
     '.cafasso-space-link--casa[data-space="patio"]',
     '.cafasso-space-link--house-recursos',
     '.cafasso-bitacora-object',
+    '.cafasso-admin-monitor',
     '.cafasso-house-corner',
     '.cafasso-animator-sheet',
     '.cafasso-world-compass',
@@ -119,6 +120,15 @@
         height:clamp(113px,17.5vh,148px)!important;
         transform:rotate(-5deg)!important;
         z-index:14!important;
+      }
+
+      html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house-panorama .cafasso-admin-monitor{
+        left:69.2%!important;
+        top:52.6%!important;
+        width:clamp(112px,17.3vh,146px)!important;
+        height:clamp(99px,15.3vh,129px)!important;
+        transform:perspective(900px) rotateX(2.5deg) rotateY(-6deg) rotateZ(.6deg)!important;
+        z-index:16!important;
       }
 
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-house-panorama .cafasso-world-compass{
@@ -239,26 +249,6 @@
         top:max(8px,calc(var(--cafasso-safe-top) + 6px))!important;
         transform:scale(.92);
         transform-origin:top left;
-      }
-
-      html.cafasso-mobile body.cafasso-mobile-house-active .cafasso-admin-home-link{
-        position:fixed!important;
-        right:max(10px,calc(var(--cafasso-safe-right) + 7px))!important;
-        top:max(10px,calc(var(--cafasso-safe-top) + 7px))!important;
-        left:auto!important;
-        z-index:2147483001!important;
-        min-width:76px!important;
-        min-height:40px!important;
-        padding:0 11px!important;
-        border-color:rgba(242,201,76,.46)!important;
-        background:rgba(13,43,65,.76)!important;
-        box-shadow:0 5px 15px rgba(0,0,0,.20)!important;
-        font-size:0!important;
-      }
-
-      html.cafasso-mobile body.cafasso-mobile-house-active .cafasso-admin-home-link:after{
-        content:"⚙ Admin";
-        font:700 10px/1 Inter,system-ui,sans-serif;
       }
 
       /* Los paneles siguen siendo interfaz de pantalla, no parte del panorama. */
@@ -483,7 +473,7 @@
     house.addEventListener('pointerdown', event => {
       if (!isPortraitMobile()) return;
       if (event.button != null && event.button !== 0) return;
-      if (event.target.closest('.cafasso-admin-home-link,.cafasso-profile-panel,.cafasso-bitacora-panel,.cafasso-bitacora-acompanante-panel,[role="dialog"]')) return;
+      if (event.target.closest('.cafasso-admin-monitor,.cafasso-profile-panel,.cafasso-bitacora-panel,.cafasso-bitacora-acompanante-panel,[role="dialog"]')) return;
 
       stopInertia();
       dragging = true;
