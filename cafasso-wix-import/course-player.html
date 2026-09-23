@@ -349,7 +349,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     if(!moduleId||!selectedCourse)return;
     var target=new URL(location.href);
     target.searchParams.set('player','1');
-    target.searchParams.set('playerBuild','22');
+    target.searchParams.set('playerBuild','23');
     target.searchParams.set('course',String(selectedCourse._id));
     target.searchParams.set('module',String(moduleId));
     target.hash='modulo';
@@ -537,7 +537,9 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
         selectedCourse.myProgress=Number(record.percent||0);
         publishAnimatorState();
         try{window.dispatchEvent(new CustomEvent('cafasso:module-completed',{detail:{courseId:selectedCourse._id,moduleId:selectedModule._id}}));}catch(e){}
-        var courseDone=Number(record.percent||0)>=100&&selectedModuleIsFinal();
+        var mods=publishedModules(),doneIds=completedModules(selectedCourse._id).map(String);
+        var allPublishedDone=mods.length>0&&mods.every(function(mod){return doneIds.indexOf(String(mod._id))!==-1;});
+        var courseDone=selectedModuleIsFinal()&&(Number(record.percent||0)>=100||allPublishedDone);
         if(courseDone){showCourseCompletion();return;}
         renderModule();
       })

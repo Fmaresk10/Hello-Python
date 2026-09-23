@@ -189,9 +189,12 @@
     if (panel) {
       let target = null;
       if (moduleId) {
-        target = [...panel.querySelectorAll('[data-school-module]:not(:disabled)')].find(item => String(item.dataset.schoolModule || '') === moduleId);
+        target = [...panel.querySelectorAll('[data-school-module]:not(:disabled)')].find(item =>
+          String(item.dataset.schoolModule || '') === moduleId && !item.classList.contains('is-done')
+        );
       }
       target ||= panel.querySelector('.cafasso-school-module.is-current:not(:disabled)');
+      target ||= panel.querySelector('.cafasso-school-module:not(.is-done):not(:disabled)');
       if (target) {
         target.click();
         target.focus({ preventScroll:true });
