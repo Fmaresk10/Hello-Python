@@ -521,24 +521,11 @@ function clearLocalSession(){
 }
 
 function route(user){
-  const role=String(user.role||'Animador').toLowerCase();
   const shell=$('loginShell');
-  const title=$('transitionTitle');
-  let target='./';
-  let copy='Entrando a Casa…';
-
-  if(role.includes('admin')){
-    target='./admin.html?v=20260907-1';
-    copy='Abriendo administración…';
-  }else if(role.includes('formador')){
-    target='./formador.html';
-    copy='Abriendo tu espacio…';
-  }
-
-  title.textContent=copy;
+  $('transitionTitle').textContent='Entrando a Casa…';
   shell.classList.add('entering');
   $('loginTransition').setAttribute('aria-hidden','false');
-  setTimeout(()=>location.replace(target),420);
+  setTimeout(()=>location.replace('./'),420);
 }
 
 async function login(){
