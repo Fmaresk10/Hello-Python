@@ -8,11 +8,17 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "any",
   "background_color": "#102f33",
   "theme_color": "#102f33",
-  "categories": ["education", "productivity"],
+  "categories": [
+    "education",
+    "productivity"
+  ],
   "icons": [
     {
       "src": "./cafasso-icon-192.png",
@@ -21,9 +27,9 @@
       "purpose": "any"
     },
     {
-      "src": "./cafasso-app-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "https://static.wixstatic.com/media/47bf07_7645b6a9a19e46ca8495cc1e5b261511~mv2.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any"
     },
     {

@@ -1,4 +1,4 @@
-const CAFASSO_CACHE='cafasso-shell-20260923-1';
+const CAFASSO_CACHE='cafasso-shell-20260923-2';
 const SCOPE=self.registration.scope;
 const url=path=>new URL(path,SCOPE).href;
 const OFFLINE=url('./offline.html');
@@ -59,12 +59,21 @@ self.addEventListener('fetch',event=>{
   if(!staticAsset)return;
 
   event.respondWith((async()=>{
+    const cache=await caches.open(CAFASSO_CACHE);
     const cached=await caches.match(request);
-    const fresh=fetch(request).then(async response=>{
-      if(response&&response.ok){
-        const cache=await caches.open(CAFASSO_CACHE);
-        cache.put(request,response.clone()).catch(()=>{});
+
+    if(requestUrl.pathname.endsWith('.webmanifest')){
+      try{
+        const response=await fetch(request,{cache:'no-store'});
+        if(response&&response.ok)cache.put(request,response.clone()).catch(()=>{});
+        return response;
+      }catch(error){
+        return cached||Response.error();
       }
+    }
+
+    const fresh=fetch(request).then(async response=>{
+      if(response&&response.ok)cache.put(request,response.clone()).catch(()=>{});
       return response;
     }).catch(()=>null);
     return cached||(await fresh)||Response.error();
