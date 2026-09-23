@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="es">
-<head><script src="./auth-guard.js?v=20260923-2"></script>
+<head><script src="./auth-guard.js?v=20260923-3"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <script>document.documentElement.dataset.cafassoBoot='animator';document.documentElement.dataset.cafassoPlayer='1';delete document.documentElement.dataset.cafassoPlayerReady;if(location.hash==='#cursos')document.documentElement.dataset.cafassoCoursesBoot='1';if(!location.hash||location.hash==='#inicio')document.documentElement.dataset.cafassoHomeV2='1';</script>
@@ -259,7 +259,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     if(!moduleId||!selectedCourse)return;
     var target=new URL(location.href);
     target.searchParams.set('player','1');
-    target.searchParams.set('playerBuild','20');
+    target.searchParams.set('playerBuild','21');
     target.searchParams.set('course',String(selectedCourse._id));
     target.searchParams.set('module',String(moduleId));
     target.hash='modulo';

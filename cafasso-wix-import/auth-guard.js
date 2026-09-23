@@ -133,6 +133,10 @@
   }
 
   function installPreviewUI(){
+    // Los controles globales viven en el shell principal. Si esta página está
+    // embebida (por ejemplo course-player dentro de index.html), evitamos
+    // duplicar "Ver como…" dentro del iframe.
+    if(window.parent!==window)return;
     if(!(isAdmin||isFormador)||document.getElementById('cafassoRolePreviewStyles'))return;
     const allowed=isAdmin?['animador','formador','admin']:['animador','formador'];
     const params=new URLSearchParams(location.search);
@@ -200,6 +204,10 @@
   }
 
   function installGlobalLogout(){
+    // El shell principal de CAFASSO ya muestra un único Cerrar sesión.
+    // Las páginas embebidas conservan el guard de autenticación, pero no
+    // deben dibujar otro botón encima del global.
+    if(window.parent!==window)return;
     if(document.getElementById('cafassoGlobalLogout'))return;
 
     const style=document.createElement('style');
