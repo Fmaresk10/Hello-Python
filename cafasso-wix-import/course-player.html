@@ -77,6 +77,30 @@ html[data-cafasso-player="1"] body.cafasso-linear-module-mode article.block{
 html[data-cafasso-player="1"] body.cafasso-linear-module-mode .complete-box{
  box-shadow:0 10px 28px rgba(0,0,0,.12)
 }
+.linear-module-nav{
+ display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;
+ margin:0 0 16px;padding:10px 12px;border:1px solid rgba(232,220,203,.92);
+ border-radius:15px;background:rgba(255,253,249,.96);box-shadow:0 10px 26px rgba(0,0,0,.12)
+}
+.linear-module-nav--bottom{margin:18px 0 0}
+.linear-module-nav__back,.linear-module-nav__step{
+ min-height:40px;border:1px solid var(--line);border-radius:11px;padding:9px 12px;
+ background:#fff;color:var(--navy);font:800 12px/1.15 Inter,system-ui,sans-serif;
+ cursor:pointer;text-decoration:none;transition:transform .16s ease,background .16s ease,opacity .16s ease
+}
+.linear-module-nav__back:hover,.linear-module-nav__step:hover:not(:disabled){transform:translateY(-1px);background:#fff8e4}
+.linear-module-nav__step--next{justify-self:end;background:var(--gold);border-color:#e2b829}
+.linear-module-nav__step:disabled{opacity:.42;cursor:not-allowed}
+.linear-module-nav__meta{min-width:0;text-align:center}
+.linear-module-nav__meta strong{display:block;color:var(--navy);font:800 12px/1.25 Inter,system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.linear-module-nav__meta small{display:block;margin-top:3px;color:var(--muted);font:700 9px/1.2 Inter,system-ui,sans-serif}
+@media(max-width:680px){
+ .linear-module-nav{grid-template-columns:1fr 1fr;gap:8px;padding:9px}
+ .linear-module-nav__meta{grid-column:1/-1;grid-row:1}
+ .linear-module-nav__back,.linear-module-nav__step{width:100%;min-height:44px;padding:9px 8px;font-size:11px}
+ .linear-module-nav__back{grid-column:1/-1}
+ .linear-module-nav__step--next{justify-self:stretch}
+}
 @media(max-width:680px){
  html[data-cafasso-player="1"] body.cafasso-linear-module-mode .module-detail{
   padding:66px 12px 34px!important
@@ -210,6 +234,41 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
   function openCourse(id,moduleId){var main=document.getElementById('main');var allowed=(assignedCourses()||[]).some(function(c){return String(c._id)===String(id);});if(!allowed&&!isAdmin()){main.innerHTML='<div class="error">Este curso no está asignado a tu cuenta.</div>';return;}try{sessionStorage.setItem('cafassoSelectedCourse',id);}catch(e){}main.innerHTML='<div class="loading">Cargando curso…</div>';fetch(COURSE_API+'?id='+encodeURIComponent(id),{cache:'no-store'}).then(function(r){return r.json().then(function(j){return {r:r,j:j};});}).then(function(x){if(!x.r.ok||!x.j.ok)throw new Error(x.j.error||'No se pudo cargar el curso.');selectedCourse=x.j.course;selectedCourse.myProgress=getProgress(id);selectedModule=null;return loadCourseSubmissions(id);}).then(function(){if(moduleId){var mods=publishedModules(),idx=mods.findIndex(function(m){return String(m._id)===String(moduleId);}),doneIds=completedModules(id);if(idx>=0&&moduleUnlocked(mods[idx],idx,mods,doneIds)){selectedModule=mods[idx];navigate('modulo');return;}try{sessionStorage.setItem('cafassoSchoolNotice',idx>=0?'Esta etapa todavía está bloqueada. Completá la anterior para continuar.':'No encontramos esa etapa en el curso.');}catch(e){}}returnToSchool();}).catch(function(e){main.innerHTML='<div class="error"><strong>No pudimos abrir esta misión.</strong><br>'+esc(e.message)+'</div>';document.getElementById('app')?.classList.add('cafasso-boot-ready');});}
   function publishedModules(){return (selectedCourse.modules||[]).filter(function(m){return m.status==='Publicado'||isAdmin();});}
   function moduleUnlocked(mod,index,mods,doneIds){if(index===0)return true;if(mod.unlockAfterPrevious===false)return true;return doneIds.indexOf(mods[index-1]._id)!==-1;}
+  function linearModuleNavData(){
+    var mods=publishedModules(),index=mods.findIndex(function(m){return String(m._id)===String(selectedModule&&selectedModule._id);});
+    var doneIds=completedModules(selectedCourse&&selectedCourse._id),currentDone=index>=0&&doneIds.indexOf(mods[index]._id)!==-1;
+    return {mods:mods,index:index,prev:index>0?mods[index-1]:null,next:index>=0&&index<mods.length-1?mods[index+1]:null,currentDone:currentDone};
+  }
+  function openPlayerModule(moduleId){
+    if(!moduleId||!selectedCourse)return;
+    var target=new URL(location.href);
+    target.searchParams.set('player','1');
+    target.searchParams.set('playerBuild','15');
+    target.searchParams.set('course',String(selectedCourse._id));
+    target.searchParams.set('module',String(moduleId));
+    target.hash='modulo';
+    location.assign(target.toString());
+  }
+  function renderLinearNav(position){
+    var nav=linearModuleNavData(),m=selectedModule||{},course=selectedCourse||{};
+    var prevLabel=nav.prev?'← '+esc(nav.prev.title||'Módulo anterior'):'← Módulo anterior';
+    var nextLabel=nav.next?(esc(nav.next.title||'Siguiente módulo')+' →'):'Fin del curso';
+    var nextDisabled=!nav.next||!nav.currentDone;
+    return '<nav class="linear-module-nav '+(position==='bottom'?'linear-module-nav--bottom':'')+'" aria-label="Navegación del curso">'+
+      '<button type="button" class="linear-module-nav__back" data-linear-course-map>← Volver al recorrido</button>'+
+      '<div class="linear-module-nav__meta"><strong>'+esc(course.title||'Curso')+'</strong><small>'+esc(m.title||'Módulo')+'</small></div>'+
+      '<div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">'+
+        '<button type="button" class="linear-module-nav__step" data-linear-prev '+(!nav.prev?'disabled':'')+'>'+prevLabel+'</button>'+
+        '<button type="button" class="linear-module-nav__step linear-module-nav__step--next" data-linear-next '+(nextDisabled?'disabled':'')+'>'+nextLabel+'</button>'+
+      '</div>'+
+    '</nav>';
+  }
+  function bindLinearNav(){
+    var nav=linearModuleNavData();
+    Array.prototype.forEach.call(document.querySelectorAll('[data-linear-course-map]'),function(btn){btn.onclick=returnToSchool;});
+    Array.prototype.forEach.call(document.querySelectorAll('[data-linear-prev]'),function(btn){btn.onclick=function(){if(nav.prev)openPlayerModule(nav.prev._id);};});
+    Array.prototype.forEach.call(document.querySelectorAll('[data-linear-next]'),function(btn){btn.onclick=function(){if(nav.next&&nav.currentDone)openPlayerModule(nav.next._id);};});
+  }
   function publishExperience(view){if(selectedModule)saveModuleWork(readModuleWork());window.CafassoCourseExperience={view:view,course:selectedCourse,module:selectedModule,submissions:courseSubmissions,work:selectedModule?readModuleWork():null};try{window.dispatchEvent(new CustomEvent('cafasso:course-experience-ready'));}catch(e){}}
   function blockText(block){var c=block.content||{};return c.text||c.body||c.description||c.url||c.link||'';}
   function youtubeEmbed(url){var s=String(url||''),m=s.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/);return m?'https://www.youtube.com/embed/'+m[1]:'';}
@@ -315,6 +374,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     var pct=status.total?Math.round(status.done/status.total*100):100;
 
     main.innerHTML='<div class="module-detail">'+
+      (!missionMode?renderLinearNav('top'):'')+
       '<div class="module-progress"><strong>Contenidos obligatorios: '+status.done+' de '+status.total+'</strong>'+
       '<div class="mini"><span style="width:'+pct+'%"></span></div>'+
       '<small style="color:var(--muted)">'+(status.ready?'Ya cumpliste todos los requisitos de este módulo.':'Completá los contenidos señalados como obligatorios para poder cerrar el módulo.')+'</small></div>'+
@@ -323,8 +383,11 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
       (done?'Módulo completado':status.ready?'¡Módulo listo para completar!':'Todavía faltan contenidos obligatorios')+
       '</strong><p>'+(done?'El progreso de esta etapa ya quedó guardado.':status.ready?'CAFASSO cerrará esta etapa cuando completes la última misión.':'Cuando completes los contenidos obligatorios se habilitará el cierre de la etapa.')+
       '</p></div><button id="completeModule" class="btn '+(done?'done':'')+'" '+(!done&&!status.ready?'disabled':'')+'>'+
-      (done?'✓ Completado':'Completar etapa')+'</button></div></div>';
+      (done?'✓ Completado':'Completar etapa')+'</button></div></div>'+
+      (!missionMode?renderLinearNav('bottom'):'')+
+      '</div>';
 
+    if(!missionMode)bindLinearNav();
     var complete=document.getElementById('completeModule');
     if(complete)complete.onclick=function(){saveModuleProgress(!done);};
     Array.prototype.forEach.call(document.querySelectorAll('[data-review]'),function(b){b.onclick=function(){toggleReview(b.getAttribute('data-review'));};});
