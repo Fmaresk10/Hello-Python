@@ -67,10 +67,11 @@ button{cursor:pointer}
   top:50%;
   width:max(100vw,177.68vh);
   height:max(100vh,56.28vw);
-  transform:translate(-50%,-50%);
+  transform:translate3d(-50%,-50%,0);
   transform-origin:center;
   container-type:size;
-  animation:cafassoSceneBreath 18s ease-in-out infinite alternate;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
 }
 .login-scene-image{
   position:absolute;
@@ -81,6 +82,10 @@ button{cursor:pointer}
   user-select:none;
   -webkit-user-drag:none;
   pointer-events:none;
+  image-rendering:auto;
+  transform:translateZ(0);
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
 }
 
 .cafasso-mark,.bitacora-prop,.bitacora-label{display:none!important}
@@ -377,18 +382,12 @@ button{cursor:pointer}
 }
 
 .login-shell.entering .login-scene-stage{
-  animation:none;
-  transform:translate(-50%,-50%) scale(1.035);
   filter:brightness(.72);
-  transition:transform .52s ease,filter .48s ease;
+  transition:filter .48s ease;
 }
 .login-shell.entering .login-transition{opacity:1;visibility:visible}
 .login-shell.entering .login-transition__inner{opacity:1;transform:none}
 
-@keyframes cafassoSceneBreath{
-  from{transform:translate(-50%,-50%) scale(1)}
-  to{transform:translate(-50%,-50%) scale(1.012)}
-}
 @keyframes cafassoAmbientLight{
   from{transform:translate3d(-1.5%,-.8%,0);opacity:.72}
   to{transform:translate3d(1.8%,1.2%,0);opacity:1}
@@ -407,7 +406,7 @@ button{cursor:pointer}
   .session-note-actions button{font-size:.62cqw}
 }
 @media(prefers-reduced-motion:reduce){
-  .login-scene-stage,.login-shell:before,.login-shell:after{animation:none!important}
+  .login-shell:before,.login-shell:after{animation:none!important}
   .login-transition,.login-transition__inner{transition:none!important}
 }
 </style>
