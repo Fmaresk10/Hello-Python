@@ -398,12 +398,96 @@ button{cursor:pointer}
 }
 
 @media(max-width:760px){
+  html{-webkit-text-size-adjust:100%}
   .login-shell:after{box-shadow:inset 0 0 80px 25px rgba(10,20,15,.18)}
-  #loginBox .field input{font-size:1.12cqw}
+  #loginBox .field input{font-size:16px}
   #go{font-size:1.55cqw}
-  .message{font-size:.68cqw}
-  .session-note-text{font-size:.65cqw}
-  .session-note-actions button{font-size:.62cqw}
+  .message{font-size:12px}
+  .session-note-text{font-size:12px}
+  .session-note-actions button{font-size:11px}
+}
+@media(max-width:760px) and (orientation:portrait){
+  /*
+    Mobile usa la misma escena original sin deformarla. Desplazamos el
+    encuadre para que el bloque dibujado del cuaderno quede centrado.
+  */
+  .login-scene-stage{
+    left:34%;
+    top:50%;
+  }
+
+  #loginBox .field input{
+    padding-left:1.05cqw;
+    padding-right:1.05cqw;
+    border-radius:.72cqw;
+  }
+
+  .message{
+    padding:.55cqw .72cqw;
+    border-radius:.55cqw;
+    line-height:1.35;
+  }
+
+  .session-note{
+    padding:.62cqw .72cqw;
+    border-radius:.62cqw;
+  }
+  .session-note-text{gap:.45cqw}
+  .session-note-actions{
+    gap:.65cqw;
+    margin-top:.42cqw;
+  }
+  .session-note-actions #continueSession{
+    padding:.36cqw .55cqw;
+    border-radius:.4cqw;
+  }
+
+  /* Cambio de contraseña: modal centrado dentro del recorte móvil. */
+  #changeBox{
+    left:42.05%;
+    top:33.5%;
+    width:24.1%;
+    padding:1.2cqw;
+    border-radius:.9cqw;
+    box-shadow:0 1.2cqw 2.8cqw rgba(26,15,9,.34);
+  }
+  #changeBox .secure{
+    gap:.65cqw;
+    margin-bottom:.85cqw;
+    padding:.68cqw;
+  }
+  #changeBox .secure b{font-size:.88cqw}
+  #changeBox .secure small{font-size:.67cqw}
+  #changeBox .field{margin:.72cqw 0}
+  #changeBox .field label{
+    margin-bottom:.28cqw;
+    font-size:.62cqw;
+  }
+  #changeBox .field input{
+    min-height:3.15cqw;
+    padding:.68cqw .78cqw;
+    border-radius:.58cqw;
+    font-size:16px;
+  }
+  #change{
+    min-height:3.05cqw;
+    margin-top:.72cqw;
+    border-radius:.58cqw;
+    font-size:.82cqw;
+  }
+  .login-shell.changing .message{
+    left:42.05%;
+    top:69.5%;
+    width:24.1%;
+  }
+}
+@supports(height:100svh){
+  @media(max-width:760px) and (orientation:portrait){
+    .login-scene-stage{
+      width:max(100vw,177.68svh);
+      height:max(100svh,56.28vw);
+    }
+  }
 }
 @media(prefers-reduced-motion:reduce){
   .login-shell:before,.login-shell:after{animation:none!important}
