@@ -89,6 +89,8 @@ button{cursor:pointer}
   position:absolute;
   inset:0;
   z-index:3;
+  width:100%;
+  height:100%;
   pointer-events:none;
 }
 .login-sheet{
@@ -114,12 +116,12 @@ button{cursor:pointer}
   position:absolute;
   left:41.02%;
   width:25.18%;
-  height:6.55%;
+  height:6.20%;
   margin:0;
   pointer-events:auto;
 }
-#loginBox .field:nth-child(1){top:54.35%}
-#loginBox .field:nth-child(2){top:62.35%}
+#loginBox .field:nth-child(1){top:54.62%}
+#loginBox .field:nth-child(2){top:62.58%}
 
 .field label{
   position:absolute;
@@ -157,13 +159,28 @@ button{cursor:pointer}
     0 0 0 .18cqw rgba(229,199,143,.13),
     inset 0 1px 0 rgba(255,255,255,.08);
 }
+#loginBox .field input:-webkit-autofill,
+#loginBox .field input:-webkit-autofill:hover,
+#loginBox .field input:-webkit-autofill:focus,
+#loginBox .field input:-webkit-autofill:active{
+  -webkit-text-fill-color:#f6ead4!important;
+  caret-color:#f6ead4!important;
+  -webkit-box-shadow:
+    0 0 0 1000px rgb(52,29,18) inset,
+    0 .32cqw .7cqw rgba(36,18,9,.16)!important;
+  box-shadow:
+    0 0 0 1000px rgb(52,29,18) inset,
+    0 .32cqw .7cqw rgba(36,18,9,.16)!important;
+  border-color:rgba(232,207,164,.35)!important;
+  transition:background-color 9999s ease-out 0s!important;
+}
 
 #go{
   position:absolute;
   left:41.02%;
-  top:71.12%;
+  top:71.10%;
   width:25.18%;
-  height:7.62%;
+  height:7.55%;
   min-height:0;
   margin:0;
   padding:0 1.1cqw;
@@ -403,16 +420,16 @@ button{cursor:pointer}
 </head>
 <body>
 <main class="login-shell" id="loginShell">
-  <div class="login-scene-stage" aria-hidden="true">
+  <div class="login-scene-stage">
     <img
       class="login-scene-image"
       src="https://static.wixstatic.com/media/47bf07_8b2cea8727f749adab08dedca208311b~mv2.jpg"
       alt=""
+      aria-hidden="true"
       fetchpriority="high"
       decoding="async">
-  </div>
 
-  <section class="login-object" aria-label="Ingreso a CAFASSO">
+    <section class="login-object" aria-label="Ingreso a CAFASSO">
     <article class="login-sheet">
       <div class="sheet-kicker">CAFASSO</div>
       <h1 id="title">Bienvenido.</h1>
@@ -462,7 +479,8 @@ button{cursor:pointer}
         </div>
       </div>
     </article>
-  </section>
+    </section>
+  </div>
 
   <div class="login-transition" id="loginTransition" aria-hidden="true">
     <div class="login-transition__inner">
