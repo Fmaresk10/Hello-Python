@@ -146,7 +146,7 @@
     app.innerHTML = `
       <main class="cafasso-house">
         <img class="cafasso-house__image" src="${HOUSE_BG}" alt="Casa CAFASSO, espacio cálido de encuentro y acompañamiento">
-        ${isAdmin ? '<a class="cafasso-admin-monitor" href="./admin.html" target="_top" aria-label="Abrir panel de administración"><span class="cafasso-admin-monitor__body"><span class="cafasso-admin-monitor__screen"><small>CAFASSO</small><strong>Administración</strong><em>Entrar →</em></span></span><span class="cafasso-admin-monitor__neck" aria-hidden="true"></span><span class="cafasso-admin-monitor__base" aria-hidden="true"></span></a>' : ''}
+        ${isAdmin ? '<a class="cafasso-admin-monitor" href="./admin.html" target="_top" aria-label="Abrir panel de administración"><img src="https://static.wixstatic.com/media/47bf07_467e3b69bf3e40ad9940e70c321b1599~mv2.png" alt="Monitor con panel de administración CAFASSO"></a>' : ''}
         <button class="cafasso-space-link cafasso-space-link--casa" data-space="patio" type="button">Patio</button>
         <button class="cafasso-space-link cafasso-space-link--house-recursos" data-space="recursos" type="button">Recursos</button>
         <button class="cafasso-bitacora-object" data-action="bitacora-open" type="button" aria-label="Abrir Bitácora">
