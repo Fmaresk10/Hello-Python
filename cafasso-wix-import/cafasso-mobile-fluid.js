@@ -242,6 +242,11 @@
           font-size:12px!important;
           line-height:1!important;
         }
+        html.cafasso-mobile-fluid[data-cafasso-world-role="formador"] .cafasso-global-counters,
+        html.cafasso-mobile-fluid[data-cafasso-world-role="admin"] .cafasso-global-counters{
+          display:none!important;
+        }
+
         html.cafasso-mobile-fluid body:not(.cafasso-mission-mode):not(.cafasso-journey-mode) #cafassoGlobalCounters .cafasso-profile-hud-button{
           width:36px!important;
           height:36px!important;
