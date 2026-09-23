@@ -124,16 +124,22 @@
   window.CafassoWorldRole = worldRole;
 
   if (space === 'patio') {
-    app.innerHTML = '<main class="cafasso-patio"><img class="cafasso-patio__image" src="${PATIO_BG}" alt="Patio salesiano CAFASSO"><button class="cafasso-space-link cafasso-space-link--patio-home" data-space="house" type="button">Casa</button><button class="cafasso-space-link cafasso-space-link--patio-escuela" data-space="escuela" type="button">Escuela</button><button class="cafasso-space-link cafasso-space-link--patio-parroquia" data-space="parroquia" type="button">Parroquia</button></main>';
+    app.innerHTML = `<main class="cafasso-patio"><img class="cafasso-patio__image" src="${PATIO_BG}" alt="Patio salesiano CAFASSO"><button class="cafasso-space-link cafasso-space-link--patio-home" data-space="house" type="button">Casa</button><button class="cafasso-space-link cafasso-space-link--patio-escuela" data-space="escuela" type="button">Escuela</button><button class="cafasso-space-link cafasso-space-link--patio-parroquia" data-space="parroquia" type="button">Parroquia</button>${isAdmin ? '<a class="cafasso-role-tool cafasso-role-tool--patio" href="./grupos.html" target="_top" aria-label="Administrar grupos"><small>ADMINISTRACIÓN</small><span>Grupos</span><b>→</b></a>' : ''}</main>`;
   } else if (space === 'parroquia') {
-    app.innerHTML = `<main class="cafasso-parroquia"><img class="cafasso-parroquia__image" src="${PARROQUIA_BG}" alt="Espacio Parroquia de CAFASSO"><button class="cafasso-space-link cafasso-space-link--parroquia-patio" data-space="patio" type="button">Patio</button></main>`;
+    app.innerHTML = `<main class="cafasso-parroquia"><img class="cafasso-parroquia__image" src="${PARROQUIA_BG}" alt="Espacio Parroquia de CAFASSO"><button class="cafasso-space-link cafasso-space-link--parroquia-patio" data-space="patio" type="button">Patio</button>${isAdmin ? '<a class="cafasso-role-tool cafasso-role-tool--parish" href="./parish-songbook-admin.html" target="_top" aria-label="Administrar Cancionero"><small>ADMINISTRACIÓN</small><span>Cancionero</span><b>→</b></a>' : ''}</main>`;
   } else if (space === 'escuela') {
-    app.innerHTML = `<main class="cafasso-escuela"><img class="cafasso-escuela__image" src="${ESCUELA_BG}" alt="Espacio Escuela de CAFASSO"><button class="cafasso-space-link cafasso-space-link--escuela-patio" data-space="patio" type="button">Patio</button>${isFormador ? '<a class="cafasso-formador-school-link" href="./formador.html" target="_top" aria-label="Abrir Mesa del Formador"><small>FORMADOR</small><span>Mesa de trabajo</span><b>→</b></a>' : ''}</main>`;
+    const schoolStaffTool = isFormador
+      ? '<a class="cafasso-role-tool cafasso-role-tool--school" href="./formador.html" target="_top" aria-label="Abrir Mesa del Formador"><small>FORMADOR</small><span>Mesa de trabajo</span><b>→</b></a>'
+      : isAdmin
+        ? '<a class="cafasso-role-tool cafasso-role-tool--school" href="./admin.html#cursos" target="_top" aria-label="Administrar cursos"><small>ADMINISTRACIÓN</small><span>Cursos</span><b>→</b></a>'
+        : '';
+    app.innerHTML = `<main class="cafasso-escuela"><img class="cafasso-escuela__image" src="${ESCUELA_BG}" alt="Espacio Escuela de CAFASSO"><button class="cafasso-space-link cafasso-space-link--escuela-patio" data-space="patio" type="button">Patio</button>${schoolStaffTool}</main>`;
   } else if (space === 'recursos') {
     app.innerHTML = `
       <main class="cafasso-recursos">
         <img class="cafasso-recursos__image" src="${RECURSOS_BG}" alt="Biblioteca de Recursos CAFASSO">
         <button class="cafasso-space-link cafasso-space-link--recursos-home" data-space="house" type="button">Casa</button>
+        ${isAdmin ? '<a class="cafasso-role-tool cafasso-role-tool--resources" href="./resource-admin.html" target="_top" aria-label="Administrar Biblioteca de Recursos"><small>ADMINISTRACIÓN</small><span>Biblioteca</span><b>→</b></a>' : ''}
         <div class="cafasso-recursos__shelf" data-resource-shelf aria-label="Biblioteca de recursos"></div>
       </main>`;
   } else {
