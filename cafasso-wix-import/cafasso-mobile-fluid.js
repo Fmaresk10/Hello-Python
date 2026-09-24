@@ -457,7 +457,10 @@
     }else{
       await new Promise(resolve=>requestAnimationFrame(resolve));
     }
-    requestAnimationFrame(()=>document.documentElement.classList.add('cafasso-mobile-fluid-ready'));
+    requestAnimationFrame(()=>{
+      document.documentElement.classList.add('cafasso-mobile-fluid-ready');
+      refreshEdgeFills();
+    });
   }
 
   function navigate(url,options={}){
@@ -718,6 +721,24 @@
     style=document.createElement('style');
     style.id='cafassoShellFullBleedCompatStyles';
     style.textContent=`
+      html.cafasso-shell-fullbleed body{
+        background:#102f33!important;
+      }
+      html.cafasso-shell-fullbleed #app{
+        position:relative!important;
+        z-index:1!important;
+        background:transparent!important;
+      }
+      html.cafasso-shell-fullbleed .cafasso-fullbleed-backdrop{
+        position:fixed;
+        z-index:0;
+        inset:-2px;
+        pointer-events:none;
+        background-repeat:no-repeat;
+        background-size:cover;
+        background-position:center center;
+        transform:translateZ(0) scale(1.003);
+      }
       html.cafasso-shell-fullbleed .cafasso-house,
       html.cafasso-shell-fullbleed .cafasso-patio,
       html.cafasso-shell-fullbleed .cafasso-parroquia,
@@ -726,6 +747,7 @@
         height:100dvh!important;
         min-height:100dvh!important;
         inset:0!important;
+        background:transparent!important;
       }
       html.cafasso-shell-fullbleed :is(
         .cafasso-house-panorama,
@@ -740,37 +762,6 @@
         overflow:visible!important;
       }
 
-      /*
-        El panorama conserva el alto lógico usado para posicionar objetos.
-        Sólo la imagen visual se prolonga hasta cubrir la safe-area inferior.
-      */
-      html.cafasso-shell-fullbleed :is(
-        .cafasso-house-panorama,
-        .cafasso-patio-panorama,
-        .cafasso-school-panorama,
-        .cafasso-parish-panorama,
-        .cafasso-resources-panorama
-      ) > :is(
-        .cafasso-house__image,
-        .cafasso-patio__image,
-        .cafasso-escuela__image,
-        .cafasso-parroquia__image,
-        .cafasso-recursos__image
-      ){
-        top:0!important;
-        right:0!important;
-        bottom:auto!important;
-        left:0!important;
-        width:100%!important;
-        height:calc(100% + var(--cafasso-shell-safe-bottom,0px))!important;
-        max-height:none!important;
-        object-fit:cover!important;
-        object-position:center top!important;
-      }
-
-      html.cafasso-shell-fullbleed .cafasso-mobile-edge-fill--bottom{
-        display:none!important;
-      }
       .cafasso-mobile-edge-fill{
         position:absolute;
         left:0;
@@ -797,21 +788,30 @@
 
   function refreshEdgeFills(){
     if(!document.documentElement.classList.contains('cafasso-shell-fullbleed'))return;
-    const panoramas=document.querySelectorAll('.cafasso-house-panorama,.cafasso-patio-panorama,.cafasso-school-panorama,.cafasso-parish-panorama,.cafasso-resources-panorama');
-    panoramas.forEach(panorama=>{
-      const image=panorama.querySelector('.cafasso-house__image,.cafasso-patio__image,.cafasso-escuela__image,.cafasso-parroquia__image,.cafasso-recursos__image');
-      const src=image?.currentSrc||image?.src;
-      if(!src)return;
-      ['top','bottom'].forEach(edge=>{
-        let fill=panorama.querySelector(`:scope > .cafasso-mobile-edge-fill--${edge}`);
-        if(!fill){
-          fill=document.createElement('div');
-          fill.className=`cafasso-mobile-edge-fill cafasso-mobile-edge-fill--${edge}`;
-          fill.setAttribute('aria-hidden','true');
-          panorama.insertBefore(fill,panorama.firstChild);
-        }
-        fill.style.backgroundImage=`url("${String(src).replace(/"/g,'%22')}")`;
-      });
+    const image=document.querySelector('.cafasso-house__image,.cafasso-patio__image,.cafasso-escuela__image,.cafasso-parroquia__image,.cafasso-recursos__image');
+    const src=image?.currentSrc||image?.src;
+    if(!src)return;
+
+    let backdrop=document.querySelector('.cafasso-fullbleed-backdrop');
+    if(!backdrop){
+      backdrop=document.createElement('div');
+      backdrop.className='cafasso-fullbleed-backdrop';
+      backdrop.setAttribute('aria-hidden','true');
+      document.body.insertBefore(backdrop,document.body.firstChild);
+    }
+    backdrop.style.backgroundImage=`url("${String(src).replace(/"/g,'%22')}")`;
+
+    const panorama=image.closest('.cafasso-house-panorama,.cafasso-patio-panorama,.cafasso-school-panorama,.cafasso-parish-panorama,.cafasso-resources-panorama');
+    if(!panorama)return;
+    ['top','bottom'].forEach(edge=>{
+      let fill=panorama.querySelector(`:scope > .cafasso-mobile-edge-fill--${edge}`);
+      if(!fill){
+        fill=document.createElement('div');
+        fill.className=`cafasso-mobile-edge-fill cafasso-mobile-edge-fill--${edge}`;
+        fill.setAttribute('aria-hidden','true');
+        panorama.insertBefore(fill,panorama.firstChild);
+      }
+      fill.style.backgroundImage=`url("${String(src).replace(/"/g,'%22')}")`;
     });
   }
 
