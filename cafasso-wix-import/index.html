@@ -138,7 +138,10 @@ html.cafasso-app-ready #cafassoLaunch{opacity:0;visibility:hidden;pointer-events
   history.replaceState({cafassoWorld:true},'',location.href);
 
   window.addEventListener('resize',syncViewport,{passive:true});
-  window.addEventListener('orientationchange',syncViewport,{passive:true});
+  window.addEventListener('orientationchange',()=>{
+    syncViewport();
+    setTimeout(syncShellBackdrop,120);
+  },{passive:true});
   window.visualViewport?.addEventListener('resize',syncViewport,{passive:true});
   window.addEventListener('online',syncNetwork,{passive:true});
   window.addEventListener('offline',syncNetwork,{passive:true});
@@ -147,7 +150,7 @@ html.cafasso-app-ready #cafassoLaunch{opacity:0;visibility:hidden;pointer-events
     const url=new URL('./world.html',location.href);
     url.search=location.search;
     ['code','state','error','error_description'].forEach(key=>url.searchParams.delete(key));
-    url.searchParams.set('__cafassoBuild','1112');
+    url.searchParams.set('__cafassoBuild','1113');
     url.hash=location.hash;
     return url.href;
   };
@@ -156,8 +159,27 @@ html.cafasso-app-ready #cafassoLaunch{opacity:0;visibility:hidden;pointer-events
     .catch(()=>null)
     .finally(()=>{frame.src=worldUrl()});
 
+  const syncShellBackdrop=()=>{
+    try{
+      const doc=frame.contentDocument;
+      const image=doc?.querySelector('.cafasso-house__image,.cafasso-patio__image,.cafasso-escuela__image,.cafasso-parroquia__image,.cafasso-recursos__image');
+      const src=image?.currentSrc||image?.src;
+      if(!src)return;
+      [document.documentElement,document.body].forEach(node=>{
+        node.style.backgroundColor='#102f33';
+        node.style.backgroundImage=`url("${String(src).replace(/"/g,'%22')}")`;
+        node.style.backgroundRepeat='no-repeat';
+        node.style.backgroundPosition='center bottom';
+        node.style.backgroundSize='cover';
+      });
+    }catch(error){}
+  };
+
   frame.addEventListener('load',()=>{
     postShellMetrics();
+    syncShellBackdrop();
+    setTimeout(syncShellBackdrop,120);
+    setTimeout(syncShellBackdrop,480);
     try{
       const doc=frame.contentDocument;
       doc?.addEventListener('click',event=>{
