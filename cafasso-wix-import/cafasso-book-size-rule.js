@@ -123,6 +123,8 @@
     loadHouseScript('./cafasso-house-v3-layout.js?v=8', 'cafasso-house-v3-layout-loader');
     loadHouseScript('./cafasso-patio-v3-layout.js?v=1', 'cafasso-patio-v3-layout-loader');
     loadHouseScript('./cafasso-parish-v3-layout.js?v=12', 'cafasso-parish-v3-layout-loader');
+    // Debe ser la última capa visual: fija la geometría mobile después de todos los estilos históricos de Parroquia.
+    loadHouseScript('./parish-mobile-final-geometry.js?v=20260924-4', 'cafasso-parish-mobile-final-geometry-loader');
   }
 
   function boot() {
