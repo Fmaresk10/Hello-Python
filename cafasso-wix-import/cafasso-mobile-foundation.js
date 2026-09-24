@@ -237,16 +237,14 @@
 
   function updateViewport() {
     const vv = window.visualViewport;
-    const shellHeight = Number(window.__cafassoShellMetrics?.height || 0);
-    const shellWidth = Number(window.__cafassoShellMetrics?.width || 0);
-    const height = Math.max(320, Math.round(shellHeight || vv?.height || window.innerHeight || document.documentElement.clientHeight || 0));
+    const height = Math.max(320, Math.round(vv?.height || window.innerHeight || document.documentElement.clientHeight || 0));
     document.documentElement.style.setProperty('--cafasso-vh', `${height}px`);
 
     const root = document.documentElement;
     const isMobile = mobileLike();
     root.classList.toggle('cafasso-mobile', isMobile);
 
-    const portrait = height >= Math.round(shellWidth || vv?.width || window.innerWidth || 0);
+    const portrait = height >= Math.round(vv?.width || window.innerWidth || 0);
     root.classList.toggle('cafasso-mobile-portrait', isMobile && portrait);
     root.classList.toggle('cafasso-mobile-landscape', isMobile && !portrait);
 
@@ -259,7 +257,7 @@
         mobile: isMobile,
         portrait,
         keyboardOpen: Boolean(keyboardOpen),
-        width: Math.round(shellWidth || vv?.width || window.innerWidth || 0),
+        width: Math.round(vv?.width || window.innerWidth || 0),
         height
       }
     }));
