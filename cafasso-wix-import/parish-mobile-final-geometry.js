@@ -10,8 +10,18 @@
   style.id = 'cafassoParishMobileFinalGeometry';
   style.textContent = `
     @media(max-width:820px),(pointer:coarse){
+      html.cafasso-mobile body .cafasso-parroquia .cafasso-parish-panorama .cafasso-space-link--parroquia-patio{
+        left:calc(50% + 8cm)!important;
+        right:auto!important;
+        top:47%!important;
+        bottom:auto!important;
+        transform:translate(-50%,-50%)!important;
+      }
+      html.cafasso-mobile body .cafasso-parroquia .cafasso-parish-panorama .cafasso-space-link--parroquia-patio:hover{
+        transform:translate(-50%,calc(-50% - 2px))!important;
+      }
       html.cafasso-mobile body .cafasso-parroquia .cafasso-parish-panorama .cafasso-parish-lectionary{
-        left:28.4%!important;
+        left:calc(28.4% - 2cm)!important;
         right:auto!important;
         top:auto!important;
         bottom:53.6%!important;
@@ -29,7 +39,7 @@
         left:auto!important;
         right:5.2%!important;
         top:auto!important;
-        bottom:9.8%!important;
+        bottom:calc(9.8% + 8cm)!important;
         width:138px!important;
         height:94px!important;
         transform:perspective(720px) rotateX(7deg) rotateZ(-3deg)!important;
