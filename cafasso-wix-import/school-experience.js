@@ -226,6 +226,14 @@
       const course = item.course, id = item.id, percent = item.percent, done = item.done;
       return `<button class="cafasso-school-course ${done ? 'is-done' : ''}" type="button" data-school-course="${esc(id)}"><span><strong>${esc(course.title || 'Curso')}</strong><small>${done ? 'Camino completado' : percent > 0 ? 'Seguí desde donde quedaste' : 'Un camino nuevo te espera'}</small></span><span class="cafasso-school-course__progress">${Math.round(percent)}%</span></button>`;
     }).join('');
+
+    host.querySelectorAll('[data-school-course]').forEach(button => {
+      button.addEventListener('click', () => {
+        const courseId = String(button.dataset.schoolCourse || '').trim();
+        if (!courseId) return;
+        openCourseMap(courseId, data);
+      });
+    });
   }
 
   function findProgress(data, courseId) {
