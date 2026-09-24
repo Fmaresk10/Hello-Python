@@ -6,7 +6,7 @@
   window.__cafassoMobileParishInstalled = true;
 
   const STYLE_ID = 'cafassoMobileParishStyles';
-  const PAN_KEY = 'cafasso-parish-panorama-v1';
+  const PAN_KEY = 'cafasso-parish-panorama-v2';
   const ASPECT = 16 / 9;
   const DEFAULT_PROGRESS = .48;
 
