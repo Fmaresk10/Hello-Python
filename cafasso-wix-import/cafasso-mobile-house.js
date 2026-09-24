@@ -6,7 +6,7 @@
   window.__cafassoMobileHouseInstalled = true;
 
   const STYLE_ID = 'cafassoMobileHouseStyles';
-  const PAN_KEY = 'cafasso-house-panorama-v1';
+  const PAN_KEY = 'cafasso-house-panorama-v2';
   const ASPECT = 16 / 9;
   const DEFAULT_PROGRESS = .56;
 
