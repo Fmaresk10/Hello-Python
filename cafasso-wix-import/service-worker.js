@@ -1,4 +1,4 @@
-const CAFASSO_CACHE='cafasso-shell-20260923-2';
+const CAFASSO_CACHE='cafasso-shell-20260924-1';
 const SCOPE=self.registration.scope;
 const url=path=>new URL(path,SCOPE).href;
 const OFFLINE=url('./offline.html');
@@ -18,7 +18,7 @@ const PRECACHE=[
 ].map(url);
 
 self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CAFASSO_CACHE).then(cache=>cache.addAll(PRECACHE)));
+  event.waitUntil(caches.open(CAFASSO_CACHE).then(cache=>cache.addAll(PRECACHE)).then(()=>self.skipWaiting()));
 });
 
 self.addEventListener('activate',event=>{
