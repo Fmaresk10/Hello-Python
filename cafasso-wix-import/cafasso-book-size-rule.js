@@ -30,8 +30,21 @@
     observer.observe(shelf, { childList: true, subtree: true });
   }
 
+  function scriptAlreadyPresent(src) {
+    try {
+      const target = new URL(src, location.href);
+      return Array.from(document.scripts).some(node => {
+        if (!node.src) return false;
+        const current = new URL(node.src, location.href);
+        return current.origin === target.origin && current.pathname === target.pathname;
+      });
+    } catch (error) {
+      return false;
+    }
+  }
+
   function loadHouseScript(src, marker) {
-    if (document.querySelector(`script[data-${marker}]`)) return;
+    if (document.querySelector(`script[data-${marker}]`) || scriptAlreadyPresent(src)) return;
     const script = document.createElement('script');
     const url = new URL(src, location.href);
     url.searchParams.set('build', BUILD_VERSION);
@@ -112,8 +125,12 @@
     loadHouseScript('./cafasso-parish-v3-layout.js?v=12', 'cafasso-parish-v3-layout-loader');
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installRule, { once: true });
-  else installRule();
-  setTimeout(installRule, 180);
-  loadHouseExperiences();
+  function boot() {
+    installRule();
+    loadHouseExperiences();
+    setTimeout(installRule, 180);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
+  else boot();
 })();
