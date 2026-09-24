@@ -304,9 +304,59 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
 
   function loadCourseSubmissions(courseId){return fetch(SUBMISSION_API+'?userId='+encodeURIComponent(session.user._id)+'&courseId='+encodeURIComponent(courseId),{cache:'no-store'}).then(function(r){return r.json().then(function(j){return {r:r,j:j};});}).then(function(x){if(!x.r.ok||!x.j.ok)throw new Error(x.j.error||'No se pudieron cargar las respuestas.');courseSubmissions=x.j.submissions||[];}).catch(function(e){console.warn(e);courseSubmissions=[];});}
   window.CafassoReloadCourseSubmissions=function(){if(!selectedCourse)return Promise.resolve();var before={};courseSubmissions.forEach(function(s){before[s.activityId]=s.status;});return loadCourseSubmissions(selectedCourse._id).then(function(){courseSubmissions.forEach(function(s){if(s.status==='Aprobada'&&before[s.activityId]!=='Aprobada'){try{window.dispatchEvent(new CustomEvent('cafasso:block-completed',{detail:{blockId:s.activityId,status:s.status}}));}catch(e){}}});if(selectedModule){publishExperience('module');renderModule();}});};
-  function openCourse(id,moduleId){var main=document.getElementById('main');var allowed=(assignedCourses()||[]).some(function(c){return String(c._id)===String(id);});if(!allowed&&!isAdmin()){main.innerHTML='<div class="error">Este curso no está asignado a tu cuenta.</div>';return;}try{sessionStorage.setItem('cafassoSelectedCourse',id);}catch(e){}main.innerHTML='<div class="loading">Cargando curso…</div>';fetch(COURSE_API+'?id='+encodeURIComponent(id),{cache:'no-store'}).then(function(r){return r.json().then(function(j){return {r:r,j:j};});}).then(function(x){if(!x.r.ok||!x.j.ok)throw new Error(x.j.error||'No se pudo cargar el curso.');selectedCourse=x.j.course;selectedCourse.myProgress=getProgress(id);selectedModule=null;return loadCourseSubmissions(id);}).then(function(){if(moduleId){var mods=publishedModules(),idx=mods.findIndex(function(m){return String(m._id)===String(moduleId);}),doneIds=completedModules(id);if(idx>=0&&moduleUnlocked(mods[idx],idx,mods,doneIds)){selectedModule=mods[idx];navigate('modulo');return;}try{sessionStorage.setItem('cafassoSchoolNotice',idx>=0?'Esta etapa todavía está bloqueada. Completá la anterior para continuar.':'No encontramos esa etapa en el curso.');}catch(e){}}returnToSchool();}).catch(function(e){main.innerHTML='<div class="error"><strong>No pudimos abrir esta misión.</strong><br>'+esc(e.message)+'</div>';document.getElementById('app')?.classList.add('cafasso-boot-ready');});}
-  function publishedModules(){return (selectedCourse.modules||[]).filter(function(m){return m.status==='Publicado'||isAdmin();});}
-  function moduleUnlocked(mod,index,mods,doneIds){if(index===0)return true;if(mod.unlockAfterPrevious===false)return true;return doneIds.indexOf(mods[index-1]._id)!==-1;}
+  function openCourse(id,moduleId){
+    var main=document.getElementById('main');
+    var allowed=(assignedCourses()||[]).some(function(c){return String(c._id||c.id)===String(id);});
+    if(!allowed&&!isAdmin()){
+      main.innerHTML='<div class="error">Este curso no está asignado a tu cuenta.</div>';
+      document.getElementById('app')?.classList.add('cafasso-boot-ready');
+      return;
+    }
+    try{sessionStorage.setItem('cafassoSelectedCourse',id);}catch(e){}
+    main.innerHTML='<div class="loading">Cargando curso…</div>';
+    fetch(COURSE_API+'?id='+encodeURIComponent(id),{cache:'no-store'})
+      .then(function(r){return r.json().then(function(j){return {r:r,j:j};});})
+      .then(function(x){
+        if(!x.r.ok||!x.j.ok)throw new Error(x.j.error||'No se pudo cargar el curso.');
+        selectedCourse=x.j.course;
+        selectedCourse.myProgress=getProgress(id);
+        selectedModule=null;
+        return loadCourseSubmissions(id);
+      })
+      .then(function(){
+        if(!moduleId){returnToSchool();return;}
+        var requested=String(moduleId).trim();
+        var allMods=(selectedCourse&&selectedCourse.modules)||[];
+        var mods=publishedModules();
+        var idx=mods.findIndex(function(m){return moduleIdOf(m)===requested;});
+        var chosen=idx>=0?mods[idx]:allMods.find(function(m){return moduleIdOf(m)===requested&&modulePublished(m);});
+        if(!chosen){
+          main.innerHTML='<div class="error"><strong>No pudimos abrir esta misión.</strong><br>El módulo solicitado no aparece entre las etapas publicadas del curso.</div>';
+          document.getElementById('app')?.classList.add('cafasso-boot-ready');
+          return;
+        }
+        var chosenIndex=mods.findIndex(function(m){return moduleIdOf(m)===moduleIdOf(chosen);});
+        var doneIds=completedModules(id).map(String);
+        if(chosenIndex>=0&&!moduleUnlocked(chosen,chosenIndex,mods,doneIds)){
+          main.innerHTML='<div class="error"><strong>Esta etapa todavía está bloqueada.</strong><br>Completá la anterior para continuar.</div>';
+          document.getElementById('app')?.classList.add('cafasso-boot-ready');
+          return;
+        }
+        selectedModule=chosen;
+        navigate('modulo');
+      })
+      .catch(function(e){
+        main.innerHTML='<div class="error"><strong>No pudimos abrir esta misión.</strong><br>'+esc(e.message)+'</div>';
+        document.getElementById('app')?.classList.add('cafasso-boot-ready');
+      });
+  }
+  function publishedModules(){return (selectedCourse.modules||[]).filter(modulePublished);}
+  function moduleUnlocked(mod,index,mods,doneIds){
+    if(index===0)return true;
+    if(mod.unlockAfterPrevious===false)return true;
+    var previousId=moduleIdOf(mods[index-1]);
+    return doneIds.map(String).indexOf(previousId)!==-1;
+  }
   function linearModuleNavData(){
     var mods=publishedModules(),index=mods.findIndex(function(m){return String(m._id)===String(selectedModule&&selectedModule._id);});
     var doneIds=completedModules(selectedCourse&&selectedCourse._id),currentDone=index>=0&&doneIds.indexOf(mods[index]._id)!==-1;
@@ -359,7 +409,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     selectedModule=mods[idx];
     var target=new URL(location.href);
     target.searchParams.set('player','1');
-    target.searchParams.set('playerBuild','24');
+    target.searchParams.set('playerBuild','26');
     target.searchParams.set('course',String(selectedCourse._id));
     target.searchParams.set('module',String(moduleId));
     target.hash='modulo';
@@ -655,6 +705,6 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
 <script src="./cafasso-huellas-v2.js?v=3"></script>
 <script src="./cafasso-huella-rewards-v2.js?v=2"></script>
 <script src="./gamified-course.js?v=20260924-1"></script>
-<script src="./course-mobile-native.js?v=20260924-2"></script>
+<script src="./course-mobile-native.js?v=20260924-3"></script>
 </body>
 </html>
