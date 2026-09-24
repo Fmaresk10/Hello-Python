@@ -319,21 +319,35 @@
         </aside>`;
 
       panel.querySelector('[data-school-map-close]')?.addEventListener('click', () => { closeCourseMap(panel); });
-      panel.querySelectorAll('[data-school-module]:not(:disabled)').forEach(button => {
-        button.addEventListener('click', () => {
-          const module = modules[Number(button.dataset.schoolModuleIndex || 0)];
-          const id = moduleId(module);
-          if (!module || !id) return;
-          const target = new URL('./course-player.html', location.href);
-          target.searchParams.set('player', '1');
-          target.searchParams.set('playerBuild', '23');
-          target.searchParams.set('course', String(courseId));
-          target.searchParams.set('module', id);
-          target.hash = 'modulo';
-          if (window.CafassoMobileFluid?.active) window.CafassoMobileFluid.navigate(target.toString());
-          else location.href = target.toString();
-        });
-      });
+
+      panel.onclick = event => {
+        const button = event.target instanceof Element ? event.target.closest('[data-school-module]') : null;
+        if (!button || button.disabled || button.hasAttribute('disabled')) return;
+        const module = modules[Number(button.dataset.schoolModuleIndex || 0)];
+        const id = moduleId(module);
+        if (!module || !id) return;
+        event.preventDefault();
+        event.stopPropagation();
+
+        const target = new URL('./course-player.html', location.href);
+        target.searchParams.set('player', '1');
+        target.searchParams.set('playerBuild', '25');
+        target.searchParams.set('course', String(courseId));
+        target.searchParams.set('module', id);
+        target.hash = 'modulo';
+
+        button.dataset.opening = '1';
+        button.setAttribute('aria-busy', 'true');
+
+        if (window.CafassoMobileFluid?.active) {
+          window.CafassoMobileFluid.navigate(target.toString());
+          setTimeout(() => {
+            if (location.pathname.endsWith('/world.html')) location.assign(target.toString());
+          }, 450);
+        } else {
+          location.assign(target.toString());
+        }
+      };
     } catch (error) {
       panel.innerHTML = `<button class="cafasso-school-map__close" type="button" data-school-map-close>← Volver a Escuela</button><header class="cafasso-school-map__head"><div class="cafasso-school-map__kicker">Escuela</div><h2>No pudimos abrir este camino</h2><p>${esc(error?.message || 'Probá nuevamente en un momento.')}</p></header>`;
       panel.querySelector('[data-school-map-close]')?.addEventListener('click', () => { closeCourseMap(panel); });
