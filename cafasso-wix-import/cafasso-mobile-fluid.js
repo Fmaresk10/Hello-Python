@@ -319,13 +319,33 @@
           top:5px;
           z-index:20;
           display:block;
-          width:38px;
-          height:4px;
+          width:46px;
+          height:5px;
           margin:-20px auto 14px;
           border-radius:999px;
-          background:rgba(77,58,39,.26);
-          box-shadow:0 1px rgba(255,255,255,.28);
-          pointer-events:none;
+          background:rgba(77,58,39,.30);
+          box-shadow:0 1px rgba(255,255,255,.30);
+          pointer-events:auto;
+          touch-action:none;
+          cursor:grab;
+        }
+        html.cafasso-mobile-fluid .cafasso-mobile-sheet-grip:active{cursor:grabbing}
+        html.cafasso-mobile-fluid .cafasso-sheet-dragging{
+          transform:translate3d(0,var(--cafasso-sheet-drag-y,0px),0)!important;
+          transition:none!important;
+          will-change:transform;
+        }
+        html.cafasso-mobile-fluid .cafasso-sheet-snapping{
+          transform:translate3d(0,0,0)!important;
+          transition:transform .24s cubic-bezier(.2,.8,.2,1)!important;
+        }
+        html.cafasso-mobile-fluid .cafasso-sheet-dismissing{
+          transform:translate3d(0,115vh,0)!important;
+          transition:transform .24s cubic-bezier(.4,0,1,1)!important;
+          pointer-events:none!important;
+        }
+        html.cafasso-mobile-fluid .cafasso-sheet-drag-overlay{
+          transition:background-color .12s linear,backdrop-filter .12s linear!important;
         }
         html.cafasso-mobile-fluid .cafasso-profile-card .cafasso-mobile-sheet-grip{
           background:rgba(104,73,45,.24);
@@ -583,12 +603,8 @@
     }catch(error){}
   }
 
-  function closeTopOverlay(){
-    const overlay=topVisibleOverlay();
-    if(!overlay){
-      notifyOverlayState(true);
-      return false;
-    }
+  function closeOverlayNode(overlay){
+    if(!(overlay instanceof HTMLElement))return false;
 
     const closeButton=OVERLAY_CLOSE_SELECTORS
       .map(selector=>overlay.querySelector(selector))
@@ -607,6 +623,15 @@
 
     setTimeout(()=>notifyOverlayState(true),90);
     return true;
+  }
+
+  function closeTopOverlay(){
+    const overlay=topVisibleOverlay();
+    if(!overlay){
+      notifyOverlayState(true);
+      return false;
+    }
+    return closeOverlayNode(overlay);
   }
 
   function syncOverlayState(){
@@ -647,6 +672,132 @@
     refresh();
     const observer=new MutationObserver(refresh);
     observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class']});
+  }
+
+  function installSheetSwipeToClose(){
+    if(!mobileLike())return;
+
+    let drag=null;
+    const DISMISS_DISTANCE=112;
+    const MIN_FAST_DISTANCE=42;
+    const DISMISS_VELOCITY=.62;
+
+    const cleanup=(sheet,overlay)=>{
+      sheet?.classList.remove('cafasso-sheet-dragging','cafasso-sheet-snapping','cafasso-sheet-dismissing');
+      sheet?.style.removeProperty('--cafasso-sheet-drag-y');
+      overlay?.classList.remove('cafasso-sheet-drag-overlay');
+      overlay?.style.removeProperty('--cafasso-sheet-drag-progress');
+    };
+
+    const snapBack=(sheet,overlay)=>{
+      if(!(sheet instanceof HTMLElement))return;
+      sheet.classList.remove('cafasso-sheet-dragging');
+      sheet.classList.add('cafasso-sheet-snapping');
+      sheet.style.setProperty('--cafasso-sheet-drag-y','0px');
+      overlay?.classList.remove('cafasso-sheet-drag-overlay');
+      setTimeout(()=>cleanup(sheet,overlay),270);
+    };
+
+    const dismiss=(sheet,overlay)=>{
+      if(!(sheet instanceof HTMLElement)||!(overlay instanceof HTMLElement))return;
+      sheet.classList.remove('cafasso-sheet-dragging','cafasso-sheet-snapping');
+      sheet.classList.add('cafasso-sheet-dismissing');
+      overlay.classList.remove('cafasso-sheet-drag-overlay');
+      try{
+        if(navigator.vibrate&&/Android/i.test(navigator.userAgent))navigator.vibrate(8);
+      }catch(error){}
+      setTimeout(()=>{
+        cleanup(sheet,overlay);
+        closeOverlayNode(overlay);
+      },205);
+    };
+
+    document.addEventListener('pointerdown',event=>{
+      if(event.pointerType==='mouse'||drag)return;
+      const grip=event.target instanceof Element?event.target.closest('.cafasso-mobile-sheet-grip'):null;
+      if(!(grip instanceof HTMLElement))return;
+
+      const sheet=grip.closest(SHEET_SELECTORS.join(','));
+      if(!(sheet instanceof HTMLElement)||!visible(sheet))return;
+      const overlay=sheet.closest(OVERLAY_SELECTORS.join(','));
+      if(!(overlay instanceof HTMLElement)||!visible(overlay))return;
+
+      const now=performance.now();
+      drag={
+        pointerId:event.pointerId,
+        sheet,
+        overlay,
+        startX:event.clientX,
+        startY:event.clientY,
+        lastY:event.clientY,
+        lastTime:now,
+        velocity:0,
+        distance:0,
+        locked:false
+      };
+
+      sheet.classList.remove('cafasso-sheet-snapping','cafasso-sheet-dismissing');
+      sheet.classList.add('cafasso-sheet-dragging');
+      overlay.classList.add('cafasso-sheet-drag-overlay');
+      try{grip.setPointerCapture?.(event.pointerId)}catch(error){}
+      event.preventDefault();
+    },{capture:true,passive:false});
+
+    document.addEventListener('pointermove',event=>{
+      if(!drag||event.pointerId!==drag.pointerId)return;
+      const dx=event.clientX-drag.startX;
+      const rawDy=event.clientY-drag.startY;
+
+      if(!drag.locked){
+        if(Math.abs(dx)>8&&Math.abs(dx)>Math.abs(rawDy)*1.15){
+          snapBack(drag.sheet,drag.overlay);
+          drag=null;
+          return;
+        }
+        if(Math.abs(rawDy)<4)return;
+        drag.locked=true;
+      }
+
+      const dy=Math.max(0,rawDy);
+      const resisted=dy<=180?dy:180+(dy-180)*.42;
+      const now=performance.now();
+      const dt=Math.max(8,now-drag.lastTime);
+      drag.velocity=(event.clientY-drag.lastY)/dt;
+      drag.lastY=event.clientY;
+      drag.lastTime=now;
+      drag.distance=dy;
+
+      drag.sheet.style.setProperty('--cafasso-sheet-drag-y',resisted.toFixed(1)+'px');
+
+      const progress=Math.min(1,resisted/260);
+      drag.overlay.style.setProperty('--cafasso-sheet-drag-progress',progress.toFixed(3));
+      drag.overlay.style.backgroundColor=`rgba(7,25,27,${Math.max(.12,.67*(1-progress*.72)).toFixed(3)})`;
+
+      event.preventDefault();
+    },{capture:true,passive:false});
+
+    const finish=event=>{
+      if(!drag||event.pointerId!==drag.pointerId)return;
+      const current=drag;
+      drag=null;
+
+      current.overlay.style.removeProperty('background-color');
+      const fast=current.velocity>DISMISS_VELOCITY&&current.distance>MIN_FAST_DISTANCE;
+      const far=current.distance>DISMISS_DISTANCE;
+      if(fast||far)dismiss(current.sheet,current.overlay);
+      else snapBack(current.sheet,current.overlay);
+
+      event.preventDefault();
+    };
+
+    document.addEventListener('pointerup',finish,{capture:true,passive:false});
+    document.addEventListener('pointercancel',event=>{
+      if(!drag||event.pointerId!==drag.pointerId)return;
+      const current=drag;
+      drag=null;
+      current.overlay.style.removeProperty('background-color');
+      snapBack(current.sheet,current.overlay);
+    },{capture:true,passive:false});
   }
 
   function installKeyboardAssist(){
@@ -716,6 +867,7 @@
     if(!document.documentElement.dataset.cafassoPlayer)watchPanorama();
     installSheetObserver();
     notifyOverlayState(true);
+    installSheetSwipeToClose();
     installKeyboardAssist();
     installTouchAssist();
 
