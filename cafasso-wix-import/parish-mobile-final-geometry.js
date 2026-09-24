@@ -51,7 +51,7 @@
       }
 
       html.cafasso-mobile body .cafasso-parroquia .cafasso-parish-panorama .cafasso-parish-candle{
-        left:61.2%!important;
+        left:calc(61.2% - .2cm)!important;
         right:auto!important;
         top:auto!important;
         bottom:calc(48.8% + 1.5cm)!important;

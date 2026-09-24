@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="https://static.wixstatic.com/media/47bf07_b667216374584c098ec5e04f8c4df87b~mv2.png">
 <link rel="apple-touch-icon-precomposed" sizes="180x180" href="https://static.wixstatic.com/media/47bf07_b667216374584c098ec5e04f8c4df87b~mv2.png">
 <link rel="icon" href="./cafasso-app-icon.svg" type="image/svg+xml">
-<script defer src="./pwa-register.js?v=20260924-4"></script>
+<script defer src="./pwa-register.js?v=20260924-5"></script>
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102f33;overscroll-behavior:none}
 *{box-sizing:border-box}
@@ -86,7 +86,7 @@ html.cafasso-app-ready #cafassoLaunch{opacity:0;visibility:hidden;pointer-events
     const url=new URL('./world.html',location.href);
     url.search=location.search;
     ['code','state','error','error_description'].forEach(key=>url.searchParams.delete(key));
-    url.searchParams.set('__cafassoBuild','1117');
+    url.searchParams.set('__cafassoBuild','1118');
     url.hash=location.hash;
     return url.href;
   };
