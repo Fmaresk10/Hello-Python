@@ -125,12 +125,12 @@
 
       /* Palabra del día: posición final de escritorio. */
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-lectionary{
-        left:auto!important;
-        right:9.25%!important;
-        bottom:calc(11.15% + 3cm)!important;
-        width:238px!important;
-        height:162px!important;
-        transform:perspective(820px) rotateX(3deg) rotateZ(1.1deg)!important;
+        left:calc(28.4% - 4cm)!important;
+        right:auto!important;
+        bottom:calc(53.6% - 2cm)!important;
+        width:186px!important;
+        height:126px!important;
+        transform:perspective(820px) rotateX(3deg) rotateZ(1deg)!important;
         transform-origin:50% 100%!important;
         z-index:14!important;
       }
@@ -141,12 +141,12 @@
 
       /* Cancionero físico: vuelve a su coordenada original. */
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-songbook{
-        left:9.2%!important;
-        right:auto!important;
-        bottom:12.2%!important;
-        width:172px!important;
-        height:118px!important;
-        transform:perspective(720px) rotateX(7deg) rotateZ(-4deg)!important;
+        left:auto!important;
+        right:5.2%!important;
+        bottom:9.8%!important;
+        width:148px!important;
+        height:110px!important;
+        transform:perspective(720px) rotateX(4deg) rotateZ(-2.2deg)!important;
         transform-origin:50% 100%!important;
         z-index:14!important;
       }
@@ -155,7 +155,7 @@
       html.cafasso-mobile.cafasso-mobile-portrait .cafasso-parish-panorama .cafasso-parish-candle{
         left:calc(61.0% - .2cm)!important;
         right:auto!important;
-        bottom:67.5%!important;
+        bottom:54.7%!important;
         width:84px!important;
         height:152px!important;
         transform:translateX(-50%) perspective(700px) rotateX(1.6deg) scale(.47)!important;
