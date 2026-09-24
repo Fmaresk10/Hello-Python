@@ -57,7 +57,7 @@
   const register=async()=>{
     if(!('serviceWorker' in navigator)||!/^https?:$/.test(location.protocol))return;
     try{
-      const reg=await navigator.serviceWorker.register('./service-worker.js?v=20260924-1',{scope:'./'});
+      const reg=await navigator.serviceWorker.register('./service-worker.js?v=20260924-2',{scope:'./'});
       window.CafassoPWA=window.CafassoPWA||{};
       window.CafassoPWA.registration=reg;
 
