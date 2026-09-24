@@ -350,6 +350,12 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
         document.getElementById('app')?.classList.add('cafasso-boot-ready');
       });
   }
+  function moduleIdOf(mod){return String(mod&&(mod._id||mod.id)||'').trim();}
+  function modulePublished(mod){
+    if(isAdmin())return true;
+    var status=String(mod&&mod.status||'Publicado').trim().toLowerCase();
+    return status==='publicado';
+  }
   function publishedModules(){return (selectedCourse.modules||[]).filter(modulePublished);}
   function moduleUnlocked(mod,index,mods,doneIds){
     if(index===0)return true;
@@ -409,7 +415,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     selectedModule=mods[idx];
     var target=new URL(location.href);
     target.searchParams.set('player','1');
-    target.searchParams.set('playerBuild','26');
+    target.searchParams.set('playerBuild','27');
     target.searchParams.set('course',String(selectedCourse._id));
     target.searchParams.set('module',String(moduleId));
     target.hash='modulo';
