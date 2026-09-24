@@ -739,6 +739,38 @@
         height:var(--cafasso-vh)!important;
         overflow:visible!important;
       }
+
+      /*
+        El panorama conserva el alto lógico usado para posicionar objetos.
+        Sólo la imagen visual se prolonga hasta cubrir la safe-area inferior.
+      */
+      html.cafasso-shell-fullbleed :is(
+        .cafasso-house-panorama,
+        .cafasso-patio-panorama,
+        .cafasso-school-panorama,
+        .cafasso-parish-panorama,
+        .cafasso-resources-panorama
+      ) > :is(
+        .cafasso-house__image,
+        .cafasso-patio__image,
+        .cafasso-escuela__image,
+        .cafasso-parroquia__image,
+        .cafasso-recursos__image
+      ){
+        top:0!important;
+        right:0!important;
+        bottom:auto!important;
+        left:0!important;
+        width:100%!important;
+        height:calc(100% + var(--cafasso-shell-safe-bottom,0px))!important;
+        max-height:none!important;
+        object-fit:cover!important;
+        object-position:center top!important;
+      }
+
+      html.cafasso-shell-fullbleed .cafasso-mobile-edge-fill--bottom{
+        display:none!important;
+      }
       .cafasso-mobile-edge-fill{
         position:absolute;
         left:0;
