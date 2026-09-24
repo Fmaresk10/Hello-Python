@@ -11,9 +11,10 @@
   function mobileLike(){return Boolean(window.matchMedia?.(MOBILE_QUERY)?.matches)}
   function viewport(){
     const vv=window.visualViewport;
+    const shell=window.__cafassoShellMetrics||null;
     return{
-      width:Math.max(1,Math.round(vv?.width||window.innerWidth||document.documentElement.clientWidth||1)),
-      height:Math.max(320,Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||320)),
+      width:Math.max(1,Math.round(shell?.width||vv?.width||window.innerWidth||document.documentElement.clientWidth||1)),
+      height:Math.max(320,Math.round(shell?.height||vv?.height||window.innerHeight||document.documentElement.clientHeight||320)),
       top:Math.max(0,Math.round(vv?.offsetTop||0)),
       left:Math.max(0,Math.round(vv?.offsetLeft||0))
     };
@@ -645,7 +646,10 @@
       syncOverlayState();
     };
     refresh();
-    const observer=new MutationObserver(refresh);
+    const observer=new MutationObserver(()=>{
+      refresh();
+      refreshEdgeFills();
+    });
     observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class']});
   }
 
@@ -707,6 +711,108 @@
       }
     },true);
   }
+
+  function ensureFullBleedCompatStyles(){
+    let style=document.getElementById('cafassoShellFullBleedCompatStyles');
+    if(style)return style;
+    style=document.createElement('style');
+    style.id='cafassoShellFullBleedCompatStyles';
+    style.textContent=`
+      html.cafasso-shell-fullbleed .cafasso-house,
+      html.cafasso-shell-fullbleed .cafasso-patio,
+      html.cafasso-shell-fullbleed .cafasso-parroquia,
+      html.cafasso-shell-fullbleed .cafasso-escuela,
+      html.cafasso-shell-fullbleed .cafasso-recursos{
+        height:100dvh!important;
+        min-height:100dvh!important;
+        inset:0!important;
+      }
+      html.cafasso-shell-fullbleed :is(
+        .cafasso-house-panorama,
+        .cafasso-patio-panorama,
+        .cafasso-school-panorama,
+        .cafasso-parish-panorama,
+        .cafasso-resources-panorama
+      ){
+        top:var(--cafasso-shell-safe-top,0px)!important;
+        left:var(--cafasso-shell-safe-left,0px)!important;
+        height:var(--cafasso-vh)!important;
+        overflow:visible!important;
+      }
+      .cafasso-mobile-edge-fill{
+        position:absolute;
+        left:0;
+        width:100%;
+        pointer-events:none;
+        background-repeat:no-repeat;
+        background-size:100% var(--cafasso-vh);
+        z-index:0;
+      }
+      .cafasso-mobile-edge-fill--top{
+        bottom:100%;
+        height:var(--cafasso-shell-safe-top,0px);
+        background-position:center top;
+      }
+      .cafasso-mobile-edge-fill--bottom{
+        top:100%;
+        height:calc(100dvh - var(--cafasso-shell-safe-top,0px) - var(--cafasso-vh));
+        background-position:center bottom;
+      }
+    `;
+    document.head.appendChild(style);
+    return style;
+  }
+
+  function refreshEdgeFills(){
+    if(!document.documentElement.classList.contains('cafasso-shell-fullbleed'))return;
+    const panoramas=document.querySelectorAll('.cafasso-house-panorama,.cafasso-patio-panorama,.cafasso-school-panorama,.cafasso-parish-panorama,.cafasso-resources-panorama');
+    panoramas.forEach(panorama=>{
+      const image=panorama.querySelector('.cafasso-house__image,.cafasso-patio__image,.cafasso-escuela__image,.cafasso-parroquia__image,.cafasso-recursos__image');
+      const src=image?.currentSrc||image?.src;
+      if(!src)return;
+      ['top','bottom'].forEach(edge=>{
+        let fill=panorama.querySelector(`:scope > .cafasso-mobile-edge-fill--${edge}`);
+        if(!fill){
+          fill=document.createElement('div');
+          fill.className=`cafasso-mobile-edge-fill cafasso-mobile-edge-fill--${edge}`;
+          fill.setAttribute('aria-hidden','true');
+          panorama.insertBefore(fill,panorama.firstChild);
+        }
+        fill.style.backgroundImage=`url("${String(src).replace(/"/g,'%22')}")`;
+      });
+    });
+  }
+
+  function applyShellMetrics(data){
+    if(!data?.fullBleed)return;
+    const safe=data.safe||{};
+    window.__cafassoShellMetrics={
+      width:Math.max(1,Number(data.width)||1),
+      height:Math.max(320,Number(data.height)||320),
+      safe:{
+        top:Math.max(0,Number(safe.top)||0),
+        right:Math.max(0,Number(safe.right)||0),
+        bottom:Math.max(0,Number(safe.bottom)||0),
+        left:Math.max(0,Number(safe.left)||0)
+      }
+    };
+    const root=document.documentElement;
+    root.classList.add('cafasso-shell-fullbleed');
+    root.style.setProperty('--cafasso-shell-safe-top',window.__cafassoShellMetrics.safe.top+'px');
+    root.style.setProperty('--cafasso-shell-safe-right',window.__cafassoShellMetrics.safe.right+'px');
+    root.style.setProperty('--cafasso-shell-safe-bottom',window.__cafassoShellMetrics.safe.bottom+'px');
+    root.style.setProperty('--cafasso-shell-safe-left',window.__cafassoShellMetrics.safe.left+'px');
+    ensureFullBleedCompatStyles();
+    window.CafassoMobile?.refresh?.();
+    updateViewport();
+    requestAnimationFrame(refreshEdgeFills);
+  }
+
+  window.addEventListener('message',event=>{
+    if(event.origin!==location.origin)return;
+    const data=event.data||{};
+    if(data.type==='cafasso-shell-metrics')applyShellMetrics(data);
+  });
 
   function init(){
     ensureStyles();

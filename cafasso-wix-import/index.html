@@ -19,6 +19,9 @@
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102f33;overscroll-behavior:none}
 *{box-sizing:border-box}
 #cafassoWorld{position:fixed;inset:0;width:100vw;height:var(--cafasso-shell-vh,100dvh);border:0;background:#102f33;display:block}
+@media(display-mode:standalone){
+  #cafassoWorld{width:100vw;height:100dvh}
+}
 #cafassoLaunch{
   display:none;position:fixed;inset:0;z-index:2147483500;place-items:center;
   padding:max(24px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));
@@ -63,11 +66,49 @@ html.cafasso-app-ready #cafassoLaunch{opacity:0;visibility:hidden;pointer-events
   const root=document.documentElement;
   const frame=document.getElementById('cafassoWorld');
   if(!frame)return;
+  const appMode=window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
+
+  const safeInsets=()=>{
+    let probe=document.getElementById('cafassoSafeAreaProbe');
+    if(!probe){
+      probe=document.createElement('div');
+      probe.id='cafassoSafeAreaProbe';
+      probe.style.cssText='position:fixed;visibility:hidden;pointer-events:none;inset:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)';
+      document.body.appendChild(probe);
+    }
+    const cs=getComputedStyle(probe);
+    return{
+      top:parseFloat(cs.paddingTop)||0,
+      right:parseFloat(cs.paddingRight)||0,
+      bottom:parseFloat(cs.paddingBottom)||0,
+      left:parseFloat(cs.paddingLeft)||0
+    };
+  };
+
+  const postShellMetrics=()=>{
+    if(!appMode)return;
+    const vv=window.visualViewport;
+    const width=Math.max(1,Math.round(vv?.width||window.innerWidth||root.clientWidth||1));
+    const height=Math.max(320,Math.round(vv?.height||window.innerHeight||root.clientHeight||320));
+    const safe=safeInsets();
+    const logicalWidth=Math.max(1,Math.round(width-safe.left-safe.right));
+    const logicalHeight=Math.max(320,Math.round(height-safe.top-safe.bottom));
+    try{
+      frame.contentWindow?.postMessage({
+        type:'cafasso-shell-metrics',
+        fullBleed:true,
+        width:logicalWidth,
+        height:logicalHeight,
+        safe
+      },location.origin);
+    }catch(error){}
+  };
 
   const syncViewport=()=>{
     const vv=window.visualViewport;
     const h=Math.max(320,Math.round(vv?.height||window.innerHeight||root.clientHeight||320));
     root.style.setProperty('--cafasso-shell-vh',h+'px');
+    postShellMetrics();
   };
   const syncNetwork=()=>root.classList.toggle('cafasso-offline',navigator.onLine===false);
   const markReady=()=>root.classList.add('cafasso-app-ready');
@@ -86,7 +127,7 @@ html.cafasso-app-ready #cafassoLaunch{opacity:0;visibility:hidden;pointer-events
     const url=new URL('./world.html',location.href);
     url.search=location.search;
     ['code','state','error','error_description'].forEach(key=>url.searchParams.delete(key));
-    url.searchParams.set('__cafassoBuild','1108');
+    url.searchParams.set('__cafassoBuild','1109');
     url.hash=location.hash;
     return url.href;
   };
@@ -96,6 +137,7 @@ html.cafasso-app-ready #cafassoLaunch{opacity:0;visibility:hidden;pointer-events
     .finally(()=>{frame.src=worldUrl()});
 
   frame.addEventListener('load',()=>{
+    postShellMetrics();
     try{
       const doc=frame.contentDocument;
       doc?.addEventListener('click',event=>{
@@ -110,7 +152,6 @@ html.cafasso-app-ready #cafassoLaunch{opacity:0;visibility:hidden;pointer-events
   });
   setTimeout(markReady,2600);
 
-  const appMode=window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
   let overlayOpen=false;
   let overlayHistoryActive=false;
   let consumeOverlayPop=false;
