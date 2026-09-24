@@ -299,7 +299,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
       renderModule();
       return;
     }
-    returnToSchool();
+    fail('El player perdió el estado del curso antes de mostrar la misión.');
   }
 
   function loadCourseSubmissions(courseId){return fetch(SUBMISSION_API+'?userId='+encodeURIComponent(session.user._id)+'&courseId='+encodeURIComponent(courseId),{cache:'no-store'}).then(function(r){return r.json().then(function(j){return {r:r,j:j};});}).then(function(x){if(!x.r.ok||!x.j.ok)throw new Error(x.j.error||'No se pudieron cargar las respuestas.');courseSubmissions=x.j.submissions||[];}).catch(function(e){console.warn(e);courseSubmissions=[];});}
@@ -343,6 +343,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
           return;
         }
         selectedModule=chosen;
+        try{sessionStorage.removeItem('cafassoPendingCourseRoute');}catch(e){}
         navigate('modulo');
       })
       .catch(function(e){
@@ -415,7 +416,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     selectedModule=mods[idx];
     var target=new URL(location.href);
     target.searchParams.set('player','1');
-    target.searchParams.set('playerBuild','27');
+    target.searchParams.set('playerBuild','28');
     target.searchParams.set('course',String(selectedCourse._id));
     target.searchParams.set('module',String(moduleId));
     target.hash='modulo';
@@ -549,7 +550,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     if(required&&!(low==='reflexión'||low==='entrega'||low==='evaluación'||low==='desafío'))html+='<div class="review-row"><small>'+(done?'Este contenido ya cuenta como revisado.':'Marcá este contenido cuando hayas terminado de revisarlo.')+'</small><button class="btn '+(done?'done':'alt')+'" data-review="'+esc(block._id)+'">'+(done?'✓ Revisado':'Marcar como revisado')+'</button></div>';return html+'</article>';}
   function renderModule(){
     var c=selectedCourse,m=selectedModule,main=document.getElementById('main');
-    if(!c||!m||!main){returnToSchool();return;}
+    if(!c||!m||!main){fail('No pudimos reconstruir la misión seleccionada.');return;}
     var missionMode=moduleUsesMissions(m);
     document.body.classList.toggle('cafasso-mission-mode',missionMode);
     document.body.classList.toggle('cafasso-linear-module-mode',!missionMode);
@@ -654,7 +655,33 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     var playerParams=new URLSearchParams(location.search);
     var directCourse=String(playerParams.get('course')||'').trim();
     var directModule=String(playerParams.get('module')||'').trim();
-    if(playerParams.get('player')!=='1'||!directCourse||!directModule){returnToSchool();return;}
+    var directPlayer=playerParams.get('player')==='1';
+
+    if(!directPlayer||!directCourse||!directModule){
+      try{
+        var pendingRoute=JSON.parse(sessionStorage.getItem('cafassoPendingCourseRoute')||'null');
+        var pendingAge=pendingRoute?Date.now()-Number(pendingRoute.createdAt||0):Infinity;
+        if(pendingRoute&&pendingAge<300000){
+          directCourse=directCourse||String(pendingRoute.courseId||'').trim();
+          directModule=directModule||String(pendingRoute.moduleId||'').trim();
+          directPlayer=!!(directCourse&&directModule);
+          if(directPlayer){
+            var recovered=new URL(location.href);
+            recovered.searchParams.set('player','1');
+            recovered.searchParams.set('playerBuild','28');
+            recovered.searchParams.set('course',directCourse);
+            recovered.searchParams.set('module',directModule);
+            recovered.hash='modulo';
+            history.replaceState({view:'modulo',module:directModule},'',recovered.pathname+recovered.search+recovered.hash);
+          }
+        }
+      }catch(e){}
+    }
+
+    if(!directPlayer||!directCourse||!directModule){
+      fail('No pudimos recuperar qué misión querías abrir. Volvé a Escuela y elegí la etapa nuevamente.');
+      return;
+    }
 
     var timedOut=false,timer=setTimeout(function(){
       timedOut=true;
