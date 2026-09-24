@@ -21,7 +21,7 @@
         transform:translate(-50%,calc(-50% - 2px))!important;
       }
       html.cafasso-mobile body .cafasso-parroquia .cafasso-parish-panorama .cafasso-parish-lectionary{
-        left:calc(28.4% - 4cm)!important;
+        left:calc(28.4% - 2.5cm)!important;
         right:auto!important;
         top:auto!important;
         bottom:53.6%!important;
@@ -54,7 +54,7 @@
         left:61.2%!important;
         right:auto!important;
         top:auto!important;
-        bottom:calc(48.8% + 2cm)!important;
+        bottom:calc(48.8% + 1.5cm)!important;
         width:84px!important;
         height:152px!important;
         transform:translateX(-50%) perspective(700px) rotateX(1.6deg) scale(.47)!important;
