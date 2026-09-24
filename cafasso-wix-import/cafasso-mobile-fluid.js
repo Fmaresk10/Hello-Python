@@ -537,11 +537,94 @@
     return style.display!=='none'&&style.visibility!=='hidden';
   }
 
+  const OVERLAY_CLOSE_SELECTORS=[
+    '[data-house-profile-close]',
+    '.cafasso-profile-close',
+    '.cafasso-bitacora-close',
+    '.cafasso-bitacora-acompanante-close',
+    '.cafasso-parish-close',
+    '.cafasso-songbook-close',
+    '[data-candle-intention-close]',
+    '.cafasso-candle-intention__close',
+    '.cafasso-school-map__close',
+    '.cafasso-world-object-close',
+    '.cafasso-discovery-close',
+    '.cafasso-corazon-close',
+    '.cafasso-servidor-close',
+    '.cafasso-parish-secret-close',
+    '[data-close]',
+    '[aria-label="Cerrar"]'
+  ];
+
+  let lastOverlayOpen=null;
+
+  function topVisibleOverlay(){
+    const nodes=[];
+    OVERLAY_SELECTORS.forEach(selector=>{
+      document.querySelectorAll(selector).forEach(node=>{
+        if(node instanceof HTMLElement&&visible(node)&&!nodes.includes(node))nodes.push(node);
+      });
+    });
+    nodes.sort((a,b)=>{
+      const az=Number.parseInt(getComputedStyle(a).zIndex,10)||0;
+      const bz=Number.parseInt(getComputedStyle(b).zIndex,10)||0;
+      return az-bz;
+    });
+    return nodes.at(-1)||null;
+  }
+
+  function notifyOverlayState(force=false){
+    if(!mobileLike()||window.parent===window)return;
+    const open=!!topVisibleOverlay();
+    if(!force&&open===lastOverlayOpen)return;
+    lastOverlayOpen=open;
+    try{
+      window.parent.postMessage({type:'cafasso-overlay-state',open},location.origin);
+    }catch(error){}
+  }
+
+  function closeTopOverlay(){
+    const overlay=topVisibleOverlay();
+    if(!overlay){
+      notifyOverlayState(true);
+      return false;
+    }
+
+    const closeButton=OVERLAY_CLOSE_SELECTORS
+      .map(selector=>overlay.querySelector(selector))
+      .find(node=>node instanceof HTMLElement&&visible(node));
+
+    if(closeButton){
+      closeButton.click();
+    }else{
+      document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',bubbles:true}));
+      setTimeout(()=>{
+        if(visible(overlay)){
+          overlay.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}));
+        }
+      },0);
+    }
+
+    setTimeout(()=>notifyOverlayState(true),90);
+    return true;
+  }
+
   function syncOverlayState(){
     if(!mobileLike())return;
-    const open=OVERLAY_SELECTORS.some(selector=>[...document.querySelectorAll(selector)].some(visible));
+    const open=!!topVisibleOverlay();
     document.body.classList.toggle('cafasso-mobile-overlay-open',open);
+    notifyOverlayState();
   }
+
+  window.addEventListener('message',event=>{
+    if(event.origin!==location.origin)return;
+    const data=event.data||{};
+    if(data.type==='cafasso-close-overlay'){
+      closeTopOverlay();
+      return;
+    }
+    if(data.type==='cafasso-query-overlay-state')notifyOverlayState(true);
+  });
 
   function decorateSheets(){
     if(!mobileLike())return;
@@ -632,6 +715,7 @@
     reveal();
     if(!document.documentElement.dataset.cafassoPlayer)watchPanorama();
     installSheetObserver();
+    notifyOverlayState(true);
     installKeyboardAssist();
     installTouchAssist();
 

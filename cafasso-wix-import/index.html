@@ -86,7 +86,7 @@ html.cafasso-app-ready #cafassoLaunch{opacity:0;visibility:hidden;pointer-events
     const url=new URL('./world.html',location.href);
     url.search=location.search;
     ['code','state','error','error_description'].forEach(key=>url.searchParams.delete(key));
-    url.searchParams.set('__cafassoBuild','1107');
+    url.searchParams.set('__cafassoBuild','1108');
     url.hash=location.hash;
     return url.href;
   };
@@ -110,18 +110,67 @@ html.cafasso-app-ready #cafassoLaunch{opacity:0;visibility:hidden;pointer-events
   });
   setTimeout(markReady,2600);
 
+  const appMode=window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
+  let overlayOpen=false;
+  let overlayHistoryActive=false;
+  let consumeOverlayPop=false;
+  let overlayBackInProgress=false;
+
+  const pushOverlayHistory=()=>{
+    if(!appMode||overlayHistoryActive||!overlayOpen)return;
+    history.pushState({...(history.state||{}),cafassoWorld:true,cafassoOverlay:true},'',location.href);
+    overlayHistoryActive=true;
+  };
+
+  const queryOverlay=()=>{
+    try{frame.contentWindow?.postMessage({type:'cafasso-query-overlay-state'},location.origin)}catch(error){}
+  };
+
   window.addEventListener('message',event=>{
     if(event.origin!==location.origin)return;
     const data=event.data||{};
+
+    if(data.type==='cafasso-overlay-state'){
+      overlayOpen=!!data.open;
+      if(!appMode)return;
+
+      if(overlayOpen){
+        if(!overlayHistoryActive&&!overlayBackInProgress)pushOverlayHistory();
+      }else if(overlayHistoryActive&&!overlayBackInProgress){
+        overlayHistoryActive=false;
+        consumeOverlayPop=true;
+        history.back();
+      }
+      return;
+    }
+
     if(data.type!=='cafasso-world-location')return;
     const next=new URL(location.href);
     next.search=data.search||'';
     next.hash=data.hash||'';
     if(next.href===location.href)return;
+    overlayHistoryActive=false;
+    overlayOpen=false;
     history.pushState({cafassoWorld:true},'',next.href);
   });
 
   window.addEventListener('popstate',()=>{
+    if(consumeOverlayPop){
+      consumeOverlayPop=false;
+      return;
+    }
+
+    if(appMode&&(overlayHistoryActive||overlayOpen)){
+      overlayHistoryActive=false;
+      overlayBackInProgress=true;
+      try{frame.contentWindow?.postMessage({type:'cafasso-close-overlay'},location.origin)}catch(error){}
+      setTimeout(()=>{
+        overlayBackInProgress=false;
+        queryOverlay();
+      },140);
+      return;
+    }
+
     const target=worldUrl();
     try{
       if(frame.contentWindow?.location?.href!==target)frame.src=target;
