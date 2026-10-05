@@ -5,7 +5,7 @@
   const STYLE_ID='cafassoHologramStyles';
   const SIGNAL_ID='cafassoHologramSignal';
   const STAGE_ID='cafassoHologramStage';
-  const SESSION_PREFIX='cafassoHologramSeen:';
+  const SESSION_PREFIX='cafassoHologramSeen:v2:';
   const rules=[];
   let globalRules=[];
   let current=null;
