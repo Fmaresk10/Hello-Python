@@ -50,6 +50,8 @@
       .cafasso-holo-person{position:relative;z-index:2;height:calc(100% - 30px);max-width:min(58vw,520px);display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 0 10px rgba(109,244,236,.34));pointer-events:auto;transform-origin:50% 100%;animation:cafassoHoloMaterialize .68s cubic-bezier(.18,.78,.22,1) both}
       .cafasso-holo-person video,.cafasso-holo-person img{display:block;max-width:100%;max-height:100%;height:100%;width:auto;object-fit:contain;object-position:center bottom;filter:saturate(.82) contrast(1.04) drop-shadow(0 0 12px rgba(83,226,218,.18))}
       .cafasso-holo-person video{background:transparent}
+      .cafasso-holo-cutout-canvas{display:block;max-width:100%;max-height:100%;height:100%;width:auto;object-fit:contain;object-position:center bottom;filter:saturate(.82) contrast(1.04) drop-shadow(0 0 12px rgba(83,226,218,.18))}
+      .cafasso-holo-cutout-loading{position:absolute;left:50%;bottom:28%;transform:translateX(-50%);padding:7px 10px;border:1px solid rgba(181,255,249,.28);border-radius:999px;background:rgba(5,32,37,.74);color:#cdf8f3;font:800 8px/1 Inter,system-ui;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
       .cafasso-holo-fallback{position:relative;width:min(250px,48vw);height:70%;min-height:270px;opacity:.82}
       .cafasso-holo-fallback__head{position:absolute;left:50%;top:4%;width:29%;aspect-ratio:1;border-radius:48% 48% 44% 44%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(184,255,249,.76),rgba(64,203,201,.24));box-shadow:0 0 18px rgba(114,242,234,.34)}
       .cafasso-holo-fallback__body{position:absolute;left:12%;right:12%;top:24%;bottom:0;border-radius:45% 45% 18% 18%/23% 23% 8% 8%;background:linear-gradient(90deg,rgba(53,176,180,.18),rgba(187,255,249,.67) 50%,rgba(53,176,180,.18));clip-path:polygon(24% 0,76% 0,100% 100%,0 100%)}
@@ -110,6 +112,8 @@
     if(stage){
       const video=stage.querySelector('video');
       try{video?.pause();}catch(error){}
+      try{stage.__cafassoCutoutCleanup?.()}catch(error){}
+      try{if(current?.__cafassoObjectUrl)URL.revokeObjectURL(current.__cafassoObjectUrl)}catch(error){}
       stage.remove();
     }
     document.body.classList.remove('cafasso-holo-open');
@@ -123,7 +127,8 @@
     if(normalize(config.videoMov))sources.push('<source src="'+esc(config.videoMov)+'" type="video/quicktime">');
     if(normalize(config.videoMp4))sources.push('<source src="'+esc(config.videoMp4)+'" type="video/mp4">');
     if(sources.length){
-      return '<video playsinline preload="metadata" '+(config.loop?'loop ':'')+(config.muted?'muted ':'')+(normalize(config.poster)?'poster="'+esc(config.poster)+'" ':'')+'>'+sources.join('')+'</video>';
+      const cors=config.removeBackground?'crossorigin="anonymous" ':'';
+      return '<video '+cors+'playsinline preload="metadata" '+(config.loop?'loop ':'')+(config.muted?'muted ':'')+(normalize(config.poster)?'poster="'+esc(config.poster)+'" ':'')+'>'+sources.join('')+'</video>';
     }
     if(normalize(config.poster))return '<img src="'+esc(config.poster)+'" alt="">';
     return '<div class="cafasso-holo-fallback" aria-hidden="true"><div class="cafasso-holo-fallback__head"></div><div class="cafasso-holo-fallback__body"></div></div>';
@@ -166,7 +171,17 @@
     const video=stage.querySelector('video');
     if(video){
       video.volume=Math.max(0,Math.min(1,Number(config.volume==null?1:config.volume)));
-      const play=()=>video.play().catch(()=>{});
+      const person=stage.querySelector('.cafasso-holo-person');
+      if(config.removeBackground&&window.CafassoHologramCutout?.attach&&person){
+        Promise.resolve(window.CafassoHologramCutout.attach(video,person,config)).then(cleanup=>{
+          if(!stage.isConnected){try{cleanup?.()}catch(error){};return}
+          stage.__cafassoCutoutCleanup=cleanup;
+        }).catch(error=>console.warn('CAFASSO cutout attach',error));
+      }
+      const play=()=>video.play().catch(()=>{
+        const hint=stage.querySelector('.cafasso-holo-audio-hint');
+        if(hint){hint.textContent='Tocá Repetir para escuchar';hint.style.pointerEvents='auto';}
+      });
       setTimeout(play,80);
       stage.querySelector('[data-holo-replay]')?.addEventListener('click',()=>{try{video.currentTime=0;}catch(error){}play();});
     }
@@ -310,20 +325,6 @@
   }
 
   window.CafassoHologram={show,announce,close,register,fire,context,loadGlobalRules,get globalRules(){return globalRules.slice()},get current(){return current;}};
-
-  register({
-    id:'demo-formador-patio-transforma-m1',
-    trigger:'mission-enter',
-    courseId:'2a9646c4-e1ef-430c-9815-e466ceb7bef2',
-    moduleId:'81a4eec3-dd9a-43a5-b019-c78a3276eddc',
-    missionId:'m1',
-    name:'Tu formador',
-    role:'Acompañamiento CAFASSO',
-    kicker:'Intervención del formador',
-    signalTitle:'Antes de empezar, tengo algo para decirte',
-    message:'Antes de avanzar, mirá esta misión como mirarías un patio lleno de jóvenes: no empieces por lo que querés hacer; empezá por descubrir a quién tenés delante.',
-    repeat:'session'
-  });
 
   window.addEventListener('cafasso:course-experience-ready',scheduleSync);
   window.addEventListener('cafasso:state-ready',scheduleSync);
