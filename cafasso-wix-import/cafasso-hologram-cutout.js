@@ -45,7 +45,7 @@
   }
   function attach(video,host,config={}){
     return new Promise(async resolve=>{
-      let stopped=false,raf=0,busy=false,lastSeg=0,lastVideoTime=-1,maskCanvas=null,maskCtx=null,maskImage=null,frameErrors=0;
+      let stopped=false,raf=0,busy=false,lastSeg=0,lastVideoTime=-1,maskCanvas=null,maskCtx=null,maskImage=null,frameErrors=0,foregroundConfirmed=false,fallbackTimer=0;
       const canvas=document.createElement('canvas');
       canvas.className='cafasso-holo-cutout-canvas';
       canvas.setAttribute('aria-hidden','true');
@@ -80,6 +80,7 @@
         video.style.visibility=previousVideoStyle.visibility;
       };
       const revealOriginal=()=>{
+        if(fallbackTimer){clearTimeout(fallbackTimer);fallbackTimer=0}
         restoreVideo();
         canvas.remove();
         loading.remove();
@@ -88,7 +89,9 @@
       let cleanup=()=>{
         stopped=true;
         if(raf)cancelAnimationFrame(raf);
+        if(fallbackTimer)clearTimeout(fallbackTimer);
         loading.remove();
+        canvas.remove();
         restoreVideo();
       };
       const waitMeta=()=>new Promise(done=>{
@@ -101,19 +104,29 @@
         await waitMeta();
         if(stopped)return resolve(cleanup);
         const size=canvasSize(video);canvas.width=size.width;canvas.height=size.height;
-        video.style.position='absolute';
-        video.style.left='0';
-        video.style.top='0';
-        video.style.width='1px';
-        video.style.height='1px';
-        video.style.maxWidth='1px';
-        video.style.maxHeight='1px';
-        video.style.opacity='0';
+        // Keep the original video visible until a real foreground mask exists.
+        // This prevents a transparent cutout from making the hologram disappear.
+        canvas.style.position='absolute';
+        canvas.style.left='50%';
+        canvas.style.bottom='0';
+        canvas.style.transform='translateX(-50%)';
+        canvas.style.zIndex='2';
+        canvas.style.pointerEvents='none';
+        canvas.style.opacity='0';
+        video.style.opacity='1';
         video.style.visibility='visible';
-        video.style.pointerEvents='none';
         const e=await engine();
         if(stopped)return resolve(cleanup);
-        loading.remove();
+        loading.textContent='Detectando persona…';
+        fallbackTimer=setTimeout(()=>{
+          if(stopped||foregroundConfirmed)return;
+          stopped=true;
+          if(raf)cancelAnimationFrame(raf);
+          canvas.remove();
+          loading.remove();
+          restoreVideo();
+          host.classList.add('cafasso-holo-cutout-fallback');
+        },3200);
         const fps=Math.max(6,Math.min(18,Number(config.cutoutFps||((matchMedia?.('(pointer:coarse)')?.matches)?10:14))));
         const interval=1000/fps;
 
@@ -129,11 +142,21 @@
               maskImage=maskCtx.createImageData(mw,mh);
             }
             const out=maskImage.data;
+            let opaque=0;
             for(let i=0,j=0;i<data.length;i++,j+=4){
               const a=smoothAlpha(Number(data[i]||0));
+              if(a>40)opaque+=1;
               out[j]=255;out[j+1]=255;out[j+2]=255;out[j+3]=a;
             }
             maskCtx.putImageData(maskImage,0,0);
+            const coverage=data.length?opaque/data.length:0;
+            if(!foregroundConfirmed&&coverage>.015&&coverage<.92){
+              foregroundConfirmed=true;
+              canvas.style.opacity='1';
+              video.style.opacity='0';
+              loading.remove();
+              if(fallbackTimer){clearTimeout(fallbackTimer);fallbackTimer=0}
+            }
           }finally{
             try{result?.confidenceMasks?.forEach(m=>m?.close?.())}catch(e){}
             try{result?.categoryMask?.close?.()}catch(e){}
