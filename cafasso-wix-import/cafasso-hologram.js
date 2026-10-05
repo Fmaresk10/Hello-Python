@@ -310,7 +310,12 @@
 
   async function loadGlobalRules(){
     try{
-      const response=await fetch(GLOBAL_CONFIG_API+'?title='+encodeURIComponent(GLOBAL_CONFIG_TITLE)+'&holo='+Date.now(),{cache:'no-store'});
+      let token='';
+      try{token=String(JSON.parse(localStorage.getItem('cafassoAuth')||'null')?.sessionToken||'')}catch(error){}
+      const response=await fetch(GLOBAL_CONFIG_API+'?title='+encodeURIComponent(GLOBAL_CONFIG_TITLE)+'&holo='+Date.now(),{
+        cache:'no-store',
+        headers:token?{'Authorization':'Bearer '+token}:{}
+      });
       const json=await response.json();
       const list=json?.course?.modules?.[0]?.settings?.holograms;
       globalRules=Array.isArray(list)?list.map((item,index)=>({id:item.id||('global-hologram-'+index),trigger:item.trigger||'space-enter',...item})):[];
