@@ -45,7 +45,7 @@
   }
   function attach(video,host,config={}){
     return new Promise(async resolve=>{
-      let stopped=false,raf=0,busy=false,lastSeg=0,lastVideoTime=-1,maskCanvas=null,maskCtx=null,maskImage=null,frameErrors=0,foregroundConfirmed=false,fallbackTimer=0;
+      let stopped=false,raf=0,busy=false,lastSeg=0,lastVideoTime=-1,maskCanvas=null,maskCtx=null,maskImage=null,frameErrors=0,foregroundConfirmed=false,fallbackTimer=0,goodMasks=0,smoothedAlpha=null;
       const canvas=document.createElement('canvas');
       canvas.className='cafasso-holo-cutout-canvas';
       canvas.setAttribute('aria-hidden','true');
@@ -82,6 +82,7 @@
       const revealOriginal=()=>{
         if(fallbackTimer){clearTimeout(fallbackTimer);fallbackTimer=0}
         restoreVideo();
+        video.style.opacity='1';
         canvas.remove();
         loading.remove();
         host.classList.add('cafasso-holo-cutout-fallback');
@@ -113,7 +114,7 @@
         canvas.style.zIndex='2';
         canvas.style.pointerEvents='none';
         canvas.style.opacity='0';
-        video.style.opacity='1';
+        video.style.opacity='0';
         video.style.visibility='visible';
         const e=await engine();
         if(stopped)return resolve(cleanup);
@@ -125,8 +126,9 @@
           canvas.remove();
           loading.remove();
           restoreVideo();
+          video.style.opacity='1';
           host.classList.add('cafasso-holo-cutout-fallback');
-        },3200);
+        },1800);
         const fps=Math.max(6,Math.min(18,Number(config.cutoutFps||((matchMedia?.('(pointer:coarse)')?.matches)?10:14))));
         const interval=1000/fps;
 
@@ -141,22 +143,45 @@
               maskCtx=maskCanvas.getContext('2d');
               maskImage=maskCtx.createImageData(mw,mh);
             }
-            const out=maskImage.data;
+            const nextAlpha=new Uint8ClampedArray(data.length);
             let opaque=0;
-            for(let i=0,j=0;i<data.length;i++,j+=4){
+            for(let i=0;i<data.length;i++){
               const a=smoothAlpha(Number(data[i]||0));
+              nextAlpha[i]=a;
               if(a>40)opaque+=1;
-              out[j]=255;out[j+1]=255;out[j+2]=255;out[j+3]=a;
             }
-            maskCtx.putImageData(maskImage,0,0);
             const coverage=data.length?opaque/data.length:0;
-            if(!foregroundConfirmed&&coverage>.015&&coverage<.92){
-              foregroundConfirmed=true;
-              canvas.style.opacity='1';
-              video.style.opacity='0';
-              loading.remove();
-              if(fallbackTimer){clearTimeout(fallbackTimer);fallbackTimer=0}
+            const valid=coverage>.015&&coverage<.92;
+
+            if(valid){
+              frameErrors=0;
+              goodMasks+=1;
+              if(!smoothedAlpha||smoothedAlpha.length!==nextAlpha.length){
+                smoothedAlpha=nextAlpha.slice();
+              }else{
+                const blend=foregroundConfirmed?.28:.48;
+                for(let i=0;i<nextAlpha.length;i++){
+                  smoothedAlpha[i]=Math.round(smoothedAlpha[i]*(1-blend)+nextAlpha[i]*blend);
+                }
+              }
+
+              const out=maskImage.data;
+              for(let i=0,j=0;i<smoothedAlpha.length;i++,j+=4){
+                out[j]=255;out[j+1]=255;out[j+2]=255;out[j+3]=smoothedAlpha[i];
+              }
+              maskCtx.putImageData(maskImage,0,0);
+
+              if(!foregroundConfirmed&&goodMasks>=2){
+                foregroundConfirmed=true;
+                canvas.style.opacity='1';
+                video.style.opacity='0';
+                loading.remove();
+                if(fallbackTimer){clearTimeout(fallbackTimer);fallbackTimer=0}
+              }
+            }else if(!foregroundConfirmed){
+              goodMasks=0;
             }
+            // Once locked, invalid masks are ignored and the last good silhouette stays on screen.
           }finally{
             try{result?.confidenceMasks?.forEach(m=>m?.close?.())}catch(e){}
             try{result?.categoryMask?.close?.()}catch(e){}
@@ -187,11 +212,14 @@
             }catch(error){
               busy=false;frameErrors+=1;
               console.warn('CAFASSO cutout frame',error);
-              if(frameErrors>=3){
+              if(!foregroundConfirmed&&frameErrors>=3){
                 stopped=true;
                 revealOriginal();
+                video.style.opacity='1';
                 return;
               }
+              // After a successful lock, transient segmentation errors never switch
+              // back to the full video; the last good mask remains visible.
             }
           }
           raf=requestAnimationFrame(draw);
