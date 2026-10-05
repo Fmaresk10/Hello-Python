@@ -5,7 +5,7 @@
   const STYLE_ID='cafassoHologramStyles';
   const SIGNAL_ID='cafassoHologramSignal';
   const STAGE_ID='cafassoHologramStage';
-  const SESSION_PREFIX='cafassoHologramSeen:v3:';
+  const SESSION_PREFIX='cafassoHologramSeen:v4:';
   const rules=[];
   let globalRules=[];
   let current=null;
@@ -226,8 +226,16 @@
     return spot;
   }
 
+  function wixMp4Url(fileId,quality='720p'){
+    const id=normalize(fileId);
+    if(!id)return'';
+    return 'https://video.wixstatic.com/video/'+encodeURIComponent(id)+'/'+quality+'/mp4/file.mp4';
+  }
+
   function mediaHtml(config){
     const sources=[];
+    const wixMp4=wixMp4Url(config.videoFileId,'720p');
+    if(wixMp4)sources.push('<source src="'+esc(wixMp4)+'" type="video/mp4">');
     if(normalize(config.videoWebm))sources.push('<source src="'+esc(config.videoWebm)+'" type="video/webm">');
     if(normalize(config.videoMov))sources.push('<source src="'+esc(config.videoMov)+'" type="video/quicktime">');
     if(normalize(config.videoMp4))sources.push('<source src="'+esc(config.videoMp4)+'" type="video/mp4">');
@@ -515,7 +523,7 @@
   }
 
   window.CafassoHologram={
-    show,announce,close,register,fire,context,loadGlobalRules,
+    show,announce,close,register,fire,context,loadGlobalRules,wixMp4Url,
     async refresh(){lastSpaceKey='';await loadGlobalRules({attempts:3});syncExperience();return globalRules.slice()},
     get globalRules(){return globalRules.slice()},
     get loadState(){return {...globalLoadState}},
