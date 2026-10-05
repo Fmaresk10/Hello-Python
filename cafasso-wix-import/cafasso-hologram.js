@@ -278,12 +278,52 @@
     if(video){
       video.volume=Math.max(0,Math.min(1,Number(config.volume==null?1:config.volume)));
       const person=stage.querySelector('.cafasso-holo-person');
+      let corsFallbackTried=false;
+
+      const restoreNormalVideo=()=>{
+        try{stage.__cafassoCutoutCleanup?.()}catch(error){}
+        stage.__cafassoCutoutCleanup=null;
+        person?.querySelector('.cafasso-holo-cutout-canvas')?.remove();
+        person?.querySelector('.cafasso-holo-cutout-loading')?.remove();
+        video.style.position='';
+        video.style.left='';
+        video.style.top='';
+        video.style.width='';
+        video.style.height='';
+        video.style.maxWidth='';
+        video.style.maxHeight='';
+        video.style.opacity='';
+        video.style.visibility='';
+        video.style.pointerEvents='';
+      };
+
+      const fallbackWithoutCors=()=>{
+        if(corsFallbackTried||!config.removeBackground)return;
+        corsFallbackTried=true;
+        restoreNormalVideo();
+        try{
+          video.pause();
+          video.removeAttribute('crossorigin');
+          video.crossOrigin=null;
+          video.load();
+          const hint=stage.querySelector('.cafasso-holo-audio-hint');
+          if(hint)hint.textContent='Video original · recorte no disponible';
+          setTimeout(()=>video.play().catch(()=>{}),120);
+        }catch(error){console.warn('CAFASSO original video fallback',error)}
+      };
+
       if(config.removeBackground&&window.CafassoHologramCutout?.attach&&person){
         Promise.resolve(window.CafassoHologramCutout.attach(video,person,config)).then(cleanup=>{
           if(!stage.isConnected){try{cleanup?.()}catch(error){};return}
           stage.__cafassoCutoutCleanup=cleanup;
-        }).catch(error=>console.warn('CAFASSO cutout attach',error));
+        }).catch(error=>{
+          console.warn('CAFASSO cutout attach',error);
+          fallbackWithoutCors();
+        });
       }
+
+      video.addEventListener('error',fallbackWithoutCors,{once:true});
+
       const play=()=>video.play().catch(()=>{
         const hint=stage.querySelector('.cafasso-holo-audio-hint');
         if(hint){hint.textContent='Tocá Repetir para escuchar';hint.style.pointerEvents='auto';}
