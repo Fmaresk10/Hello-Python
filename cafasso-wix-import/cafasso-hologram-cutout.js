@@ -45,7 +45,7 @@
   }
   function attach(video,host,config={}){
     return new Promise(async resolve=>{
-      let stopped=false,raf=0,busy=false,lastSeg=0,lastVideoTime=-1,maskCanvas=null,maskCtx=null,maskImage=null;
+      let stopped=false,raf=0,busy=false,lastSeg=0,lastVideoTime=-1,maskCanvas=null,maskCtx=null,maskImage=null,frameErrors=0;
       const canvas=document.createElement('canvas');
       canvas.className='cafasso-holo-cutout-canvas';
       canvas.setAttribute('aria-hidden','true');
@@ -54,8 +54,43 @@
       loading.className='cafasso-holo-cutout-loading';
       loading.textContent='Preparando recorte…';
       host.appendChild(canvas);host.appendChild(loading);
-      const revealOriginal=()=>{video.style.opacity='1';canvas.remove();loading.remove()};
-      const cleanup=()=>{stopped=true;if(raf)cancelAnimationFrame(raf);loading.remove();try{video.style.opacity=''}catch(e){}};
+
+      const previousVideoStyle={
+        position:video.style.position,
+        left:video.style.left,
+        top:video.style.top,
+        width:video.style.width,
+        height:video.style.height,
+        maxWidth:video.style.maxWidth,
+        maxHeight:video.style.maxHeight,
+        opacity:video.style.opacity,
+        pointerEvents:video.style.pointerEvents,
+        visibility:video.style.visibility
+      };
+      const restoreVideo=()=>{
+        video.style.position=previousVideoStyle.position;
+        video.style.left=previousVideoStyle.left;
+        video.style.top=previousVideoStyle.top;
+        video.style.width=previousVideoStyle.width;
+        video.style.height=previousVideoStyle.height;
+        video.style.maxWidth=previousVideoStyle.maxWidth;
+        video.style.maxHeight=previousVideoStyle.maxHeight;
+        video.style.opacity=previousVideoStyle.opacity;
+        video.style.pointerEvents=previousVideoStyle.pointerEvents;
+        video.style.visibility=previousVideoStyle.visibility;
+      };
+      const revealOriginal=()=>{
+        restoreVideo();
+        canvas.remove();
+        loading.remove();
+        host.classList.add('cafasso-holo-cutout-fallback');
+      };
+      let cleanup=()=>{
+        stopped=true;
+        if(raf)cancelAnimationFrame(raf);
+        loading.remove();
+        restoreVideo();
+      };
       const waitMeta=()=>new Promise(done=>{
         if(video.readyState>=1&&video.videoWidth)return done();
         const finish=()=>{video.removeEventListener('loadedmetadata',finish);done()};
@@ -66,33 +101,16 @@
         await waitMeta();
         if(stopped)return resolve(cleanup);
         const size=canvasSize(video);canvas.width=size.width;canvas.height=size.height;
-        const previousVideoStyle={
-          position:video.style.position,
-          width:video.style.width,
-          height:video.style.height,
-          maxWidth:video.style.maxWidth,
-          maxHeight:video.style.maxHeight,
-          opacity:video.style.opacity,
-          pointerEvents:video.style.pointerEvents
-        };
         video.style.position='absolute';
+        video.style.left='0';
+        video.style.top='0';
         video.style.width='1px';
         video.style.height='1px';
         video.style.maxWidth='1px';
         video.style.maxHeight='1px';
         video.style.opacity='0';
+        video.style.visibility='visible';
         video.style.pointerEvents='none';
-        const restoreVideo=()=>{
-          video.style.position=previousVideoStyle.position;
-          video.style.width=previousVideoStyle.width;
-          video.style.height=previousVideoStyle.height;
-          video.style.maxWidth=previousVideoStyle.maxWidth;
-          video.style.maxHeight=previousVideoStyle.maxHeight;
-          video.style.opacity=previousVideoStyle.opacity;
-          video.style.pointerEvents=previousVideoStyle.pointerEvents;
-        };
-        const previousCleanup=cleanup;
-        cleanup=()=>{previousCleanup();restoreVideo();};
         const e=await engine();
         if(stopped)return resolve(cleanup);
         loading.remove();
@@ -143,7 +161,15 @@
             try{
               const maybe=e.segmenter.segmentForVideo(video,now,updateMask);
               if(maybe&&maybe.confidenceMasks)updateMask(maybe);
-            }catch(error){busy=false;console.warn('CAFASSO cutout frame',error)}
+            }catch(error){
+              busy=false;frameErrors+=1;
+              console.warn('CAFASSO cutout frame',error);
+              if(frameErrors>=3){
+                stopped=true;
+                revealOriginal();
+                return;
+              }
+            }
           }
           raf=requestAnimationFrame(draw);
         };
