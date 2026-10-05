@@ -41,6 +41,17 @@
       .cafasso-holo-signal__copy strong{display:block;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff8e9;font:700 12px/1.15 Georgia,serif}
       .cafasso-holo-stage{position:fixed;inset:0;z-index:2147483430;display:grid;place-items:end center;padding:max(18px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));overflow:hidden;background:radial-gradient(circle at 50% 70%,rgba(57,212,207,.11),transparent 38%),rgba(1,19,25,.28);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;animation:cafassoHoloBackdrop .24s ease-out both}
       .cafasso-holo-stage[hidden]{display:none!important}
+      .cafasso-holo-stage--spatial{padding:0!important;background:transparent!important;overflow:hidden!important;pointer-events:none!important;animation:none!important}
+      .cafasso-holo-stage--spatial:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at var(--cafasso-holo-light-x,50%) var(--cafasso-holo-light-y,70%),hsla(var(--cafasso-holo-light-h,178),var(--cafasso-holo-light-s,50%),var(--cafasso-holo-light-l,64%),var(--cafasso-holo-light-a,.12)),transparent 18%);mix-blend-mode:screen}
+      .cafasso-holo-stage--spatial .cafasso-holo-close{pointer-events:auto}
+      .cafasso-holo-stage--spatial .cafasso-holo-scene{position:absolute;min-height:0;width:320px;height:560px;pointer-events:none}
+      .cafasso-holo-stage--spatial .cafasso-holo-person{height:100%;max-width:100%;margin:0;transform:perspective(900px) rotateY(var(--cafasso-holo-ry,0deg)) rotateX(var(--cafasso-holo-rx,0deg));transform-origin:50% 100%}
+      .cafasso-holo-stage--spatial .cafasso-holo-projector{bottom:0;width:78%;height:88%;opacity:.48}
+      .cafasso-holo-stage--spatial .cafasso-holo-base{bottom:-2px;width:var(--cafasso-holo-contact-width,46%);height:18px;opacity:var(--cafasso-holo-contact-opacity,.22);filter:blur(var(--cafasso-holo-contact-blur,8px));border:0;background:radial-gradient(ellipse,rgba(151,255,246,.66),rgba(54,211,204,.20) 42%,transparent 72%);box-shadow:none}
+      .cafasso-holo-stage--spatial .cafasso-holo-glitch{opacity:.40}
+      .cafasso-holo-stage--spatial .cafasso-holo-card{position:fixed;left:50%;bottom:max(12px,calc(env(safe-area-inset-bottom) + 8px));transform:translateX(-50%);pointer-events:auto}
+      .cafasso-holo-stage--spatial .cafasso-holo-audio-hint{position:fixed;left:50%;top:max(14px,calc(env(safe-area-inset-top) + 8px));transform:translateX(-50%);pointer-events:none}
+      .cafasso-holo-occluder{position:absolute;z-index:4;pointer-events:none;object-fit:fill}
       .cafasso-holo-close{position:absolute;z-index:4;right:max(15px,calc(env(safe-area-inset-right) + 10px));top:max(15px,calc(env(safe-area-inset-top) + 10px));width:42px;height:42px;border:1px solid rgba(183,247,241,.35);border-radius:50%;background:rgba(8,38,43,.82);color:#eafffb;font:300 27px/1 Georgia,serif;cursor:pointer;touch-action:manipulation}
       .cafasso-holo-scene{position:relative;width:min(920px,96vw);height:min(78vh,760px);min-height:390px;display:flex;align-items:flex-end;justify-content:center;pointer-events:none}
       .cafasso-holo-position--left .cafasso-holo-scene{justify-content:flex-start}.cafasso-holo-position--right .cafasso-holo-scene{justify-content:flex-end}
@@ -70,6 +81,9 @@
         .cafasso-holo-person{height:72%;max-width:86vw;margin-bottom:116px}
         .cafasso-holo-projector{height:72%;bottom:104px;width:88vw}
         .cafasso-holo-base{bottom:104px;width:62vw}
+        .cafasso-holo-stage--spatial .cafasso-holo-person{height:100%;max-width:100%;margin:0}
+        .cafasso-holo-stage--spatial .cafasso-holo-projector{height:88%;bottom:0;width:78%}
+        .cafasso-holo-stage--spatial .cafasso-holo-base{bottom:-2px;width:var(--cafasso-holo-contact-width,46vw)}
         .cafasso-holo-card{bottom:8px;width:calc(100vw - 16px);padding:13px 14px;border-radius:15px}
         .cafasso-holo-card__meta strong{font-size:15px}.cafasso-holo-card p{font-size:12px;line-height:1.42}
         .cafasso-holo-audio-hint{top:max(13px,env(safe-area-inset-top))}
@@ -113,12 +127,101 @@
       const video=stage.querySelector('video');
       try{video?.pause();}catch(error){}
       try{stage.__cafassoCutoutCleanup?.()}catch(error){}
+      try{stage.__cafassoSpatialCleanup?.()}catch(error){}
       try{if(current?.__cafassoObjectUrl)URL.revokeObjectURL(current.__cafassoObjectUrl)}catch(error){}
       stage.remove();
     }
     document.body.classList.remove('cafasso-holo-open');
     current=null;
     try{window.dispatchEvent(new CustomEvent('cafasso:hologram-close'));}catch(error){}
+  }
+
+  function spatialContext(config={}){
+    const ctx=context();
+    if(ctx.space&&window.CafassoHologramSpots?.resolve){
+      const spot=window.CafassoHologramSpots.resolve(config,ctx);
+      if(spot?.host)return {kind:'world',...spot};
+    }
+    if(config.courseSpotId&&window.CafassoHologramSpots?.courseFind){
+      const spot=window.CafassoHologramSpots.courseFind(config.courseSpotId);
+      return {
+        kind:'course',
+        id:spot.id,label:spot.label,x:spot.x,y:spot.y,scale:Math.max(.35,Math.min(1.35,spot.scale*Number(config.spotScale||1))),
+        perspective:{rotateY:0,rotateX:0},contact:{width:28,opacity:.20,blur:8},
+        light:{hue:178,saturation:48,luminosity:64,opacity:.18},
+        host:document.documentElement
+      };
+    }
+    return null;
+  }
+
+  function imageFitRect(hostRect,kind){
+    if(kind==='course')return {left:0,top:0,width:window.innerWidth||hostRect.width,height:window.innerHeight||hostRect.height};
+    const aspect=16/9;
+    const containerRatio=hostRect.width/Math.max(1,hostRect.height);
+    if(Math.abs(containerRatio-aspect)<.01)return hostRect;
+    if(containerRatio>aspect){
+      const width=hostRect.width,height=width/aspect;
+      return {left:hostRect.left,top:hostRect.top+(hostRect.height-height)/2,width,height};
+    }
+    const height=hostRect.height,width=height*aspect;
+    return {left:hostRect.left+(hostRect.width-width)/2,top:hostRect.top,width,height};
+  }
+
+  function installSpatialStage(stage,config){
+    const spot=spatialContext(config);
+    if(!spot)return null;
+    const scene=stage.querySelector('.cafasso-holo-scene');
+    if(!scene)return null;
+    stage.classList.add('cafasso-holo-stage--spatial');
+    stage.dataset.holoSpot=spot.id||'';
+    stage.dataset.holoSpace=spot.space||spot.kind||'';
+    const light=spot.light||{};
+    stage.style.setProperty('--cafasso-holo-light-h',String(Number(light.hue||178)));
+    stage.style.setProperty('--cafasso-holo-light-s',String(Number(light.saturation||50))+'%');
+    stage.style.setProperty('--cafasso-holo-light-l',String(Number(light.luminosity||64))+'%');
+    stage.style.setProperty('--cafasso-holo-light-a',String(Number(light.opacity||.18)));
+    scene.style.setProperty('--cafasso-holo-ry',String(Number(spot.perspective?.rotateY||0))+'deg');
+    scene.style.setProperty('--cafasso-holo-rx',String(Number(spot.perspective?.rotateX||0))+'deg');
+    scene.style.setProperty('--cafasso-holo-contact-width',String(Number(spot.contact?.width||26))+'%');
+    scene.style.setProperty('--cafasso-holo-contact-opacity',String(Number(spot.contact?.opacity||.20)));
+    scene.style.setProperty('--cafasso-holo-contact-blur',String(Number(spot.contact?.blur||8))+'px');
+
+    let raf=0,stopped=false;
+    const layout=()=>{
+      if(stopped||!stage.isConnected)return;
+      const host=spot.host;
+      if(!host?.isConnected){raf=requestAnimationFrame(layout);return}
+      const raw=host.getBoundingClientRect();
+      const rect=imageFitRect(raw,spot.kind);
+      const x=rect.left+rect.width*(Number(spot.x||50)/100);
+      const y=rect.top+rect.height*(Number(spot.y||88)/100);
+      const viewportW=Math.max(320,window.innerWidth||raw.width||320);
+      const viewportH=Math.max(420,window.innerHeight||raw.height||420);
+      const baseW=Math.min(440,Math.max(250,viewportW*(spot.kind==='course'?.34:.31)));
+      const baseH=Math.min(690,Math.max(400,viewportH*(spot.kind==='course'?.76:.73)));
+      const scale=Number(spot.scale||.75);
+      const width=baseW*scale,height=baseH*scale;
+      scene.style.left=(x-width/2)+'px';
+      scene.style.top=(y-height)+'px';
+      scene.style.width=width+'px';
+      scene.style.height=height+'px';
+      stage.style.setProperty('--cafasso-holo-light-x',(100*x/viewportW)+'%');
+      stage.style.setProperty('--cafasso-holo-light-y',(100*y/viewportH)+'%');
+      raf=requestAnimationFrame(layout);
+    };
+    layout();
+    const mask=spot.occlusion?.maskUrl||config.occlusionMaskUrl;
+    if(mask){
+      const img=document.createElement('img');
+      img.className='cafasso-holo-occluder';
+      img.src=mask;img.alt='';img.setAttribute('aria-hidden','true');
+      Object.assign(img.style,{left:'0',top:'0',width:'100%',height:'100%'});
+      stage.appendChild(img);
+    }
+    const cleanup=()=>{stopped=true;if(raf)cancelAnimationFrame(raf)};
+    stage.__cafassoSpatialCleanup=cleanup;
+    return spot;
   }
 
   function mediaHtml(config){
@@ -165,7 +268,8 @@
       </div>
     `;
     document.body.appendChild(stage);
-    document.body.classList.add('cafasso-holo-open');
+    const spatial=installSpatialStage(stage,config);
+    if(!spatial)document.body.classList.add('cafasso-holo-open');
     markSeen(config);
 
     const video=stage.querySelector('video');
@@ -187,7 +291,7 @@
     }
     stage.querySelector('.cafasso-holo-close')?.addEventListener('click',close);
     stage.querySelector('[data-holo-continue]')?.addEventListener('click',close);
-    stage.addEventListener('click',event=>{if(event.target===stage&&config.dismissOnBackdrop!==false)close();});
+    stage.addEventListener('click',event=>{if(event.target===stage&&!stage.classList.contains('cafasso-holo-stage--spatial')&&config.dismissOnBackdrop!==false)close();});
     window.addEventListener('keydown',event=>{if(event.key==='Escape')close();},{once:true});
     try{window.dispatchEvent(new CustomEvent('cafasso:hologram-open',{detail:{config:current}}));}catch(error){}
     return stage;
