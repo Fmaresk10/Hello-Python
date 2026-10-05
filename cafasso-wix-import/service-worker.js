@@ -1,4 +1,4 @@
-const CAFASSO_CACHE='cafasso-shell-20260924-11';
+const CAFASSO_CACHE='cafasso-shell-20261005-1';
 const SCOPE=self.registration.scope;
 const url=path=>new URL(path,SCOPE).href;
 const OFFLINE=url('./offline.html');
@@ -14,7 +14,8 @@ const PRECACHE=[
   './cafasso-icon-192.png',
   './cafasso-app-icon.svg',
   './cafasso-app-icon-maskable.svg',
-  './pwa-register.js'
+  './pwa-register.js',
+  './cafasso-hologram.js'
 ].map(url);
 
 self.addEventListener('install',event=>{
