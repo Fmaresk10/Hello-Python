@@ -118,22 +118,41 @@
     const extractedId=extractWixVideoId(mediaUrl);
     const descriptorId=String(descriptor?.id||descriptor?.fileId||descriptor?.file_id||'').trim();
     const fileId=extractedId||(looksLikeWixId(descriptorId)?descriptorId:'');
-    const url=directVideoUrl(mediaUrl)||(fileId?'https://video.wixstatic.com/video/'+fileId+'/file':'');
-    if(!url)throw new Error('El video subió, pero Wix no devolvió una dirección reproducible.');
+    const originalUrl=directVideoUrl(mediaUrl)||(fileId?'https://video.wixstatic.com/video/'+fileId+'/file':'');
+    if(!originalUrl)throw new Error('El video subió, pero Wix no devolvió una dirección reproducible.');
     onStatus?.('Comprobando video…',.97);
-    const playable=await probe(url,{timeout:14000});
+
+    let playbackUrl=originalUrl;
+    let playbackMime=meta.mimeType;
+    let playbackField=fieldForMime(meta.mimeType);
+    let playable=false;
+
+    if(fileId){
+      const mp4Candidate='https://video.wixstatic.com/video/'+fileId+'/720p/mp4/file.mp4';
+      const mp4Ready=await probe(mp4Candidate,{timeout:14000});
+      if(mp4Ready){
+        playbackUrl=mp4Candidate;
+        playbackMime='video/mp4';
+        playbackField='videoMp4';
+        playable=true;
+      }
+    }
+    if(!playable)playable=await probe(originalUrl,{timeout:9000});
+
     onStatus?.(playable?'Video listo para usar ✓':'Video subido · Wix todavía lo está procesando…',1);
     return{
-      url,
+      url:playbackUrl,
+      originalUrl,
       wixMediaUrl:mediaUrl,
       fileId,
       fileName:String(descriptor?.fileName||descriptor?.file_name||meta.fileName||''),
       playable,
       operationStatus:String(descriptor?.operationStatus||descriptor?.opStatus||(playable?'READY':'PROCESSING')),
-      mimeType:meta.mimeType,
+      mimeType:playbackMime,
+      originalMimeType:meta.mimeType,
       duration:meta.duration,
       sizeInBytes:meta.sizeInBytes,
-      field:fieldForMime(meta.mimeType)
+      field:playbackField
     };
   }
   function assign(config,result){
