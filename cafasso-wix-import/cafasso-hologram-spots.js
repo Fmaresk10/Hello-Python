@@ -4,6 +4,7 @@
   const SPACES={
     casa:{
       label:'Casa',
+      previewImage:'https://static.wixstatic.com/media/47bf07_9bc5db4bdd144670b58b89d62684b300~mv2.jpg',
       selector:'.cafasso-house',
       sceneSelectors:['.cafasso-house-panorama','.cafasso-house-desktop-scene','.cafasso-house'],
       light:{hue:178,saturation:54,luminosity:62,opacity:.30},
@@ -15,6 +16,7 @@
     },
     patio:{
       label:'Patio',
+      previewImage:'https://static.wixstatic.com/media/47bf07_794847b8f87d4577a04e10fb9adf630c~mv2.png',
       selector:'.cafasso-patio',
       sceneSelectors:['.cafasso-patio-panorama','.cafasso-patio-desktop-scene','.cafasso-patio'],
       light:{hue:178,saturation:50,luminosity:66,opacity:.26},
@@ -26,6 +28,7 @@
     },
     escuela:{
       label:'Escuela',
+      previewImage:'https://static.wixstatic.com/media/47bf07_3248c27ab7aa4fe5847c319c7e250cc4~mv2.png',
       selector:'.cafasso-escuela',
       sceneSelectors:['.cafasso-school-panorama','.cafasso-school-desktop-scene','.cafasso-escuela'],
       light:{hue:180,saturation:46,luminosity:65,opacity:.26},
@@ -37,6 +40,7 @@
     },
     parroquia:{
       label:'Parroquia',
+      previewImage:'https://static.wixstatic.com/media/47bf07_1c9e484e5ec8490781a6e54d6c262e1a~mv2.png',
       selector:'.cafasso-parroquia',
       sceneSelectors:['.cafasso-parish-panorama','.cafasso-parish-desktop-scene','.cafasso-parroquia'],
       light:{hue:174,saturation:42,luminosity:66,opacity:.22},
@@ -48,6 +52,7 @@
     },
     recursos:{
       label:'Recursos',
+      previewImage:'https://static.wixstatic.com/media/47bf07_8451eada7d72451a854df7cae47a80b6~mv2.png',
       selector:'.cafasso-recursos',
       sceneSelectors:['.cafasso-resources-panorama','.cafasso-recursos'],
       light:{hue:176,saturation:44,luminosity:63,opacity:.24},
