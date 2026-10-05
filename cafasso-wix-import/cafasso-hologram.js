@@ -201,30 +201,6 @@
     scene.style.setProperty('--cafasso-holo-contact-blur',String(Number(spot.contact?.blur||8))+'px');
 
     let raf=0,stopped=false;
-    const layout=()=>{
-      if(stopped||!stage.isConnected)return;
-      const host=spot.kind==='world'&&window.CafassoHologramSpots?.scene?window.CafassoHologramSpots.scene(spot.space):spot.host;
-      if(!host?.isConnected){raf=requestAnimationFrame(layout);return}
-      const raw=host.getBoundingClientRect();
-      const rect=imageFitRect(raw,spot.kind);
-      syncOccluder?.(rect,host);
-      const x=rect.left+rect.width*(Number(spot.x||50)/100);
-      const y=rect.top+rect.height*(Number(spot.y||88)/100);
-      const viewportW=Math.max(320,window.innerWidth||raw.width||320);
-      const viewportH=Math.max(420,window.innerHeight||raw.height||420);
-      const baseW=Math.min(440,Math.max(250,viewportW*(spot.kind==='course'?.34:.31)));
-      const baseH=Math.min(690,Math.max(400,viewportH*(spot.kind==='course'?.76:.73)));
-      const scale=Number(spot.scale||.75);
-      const width=baseW*scale,height=baseH*scale;
-      scene.style.left=(x-width/2)+'px';
-      scene.style.top=(y-height)+'px';
-      scene.style.width=width+'px';
-      scene.style.height=height+'px';
-      stage.style.setProperty('--cafasso-holo-light-x',(100*x/viewportW)+'%');
-      stage.style.setProperty('--cafasso-holo-light-y',(100*y/viewportH)+'%');
-      raf=requestAnimationFrame(layout);
-    };
-    layout();
     let occluder=null;
     const polygon=normalizeOcclusionPolygon(
       config.occlusionEnabled===false?[]:(config.occlusionPolygon||spot.occlusionPolygon||[])
@@ -262,6 +238,30 @@
       });
     };
 
+    const layout=()=>{
+      if(stopped||!stage.isConnected)return;
+      const host=spot.kind==='world'&&window.CafassoHologramSpots?.scene?window.CafassoHologramSpots.scene(spot.space):spot.host;
+      if(!host?.isConnected){raf=requestAnimationFrame(layout);return}
+      const raw=host.getBoundingClientRect();
+      const rect=imageFitRect(raw,spot.kind);
+      syncOccluder(rect,host);
+      const x=rect.left+rect.width*(Number(spot.x||50)/100);
+      const y=rect.top+rect.height*(Number(spot.y||88)/100);
+      const viewportW=Math.max(320,window.innerWidth||raw.width||320);
+      const viewportH=Math.max(420,window.innerHeight||raw.height||420);
+      const baseW=Math.min(440,Math.max(250,viewportW*(spot.kind==='course'?.34:.31)));
+      const baseH=Math.min(690,Math.max(400,viewportH*(spot.kind==='course'?.76:.73)));
+      const scale=Number(spot.scale||.75);
+      const width=baseW*scale,height=baseH*scale;
+      scene.style.left=(x-width/2)+'px';
+      scene.style.top=(y-height)+'px';
+      scene.style.width=width+'px';
+      scene.style.height=height+'px';
+      stage.style.setProperty('--cafasso-holo-light-x',(100*x/viewportW)+'%');
+      stage.style.setProperty('--cafasso-holo-light-y',(100*y/viewportH)+'%');
+      raf=requestAnimationFrame(layout);
+    };
+    layout();
     const cleanup=()=>{stopped=true;if(raf)cancelAnimationFrame(raf)};
     stage.__cafassoSpatialCleanup=cleanup;
     return spot;
