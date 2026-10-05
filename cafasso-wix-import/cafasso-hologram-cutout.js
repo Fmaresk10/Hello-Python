@@ -66,7 +66,33 @@
         await waitMeta();
         if(stopped)return resolve(cleanup);
         const size=canvasSize(video);canvas.width=size.width;canvas.height=size.height;
+        const previousVideoStyle={
+          position:video.style.position,
+          width:video.style.width,
+          height:video.style.height,
+          maxWidth:video.style.maxWidth,
+          maxHeight:video.style.maxHeight,
+          opacity:video.style.opacity,
+          pointerEvents:video.style.pointerEvents
+        };
+        video.style.position='absolute';
+        video.style.width='1px';
+        video.style.height='1px';
+        video.style.maxWidth='1px';
+        video.style.maxHeight='1px';
         video.style.opacity='0';
+        video.style.pointerEvents='none';
+        const restoreVideo=()=>{
+          video.style.position=previousVideoStyle.position;
+          video.style.width=previousVideoStyle.width;
+          video.style.height=previousVideoStyle.height;
+          video.style.maxWidth=previousVideoStyle.maxWidth;
+          video.style.maxHeight=previousVideoStyle.maxHeight;
+          video.style.opacity=previousVideoStyle.opacity;
+          video.style.pointerEvents=previousVideoStyle.pointerEvents;
+        };
+        const previousCleanup=cleanup;
+        cleanup=()=>{previousCleanup();restoreVideo();};
         const e=await engine();
         if(stopped)return resolve(cleanup);
         loading.remove();
