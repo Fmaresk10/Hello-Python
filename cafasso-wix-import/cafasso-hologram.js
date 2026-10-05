@@ -560,6 +560,7 @@
         // Critical: the first space check may have happened while rules were still empty.
         // Reset the key so Casa/Patio/etc. is evaluated again now that rules exist.
         lastSpaceKey='';
+        warmCutoutEngine();
         scheduleSync();
         try{window.dispatchEvent(new CustomEvent('cafasso:hologram-rules-ready',{detail:{count:globalRules.length}}))}catch(error){}
         return globalRules;
@@ -576,6 +577,25 @@
     console.warn('CAFASSO holograms: global rules unavailable',lastError);
     return globalRules;
   }
+  let cutoutWarmStarted=false;
+  function warmCutoutEngine(){
+    if(cutoutWarmStarted)return;
+    cutoutWarmStarted=true;
+    const start=()=>{
+      const run=window.CafassoHologramCutout?.engine;
+      if(typeof run!=='function'){cutoutWarmStarted=false;return}
+      Promise.resolve(run()).catch(error=>{
+        cutoutWarmStarted=false;
+        console.warn('CAFASSO cutout warmup',error);
+      });
+    };
+    if('requestIdleCallback' in window){
+      requestIdleCallback(start,{timeout:1200});
+    }else{
+      setTimeout(start,350);
+    }
+  }
+
   function scheduleSync(){
     clearTimeout(syncTimer);
     syncTimer=setTimeout(syncExperience,120);
@@ -609,8 +629,8 @@
   window.addEventListener('pagehide',close);
   window.addEventListener('cafasso:navigate',close);
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{installStyles();loadGlobalRules({attempts:3});scheduleSync();previewFromStorage();},{once:true});
-  else {installStyles();loadGlobalRules({attempts:3});scheduleSync();previewFromStorage()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{installStyles();warmCutoutEngine();loadGlobalRules({attempts:3});scheduleSync();previewFromStorage();},{once:true});
+  else {installStyles();warmCutoutEngine();loadGlobalRules({attempts:3});scheduleSync();previewFromStorage()}
 
   const observer=new MutationObserver(()=>scheduleSync());
   const observe=()=>{const host=document.getElementById('main')||document.getElementById('app');if(host)observer.observe(host,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});else setTimeout(observe,180);};
