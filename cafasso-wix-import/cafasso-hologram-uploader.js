@@ -41,6 +41,44 @@
     if(duration&&duration>MAX_SECONDS)throw new Error('Para mantener CAFASSO ágil, cada holograma puede durar hasta 60 segundos.');
     return{mimeType,duration,sizeInBytes:file.size,fileName:file.name||('cafasso-hologram-'+Date.now()+'.mp4')};
   }
+  function extractWixVideoId(value){
+    const raw=String(value||'').trim();
+    const match=raw.match(/^wix:video:\/\/v1\/([^/]+)\//i);
+    if(match?.[1])return match[1];
+    const direct=raw.match(/video\.wixstatic\.com\/video\/([^/]+)\/file/i);
+    return direct?.[1]||'';
+  }
+  function directVideoUrl(value){
+    const raw=String(value||'').trim();
+    if(!raw)return'';
+    if(/^https?:\/\//i.test(raw))return raw;
+    const id=extractWixVideoId(raw);
+    return id?'https://video.wixstatic.com/video/'+id+'/file':'';
+  }
+  function looksLikeWixId(value){
+    return /^[a-f0-9]{6,}_[a-f0-9]{6,}(?:~mv2)?$/i.test(String(value||'').trim());
+  }
+  function probe(url,{timeout=12000}={}){
+    return new Promise(resolve=>{
+      const src=String(url||'').trim();
+      if(!src){resolve(false);return}
+      const video=document.createElement('video');
+      let done=false;
+      const finish=ok=>{
+        if(done)return;done=true;
+        clearTimeout(timer);
+        try{video.pause();video.removeAttribute('src');video.load()}catch(e){}
+        resolve(Boolean(ok));
+      };
+      const timer=setTimeout(()=>finish(false),timeout);
+      video.preload='metadata';video.muted=true;video.playsInline=true;
+      video.onloadedmetadata=()=>finish(true);
+      video.oncanplay=()=>finish(true);
+      video.onerror=()=>finish(false);
+      video.src=src;
+    });
+  }
+
   async function upload(file,{onStatus}={}){
     const meta=await validate(file);
     onStatus?.('Preparando subida…',0);
@@ -70,18 +108,28 @@
       xhr.send(form);
     });
     const descriptor=Array.isArray(result)?result[0]:(result?.file||result);
-    const fileId=String(descriptor?.id||descriptor?.file_name||'').trim();
-    const url=String(
+    const mediaUrl=String(
+      descriptor?.fileUrl||
+      descriptor?.file_url||
       descriptor?.url||
       descriptor?.media?.video?.video?.url||
-      (fileId?'https://video.wixstatic.com/video/'+fileId+'/file':'')
+      ''
     ).trim();
-    if(!url)throw new Error('El video subió, pero Wix todavía no devolvió su enlace.');
-    onStatus?.('Video subido · Wix lo está procesando…',1);
+    const extractedId=extractWixVideoId(mediaUrl);
+    const descriptorId=String(descriptor?.id||descriptor?.fileId||descriptor?.file_id||'').trim();
+    const fileId=extractedId||(looksLikeWixId(descriptorId)?descriptorId:'');
+    const url=directVideoUrl(mediaUrl)||(fileId?'https://video.wixstatic.com/video/'+fileId+'/file':'');
+    if(!url)throw new Error('El video subió, pero Wix no devolvió una dirección reproducible.');
+    onStatus?.('Comprobando video…',.97);
+    const playable=await probe(url,{timeout:14000});
+    onStatus?.(playable?'Video listo para usar ✓':'Video subido · Wix todavía lo está procesando…',1);
     return{
       url,
+      wixMediaUrl:mediaUrl,
       fileId,
-      operationStatus:String(descriptor?.operationStatus||descriptor?.opStatus||'PROCESSING'),
+      fileName:String(descriptor?.fileName||descriptor?.file_name||meta.fileName||''),
+      playable,
+      operationStatus:String(descriptor?.operationStatus||descriptor?.opStatus||(playable?'READY':'PROCESSING')),
       mimeType:meta.mimeType,
       duration:meta.duration,
       sizeInBytes:meta.sizeInBytes,
@@ -93,6 +141,9 @@
     delete config.videoWebm;delete config.videoMov;delete config.videoMp4;
     config[result.field||fieldForMime(result.mimeType)]=result.url;
     config.videoFileId=result.fileId||'';
+    config.videoWixMediaUrl=result.wixMediaUrl||'';
+    config.videoFileName=result.fileName||'';
+    config.videoReady=result.playable===true;
     config.removeBackground=true;
     config.videoSource='wix-upload';
     return config;
@@ -106,5 +157,5 @@
     preview.__cafassoObjectUrl=url;
     return preview;
   }
-  window.CafassoHologramUploader={upload,assign,validate,localPreviewConfig,mimeOf,fieldForMime,MAX_BYTES,MAX_SECONDS};
+  window.CafassoHologramUploader={upload,assign,validate,localPreviewConfig,mimeOf,fieldForMime,probe,directVideoUrl,extractWixVideoId,MAX_BYTES,MAX_SECONDS};
 })();
