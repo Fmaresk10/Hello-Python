@@ -48,9 +48,9 @@
       .cafasso-holo-stage--spatial .cafasso-holo-close{pointer-events:auto}
       .cafasso-holo-stage--spatial .cafasso-holo-scene{position:absolute;min-height:0;width:320px;height:560px;pointer-events:none}
       .cafasso-holo-stage--spatial .cafasso-holo-person{height:100%;max-width:100%;margin:0;transform:perspective(900px) rotateY(var(--cafasso-holo-ry,0deg)) rotateX(var(--cafasso-holo-rx,0deg));transform-origin:50% 100%}
-      .cafasso-holo-stage--spatial .cafasso-holo-projector{bottom:0;width:78%;height:88%;opacity:.48}
+      .cafasso-holo-stage--spatial .cafasso-holo-projector{bottom:0;width:72%;height:84%;opacity:.22;filter:blur(1.6px)}
       .cafasso-holo-stage--spatial .cafasso-holo-base{bottom:-2px;width:var(--cafasso-holo-contact-width,46%);height:18px;opacity:var(--cafasso-holo-contact-opacity,.22);filter:blur(var(--cafasso-holo-contact-blur,8px));border:0;background:radial-gradient(ellipse,rgba(151,255,246,.66),rgba(54,211,204,.20) 42%,transparent 72%);box-shadow:none}
-      .cafasso-holo-stage--spatial .cafasso-holo-glitch{opacity:.40}
+      .cafasso-holo-stage--spatial .cafasso-holo-glitch{display:none!important}
       .cafasso-holo-stage--spatial .cafasso-holo-card{position:fixed;left:50%;bottom:max(12px,calc(env(safe-area-inset-bottom) + 8px));transform:translateX(-50%);pointer-events:auto}
       .cafasso-holo-stage--spatial .cafasso-holo-audio-hint{position:fixed;left:50%;top:max(14px,calc(env(safe-area-inset-top) + 8px));transform:translateX(-50%);pointer-events:none}
       .cafasso-holo-occluder{position:absolute;z-index:4;pointer-events:none;object-fit:fill}
