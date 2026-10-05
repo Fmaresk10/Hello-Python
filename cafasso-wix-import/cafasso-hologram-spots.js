@@ -8,6 +8,7 @@
       selector:'.cafasso-house',
       sceneSelectors:['.cafasso-house-panorama','.cafasso-house-desktop-scene','.cafasso-house'],
       light:{hue:178,saturation:54,luminosity:62,opacity:.30},
+      ambient:{brightness:.98,saturation:.86,contrast:1.03,sepia:.06,hue:-5},
       spots:[
         {id:'casa-centro',label:'Centro de la sala',description:'Aparición principal, de cuerpo entero, apoyada sobre el piso central.',x:50,y:88,scale:.88,depth:'foreground',contact:{width:30,opacity:.25,blur:10},perspective:{rotateY:0,rotateX:0}},
         {id:'casa-tv',label:'Junto al televisor',description:'Presencia cercana a la TV, ideal para bienvenida o explicación.',x:66,y:82,scale:.74,depth:'mid',contact:{width:25,opacity:.22,blur:9},perspective:{rotateY:-2,rotateX:0}},
@@ -20,6 +21,7 @@
       selector:'.cafasso-patio',
       sceneSelectors:['.cafasso-patio-panorama','.cafasso-patio-desktop-scene','.cafasso-patio'],
       light:{hue:178,saturation:50,luminosity:66,opacity:.26},
+      ambient:{brightness:1.03,saturation:.88,contrast:1.02,sepia:.01,hue:0},
       spots:[
         {id:'patio-centro',label:'Centro del patio',description:'Punto principal de encuentro, con buena lectura de cuerpo entero.',x:50,y:89,scale:.76,depth:'foreground',contact:{width:29,opacity:.22,blur:10},perspective:{rotateY:0,rotateX:0}},
         {id:'patio-izquierda',label:'Lateral izquierdo',description:'Aparición más lejana, útil para ambientación o llamados breves.',x:29,y:84,scale:.64,depth:'mid',contact:{width:23,opacity:.18,blur:8},perspective:{rotateY:3,rotateX:0}},
@@ -32,6 +34,7 @@
       selector:'.cafasso-escuela',
       sceneSelectors:['.cafasso-school-panorama','.cafasso-school-desktop-scene','.cafasso-escuela'],
       light:{hue:180,saturation:46,luminosity:65,opacity:.26},
+      ambient:{brightness:.99,saturation:.84,contrast:1.03,sepia:.015,hue:-1},
       spots:[
         {id:'escuela-pizarra',label:'Frente a la pizarra',description:'Spot docente principal. Ideal para explicaciones del formador.',x:49,y:83,scale:.68,depth:'mid',contact:{width:25,opacity:.22,blur:8},perspective:{rotateY:0,rotateX:0}},
         {id:'escuela-escritorio',label:'Junto al escritorio',description:'Presencia más cercana, apropiada para devoluciones o consignas.',x:67,y:86,scale:.76,depth:'foreground',contact:{width:28,opacity:.24,blur:9},perspective:{rotateY:-2,rotateX:0}},
@@ -44,6 +47,7 @@
       selector:'.cafasso-parroquia',
       sceneSelectors:['.cafasso-parish-panorama','.cafasso-parish-desktop-scene','.cafasso-parroquia'],
       light:{hue:174,saturation:42,luminosity:66,opacity:.22},
+      ambient:{brightness:.94,saturation:.78,contrast:1.05,sepia:.045,hue:-4},
       spots:[
         {id:'parroquia-nave',label:'Nave central',description:'Punto sobrio de cuerpo entero, sin intervenir la geometría del altar.',x:50,y:88,scale:.64,depth:'foreground',contact:{width:26,opacity:.18,blur:9},perspective:{rotateY:0,rotateX:0}},
         {id:'parroquia-lateral-izq',label:'Lateral izquierdo',description:'Aparición discreta, pensada para acompañamiento o introducciones.',x:34,y:85,scale:.57,depth:'mid',contact:{width:21,opacity:.16,blur:8},perspective:{rotateY:2,rotateX:0}},
@@ -56,6 +60,7 @@
       selector:'.cafasso-recursos',
       sceneSelectors:['.cafasso-resources-panorama','.cafasso-recursos'],
       light:{hue:176,saturation:44,luminosity:63,opacity:.24},
+      ambient:{brightness:.97,saturation:.82,contrast:1.04,sepia:.035,hue:-3},
       spots:[
         {id:'recursos-centro',label:'Pasillo central',description:'Punto principal entre estanterías, pensado para recomendaciones.',x:50,y:88,scale:.72,depth:'foreground',contact:{width:27,opacity:.22,blur:9},perspective:{rotateY:0,rotateX:0}},
         {id:'recursos-izq',label:'Estantería izquierda',description:'Aparición lateral para presentar un recurso o colección.',x:36,y:85,scale:.61,depth:'mid',contact:{width:22,opacity:.18,blur:8},perspective:{rotateY:3,rotateX:0}},
@@ -103,6 +108,7 @@
       y:Math.max(0,Math.min(100,base.y+dy)),
       scale:Math.max(.35,Math.min(1.35,base.scale*scaleAdjust)),
       light:{...entry.light,...(base.light||{})},
+      ambient:{...entry.ambient,...(base.ambient||{})},
       host:scene(spaceName)
     };
   }
