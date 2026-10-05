@@ -1,4 +1,4 @@
-const CAFASSO_CACHE='cafasso-shell-20261005-2';
+const CAFASSO_CACHE='cafasso-shell-20261005-3';
 const SCOPE=self.registration.scope;
 const url=path=>new URL(path,SCOPE).href;
 const OFFLINE=url('./offline.html');
@@ -16,6 +16,8 @@ const PRECACHE=[
   './cafasso-app-icon-maskable.svg',
   './pwa-register.js',
   './cafasso-hologram.js',
+  './cafasso-hologram-cutout.js',
+  './cafasso-hologram-uploader.js',
   './hologramas.html',
   './course-editor-holograms.js'
 ].map(url);
