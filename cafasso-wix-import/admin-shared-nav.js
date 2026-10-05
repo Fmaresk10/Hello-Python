@@ -6,9 +6,10 @@
     {key:'home',label:'Inicio',icon:'⌂',href:'./admin.html'},
     {key:'people',label:'Personas',icon:'👥',href:'./animadores.html'},
     {key:'courses',label:'Cursos',icon:'📚',href:'./admin.html#cursos'},
-    {key:'submissions',label:'Entregas',icon:'📥',href:'./entregas.html'}
+    {key:'holograms',label:'Hologramas',icon:'✦',href:'./hologramas.html'}
   ];
   const MORE=[
+    {key:'submissions',label:'Entregas',icon:'📥',href:'./entregas.html'},
     {key:'groups',label:'Grupos',icon:'◉',href:'./grupos.html'},
     {key:'assignments',label:'Asignaciones',icon:'↗',href:'./asignaciones.html'},
     {key:'resources',label:'Recursos',icon:'🗂',href:'./resource-admin.html'},
@@ -23,6 +24,7 @@
     if(page==='admin.html'||page==='')return location.hash==='#cursos'?'courses':'home';
     if(page==='animadores.html')return'people';
     if(page==='entregas.html')return'submissions';
+    if(page==='hologramas.html')return'holograms';
     if(page==='grupos.html'||page==='grupo.html')return'groups';
     if(page==='asignaciones.html')return'assignments';
     if(page==='resource-admin.html')return'resources';
