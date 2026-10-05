@@ -94,12 +94,15 @@ async function save(){
       if(savedRule)savedRule.videoReady=playable===true;
     }
 
+    const behavior=savedRule?.activation==='auto'
+      ? 'En '+itemLabel(savedRule)+' debería aparecer automáticamente.'
+      : 'En '+itemLabel(savedRule)+' aparecerá una señal ✦; tocala para abrir el holograma.';
     if(verified&&savedVideo&&playable===true){
       setStatus('Guardado y comprobado ✓',true);
-      setSaveCheck('✓ Guardado y comprobado en Wix. La aparición volvió a leerse correctamente y el video está listo para reproducirse.','ok');
+      setSaveCheck('✓ Guardado y comprobado en Wix. El video está listo para reproducirse. '+behavior,'ok');
     }else if(verified&&savedVideo&&playable===false){
       setStatus('Guardado · video pendiente',true);
-      setSaveCheck('✓ La configuración quedó guardada en Wix. ⚠ El video todavía no responde para reproducción; Wix puede seguir procesándolo.','warn');
+      setSaveCheck('✓ La configuración quedó guardada en Wix. ⚠ El video todavía no responde para reproducción; Wix puede seguir procesándolo. '+behavior,'warn');
     }else if(verified){
       setStatus('Guardado y comprobado ✓',true);
       setSaveCheck('✓ Guardado y comprobado en Wix. La aparición volvió a leerse correctamente.','ok');
