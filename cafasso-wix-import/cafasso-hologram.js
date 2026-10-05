@@ -14,6 +14,7 @@
   let syncTimer=0;
   const GLOBAL_CONFIG_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
   const GLOBAL_CONFIG_TITLE='__CAFASSO_GLOBAL_HOLOGRAMS__';
+  const PREVIEW_MODE=new URLSearchParams(location.search).get('holoPreview')==='1';
 
   const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
@@ -142,8 +143,8 @@
       const spot=window.CafassoHologramSpots.resolve(config,ctx);
       if(spot?.host)return {kind:'world',...spot};
     }
-    if(config.courseSpotId&&window.CafassoHologramSpots?.courseFind){
-      const spot=window.CafassoHologramSpots.courseFind(config.courseSpotId);
+    if((config.courseSpotId||ctx.view==='module')&&window.CafassoHologramSpots?.courseFind){
+      const spot=window.CafassoHologramSpots.courseFind(config.courseSpotId||'curso-derecha');
       return {
         kind:'course',
         id:spot.id,label:spot.label,x:spot.x,y:spot.y,scale:Math.max(.35,Math.min(1.35,spot.scale*Number(config.spotScale||1))),
@@ -389,6 +390,7 @@
   }
 
   function syncExperience(){
+    if(PREVIEW_MODE)return;
     const ctx=context();
     if(ctx.view==='module'&&ctx.moduleId){
       lastSpaceKey='';
@@ -433,6 +435,18 @@
     syncTimer=setTimeout(syncExperience,120);
   }
 
+  function previewFromStorage(){
+    if(!PREVIEW_MODE)return false;
+    try{
+      const preview=JSON.parse(localStorage.getItem('cafassoHologramPreviewRule')||'null');
+      if(!preview||Number(preview.expiresAt||0)<Date.now()){localStorage.removeItem('cafassoHologramPreviewRule');return false}
+      const ctx=context();
+      if(preview.space&&ctx.space&&String(preview.space)!==String(ctx.space))return false;
+      setTimeout(()=>show({...preview,activation:'auto',repeat:'always'}),260);
+      return true;
+    }catch(error){return false}
+  }
+
   window.CafassoHologram={show,announce,close,register,fire,context,loadGlobalRules,get globalRules(){return globalRules.slice()},get current(){return current;}};
 
   window.addEventListener('cafasso:course-experience-ready',scheduleSync);
@@ -443,8 +457,8 @@
   window.addEventListener('pagehide',close);
   window.addEventListener('cafasso:navigate',close);
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{installStyles();loadGlobalRules();scheduleSync();},{once:true});
-  else {installStyles();loadGlobalRules();scheduleSync();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{installStyles();loadGlobalRules();scheduleSync();previewFromStorage();},{once:true});
+  else {installStyles();loadGlobalRules();scheduleSync();previewFromStorage()}
 
   const observer=new MutationObserver(()=>scheduleSync());
   const observe=()=>{const host=document.getElementById('main')||document.getElementById('app');if(host)observer.observe(host,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});else setTimeout(observe,180);};
