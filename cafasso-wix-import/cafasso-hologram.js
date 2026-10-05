@@ -51,7 +51,13 @@
       .cafasso-holo-stage--spatial .cafasso-holo-projector{bottom:0;width:72%;height:84%;opacity:.22;filter:blur(1.6px)}
       .cafasso-holo-stage--spatial .cafasso-holo-base{bottom:-2px;width:var(--cafasso-holo-contact-width,46%);height:18px;opacity:var(--cafasso-holo-contact-opacity,.22);filter:blur(var(--cafasso-holo-contact-blur,8px));border:0;background:radial-gradient(ellipse,rgba(151,255,246,.66),rgba(54,211,204,.20) 42%,transparent 72%);box-shadow:none}
       .cafasso-holo-stage--spatial .cafasso-holo-glitch{display:none!important}
-      .cafasso-holo-stage--spatial .cafasso-holo-card{position:fixed;left:50%;bottom:max(12px,calc(env(safe-area-inset-bottom) + 8px));transform:translateX(-50%);pointer-events:auto}
+      .cafasso-holo-stage--spatial .cafasso-holo-card{position:fixed;left:50%;bottom:max(9px,calc(env(safe-area-inset-bottom) + 6px));transform:translateX(-50%);width:auto;max-width:min(320px,calc(100vw - 24px));padding:8px 10px;border-radius:11px;pointer-events:auto;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+      .cafasso-holo-stage--spatial .cafasso-holo-card__meta{gap:5px}
+      .cafasso-holo-stage--spatial .cafasso-holo-card__meta strong{font-size:12px}
+      .cafasso-holo-stage--spatial .cafasso-holo-card__meta span{font-size:6.5px;letter-spacing:.08em}
+      .cafasso-holo-stage--spatial .cafasso-holo-card p{margin-top:5px;font-size:10px;line-height:1.32}
+      .cafasso-holo-stage--spatial .cafasso-holo-card__actions{gap:5px;margin-top:7px}
+      .cafasso-holo-stage--spatial .cafasso-holo-card__actions button{min-height:27px;padding:5px 9px;font-size:8px}
       .cafasso-holo-stage--spatial .cafasso-holo-audio-hint{position:fixed;left:50%;top:max(14px,calc(env(safe-area-inset-top) + 8px));transform:translateX(-50%);pointer-events:none}
       .cafasso-holo-occluder{position:absolute;z-index:4;pointer-events:none;object-fit:fill;max-width:none!important;max-height:none!important}
       .cafasso-holo-close{position:absolute;z-index:4;right:max(15px,calc(env(safe-area-inset-right) + 10px));top:max(15px,calc(env(safe-area-inset-top) + 10px));width:42px;height:42px;border:1px solid rgba(183,247,241,.35);border-radius:50%;background:rgba(8,38,43,.82);color:#eafffb;font:300 27px/1 Georgia,serif;cursor:pointer;touch-action:manipulation}
@@ -88,6 +94,8 @@
         .cafasso-holo-stage--spatial .cafasso-holo-base{bottom:-2px;width:var(--cafasso-holo-contact-width,46vw)}
         .cafasso-holo-card{bottom:8px;width:calc(100vw - 16px);padding:13px 14px;border-radius:15px}
         .cafasso-holo-card__meta strong{font-size:15px}.cafasso-holo-card p{font-size:12px;line-height:1.42}
+        .cafasso-holo-stage--spatial .cafasso-holo-card{width:auto;max-width:min(280px,calc(100vw - 20px));padding:7px 9px;border-radius:10px}
+        .cafasso-holo-stage--spatial .cafasso-holo-card__meta strong{font-size:11px}.cafasso-holo-stage--spatial .cafasso-holo-card p{font-size:9px;line-height:1.28}
         .cafasso-holo-audio-hint{top:max(13px,env(safe-area-inset-top))}
       }
       @media(max-height:620px) and (orientation:landscape){
