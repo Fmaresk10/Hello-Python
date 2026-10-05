@@ -69,9 +69,9 @@
       .cafasso-holo-projector:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent 0 7px,rgba(174,255,250,.09) 8px,transparent 9px);animation:cafassoHoloScan 5.5s linear infinite}
       .cafasso-holo-base{position:absolute;left:50%;bottom:0;width:min(330px,56vw);height:30px;transform:translateX(-50%);border:1px solid rgba(125,239,231,.58);border-radius:50%;background:radial-gradient(ellipse,rgba(167,255,248,.35),rgba(43,181,180,.12) 45%,rgba(10,76,81,.1) 70%,transparent 72%);box-shadow:0 0 38px rgba(78,232,223,.30),inset 0 0 22px rgba(174,255,249,.25)}
       .cafasso-holo-person{position:relative;z-index:2;height:calc(100% - 30px);max-width:min(58vw,520px);display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 0 10px rgba(109,244,236,.34));pointer-events:auto;transform-origin:50% 100%;animation:cafassoHoloMaterialize .68s cubic-bezier(.18,.78,.22,1) both}
-      .cafasso-holo-person video,.cafasso-holo-person img{display:block;max-width:100%;max-height:100%;height:100%;width:auto;object-fit:contain;object-position:center bottom;filter:saturate(.82) contrast(1.04) drop-shadow(0 0 12px rgba(83,226,218,.18))}
+      .cafasso-holo-person video,.cafasso-holo-person img{display:block;max-width:100%;max-height:100%;height:100%;width:auto;object-fit:contain;object-position:center bottom;filter:brightness(var(--cafasso-holo-ambient-brightness,1)) saturate(var(--cafasso-holo-ambient-saturation,.82)) contrast(var(--cafasso-holo-ambient-contrast,1.04)) sepia(var(--cafasso-holo-ambient-sepia,0)) hue-rotate(var(--cafasso-holo-ambient-hue,0deg)) drop-shadow(0 0 12px rgba(83,226,218,.18))}
       .cafasso-holo-person video{background:transparent}
-      .cafasso-holo-cutout-canvas{display:block;max-width:100%;max-height:100%;height:100%;width:auto;object-fit:contain;object-position:center bottom;filter:saturate(.82) contrast(1.04) drop-shadow(0 0 12px rgba(83,226,218,.18))}
+      .cafasso-holo-cutout-canvas{display:block;max-width:100%;max-height:100%;height:100%;width:auto;object-fit:contain;object-position:center bottom;filter:brightness(var(--cafasso-holo-ambient-brightness,1)) saturate(var(--cafasso-holo-ambient-saturation,.82)) contrast(var(--cafasso-holo-ambient-contrast,1.04)) sepia(var(--cafasso-holo-ambient-sepia,0)) hue-rotate(var(--cafasso-holo-ambient-hue,0deg)) drop-shadow(0 0 12px rgba(83,226,218,.18))}
       .cafasso-holo-cutout-loading{position:absolute;left:50%;bottom:28%;transform:translateX(-50%);padding:7px 10px;border:1px solid rgba(181,255,249,.28);border-radius:999px;background:rgba(5,32,37,.74);color:#cdf8f3;font:800 8px/1 Inter,system-ui;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
       .cafasso-holo-fallback{position:relative;width:min(250px,48vw);height:70%;min-height:270px;opacity:.82}
       .cafasso-holo-fallback__head{position:absolute;left:50%;top:4%;width:29%;aspect-ratio:1;border-radius:48% 48% 44% 44%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(184,255,249,.76),rgba(64,203,201,.24));box-shadow:0 0 18px rgba(114,242,234,.34)}
@@ -161,6 +161,7 @@
         id:spot.id,label:spot.label,x:spot.x,y:spot.y,scale:Math.max(.35,Math.min(1.35,spot.scale*Number(config.spotScale||1))),
         perspective:{rotateY:0,rotateX:0},contact:{width:28,opacity:.20,blur:8},
         light:{hue:178,saturation:48,luminosity:64,opacity:.18},
+        ambient:{brightness:1,saturation:.84,contrast:1.03,sepia:.01,hue:0},
         host:document.documentElement
       };
     }
@@ -204,6 +205,12 @@
     stage.style.setProperty('--cafasso-holo-light-s',String(Number(light.saturation||50))+'%');
     stage.style.setProperty('--cafasso-holo-light-l',String(Number(light.luminosity||64))+'%');
     stage.style.setProperty('--cafasso-holo-light-a',String(Number(light.opacity||.18)));
+    const ambient=spot.ambient||{};
+    scene.style.setProperty('--cafasso-holo-ambient-brightness',String(Number(ambient.brightness||1)));
+    scene.style.setProperty('--cafasso-holo-ambient-saturation',String(Number(ambient.saturation||.84)));
+    scene.style.setProperty('--cafasso-holo-ambient-contrast',String(Number(ambient.contrast||1.03)));
+    scene.style.setProperty('--cafasso-holo-ambient-sepia',String(Number(ambient.sepia||0)));
+    scene.style.setProperty('--cafasso-holo-ambient-hue',String(Number(ambient.hue||0))+'deg');
     scene.style.setProperty('--cafasso-holo-ry',String(Number(spot.perspective?.rotateY||0))+'deg');
     scene.style.setProperty('--cafasso-holo-rx',String(Number(spot.perspective?.rotateX||0))+'deg');
     const contact=spot.contact||{};
