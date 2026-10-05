@@ -188,7 +188,7 @@ $('add').onclick=()=>{saveForm();rules.push({id:uid(),trigger:'space-enter',spac
 document.addEventListener('click',e=>{const del=e.target.closest('[data-del]');if(del){e.stopPropagation();if(confirm('¿Eliminar este holograma global?')){rules.splice(Number(del.dataset.del),1);selected=Math.min(selected,rules.length-1);render()}return}const item=e.target.closest('[data-index]');if(item){saveForm();selected=Number(item.dataset.index);render()}});
 load();
 </script>
-<script src="./cafasso-hologram-uploader.js?v=3"></script>
+<script src="./cafasso-hologram-uploader.js?v=4"></script>
 <script src="./cafasso-hologram-cutout.js?v=3"></script>
 <script src="./cafasso-hologram.js?v=11"></script>
 </body></html>
