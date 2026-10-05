@@ -47,10 +47,11 @@
     const labels={'module-enter':'Al entrar al módulo','mission-enter':'Al entrar a una misión','block-completed':'Después de completar un contenido','module-completed':'Al completar el módulo'};
     return labels[h?.trigger]||'Intervención';
   }
+  function courseSpotLabel(h){const list=window.CafassoHologramSpots?.COURSE_SPOTS||[];return list.find(x=>x.id===(h?.courseSpotId||'curso-derecha'))?.label||'Lado derecho'}
   function renderList(){
     const box=document.querySelector('[data-holo-editor-items]');if(!box)return;
     const items=list();
-    box.innerHTML=items.length?items.map((h,i)=>`<button type="button" class="cafasso-holo-editor__item ${i===selected?'active':''}" data-holo-index="${i}"><strong>✦ ${esc(h.name||'Formador')}</strong><small>${esc(triggerLabel(h))}${h.missionId?' · '+esc(missions().find(m=>String(m.id)===String(h.missionId))?.title||h.missionId):''}</small><span class="x" data-holo-delete="${i}" aria-label="Eliminar">×</span></button>`).join(''):'<div class="cafasso-holo-editor__empty">Todavía no hay intervenciones holográficas en este módulo. Agregá una para que el formador aparezca en un momento concreto del recorrido.</div>';
+    box.innerHTML=items.length?items.map((h,i)=>`<button type="button" class="cafasso-holo-editor__item ${i===selected?'active':''}" data-holo-index="${i}"><strong>✦ ${esc(h.name||'Formador')}</strong><small>${esc(triggerLabel(h))} · ${esc(courseSpotLabel(h))}${h.missionId?' · '+esc(missions().find(m=>String(m.id)===String(h.missionId))?.title||h.missionId):''}</small><span class="x" data-holo-delete="${i}" aria-label="Eliminar">×</span></button>`).join(''):'<div class="cafasso-holo-editor__empty">Todavía no hay intervenciones holográficas en este módulo. Agregá una para que el formador aparezca en un momento concreto del recorrido.</div>';
   }
   function option(value,label,current){return `<option value="${esc(value)}" ${String(value)===String(current)?'selected':''}>${esc(label)}</option>`}
   function videoUrl(h){return h.videoWebm||h.videoMov||h.videoMp4||''}
