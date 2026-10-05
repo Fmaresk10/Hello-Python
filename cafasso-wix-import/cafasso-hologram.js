@@ -303,82 +303,6 @@
     return 'https://video.wixstatic.com/video/'+encodeURIComponent(id)+'/'+quality+'/mp4/file.mp4';
   }
 
-  const warmVideos=new Map();
-  let warmupTimer=0;
-
-  function preferredVideoUrl(config={}){
-    return wixMp4Url(config.videoFileId,'720p')||
-      normalize(config.videoMp4)||
-      normalize(config.videoWebm)||
-      normalize(config.videoMov);
-  }
-
-  function ensureWarmConnections(){
-    const origins=['https://cdn.jsdelivr.net','https://storage.googleapis.com','https://video.wixstatic.com'];
-    origins.forEach(origin=>{
-      if(document.head.querySelector('link[data-cafasso-holo-origin="'+origin+'"]'))return;
-      const link=document.createElement('link');
-      link.rel='preconnect';link.href=origin;link.crossOrigin='anonymous';
-      link.dataset.cafassoHoloOrigin=origin;
-      document.head.appendChild(link);
-    });
-  }
-
-  function warmVideo(config={}){
-    const url=preferredVideoUrl(config);
-    if(!url)return Promise.resolve(false);
-    if(warmVideos.has(url))return warmVideos.get(url).promise;
-    let settle;
-    const promise=new Promise(resolve=>settle=resolve);
-    const video=document.createElement('video');
-    video.preload='auto';
-    video.playsInline=true;
-    video.muted=true;
-    video.crossOrigin=config.removeBackground?'anonymous':'';
-    video.style.cssText='position:fixed;width:1px;height:1px;left:-9999px;top:-9999px;opacity:.001;pointer-events:none';
-    const done=ok=>{
-      const entry=warmVideos.get(url);
-      if(entry?.settled)return;
-      if(entry)entry.settled=true;
-      settle(Boolean(ok));
-    };
-    video.addEventListener('loadeddata',()=>done(true),{once:true});
-    video.addEventListener('canplay',()=>done(true),{once:true});
-    video.addEventListener('error',()=>done(false),{once:true});
-    video.src=url;
-    document.body.appendChild(video);
-    try{video.load()}catch(error){done(false)}
-    setTimeout(()=>done(video.readyState>=2),6500);
-    warmVideos.set(url,{video,promise,settled:false});
-    return promise;
-  }
-
-  function warmConfig(config={}){
-    ensureWarmConnections();
-    const jobs=[warmVideo(config)];
-    if(config.removeBackground!==false&&window.CafassoHologramCutout?.warm){
-      jobs.push(Promise.resolve(window.CafassoHologramCutout.warm()).catch(()=>false));
-    }
-    return Promise.allSettled(jobs);
-  }
-
-  function warmRelevantRules(){
-    clearTimeout(warmupTimer);
-    warmupTimer=setTimeout(()=>{
-      const ctx=context();
-      const pool=[...globalRules,...dynamicRules(ctx),...rules];
-      const candidate=pool.find(item=>{
-        if(hasSeen(item))return false;
-        const trigger=normalize(item.trigger||'mission-enter');
-        if(ctx.space&&trigger==='space-enter')return matches(item,'space-enter',ctx,{space:ctx.space});
-        if(ctx.moduleId&&ctx.missionId&&trigger==='mission-enter')return matches(item,'mission-enter',ctx,{missionId:ctx.missionId});
-        if(ctx.moduleId&&trigger==='module-enter')return matches(item,'module-enter',ctx,{});
-        return false;
-      });
-      if(candidate)warmConfig(candidate);
-    },60);
-  }
-
   function mediaHtml(config){
     const sources=[];
     const wixMp4=wixMp4Url(config.videoFileId,'720p');
@@ -497,7 +421,6 @@
   function announce(config={}){
     installStyles();
     if(!config||hasSeen(config))return null;
-    warmConfig(config);
     removeSignal();
     const signal=document.createElement('button');
     signal.id=SIGNAL_ID;
@@ -571,7 +494,6 @@
   function present(rule,trigger){
     const config={...rule,trigger};
     const delay=Math.max(0,Number(config.delayMs||0));
-    warmConfig(config);
     if(config.activation==='auto'){
       if(delay){setTimeout(()=>{if(!hasSeen(config))show(config)},delay);return config}
       return show(config);
@@ -638,7 +560,6 @@
         // Critical: the first space check may have happened while rules were still empty.
         // Reset the key so Casa/Patio/etc. is evaluated again now that rules exist.
         lastSpaceKey='';
-        warmRelevantRules();
         scheduleSync();
         try{window.dispatchEvent(new CustomEvent('cafasso:hologram-rules-ready',{detail:{count:globalRules.length}}))}catch(error){}
         return globalRules;
@@ -673,7 +594,7 @@
   }
 
   window.CafassoHologram={
-    show,announce,close,register,fire,context,loadGlobalRules,wixMp4Url,warmConfig,warmRelevantRules,
+    show,announce,close,register,fire,context,loadGlobalRules,wixMp4Url,
     async refresh(){lastSpaceKey='';await loadGlobalRules({attempts:3});syncExperience();return globalRules.slice()},
     get globalRules(){return globalRules.slice()},
     get loadState(){return {...globalLoadState}},
@@ -681,10 +602,10 @@
   };
 
   window.addEventListener('cafasso:course-experience-ready',scheduleSync);
-  window.addEventListener('cafasso:state-ready',()=>{loadGlobalRules({attempts:2});warmRelevantRules()});
+  window.addEventListener('cafasso:state-ready',()=>loadGlobalRules({attempts:2}));
   window.addEventListener('cafasso:block-completed',event=>fire('block-completed',event?.detail||{}));
   window.addEventListener('cafasso:module-completed',event=>fire('module-completed',event?.detail||{}));
-  window.addEventListener('hashchange',()=>{scheduleSync();warmRelevantRules()});
+  window.addEventListener('hashchange',scheduleSync);
   window.addEventListener('pagehide',close);
   window.addEventListener('cafasso:navigate',close);
 
