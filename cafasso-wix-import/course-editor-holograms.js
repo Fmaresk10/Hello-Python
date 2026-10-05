@@ -54,6 +54,7 @@
   }
   function option(value,label,current){return `<option value="${esc(value)}" ${String(value)===String(current)?'selected':''}>${esc(label)}</option>`}
   function videoUrl(h){return h.videoWebm||h.videoMov||h.videoMp4||''}
+  function courseSpotOptions(h){const list=window.CafassoHologramSpots?.COURSE_SPOTS||[];return list.map(x=>option(x.id,x.label,h.courseSpotId||'curso-derecha')).join('')}
   function renderForm(){
     const form=document.querySelector('[data-holo-editor-form]');if(!form)return;
     const h=list()[selected];
@@ -82,7 +83,8 @@
         <div class="cafasso-holo-field"><label>Quitar fondo</label><select data-hf="removeBackground">${option('true','Sí · automático',h.removeBackground!==false?'true':'false')}${option('false','No · usar video completo',h.removeBackground===false?'false':'true')}</select></div>
         <div class="cafasso-holo-field"><label>Frecuencia</label><select data-hf="repeat">${option('session','Una vez por sesión',h.repeat||'session')}${option('always','Siempre que se cumpla',h.repeat)}</select></div>
         <div class="cafasso-holo-field full"><label>URL manual (opcional / avanzado)</label><input data-hf="videoUrl" value="${esc(videoUrl(h))}" placeholder="También podés pegar una URL WebM, MOV o MP4"></div>
-        <div class="cafasso-holo-field"><label>Posición</label><select data-hf="position">${option('center','Centro',h.position||'center')}${option('left','Izquierda',h.position)}${option('right','Derecha',h.position)}</select></div>
+        <div class="cafasso-holo-field"><label>Ubicación del formador</label><select data-hf="courseSpotId">${courseSpotOptions(h)}</select></div>
+        <div class="cafasso-holo-field"><label>Escala</label><select data-hf="spotScale">${option('.85','Más discreto',String(h.spotScale||1))}${option('1','Normal',String(h.spotScale||1))}${option('1.15','Más protagonista',String(h.spotScale||1))}</select></div>
       </div>
       <div class="cafasso-holo-editor__preview"><b>Vista pedagógica:</b> ${esc(triggerLabel(h))}. ${esc(h.activation==='auto'?'El holograma aparecerá solo.':'El animador verá una señal y decidirá abrir el mensaje.')}</div>
       <div class="cafasso-holo-editor__actions"><button type="button" data-holo-test>Vista previa</button><button type="button" class="primary" data-holo-done>Listo</button></div>`;
@@ -100,6 +102,7 @@
       const key=el.dataset.hf,value=el.value;
       if(key==='videoUrl'){const current=videoUrl(h);const clean=value.trim();if(clean===current)return;delete h.videoWebm;delete h.videoMov;delete h.videoMp4;delete h.videoFileId;if(clean){if(/\.webm(?:\?|$)/i.test(clean))h.videoWebm=clean;else if(/\.mov(?:\?|$)/i.test(clean))h.videoMov=clean;else h.videoMp4=clean}return}
       if(key==='removeBackground'){h.removeBackground=value!=='false';return}
+      if(key==='spotScale'){h.spotScale=Number(value||1);return}
       h[key]=value;
     });
     if(h.trigger!=='mission-enter')delete h.missionId;
@@ -107,7 +110,7 @@
     changed();
   }
   function add(){
-    const h={id:uid(),trigger:'module-enter',name:'Tu formador',role:'Acompañamiento CAFASSO',message:'',activation:'signal',repeat:'session',position:'center',removeBackground:true};
+    const h={id:uid(),trigger:'module-enter',name:'Tu formador',role:'Acompañamiento CAFASSO',message:'',activation:'signal',repeat:'session',courseSpotId:'curso-derecha',spotScale:1,removeBackground:true};
     list().push(h);selected=list().length-1;changed();renderList();renderForm()
   }
   function remove(index){
