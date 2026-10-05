@@ -53,7 +53,7 @@
       .cafasso-holo-stage--spatial .cafasso-holo-glitch{display:none!important}
       .cafasso-holo-stage--spatial .cafasso-holo-card{position:fixed;left:50%;bottom:max(12px,calc(env(safe-area-inset-bottom) + 8px));transform:translateX(-50%);pointer-events:auto}
       .cafasso-holo-stage--spatial .cafasso-holo-audio-hint{position:fixed;left:50%;top:max(14px,calc(env(safe-area-inset-top) + 8px));transform:translateX(-50%);pointer-events:none}
-      .cafasso-holo-occluder{position:absolute;z-index:4;pointer-events:none;object-fit:fill}
+      .cafasso-holo-occluder{position:absolute;z-index:4;pointer-events:none;object-fit:fill;max-width:none!important;max-height:none!important}
       .cafasso-holo-close{position:absolute;z-index:4;right:max(15px,calc(env(safe-area-inset-right) + 10px));top:max(15px,calc(env(safe-area-inset-top) + 10px));width:42px;height:42px;border:1px solid rgba(183,247,241,.35);border-radius:50%;background:rgba(8,38,43,.82);color:#eafffb;font:300 27px/1 Georgia,serif;cursor:pointer;touch-action:manipulation}
       .cafasso-holo-scene{position:relative;width:min(920px,96vw);height:min(78vh,760px);min-height:390px;display:flex;align-items:flex-end;justify-content:center;pointer-events:none}
       .cafasso-holo-position--left .cafasso-holo-scene{justify-content:flex-start}.cafasso-holo-position--right .cafasso-holo-scene{justify-content:flex-end}
@@ -170,6 +170,17 @@
     return {left:hostRect.left+(hostRect.width-width)/2,top:hostRect.top,width,height};
   }
 
+  function normalizeOcclusionPolygon(value){
+    const raw=Array.isArray(value)?value:[];
+    return raw.map(point=>{
+      if(Array.isArray(point))return{x:Number(point[0]),y:Number(point[1])};
+      return{x:Number(point?.x),y:Number(point?.y)};
+    }).filter(point=>Number.isFinite(point.x)&&Number.isFinite(point.y)).map(point=>({
+      x:Math.max(0,Math.min(100,point.x)),
+      y:Math.max(0,Math.min(100,point.y))
+    }));
+  }
+
   function installSpatialStage(stage,config){
     const spot=spatialContext(config);
     if(!spot)return null;
@@ -196,6 +207,7 @@
       if(!host?.isConnected){raf=requestAnimationFrame(layout);return}
       const raw=host.getBoundingClientRect();
       const rect=imageFitRect(raw,spot.kind);
+      syncOccluder?.(rect,host);
       const x=rect.left+rect.width*(Number(spot.x||50)/100);
       const y=rect.top+rect.height*(Number(spot.y||88)/100);
       const viewportW=Math.max(320,window.innerWidth||raw.width||320);
@@ -213,14 +225,43 @@
       raf=requestAnimationFrame(layout);
     };
     layout();
+    let occluder=null;
+    const polygon=normalizeOcclusionPolygon(
+      config.occlusionEnabled===false?[]:(config.occlusionPolygon||spot.occlusionPolygon||[])
+    );
     const mask=spot.occlusion?.maskUrl||config.occlusionMaskUrl;
-    if(mask){
-      const img=document.createElement('img');
-      img.className='cafasso-holo-occluder';
-      img.src=mask;img.alt='';img.setAttribute('aria-hidden','true');
-      Object.assign(img.style,{left:'0',top:'0',width:'100%',height:'100%'});
-      stage.appendChild(img);
+
+    if(polygon.length>=3){
+      occluder=document.createElement('img');
+      occluder.className='cafasso-holo-occluder';
+      occluder.alt='';occluder.setAttribute('aria-hidden','true');
+      occluder.style.clipPath='polygon('+polygon.map(point=>point.x+'% '+point.y+'%').join(',')+')';
+      occluder.style.webkitClipPath=occluder.style.clipPath;
+      stage.appendChild(occluder);
+    }else if(mask){
+      occluder=document.createElement('img');
+      occluder.className='cafasso-holo-occluder';
+      occluder.src=mask;occluder.alt='';occluder.setAttribute('aria-hidden','true');
+      stage.appendChild(occluder);
     }
+
+    const syncOccluder=(rect,host)=>{
+      if(!occluder)return;
+      if(polygon.length>=3){
+        const source=host?.matches?.('img')?host:host?.querySelector?.('.cafasso-house__image,.cafasso-patio__image,.cafasso-parroquia__image,.cafasso-escuela__image,.cafasso-recursos__image,img');
+        const src=source?.currentSrc||source?.src||'';
+        if(src&&occluder.src!==src)occluder.src=src;
+      }
+      Object.assign(occluder.style,{
+        left:rect.left+'px',
+        top:rect.top+'px',
+        width:rect.width+'px',
+        height:rect.height+'px',
+        objectFit:'cover',
+        objectPosition:'center center'
+      });
+    };
+
     const cleanup=()=>{stopped=true;if(raf)cancelAnimationFrame(raf)};
     stage.__cafassoSpatialCleanup=cleanup;
     return spot;
