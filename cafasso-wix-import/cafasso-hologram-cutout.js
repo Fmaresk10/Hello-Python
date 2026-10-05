@@ -244,5 +244,22 @@
       }
     });
   }
-  window.CafassoHologramCutout={attach,engine};
+  let warmState='idle';
+  async function warm(){
+    if(warmState==='ready')return true;
+    warmState='loading';
+    try{
+      await engine();
+      warmState='ready';
+      try{window.dispatchEvent(new CustomEvent('cafasso:hologram-cutout-ready'));}catch(error){}
+      return true;
+    }catch(error){
+      warmState='error';
+      throw error;
+    }
+  }
+  window.CafassoHologramCutout={
+    attach,engine,warm,
+    get warmState(){return warmState}
+  };
 })();
