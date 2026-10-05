@@ -7,9 +7,13 @@
   const STAGE_ID='cafassoHologramStage';
   const SESSION_PREFIX='cafassoHologramSeen:';
   const rules=[];
+  let globalRules=[];
   let current=null;
   let lastMissionKey='';
+  let lastSpaceKey='';
   let syncTimer=0;
+  const GLOBAL_CONFIG_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
+  const GLOBAL_CONFIG_TITLE='__CAFASSO_GLOBAL_HOLOGRAMS__';
 
   const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
@@ -39,6 +43,7 @@
       .cafasso-holo-stage[hidden]{display:none!important}
       .cafasso-holo-close{position:absolute;z-index:4;right:max(15px,calc(env(safe-area-inset-right) + 10px));top:max(15px,calc(env(safe-area-inset-top) + 10px));width:42px;height:42px;border:1px solid rgba(183,247,241,.35);border-radius:50%;background:rgba(8,38,43,.82);color:#eafffb;font:300 27px/1 Georgia,serif;cursor:pointer;touch-action:manipulation}
       .cafasso-holo-scene{position:relative;width:min(920px,96vw);height:min(78vh,760px);min-height:390px;display:flex;align-items:flex-end;justify-content:center;pointer-events:none}
+      .cafasso-holo-position--left .cafasso-holo-scene{justify-content:flex-start}.cafasso-holo-position--right .cafasso-holo-scene{justify-content:flex-end}
       .cafasso-holo-projector{position:absolute;left:50%;bottom:0;width:min(560px,78vw);height:76%;transform:translateX(-50%);clip-path:polygon(39% 100%,61% 100%,91% 0,9% 0);background:linear-gradient(180deg,rgba(108,242,235,.02),rgba(90,231,222,.10) 70%,rgba(90,231,222,.24));filter:blur(.2px);opacity:.92}
       .cafasso-holo-projector:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent 0 7px,rgba(174,255,250,.09) 8px,transparent 9px);animation:cafassoHoloScan 5.5s linear infinite}
       .cafasso-holo-base{position:absolute;left:50%;bottom:0;width:min(330px,56vw);height:30px;transform:translateX(-50%);border:1px solid rgba(125,239,231,.58);border-radius:50%;background:radial-gradient(ellipse,rgba(167,255,248,.35),rgba(43,181,180,.12) 45%,rgba(10,76,81,.1) 70%,transparent 72%);box-shadow:0 0 38px rgba(78,232,223,.30),inset 0 0 22px rgba(174,255,249,.25)}
@@ -131,7 +136,7 @@
     current={...config};
     const stage=document.createElement('section');
     stage.id=STAGE_ID;
-    stage.className='cafasso-holo-stage';
+    stage.className='cafasso-holo-stage cafasso-holo-position--'+(['left','right'].includes(config.position)?config.position:'center');
     stage.setAttribute('role','dialog');
     stage.setAttribute('aria-modal','true');
     stage.setAttribute('aria-label','Mensaje holográfico del formador');
@@ -195,6 +200,19 @@
     return rules.length;
   }
 
+  function currentSpace(){
+    const checks=[
+      ['casa','.cafasso-house'],['patio','.cafasso-patio'],['escuela','.cafasso-escuela'],['parroquia','.cafasso-parroquia'],['recursos','.cafasso-recursos']
+    ];
+    for(const [name,selector] of checks){
+      const node=document.querySelector(selector);
+      if(node&&!node.hidden&&getComputedStyle(node).display!=='none')return name;
+    }
+    const params=new URLSearchParams(location.search);
+    const hinted=normalize(params.get('space')).toLowerCase();
+    return ['casa','patio','escuela','parroquia','recursos'].includes(hinted)?hinted:'';
+  }
+
   function context(){
     const state=window.CafassoCourseExperience||null;
     const course=state?.course||null;
@@ -205,6 +223,7 @@
       courseId:normalize(course?._id||course?.id),
       moduleId:normalize(module?._id||module?.id),
       missionId:normalize(active?.getAttribute('data-mission-id')),
+      space:currentSpace(),
       course,
       module
     };
@@ -224,6 +243,7 @@
 
   function matches(rule,trigger,ctx,detail={}){
     if(normalize(rule.trigger||'mission-enter')!==trigger)return false;
+    if(rule.space&&normalize(rule.space).toLowerCase()!==normalize(ctx.space).toLowerCase())return false;
     if(rule.courseId&&normalize(rule.courseId)!==ctx.courseId)return false;
     if(rule.moduleId&&normalize(rule.moduleId)!==ctx.moduleId)return false;
     if(rule.missionId&&normalize(rule.missionId)!==normalize(ctx.missionId||detail.missionId))return false;
@@ -231,25 +251,57 @@
     return true;
   }
 
+  function present(rule,trigger){
+    const config={...rule,trigger};
+    const delay=Math.max(0,Number(config.delayMs||0));
+    if(config.activation==='auto'){
+      if(delay){setTimeout(()=>{if(!hasSeen(config))show(config)},delay);return config}
+      return show(config);
+    }
+    return announce(config);
+  }
+
   function fire(trigger,detail={}){
     const ctx=context();
-    const pool=[...rules,...dynamicRules(ctx)];
+    const pool=[...rules,...globalRules,...dynamicRules(ctx)];
     const rule=pool.find(item=>matches(item,trigger,ctx,detail)&&!hasSeen(item));
     if(!rule)return null;
-    return announce({...rule,trigger});
+    return present(rule,trigger);
   }
 
   function syncExperience(){
     const ctx=context();
-    if(ctx.view!=='module'||!ctx.moduleId){removeSignal();lastMissionKey='';return;}
-    const key=[ctx.courseId,ctx.moduleId,ctx.missionId].join(':');
-    if(ctx.missionId&&key!==lastMissionKey){
-      lastMissionKey=key;
-      if(!fire('mission-enter',{missionId:ctx.missionId}))fire('module-enter',{});
-    }else if(!ctx.missionId&&!lastMissionKey){
-      lastMissionKey=[ctx.courseId,ctx.moduleId,'module'].join(':');
-      fire('module-enter',{});
+    if(ctx.view==='module'&&ctx.moduleId){
+      lastSpaceKey='';
+      const key=[ctx.courseId,ctx.moduleId,ctx.missionId].join(':');
+      if(ctx.missionId&&key!==lastMissionKey){
+        lastMissionKey=key;
+        if(!fire('mission-enter',{missionId:ctx.missionId}))fire('module-enter',{});
+      }else if(!ctx.missionId&&!lastMissionKey){
+        lastMissionKey=[ctx.courseId,ctx.moduleId,'module'].join(':');
+        fire('module-enter',{});
+      }
+      return;
     }
+    lastMissionKey='';
+    if(ctx.space){
+      const key='space:'+ctx.space;
+      if(key!==lastSpaceKey){lastSpaceKey=key;removeSignal();fire('space-enter',{space:ctx.space});}
+      return;
+    }
+    lastSpaceKey='';
+    removeSignal();
+  }
+
+  async function loadGlobalRules(){
+    try{
+      const response=await fetch(GLOBAL_CONFIG_API+'?title='+encodeURIComponent(GLOBAL_CONFIG_TITLE)+'&holo='+Date.now(),{cache:'no-store'});
+      const json=await response.json();
+      const list=json?.course?.modules?.[0]?.settings?.holograms;
+      globalRules=Array.isArray(list)?list.map((item,index)=>({id:item.id||('global-hologram-'+index),trigger:item.trigger||'space-enter',...item})):[];
+    }catch(error){globalRules=[]}
+    scheduleSync();
+    return globalRules;
   }
 
   function scheduleSync(){
@@ -257,7 +309,7 @@
     syncTimer=setTimeout(syncExperience,120);
   }
 
-  window.CafassoHologram={show,announce,close,register,fire,context,get current(){return current;}};
+  window.CafassoHologram={show,announce,close,register,fire,context,loadGlobalRules,get globalRules(){return globalRules.slice()},get current(){return current;}};
 
   register({
     id:'demo-formador-patio-transforma-m1',
@@ -281,8 +333,8 @@
   window.addEventListener('pagehide',close);
   window.addEventListener('cafasso:navigate',close);
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{installStyles();scheduleSync();},{once:true});
-  else {installStyles();scheduleSync();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{installStyles();loadGlobalRules();scheduleSync();},{once:true});
+  else {installStyles();loadGlobalRules();scheduleSync();}
 
   const observer=new MutationObserver(()=>scheduleSync());
   const observe=()=>{const host=document.getElementById('main')||document.getElementById('app');if(host)observer.observe(host,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});else setTimeout(observe,180);};
