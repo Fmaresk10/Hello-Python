@@ -16,6 +16,9 @@ main{width:100%;max-width:1450px;margin:auto;padding:34px 36px 60px}.head{displa
 .location-map__spot{position:absolute;z-index:3;width:22px;height:22px;transform:translate(-50%,-50%);border:2px solid #fff;border-radius:50%;background:#2f918a;box-shadow:0 2px 8px rgba(0,0,0,.35);color:transparent;cursor:pointer}.location-map__spot:after{content:attr(data-label);position:absolute;left:50%;top:26px;transform:translateX(-50%);width:max-content;max-width:150px;padding:4px 7px;border-radius:999px;background:rgba(9,37,43,.82);color:#fff;font-size:8px;font-weight:800;white-space:nowrap;opacity:.78}.location-map__spot.active{background:var(--gold);border-color:#fff7cf;box-shadow:0 0 0 5px rgba(242,201,76,.22),0 2px 8px rgba(0,0,0,.35)}.location-map__spot.active:after{color:#fff3bc;opacity:1}
 .location-map__person{position:absolute;z-index:5;width:54px;height:126px;transform:translate(-50%,-100%) scale(var(--map-person-scale,1));transform-origin:50% 100%;cursor:grab;filter:drop-shadow(0 5px 5px rgba(0,0,0,.38));touch-action:none}.location-map__person:active{cursor:grabbing}.location-map__person .head{position:absolute;left:50%;top:0;width:28px;height:28px;margin:0;transform:translateX(-50%);border-radius:50%;background:rgba(174,255,248,.88);box-shadow:0 0 12px rgba(87,233,225,.75)}.location-map__person .body{position:absolute;left:50%;top:24px;width:50px;height:100px;transform:translateX(-50%);clip-path:polygon(31% 0,69% 0,86% 25%,100% 100%,0 100%,14% 25%);border-radius:24px 24px 8px 8px;background:linear-gradient(90deg,rgba(59,177,181,.48),rgba(202,255,250,.90) 50%,rgba(59,177,181,.48));box-shadow:0 0 16px rgba(82,230,221,.38)}.location-map__person:after{content:"";position:absolute;left:50%;bottom:-4px;width:48px;height:10px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,rgba(112,247,237,.62),transparent 70%)}
 .location-map__coords{position:absolute;z-index:6;right:8px;top:8px;padding:5px 8px;border-radius:999px;background:rgba(6,34,39,.82);color:#e8fffb;font-size:9px;font-weight:800;pointer-events:none}.location-map__controls{display:grid;grid-template-columns:minmax(180px,1fr) auto auto;gap:10px;align-items:center;margin-top:10px}.location-map__scale{display:grid;grid-template-columns:auto minmax(90px,1fr) auto;gap:8px;align-items:center;color:#566d68;font-size:10px;font-weight:800}.location-map__scale input{width:100%}.location-map__readout{padding:7px 9px;border:1px solid #d1dfdb;border-radius:9px;background:#fff;color:#4f6964;font-size:10px;font-weight:800}.location-map__reset{border:1px solid #c6d8d2;border-radius:9px;padding:8px 10px;background:#fff;color:#355e59;font-size:10px;font-weight:850;cursor:pointer}.location-map__legend{margin-top:8px;color:#71817d;font-size:9px;line-height:1.4}
+.location-map__occlusion{position:absolute;inset:0;z-index:4;pointer-events:none}.location-map__occlusion polygon{fill:rgba(242,201,76,.24);stroke:#ffe28a;stroke-width:.45;vector-effect:non-scaling-stroke}.location-map__occlusion circle{fill:#fff6cf;stroke:#b88a13;stroke-width:.45;vector-effect:non-scaling-stroke}
+.location-map__scene.occlusion-editing{cursor:crosshair;box-shadow:inset 0 0 0 3px rgba(242,201,76,.62)}.location-map__scene.occlusion-editing .location-map__person{opacity:.5;pointer-events:none}.location-map__scene.occlusion-editing .location-map__spot{opacity:.35;pointer-events:none}
+.occlusion-tools{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.occlusion-tools button{border:1px solid #c9d9d4;border-radius:9px;padding:8px 10px;background:#fff;color:#365e59;font-size:10px;font-weight:850;cursor:pointer}.occlusion-tools button.primary{border-color:#caa437;background:#fff5ca;color:#694f05}.occlusion-tools button.danger{border-color:#e0b8af;background:#fff1ee;color:#8a443b}.occlusion-status{margin-left:auto;align-self:center;color:#667a75;font-size:10px;font-weight:800}
 .actions{display:flex;justify-content:flex-end;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
 @media(max-width:880px){.shell{display:block}.side{height:auto;position:static}.side-foot{position:static;margin-top:20px}main{padding:22px 14px 90px}.grid{grid-template-columns:1fr}.head{flex-direction:column}.fields{grid-template-columns:1fr}.field.full,.hint,.location-map{grid-column:auto}.location-map__controls{grid-template-columns:1fr}.location-map__spot:after{display:none}.location-map__person{width:44px;height:104px}.location-map__person .head{width:23px;height:23px}.location-map__person .body{top:20px;width:41px;height:84px}}
 </style>
@@ -148,6 +151,7 @@ function locationMapHtml(r){
     <div class="location-map__scene" id="locationMap">
       <img src="${esc(meta.previewImage)}" alt="Referencia visual de ${esc(meta.label)}">
       ${dots}
+      <svg class="location-map__occlusion" id="mapOcclusionSvg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
       <div class="location-map__coords" id="mapCoords">X ${state.x.toFixed(1)} · Y ${state.y.toFixed(1)}</div>
       <div class="location-map__person" id="mapPerson" style="left:${state.x}%;top:${state.y}%;--map-person-scale:${state.visualScale}" role="slider" tabindex="0" aria-label="Posición del holograma"><span class="head"></span><span class="body"></span></div>
     </div>
@@ -156,7 +160,13 @@ function locationMapHtml(r){
       <div class="location-map__readout" id="mapOffsetReadout">ΔX ${Number(r.spotOffsetX||0).toFixed(1)} · ΔY ${Number(r.spotOffsetY||0).toFixed(1)}</div>
       <button type="button" class="location-map__reset" id="mapReset">Volver al spot</button>
     </div>
-    <div class="location-map__legend">Los círculos son posiciones recomendadas. La silueta marca dónde apoyará los pies el holograma. La escala del mapa es una referencia visual; la vista real sigue siendo la comprobación final.</div>
+    <div class="occlusion-tools">
+      <button type="button" class="primary" id="occlusionEdit">${Array.isArray(r.occlusionPolygon)&&r.occlusionPolygon.length>=3?'Editar oclusión':'Dibujar oclusión'}</button>
+      <button type="button" id="occlusionUndo">Deshacer punto</button>
+      <button type="button" class="danger" id="occlusionClear">Quitar oclusión</button>
+      <span class="occlusion-status" id="occlusionStatus"></span>
+    </div>
+    <div class="location-map__legend">Los círculos son posiciones recomendadas. La silueta marca dónde apoyará los pies el holograma. Para oclusión, marcá con puntos el contorno del mueble u objeto que debe quedar delante de la persona.</div>
   </section>`;
 }
 function renderForm(){const r=rules[selected];if(!r){$('form').innerHTML='<div class="empty">Elegí una aparición de la lista o creá una nueva.</div>';return}$('form').innerHTML=`
@@ -188,6 +198,29 @@ function renderForm(){const r=rules[selected];if(!r){$('form').innerHTML='<div c
 </div>
 <div class="actions"><button class="btn alt" type="button" id="preview">Vista previa</button><button class="btn" type="button" id="save">Guardar en Wix</button></div><div class="save-check" id="saveCheck"></div>`;bindForm()}
 function saveForm(){const r=rules[selected];if(!r)return;document.querySelectorAll('[data-f]').forEach(el=>{const k=el.dataset.f,v=el.value;if(k==='videoUrl'){const current=videoUrl(r),u=v.trim();if(u===current)return;delete r.videoWebm;delete r.videoMov;delete r.videoMp4;delete r.videoFileId;if(u){if(/\.webm(?:\?|$)/i.test(u))r.videoWebm=u;else if(/\.mov(?:\?|$)/i.test(u))r.videoMov=u;else r.videoMp4=u}}else if(k==='removeBackground')r.removeBackground=v!=='false';else if(['delayMs','spotOffsetX','spotOffsetY','spotScale'].includes(k))r[k]=Number(v||0);else r[k]=v});const available=spotsFor(r.space);if(available.length&&!available.some(x=>x.id===r.spotId))r.spotId=available[0].id}
+function normalizePolygon(points){
+  return (Array.isArray(points)?points:[]).map(p=>Array.isArray(p)?{x:Number(p[0]),y:Number(p[1])}:{x:Number(p?.x),y:Number(p?.y)})
+    .filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y))
+    .map(p=>({x:Math.max(0,Math.min(100,p.x)),y:Math.max(0,Math.min(100,p.y))}));
+}
+function renderOcclusionPreview(){
+  const r=rules[selected],svg=$('mapOcclusionSvg'),status=$('occlusionStatus');
+  if(!r||!svg)return;
+  const points=normalizePolygon(r.occlusionPolygon);
+  svg.innerHTML='';
+  if(points.length){
+    const polygon=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    polygon.setAttribute('points',points.map(p=>p.x+','+p.y).join(' '));
+    svg.appendChild(polygon);
+    points.forEach((p,i)=>{
+      const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      circle.setAttribute('cx',p.x);circle.setAttribute('cy',p.y);circle.setAttribute('r',1.15);circle.dataset.index=String(i);
+      svg.appendChild(circle);
+    });
+  }
+  if(status)status.textContent=points.length>=3?'Oclusión activa · '+points.length+' puntos':points.length?'Marcá al menos 3 puntos':'Sin oclusión';
+}
+let occlusionEditing=false;
 function bindForm(){
   document.querySelectorAll('[data-f]').forEach(el=>{
     el.oninput=()=>{saveForm();renderList()};
@@ -218,8 +251,36 @@ function bindForm(){
     person.onpointerdown=e=>{dragging=true;pointerId=e.pointerId;person.setPointerCapture?.(e.pointerId);e.preventDefault()};
     person.onpointermove=e=>{if(dragging&&e.pointerId===pointerId)moveFromPointer(e)};
     person.onpointerup=e=>{if(dragging&&e.pointerId===pointerId){moveFromPointer(e);dragging=false;pointerId=null}};
-    map.onclick=e=>{if(!e.target.closest('[data-map-spot]')&&!e.target.closest('#mapPerson'))moveFromPointer(e)};
+    map.onclick=e=>{
+      if(occlusionEditing){
+        const r=rules[selected];if(!r)return;
+        const rect=map.getBoundingClientRect();
+        const x=Math.max(0,Math.min(100,(e.clientX-rect.left)/rect.width*100));
+        const y=Math.max(0,Math.min(100,(e.clientY-rect.top)/rect.height*100));
+        const points=normalizePolygon(r.occlusionPolygon);
+        points.push({x:Math.round(x*10)/10,y:Math.round(y*10)/10});
+        r.occlusionPolygon=points;r.occlusionEnabled=true;
+        renderOcclusionPreview();renderList();
+        return;
+      }
+      if(!e.target.closest('[data-map-spot]')&&!e.target.closest('#mapPerson'))moveFromPointer(e);
+    };
   }
+  $('occlusionEdit')?.addEventListener('click',()=>{
+    occlusionEditing=!occlusionEditing;
+    map?.classList.toggle('occlusion-editing',occlusionEditing);
+    const button=$('occlusionEdit');if(button)button.textContent=occlusionEditing?'Terminar oclusión':'Editar oclusión';
+    renderOcclusionPreview();
+  });
+  $('occlusionUndo')?.addEventListener('click',()=>{
+    const r=rules[selected];if(!r)return;
+    const points=normalizePolygon(r.occlusionPolygon);points.pop();r.occlusionPolygon=points;r.occlusionEnabled=points.length>=3;renderOcclusionPreview();
+  });
+  $('occlusionClear')?.addEventListener('click',()=>{
+    const r=rules[selected];if(!r)return;
+    r.occlusionPolygon=[];r.occlusionEnabled=false;renderOcclusionPreview();renderList();
+  });
+  renderOcclusionPreview();
   document.querySelectorAll('[data-map-spot]').forEach(btn=>btn.onclick=()=>{
     const r=rules[selected];if(!r)return;r.spotId=btn.dataset.mapSpot;r.spotOffsetX=0;r.spotOffsetY=0;renderForm();renderList();
   });
@@ -255,7 +316,7 @@ function bindForm(){
   $('save').onclick=save;
   $('preview').onclick=()=>{saveForm();const rule=rules[selected];if(!rule)return;try{localStorage.setItem('cafassoHologramPreviewRule',JSON.stringify({...rule,activation:'auto',repeat:'always',expiresAt:Date.now()+300000}))}catch(e){}const url=new URL('./',location.href);if(rule.space!=='casa')url.searchParams.set('space',rule.space);url.searchParams.set('holoPreview','1');window.open(url.href,'_blank','noopener')}
 }
-function render(){renderList();renderForm()}
+function render(){occlusionEditing=false;renderList();renderForm()}
 $('add').onclick=()=>{saveForm();rules.push({id:uid(),trigger:'space-enter',space:'casa',spotId:'casa-centro',name:'Persona',role:'CAFASSO',message:'',activation:'signal',repeat:'session',delayMs:0,signalTitle:'Hay alguien esperándote',removeBackground:true,spotOffsetX:0,spotOffsetY:0,spotScale:1});selected=rules.length-1;render()};
 document.addEventListener('click',e=>{const del=e.target.closest('[data-del]');if(del){e.stopPropagation();if(confirm('¿Eliminar este holograma global?')){rules.splice(Number(del.dataset.del),1);selected=Math.min(selected,rules.length-1);render()}return}const item=e.target.closest('[data-index]');if(item){saveForm();selected=Number(item.dataset.index);render()}});
 load();
