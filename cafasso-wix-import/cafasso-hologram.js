@@ -49,7 +49,9 @@
       .cafasso-holo-stage--spatial .cafasso-holo-scene{position:absolute;min-height:0;width:320px;height:560px;pointer-events:none}
       .cafasso-holo-stage--spatial .cafasso-holo-person{height:100%;max-width:100%;margin:0;transform:perspective(900px) rotateY(var(--cafasso-holo-ry,0deg)) rotateX(var(--cafasso-holo-rx,0deg));transform-origin:50% 100%}
       .cafasso-holo-stage--spatial .cafasso-holo-projector{bottom:0;width:72%;height:84%;opacity:.22;filter:blur(1.6px)}
-      .cafasso-holo-stage--spatial .cafasso-holo-base{bottom:-2px;width:var(--cafasso-holo-contact-width,46%);height:18px;opacity:var(--cafasso-holo-contact-opacity,.22);filter:blur(var(--cafasso-holo-contact-blur,8px));border:0;background:radial-gradient(ellipse,rgba(151,255,246,.66),rgba(54,211,204,.20) 42%,transparent 72%);box-shadow:none}
+      .cafasso-holo-stage--spatial .cafasso-holo-base{z-index:1;bottom:var(--cafasso-holo-contact-bottom,-2px);width:var(--cafasso-holo-contact-width,46%);height:var(--cafasso-holo-contact-height,18px);opacity:1;filter:none;border:0;background:transparent;box-shadow:none;overflow:visible}
+      .cafasso-holo-stage--spatial .cafasso-holo-base:before{content:"";position:absolute;left:50%;top:50%;width:100%;height:72%;transform:translate(-50%,-50%) scaleY(var(--cafasso-holo-shadow-squash,.58));border-radius:50%;background:radial-gradient(ellipse,rgba(2,13,17,var(--cafasso-holo-shadow-opacity,.24)) 0%,rgba(2,13,17,var(--cafasso-holo-shadow-mid,.13)) 42%,transparent 76%);filter:blur(var(--cafasso-holo-shadow-blur,5px));mix-blend-mode:multiply}
+      .cafasso-holo-stage--spatial .cafasso-holo-base:after{content:"";position:absolute;left:50%;top:37%;width:86%;height:58%;transform:translate(-50%,-50%) scaleY(var(--cafasso-holo-glow-squash,.48));border-radius:50%;background:radial-gradient(ellipse,hsla(var(--cafasso-holo-light-h,178),70%,78%,var(--cafasso-holo-floor-glow,.20)) 0%,hsla(var(--cafasso-holo-light-h,178),65%,64%,calc(var(--cafasso-holo-floor-glow,.20) * .42)) 38%,transparent 76%);filter:blur(var(--cafasso-holo-floor-blur,4px));mix-blend-mode:screen}
       .cafasso-holo-stage--spatial .cafasso-holo-glitch{display:none!important}
       .cafasso-holo-stage--spatial .cafasso-holo-card{position:fixed;left:50%;bottom:max(9px,calc(env(safe-area-inset-bottom) + 6px));transform:translateX(-50%);width:auto;max-width:min(320px,calc(100vw - 24px));padding:8px 10px;border-radius:11px;pointer-events:auto;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
       .cafasso-holo-stage--spatial .cafasso-holo-card__meta{gap:5px}
@@ -91,7 +93,7 @@
         .cafasso-holo-base{bottom:104px;width:62vw}
         .cafasso-holo-stage--spatial .cafasso-holo-person{height:100%;max-width:100%;margin:0}
         .cafasso-holo-stage--spatial .cafasso-holo-projector{height:88%;bottom:0;width:78%}
-        .cafasso-holo-stage--spatial .cafasso-holo-base{bottom:-2px;width:var(--cafasso-holo-contact-width,46vw)}
+        .cafasso-holo-stage--spatial .cafasso-holo-base{bottom:var(--cafasso-holo-contact-bottom,-2px);width:var(--cafasso-holo-contact-width,46%);height:var(--cafasso-holo-contact-height,16px)}
         .cafasso-holo-card{bottom:8px;width:calc(100vw - 16px);padding:13px 14px;border-radius:15px}
         .cafasso-holo-card__meta strong{font-size:15px}.cafasso-holo-card p{font-size:12px;line-height:1.42}
         .cafasso-holo-stage--spatial .cafasso-holo-card{width:auto;max-width:min(280px,calc(100vw - 20px));padding:7px 9px;border-radius:10px}
@@ -204,9 +206,22 @@
     stage.style.setProperty('--cafasso-holo-light-a',String(Number(light.opacity||.18)));
     scene.style.setProperty('--cafasso-holo-ry',String(Number(spot.perspective?.rotateY||0))+'deg');
     scene.style.setProperty('--cafasso-holo-rx',String(Number(spot.perspective?.rotateX||0))+'deg');
-    scene.style.setProperty('--cafasso-holo-contact-width',String(Number(spot.contact?.width||26))+'%');
-    scene.style.setProperty('--cafasso-holo-contact-opacity',String(Number(spot.contact?.opacity||.20)));
-    scene.style.setProperty('--cafasso-holo-contact-blur',String(Number(spot.contact?.blur||8))+'px');
+    const contact=spot.contact||{};
+    const depth=String(spot.depth||'mid');
+    const contactOpacity=Math.max(.08,Math.min(.34,Number(contact.opacity||.20)));
+    const contactBlur=Math.max(2,Math.min(12,Number(contact.blur||8)));
+    const depthFactor=depth==='foreground'?1:depth==='background'?.68:.84;
+    const scaleFactor=Math.max(.72,Math.min(1.2,Number(spot.scale||.75)/.75));
+    scene.style.setProperty('--cafasso-holo-contact-width',String(Math.max(18,Math.min(42,Number(contact.width||26)*depthFactor*scaleFactor)))+'%');
+    scene.style.setProperty('--cafasso-holo-contact-height',String(Math.max(10,Math.min(21,15*depthFactor*scaleFactor)))+'px');
+    scene.style.setProperty('--cafasso-holo-contact-bottom',String(depth==='foreground'?-2:-1)+'px');
+    scene.style.setProperty('--cafasso-holo-shadow-opacity',String(Math.max(.12,Math.min(.34,contactOpacity*1.15))));
+    scene.style.setProperty('--cafasso-holo-shadow-mid',String(Math.max(.05,Math.min(.19,contactOpacity*.62))));
+    scene.style.setProperty('--cafasso-holo-shadow-blur',String(Math.max(2.5,contactBlur*.58))+'px');
+    scene.style.setProperty('--cafasso-holo-shadow-squash',String(depth==='foreground'?.62:depth==='background'?.45:.53));
+    scene.style.setProperty('--cafasso-holo-floor-glow',String(Math.max(.08,Math.min(.24,contactOpacity*.72))));
+    scene.style.setProperty('--cafasso-holo-floor-blur',String(Math.max(2.5,contactBlur*.48))+'px');
+    scene.style.setProperty('--cafasso-holo-glow-squash',String(depth==='foreground'?.52:depth==='background'?.38:.45));
 
     let raf=0,stopped=false;
     let occluder=null;
