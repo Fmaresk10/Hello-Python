@@ -36,6 +36,7 @@
       .cafasso-holo-editor__empty{padding:18px;border:1px dashed #cabd9f;border-radius:10px;color:#7e7567;font-size:11px;line-height:1.45}
       .cafasso-holo-editor__grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cafasso-holo-field{display:grid;gap:5px;margin-bottom:10px}.cafasso-holo-field.full{grid-column:1/-1}.cafasso-holo-field label{color:#6a655a;font:850 9px Inter,system-ui;text-transform:uppercase;letter-spacing:.07em}.cafasso-holo-field input,.cafasso-holo-field select,.cafasso-holo-field textarea{width:100%;border:1px solid #d6c8ad;border-radius:8px;background:white;color:#344b43;padding:9px 10px;font:12px Inter,system-ui}.cafasso-holo-field textarea{min-height:90px;resize:vertical;line-height:1.4}
       .cafasso-holo-editor__preview{margin:4px 0 12px;padding:11px 12px;border:1px solid rgba(82,185,177,.35);border-radius:10px;background:linear-gradient(135deg,#eaf8f5,#f9f1d9);color:#36564f;font-size:11px;line-height:1.45}.cafasso-holo-editor__preview b{color:#2b7770}
+      .cafasso-holo-upload{grid-column:1/-1;padding:13px;border:1px dashed #83bbb5;border-radius:11px;background:#eff9f7}.cafasso-holo-upload__head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.cafasso-holo-upload__head strong{display:block;color:#31564f;font:700 15px Georgia,serif}.cafasso-holo-upload__head small{display:block;margin-top:4px;color:#6d7b75;font-size:10px;line-height:1.35}.cafasso-holo-upload label{display:inline-flex;align-items:center;justify-content:center;margin-top:10px;min-height:38px;padding:8px 12px;border:1px solid #63aba5;border-radius:8px;background:#4caea8;color:#fff;font:850 11px Inter,system-ui;cursor:pointer}.cafasso-holo-upload input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.cafasso-holo-upload__status{margin-top:9px;color:#58706b;font-size:10px;min-height:14px}.cafasso-holo-upload__track{height:5px;margin-top:6px;border-radius:999px;background:#d8e8e4;overflow:hidden}.cafasso-holo-upload__bar{display:block;height:100%;width:0;background:#4caea8;transition:width .18s ease}.cafasso-holo-upload.is-busy label{pointer-events:none;opacity:.55}
       .cafasso-holo-editor__actions{display:flex;justify-content:flex-end;gap:8px;padding-top:8px;border-top:1px solid #e3d7c3}.cafasso-holo-editor__actions .primary{background:#4caea8;border-color:#338f89;color:#fff}
       @media(max-width:760px){.cafasso-holo-editor{padding:8px}.cafasso-holo-editor__card{max-height:96dvh;border-radius:14px}.cafasso-holo-editor__body{grid-template-columns:1fr}.cafasso-holo-editor__grid{grid-template-columns:1fr}.cafasso-holo-field.full{grid-column:auto}}
     `;document.head.appendChild(style)
@@ -72,8 +73,15 @@
         <div class="cafasso-holo-field" data-holo-mission-field><label>Misión</label><select data-hf="missionId"><option value="">Cualquier misión</option>${ms.map(m=>option(m.id,m.title||m.id,h.missionId)).join('')}</select></div>
         <div class="cafasso-holo-field" data-holo-block-field><label>Contenido</label><select data-hf="blockId"><option value="">Cualquier contenido</option>${bs.map(b=>option(b._id,b.title||b.type||b._id,h.blockId)).join('')}</select></div>
         <div class="cafasso-holo-field full"><label>Comentario del formador</label><textarea data-hf="message">${esc(h.message||'')}</textarea></div>
-        <div class="cafasso-holo-field full"><label>Video transparente (URL WebM / MOV / MP4)</label><input data-hf="videoUrl" value="${esc(videoUrl(h))}" placeholder="Pegá aquí la URL del video del formador"></div>
+        <section class="cafasso-holo-upload" data-holo-upload-box>
+          <div class="cafasso-holo-upload__head"><div><strong>Subir video del formador</strong><small>Grabalo normal. CAFASSO quita el fondo automáticamente al mostrarlo. MP4, MOV o WebM · máximo 60 s / 50 MB.</small></div><span aria-hidden="true">✦</span></div>
+          <label>Elegir video<input type="file" accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm" data-holo-file></label>
+          <div class="cafasso-holo-upload__status" data-holo-upload-status>${h.videoFileId?'Video guardado en Wix ✓':videoUrl(h)?'Video enlazado ✓':'Todavía no hay video.'}</div>
+          <div class="cafasso-holo-upload__track"><span class="cafasso-holo-upload__bar" data-holo-upload-bar></span></div>
+        </section>
+        <div class="cafasso-holo-field"><label>Quitar fondo</label><select data-hf="removeBackground">${option('true','Sí · automático',h.removeBackground!==false?'true':'false')}${option('false','No · usar video completo',h.removeBackground===false?'false':'true')}</select></div>
         <div class="cafasso-holo-field"><label>Frecuencia</label><select data-hf="repeat">${option('session','Una vez por sesión',h.repeat||'session')}${option('always','Siempre que se cumpla',h.repeat)}</select></div>
+        <div class="cafasso-holo-field full"><label>URL manual (opcional / avanzado)</label><input data-hf="videoUrl" value="${esc(videoUrl(h))}" placeholder="También podés pegar una URL WebM, MOV o MP4"></div>
         <div class="cafasso-holo-field"><label>Posición</label><select data-hf="position">${option('center','Centro',h.position||'center')}${option('left','Izquierda',h.position)}${option('right','Derecha',h.position)}</select></div>
       </div>
       <div class="cafasso-holo-editor__preview"><b>Vista pedagógica:</b> ${esc(triggerLabel(h))}. ${esc(h.activation==='auto'?'El holograma aparecerá solo.':'El animador verá una señal y decidirá abrir el mensaje.')}</div>
@@ -90,7 +98,8 @@
     const h=list()[selected];if(!h)return;
     document.querySelectorAll('[data-hf]').forEach(el=>{
       const key=el.dataset.hf,value=el.value;
-      if(key==='videoUrl'){delete h.videoWebm;delete h.videoMov;delete h.videoMp4;const clean=value.trim();if(clean){if(/\.webm(?:\?|$)/i.test(clean))h.videoWebm=clean;else if(/\.mov(?:\?|$)/i.test(clean))h.videoMov=clean;else h.videoMp4=clean}return}
+      if(key==='videoUrl'){const current=videoUrl(h);const clean=value.trim();if(clean===current)return;delete h.videoWebm;delete h.videoMov;delete h.videoMp4;delete h.videoFileId;if(clean){if(/\.webm(?:\?|$)/i.test(clean))h.videoWebm=clean;else if(/\.mov(?:\?|$)/i.test(clean))h.videoMov=clean;else h.videoMp4=clean}return}
+      if(key==='removeBackground'){h.removeBackground=value!=='false';return}
       h[key]=value;
     });
     if(h.trigger!=='mission-enter')delete h.missionId;
@@ -98,7 +107,7 @@
     changed();
   }
   function add(){
-    const h={id:uid(),trigger:'module-enter',name:'Tu formador',role:'Acompañamiento CAFASSO',message:'',activation:'signal',repeat:'session',position:'center'};
+    const h={id:uid(),trigger:'module-enter',name:'Tu formador',role:'Acompañamiento CAFASSO',message:'',activation:'signal',repeat:'session',position:'center',removeBackground:true};
     list().push(h);selected=list().length-1;changed();renderList();renderForm()
   }
   function remove(index){
@@ -120,8 +129,23 @@
         if(e.target.closest('[data-holo-done]')){saveForm();notify('Intervención lista · guardá el curso para sincronizarla con Wix');modal.classList.remove('show');return}
         if(e.target.closest('[data-holo-test]')){saveForm();const h=list()[selected];if(window.CafassoHologram?.show)window.CafassoHologram.show({...h,repeat:'always'});else notify('La vista previa completa está disponible en el curso publicado.');return}
       });
+      modal.addEventListener('change',async e=>{
+        const fileInput=e.target.closest('[data-holo-file]');
+        if(fileInput){
+          const file=fileInput.files?.[0];if(!file)return;
+          const h=list()[selected];const box=modal.querySelector('[data-holo-upload-box]'),status=modal.querySelector('[data-holo-upload-status]'),bar=modal.querySelector('[data-holo-upload-bar]');
+          if(!h||!window.CafassoHologramUploader){notify('El cargador de video todavía no está disponible.');return}
+          box?.classList.add('is-busy');
+          try{
+            const result=await window.CafassoHologramUploader.upload(file,{onStatus:(label,progress)=>{if(status)status.textContent=label;if(bar)bar.style.width=Math.round(Math.max(0,Math.min(1,progress||0))*100)+'%'}});
+            window.CafassoHologramUploader.assign(h,result);changed();renderForm();renderList();notify('Video cargado · CAFASSO quitará el fondo automáticamente');
+          }catch(error){if(status)status.textContent=error.message||'No se pudo subir el video.';if(bar)bar.style.width='0%';notify(error.message||'No se pudo subir el video.')}
+          finally{box?.classList.remove('is-busy')}
+          return;
+        }
+        if(e.target.matches('[data-hf]')){saveForm();renderList();syncConditional()}
+      });
       modal.addEventListener('input',e=>{if(e.target.matches('[data-hf]')){saveForm();if(e.target.dataset.hf==='trigger'){renderForm()}else if(e.target.dataset.hf==='activation'){renderForm()}}});
-      modal.addEventListener('change',e=>{if(e.target.matches('[data-hf]')){saveForm();renderList();syncConditional()}});
     }
     selected=list().length?Math.max(0,Math.min(selected,list().length-1)):-1;renderList();renderForm();modal.classList.add('show')
   }
