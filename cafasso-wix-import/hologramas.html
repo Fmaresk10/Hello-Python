@@ -29,6 +29,7 @@ main{width:100%;max-width:1450px;margin:auto;padding:34px 36px 60px}.head{displa
   </div>
 </main>
 </div>
+<script src="./cafasso-hologram-spots.js?v=1"></script>
 <script>
 const API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
 const CONFIG_TITLE='__CAFASSO_GLOBAL_HOLOGRAMS__';
@@ -47,9 +48,13 @@ function itemLabel(r){const spaces={casa:'Casa',patio:'Patio',escuela:'Escuela',
 function renderList(){$('items').innerHTML=rules.length?rules.map((r,i)=>`<button class="item ${i===selected?'active':''}" data-index="${i}"><strong>✦ ${esc(r.name||'Persona')}</strong><small>${esc(itemLabel(r))} · ${r.activation==='auto'?'automático':'con señal'} · ${esc(r.position||'centro')}</small><span class="del" data-del="${i}">×</span></button>`).join(''):'<div class="empty">Todavía no hay hologramas globales. Creá uno y elegí en qué espacio de CAFASSO querés que aparezca.</div>'}
 function opt(value,label,current){return`<option value="${esc(value)}" ${String(value)===String(current)?'selected':''}>${esc(label)}</option>`}
 function videoUrl(r){return r.videoWebm||r.videoMov||r.videoMp4||''}
+function spotsFor(space){return window.CafassoHologramSpots?.list?.(space)||[]}
+function spotLabel(r){const list=spotsFor(r.space);return list.find(x=>x.id===r.spotId)?.label||list[0]?.label||'Spot principal'}
+function spotOptions(r){const list=spotsFor(r.space);return list.map(x=>opt(x.id,x.label,r.spotId||list[0]?.id)).join('')}
 function renderForm(){const r=rules[selected];if(!r){$('form').innerHTML='<div class="empty">Elegí una aparición de la lista o creá una nueva.</div>';return}$('form').innerHTML=`
 <div class="fields">
   <div class="field"><label>Espacio</label><select data-f="space">${opt('casa','Casa',r.space)}${opt('patio','Patio',r.space)}${opt('escuela','Escuela',r.space)}${opt('parroquia','Parroquia',r.space)}${opt('recursos','Recursos',r.space)}</select></div>
+  <div class="field"><label>Spot realista</label><select data-f="spotId">${spotOptions(r)}</select></div>
   <div class="field"><label>Cómo aparece</label><select data-f="activation">${opt('signal','Muestra una señal para tocar',r.activation||'signal')}${opt('auto','Aparece automáticamente',r.activation)}</select></div>
   <div class="field"><label>Nombre</label><input data-f="name" value="${esc(r.name||'Persona')}"></div>
   <div class="field"><label>Rol / subtítulo</label><input data-f="role" value="${esc(r.role||'CAFASSO')}"></div>
@@ -62,15 +67,17 @@ function renderForm(){const r=rules[selected];if(!r){$('form').innerHTML='<div c
     <div class="video-upload-track"><span class="video-upload-bar" id="videoUploadBar"></span></div>
   </section>
   <div class="field"><label>Quitar fondo</label><select data-f="removeBackground">${opt('true','Sí · automático',r.removeBackground!==false?'true':'false')}${opt('false','No · usar video completo',r.removeBackground===false?'false':'true')}</select></div>
+  <div class="field"><label>Ajuste horizontal</label><input data-f="spotOffsetX" type="number" min="-12" max="12" step=".5" value="${Number(r.spotOffsetX||0)}"></div>
+  <div class="field"><label>Ajuste vertical</label><input data-f="spotOffsetY" type="number" min="-12" max="12" step=".5" value="${Number(r.spotOffsetY||0)}"></div>
+  <div class="field"><label>Escala del spot</label><input data-f="spotScale" type="number" min=".65" max="1.35" step=".05" value="${Number(r.spotScale||1)}"></div>
   <div class="field full"><label>URL manual (opcional / avanzado)</label><input data-f="videoUrl" value="${esc(videoUrl(r))}" placeholder="También podés pegar una URL WebM, MOV o MP4"></div>
-  <div class="field"><label>Posición</label><select data-f="position">${opt('left','Izquierda',r.position)}${opt('center','Centro',r.position||'center')}${opt('right','Derecha',r.position)}</select></div>
   <div class="field"><label>Frecuencia</label><select data-f="repeat">${opt('session','Una vez por sesión',r.repeat||'session')}${opt('always','Cada vez que se entra',r.repeat)}</select></div>
   <div class="field"><label>Demora si es automático</label><select data-f="delayMs">${opt('0','Sin demora',String(r.delayMs||0))}${opt('1500','1,5 segundos',String(r.delayMs||0))}${opt('3000','3 segundos',String(r.delayMs||0))}${opt('5000','5 segundos',String(r.delayMs||0))}</select></div>
   <div class="field"><label>Texto de la señal</label><input data-f="signalTitle" value="${esc(r.signalTitle||'Hay alguien esperándote')}"></div>
-  <div class="hint">El holograma se activará al entrar a <b>${esc(itemLabel(r))}</b>. Podés dejarlo como señal para que la persona decida abrirlo, o hacerlo aparecer automáticamente.</div>
+  <div class="hint"><b>${esc(spotLabel(r))}</b> · El holograma quedará apoyado sobre la superficie definida para ese spot. Los ajustes X/Y y escala son sólo para calibración fina.</div>
 </div>
 <div class="actions"><button class="btn alt" type="button" id="preview">Vista previa</button><button class="btn" type="button" id="save">Guardar en Wix</button></div>`;bindForm()}
-function saveForm(){const r=rules[selected];if(!r)return;document.querySelectorAll('[data-f]').forEach(el=>{const k=el.dataset.f,v=el.value;if(k==='videoUrl'){const current=videoUrl(r),u=v.trim();if(u===current)return;delete r.videoWebm;delete r.videoMov;delete r.videoMp4;delete r.videoFileId;if(u){if(/\.webm(?:\?|$)/i.test(u))r.videoWebm=u;else if(/\.mov(?:\?|$)/i.test(u))r.videoMov=u;else r.videoMp4=u}}else if(k==='removeBackground')r.removeBackground=v!=='false';else if(k==='delayMs')r.delayMs=Number(v||0);else r[k]=v})}
+function saveForm(){const r=rules[selected];if(!r)return;document.querySelectorAll('[data-f]').forEach(el=>{const k=el.dataset.f,v=el.value;if(k==='videoUrl'){const current=videoUrl(r),u=v.trim();if(u===current)return;delete r.videoWebm;delete r.videoMov;delete r.videoMp4;delete r.videoFileId;if(u){if(/\.webm(?:\?|$)/i.test(u))r.videoWebm=u;else if(/\.mov(?:\?|$)/i.test(u))r.videoMov=u;else r.videoMp4=u}}else if(k==='removeBackground')r.removeBackground=v!=='false';else if(['delayMs','spotOffsetX','spotOffsetY','spotScale'].includes(k))r[k]=Number(v||0);else r[k]=v});const available=spotsFor(r.space);if(available.length&&!available.some(x=>x.id===r.spotId))r.spotId=available[0].id}
 function bindForm(){
   document.querySelectorAll('[data-f]').forEach(el=>{
     el.oninput=()=>{saveForm();renderList()};
@@ -93,10 +100,10 @@ function bindForm(){
     }finally{box?.classList.remove('busy')}
   };
   $('save').onclick=save;
-  $('preview').onclick=()=>{saveForm();if(window.CafassoHologram?.show)window.CafassoHologram.show({...rules[selected],repeat:'always'});else alert('La vista previa se verá en CAFASSO una vez guardado.')}
+  $('preview').onclick=()=>{saveForm();const rule=rules[selected];if(!rule)return;try{localStorage.setItem('cafassoHologramPreviewRule',JSON.stringify({...rule,activation:'auto',repeat:'always',expiresAt:Date.now()+300000}))}catch(e){}const url=new URL('./',location.href);if(rule.space!=='casa')url.searchParams.set('space',rule.space);url.searchParams.set('holoPreview','1');window.open(url.href,'_blank','noopener')}
 }
 function render(){renderList();renderForm()}
-$('add').onclick=()=>{saveForm();rules.push({id:uid(),trigger:'space-enter',space:'casa',name:'Persona',role:'CAFASSO',message:'',activation:'signal',repeat:'session',position:'center',delayMs:0,signalTitle:'Hay alguien esperándote',removeBackground:true});selected=rules.length-1;render()};
+$('add').onclick=()=>{saveForm();rules.push({id:uid(),trigger:'space-enter',space:'casa',spotId:'casa-centro',name:'Persona',role:'CAFASSO',message:'',activation:'signal',repeat:'session',delayMs:0,signalTitle:'Hay alguien esperándote',removeBackground:true,spotOffsetX:0,spotOffsetY:0,spotScale:1});selected=rules.length-1;render()};
 document.addEventListener('click',e=>{const del=e.target.closest('[data-del]');if(del){e.stopPropagation();if(confirm('¿Eliminar este holograma global?')){rules.splice(Number(del.dataset.del),1);selected=Math.min(selected,rules.length-1);render()}return}const item=e.target.closest('[data-index]');if(item){saveForm();selected=Number(item.dataset.index);render()}});
 load();
 </script>
