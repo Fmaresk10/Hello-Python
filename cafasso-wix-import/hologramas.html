@@ -136,7 +136,8 @@ function mapState(r){
   const x=Math.max(2,Math.min(98,Number(base.x||50)+Number(r.spotOffsetX||0)));
   const y=Math.max(8,Math.min(98,Number(base.y||85)+Number(r.spotOffsetY||0)));
   const scale=Math.max(.65,Math.min(1.35,Number(r.spotScale||1)));
-  return{base,x,y,scale};
+  const visualScale=Math.max(.55,Math.min(1.45,(Number(base.scale||.75)*scale)/.75));
+  return{base,x,y,scale,visualScale};
 }
 function locationMapHtml(r){
   const meta=spaceMeta(r),state=mapState(r),spots=spotsFor(r.space);
@@ -148,7 +149,7 @@ function locationMapHtml(r){
       <img src="${esc(meta.previewImage)}" alt="Referencia visual de ${esc(meta.label)}">
       ${dots}
       <div class="location-map__coords" id="mapCoords">X ${state.x.toFixed(1)} · Y ${state.y.toFixed(1)}</div>
-      <div class="location-map__person" id="mapPerson" style="left:${state.x}%;top:${state.y}%;--map-person-scale:${state.scale}" role="slider" tabindex="0" aria-label="Posición del holograma"><span class="head"></span><span class="body"></span></div>
+      <div class="location-map__person" id="mapPerson" style="left:${state.x}%;top:${state.y}%;--map-person-scale:${state.visualScale}" role="slider" tabindex="0" aria-label="Posición del holograma"><span class="head"></span><span class="body"></span></div>
     </div>
     <div class="location-map__controls">
       <label class="location-map__scale"><span>Tamaño</span><input id="mapScale" type="range" min=".65" max="1.35" step=".05" value="${state.scale}"><b id="mapScaleValue">${Math.round(state.scale*100)}%</b></label>
@@ -196,7 +197,7 @@ function bindForm(){
   const updateMapVisual=()=>{
     const r=rules[selected];if(!r)return;
     const state=mapState(r);
-    if(person){person.style.left=state.x+'%';person.style.top=state.y+'%';person.style.setProperty('--map-person-scale',state.scale)}
+    if(person){person.style.left=state.x+'%';person.style.top=state.y+'%';person.style.setProperty('--map-person-scale',state.visualScale)}
     if($('mapCoords'))$('mapCoords').textContent='X '+state.x.toFixed(1)+' · Y '+state.y.toFixed(1);
     if($('mapOffsetReadout'))$('mapOffsetReadout').textContent='ΔX '+Number(r.spotOffsetX||0).toFixed(1)+' · ΔY '+Number(r.spotOffsetY||0).toFixed(1);
     if($('mapScaleValue'))$('mapScaleValue').textContent=Math.round(state.scale*100)+'%';
@@ -217,7 +218,7 @@ function bindForm(){
     person.onpointerdown=e=>{dragging=true;pointerId=e.pointerId;person.setPointerCapture?.(e.pointerId);e.preventDefault()};
     person.onpointermove=e=>{if(dragging&&e.pointerId===pointerId)moveFromPointer(e)};
     person.onpointerup=e=>{if(dragging&&e.pointerId===pointerId){moveFromPointer(e);dragging=false;pointerId=null}};
-    map.ondblclick=e=>{moveFromPointer(e)};
+    map.onclick=e=>{if(!e.target.closest('[data-map-spot]')&&!e.target.closest('#mapPerson'))moveFromPointer(e)};
   }
   document.querySelectorAll('[data-map-spot]').forEach(btn=>btn.onclick=()=>{
     const r=rules[selected];if(!r)return;r.spotId=btn.dataset.mapSpot;r.spotOffsetX=0;r.spotOffsetY=0;renderForm();renderList();
