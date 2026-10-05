@@ -12,6 +12,7 @@
   let lastMissionKey='';
   let lastSpaceKey='';
   let syncTimer=0;
+  let closeTimer=0;
   let globalLoadState={status:'idle',count:0,error:'',loadedAt:0};
   const GLOBAL_CONFIG_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
   const GLOBAL_CONFIG_TITLE='__CAFASSO_GLOBAL_HOLOGRAMS__';
@@ -53,6 +54,15 @@
       .cafasso-holo-stage--spatial .cafasso-holo-base:before{content:"";position:absolute;left:50%;top:50%;width:100%;height:72%;transform:translate(-50%,-50%) scaleY(var(--cafasso-holo-shadow-squash,.58));border-radius:50%;background:radial-gradient(ellipse,rgba(2,13,17,var(--cafasso-holo-shadow-opacity,.24)) 0%,rgba(2,13,17,var(--cafasso-holo-shadow-mid,.13)) 42%,transparent 76%);filter:blur(var(--cafasso-holo-shadow-blur,5px));mix-blend-mode:multiply}
       .cafasso-holo-stage--spatial .cafasso-holo-base:after{content:"";position:absolute;left:50%;top:37%;width:86%;height:58%;transform:translate(-50%,-50%) scaleY(var(--cafasso-holo-glow-squash,.48));border-radius:50%;background:radial-gradient(ellipse,hsla(var(--cafasso-holo-light-h,178),70%,78%,var(--cafasso-holo-floor-glow,.20)) 0%,hsla(var(--cafasso-holo-light-h,178),65%,64%,calc(var(--cafasso-holo-floor-glow,.20) * .42)) 38%,transparent 76%);filter:blur(var(--cafasso-holo-floor-blur,4px));mix-blend-mode:screen}
       .cafasso-holo-stage--spatial .cafasso-holo-glitch{display:none!important}
+      .cafasso-holo-stage--spatial .cafasso-holo-projector{animation:cafassoHoloProjectorIn .64s ease-out both}
+      .cafasso-holo-stage--spatial .cafasso-holo-base{animation:cafassoHoloBaseIn .64s ease-out both}
+      .cafasso-holo-stage--spatial .cafasso-holo-card{animation:cafassoHoloCardIn .22s .46s ease-out both}
+      .cafasso-holo-stage--spatial .cafasso-holo-audio-hint{animation:cafassoHoloCardIn .18s .48s ease-out both}
+      .cafasso-holo-stage--closing .cafasso-holo-person{animation:cafassoHoloDematerialize .40s cubic-bezier(.55,.02,.82,.42) both}
+      .cafasso-holo-stage--closing .cafasso-holo-person:after{animation:cafassoHoloDematerializeScan .40s ease-in both}
+      .cafasso-holo-stage--closing.cafasso-holo-stage--spatial .cafasso-holo-projector{animation:cafassoHoloProjectorOut .40s ease-in both}
+      .cafasso-holo-stage--closing.cafasso-holo-stage--spatial .cafasso-holo-base{animation:cafassoHoloBaseOut .40s ease-in both}
+      .cafasso-holo-stage--closing .cafasso-holo-card,.cafasso-holo-stage--closing .cafasso-holo-audio-hint,.cafasso-holo-stage--closing .cafasso-holo-close{animation:cafassoHoloCardOut .14s ease-in both}
       .cafasso-holo-stage--spatial .cafasso-holo-card{position:fixed;left:var(--cafasso-holo-card-x,50%);top:var(--cafasso-holo-card-y,80%);bottom:auto;transform:translateX(-50%);width:max-content;max-width:min(205px,calc(100vw - 18px));padding:5px 7px;border-radius:8px;border-color:rgba(160,241,232,.24);background:rgba(6,35,39,.84);box-shadow:0 8px 22px rgba(0,0,0,.22);pointer-events:auto;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
       .cafasso-holo-stage--spatial .cafasso-holo-card__meta{gap:4px;justify-content:center;flex-wrap:nowrap;white-space:nowrap}
       .cafasso-holo-stage--spatial .cafasso-holo-card__meta strong{font-size:10px;line-height:1}
@@ -68,7 +78,8 @@
       .cafasso-holo-projector{position:absolute;left:50%;bottom:0;width:min(560px,78vw);height:76%;transform:translateX(-50%);clip-path:polygon(39% 100%,61% 100%,91% 0,9% 0);background:linear-gradient(180deg,rgba(108,242,235,.02),rgba(90,231,222,.10) 70%,rgba(90,231,222,.24));filter:blur(.2px);opacity:.92}
       .cafasso-holo-projector:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent 0 7px,rgba(174,255,250,.09) 8px,transparent 9px);animation:cafassoHoloScan 5.5s linear infinite}
       .cafasso-holo-base{position:absolute;left:50%;bottom:0;width:min(330px,56vw);height:30px;transform:translateX(-50%);border:1px solid rgba(125,239,231,.58);border-radius:50%;background:radial-gradient(ellipse,rgba(167,255,248,.35),rgba(43,181,180,.12) 45%,rgba(10,76,81,.1) 70%,transparent 72%);box-shadow:0 0 38px rgba(78,232,223,.30),inset 0 0 22px rgba(174,255,249,.25)}
-      .cafasso-holo-person{position:relative;z-index:2;height:calc(100% - 30px);max-width:min(58vw,520px);display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 0 10px rgba(109,244,236,.34));pointer-events:auto;transform-origin:50% 100%;animation:cafassoHoloMaterialize .68s cubic-bezier(.18,.78,.22,1) both}
+      .cafasso-holo-person{position:relative;z-index:2;height:calc(100% - 30px);max-width:min(58vw,520px);display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 0 10px rgba(109,244,236,.34));pointer-events:auto;transform-origin:50% 100%;will-change:clip-path,opacity,filter;animation:cafassoHoloMaterialize .64s cubic-bezier(.18,.78,.22,1) both}
+      .cafasso-holo-person:after{content:"";position:absolute;z-index:5;left:12%;right:12%;height:2px;top:5%;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(210,255,251,.94) 22%,rgba(115,244,237,.95) 50%,rgba(210,255,251,.94) 78%,transparent);box-shadow:0 0 8px rgba(112,246,238,.72),0 0 18px rgba(70,218,213,.34);opacity:0;animation:cafassoHoloMaterializeScan .64s ease-out both}
       .cafasso-holo-person video,.cafasso-holo-person img{display:block;max-width:100%;max-height:100%;height:100%;width:auto;object-fit:contain;object-position:center bottom;filter:brightness(var(--cafasso-holo-ambient-brightness,1)) saturate(var(--cafasso-holo-ambient-saturation,.82)) contrast(var(--cafasso-holo-ambient-contrast,1.04)) sepia(var(--cafasso-holo-ambient-sepia,0)) hue-rotate(var(--cafasso-holo-ambient-hue,0deg)) drop-shadow(0 0 12px rgba(83,226,218,.18))}
       .cafasso-holo-person video{background:transparent}
       .cafasso-holo-cutout-canvas{display:block;max-width:100%;max-height:100%;height:100%;width:auto;object-fit:contain;object-position:center bottom;filter:brightness(var(--cafasso-holo-ambient-brightness,1)) saturate(var(--cafasso-holo-ambient-saturation,.82)) contrast(var(--cafasso-holo-ambient-contrast,1.04)) sepia(var(--cafasso-holo-ambient-sepia,0)) hue-rotate(var(--cafasso-holo-ambient-hue,0deg)) drop-shadow(0 0 12px rgba(83,226,218,.18))}
@@ -104,12 +115,37 @@
         .cafasso-holo-person{height:80%;margin-bottom:74px}.cafasso-holo-projector{bottom:65px;height:75%}.cafasso-holo-base{bottom:64px}.cafasso-holo-card{left:auto;right:10px;bottom:10px;transform:none;width:min(430px,47vw)}
       }
       @media(prefers-reduced-motion:reduce){
-        .cafasso-holo-signal,.cafasso-holo-person,.cafasso-holo-stage{animation:none!important}.cafasso-holo-projector:after,.cafasso-holo-signal__orb:after{animation:none!important}
+        .cafasso-holo-signal,.cafasso-holo-person,.cafasso-holo-stage,.cafasso-holo-card,.cafasso-holo-base,.cafasso-holo-projector,.cafasso-holo-audio-hint,.cafasso-holo-close,.cafasso-holo-person:after{animation:none!important}.cafasso-holo-projector:after,.cafasso-holo-signal__orb:after{animation:none!important}
       }
       @keyframes cafassoHoloSignalIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
       @keyframes cafassoHoloPulse{0%{transform:scale(.72);opacity:.8}100%{transform:scale(1.5);opacity:0}}
       @keyframes cafassoHoloBackdrop{from{opacity:0}to{opacity:1}}
-      @keyframes cafassoHoloMaterialize{0%{opacity:0;transform:translateY(16px) scaleY(.35);filter:blur(5px)}45%{opacity:.72;transform:translateY(2px) scaleY(1.025);filter:blur(1px)}100%{opacity:1;transform:none;filter:none}}
+      @keyframes cafassoHoloMaterialize{
+        0%{opacity:0;clip-path:inset(94% 0 0 0);filter:blur(5px) drop-shadow(0 0 5px rgba(109,244,236,.18))}
+        18%{opacity:.32;clip-path:inset(72% 0 0 0);filter:blur(3px) drop-shadow(0 0 8px rgba(109,244,236,.30))}
+        26%{opacity:.18}
+        36%{opacity:.58;clip-path:inset(43% 0 0 0)}
+        43%{opacity:.36}
+        54%{opacity:.82;clip-path:inset(18% 0 0 0);filter:blur(1.2px) drop-shadow(0 0 12px rgba(109,244,236,.36))}
+        72%{opacity:.94;clip-path:inset(3% 0 0 0)}
+        100%{opacity:1;clip-path:inset(0 0 0 0);filter:drop-shadow(0 0 10px rgba(109,244,236,.34))}
+      }
+      @keyframes cafassoHoloMaterializeScan{0%{top:96%;opacity:0}12%{opacity:.95}76%{opacity:.72}100%{top:3%;opacity:0}}
+      @keyframes cafassoHoloDematerialize{
+        0%{opacity:1;clip-path:inset(0 0 0 0);filter:drop-shadow(0 0 10px rgba(109,244,236,.34))}
+        24%{opacity:.88;clip-path:inset(6% 0 0 0)}
+        42%{opacity:.54;clip-path:inset(26% 0 0 0);filter:blur(1.5px) drop-shadow(0 0 10px rgba(109,244,236,.32))}
+        50%{opacity:.72}
+        68%{opacity:.28;clip-path:inset(62% 0 0 0);filter:blur(3px)}
+        100%{opacity:0;clip-path:inset(96% 0 0 0);filter:blur(5px)}
+      }
+      @keyframes cafassoHoloDematerializeScan{0%{top:3%;opacity:0}12%{opacity:.9}82%{opacity:.62}100%{top:96%;opacity:0}}
+      @keyframes cafassoHoloProjectorIn{0%{opacity:0}18%{opacity:.34}36%{opacity:.10}52%{opacity:.28}100%{opacity:.22}}
+      @keyframes cafassoHoloProjectorOut{0%{opacity:.22}48%{opacity:.30}100%{opacity:0}}
+      @keyframes cafassoHoloBaseIn{0%{opacity:0}20%{opacity:.35}42%{opacity:1}55%{opacity:.58}100%{opacity:1}}
+      @keyframes cafassoHoloBaseOut{0%{opacity:1}42%{opacity:.72}100%{opacity:0}}
+      @keyframes cafassoHoloCardIn{from{opacity:0;filter:blur(3px)}to{opacity:1;filter:none}}
+      @keyframes cafassoHoloCardOut{from{opacity:1}to{opacity:0}}
       @keyframes cafassoHoloScan{from{transform:translateY(-18px)}to{transform:translateY(18px)}}
     `;
     document.head.appendChild(style);
@@ -133,19 +169,41 @@
     document.getElementById(SIGNAL_ID)?.remove();
   }
 
-  function close(){
-    const stage=document.getElementById(STAGE_ID);
-    if(stage){
-      const video=stage.querySelector('video');
-      try{video?.pause();}catch(error){}
-      try{stage.__cafassoCutoutCleanup?.()}catch(error){}
-      try{stage.__cafassoSpatialCleanup?.()}catch(error){}
-      try{if(current?.__cafassoObjectUrl)URL.revokeObjectURL(current.__cafassoObjectUrl)}catch(error){}
-      stage.remove();
+  function finalizeClose(stage,closingCurrent){
+    if(!stage)return;
+    const video=stage.querySelector('video');
+    try{video?.pause();}catch(error){}
+    try{stage.__cafassoCutoutCleanup?.()}catch(error){}
+    try{stage.__cafassoSpatialCleanup?.()}catch(error){}
+    try{if(closingCurrent?.__cafassoObjectUrl)URL.revokeObjectURL(closingCurrent.__cafassoObjectUrl)}catch(error){}
+    stage.remove();
+    const replacement=document.getElementById(STAGE_ID);
+    if(!replacement){
+      document.body.classList.remove('cafasso-holo-open');
+      if(current===closingCurrent)current=null;
+      try{window.dispatchEvent(new CustomEvent('cafasso:hologram-close'));}catch(error){}
     }
-    document.body.classList.remove('cafasso-holo-open');
-    current=null;
-    try{window.dispatchEvent(new CustomEvent('cafasso:hologram-close'));}catch(error){}
+  }
+
+  function close(options={}){
+    const stage=document.getElementById(STAGE_ID);
+    if(!stage){
+      document.body.classList.remove('cafasso-holo-open');
+      return;
+    }
+    const closingCurrent=current;
+    if(closeTimer){clearTimeout(closeTimer);closeTimer=0}
+    const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    if(options?.immediate===true||reduced){
+      finalizeClose(stage,closingCurrent);
+      return;
+    }
+    if(stage.classList.contains('cafasso-holo-stage--closing'))return;
+    stage.classList.add('cafasso-holo-stage--closing');
+    closeTimer=setTimeout(()=>{
+      closeTimer=0;
+      finalizeClose(stage,closingCurrent);
+    },430);
   }
 
   function spatialContext(config={}){
@@ -323,7 +381,7 @@
 
   function show(config={}){
     installStyles();
-    close();
+    close({immediate:true});
     removeSignal();
     current={...config};
     const stage=document.createElement('section');
@@ -629,8 +687,8 @@
   window.addEventListener('cafasso:block-completed',event=>fire('block-completed',event?.detail||{}));
   window.addEventListener('cafasso:module-completed',event=>fire('module-completed',event?.detail||{}));
   window.addEventListener('hashchange',scheduleSync);
-  window.addEventListener('pagehide',close);
-  window.addEventListener('cafasso:navigate',close);
+  window.addEventListener('pagehide',()=>close({immediate:true}));
+  window.addEventListener('cafasso:navigate',()=>close({immediate:true}));
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{installStyles();warmCutoutEngine();loadGlobalRules({attempts:3});scheduleSync();previewFromStorage();},{once:true});
   else {installStyles();warmCutoutEngine();loadGlobalRules({attempts:3});scheduleSync();previewFromStorage()}
