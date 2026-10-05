@@ -55,8 +55,7 @@
     onStatus?.('Subiendo a Wix…',0.12);
     const result=await new Promise((resolve,reject)=>{
       const xhr=new XMLHttpRequest();
-      xhr.open('PUT',signedJson.uploadUrl,true);
-      xhr.setRequestHeader('Content-Type',meta.mimeType);
+      xhr.open('POST',signedJson.uploadUrl,true);
       xhr.upload.onprogress=e=>{
         if(e.lengthComputable)onStatus?.('Subiendo a Wix…',0.12+0.82*(e.loaded/e.total));
       };
@@ -65,16 +64,24 @@
         if(xhr.status<200||xhr.status>=300)return reject(new Error('Wix rechazó la subida del video.'));
         try{resolve(JSON.parse(xhr.responseText||'{}'))}catch(e){reject(new Error('Wix respondió con un formato inesperado.'))}
       };
-      xhr.send(file);
+      const form=new FormData();
+      form.append('upload_url',signedJson.uploadUrl);
+      form.append('file',file,signedJson.fileName||meta.fileName);
+      xhr.send(form);
     });
-    const descriptor=result?.file;
-    const url=String(descriptor?.url||descriptor?.media?.video?.video?.url||'').trim();
+    const descriptor=Array.isArray(result)?result[0]:(result?.file||result);
+    const fileId=String(descriptor?.id||descriptor?.file_name||'').trim();
+    const url=String(
+      descriptor?.url||
+      descriptor?.media?.video?.video?.url||
+      (fileId?'https://video.wixstatic.com/video/'+fileId+'/file':'')
+    ).trim();
     if(!url)throw new Error('El video subió, pero Wix todavía no devolvió su enlace.');
-    onStatus?.(descriptor?.operationStatus==='READY'?'Video listo ✓':'Video subido · Wix lo está procesando…',1);
+    onStatus?.('Video subido · Wix lo está procesando…',1);
     return{
       url,
-      fileId:String(descriptor?.id||''),
-      operationStatus:String(descriptor?.operationStatus||''),
+      fileId,
+      operationStatus:String(descriptor?.operationStatus||descriptor?.opStatus||'PROCESSING'),
       mimeType:meta.mimeType,
       duration:meta.duration,
       sizeInBytes:meta.sizeInBytes,
