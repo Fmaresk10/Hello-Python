@@ -31,12 +31,13 @@
   }
   function engine(){return enginePromise||(enginePromise=createEngine().catch(error=>{enginePromise=null;throw error}))}
   function smoothAlpha(value){
-    const low=.22,high=.72;
+    const low=.30,high=.74;
     if(value<=low)return 0;
     if(value>=high)return 255;
     const x=(value-low)/(high-low);
     const eased=x*x*(3-2*x);
-    return Math.round(eased*255);
+    const alpha=Math.round(eased*255);
+    return alpha<14?0:alpha;
   }
   function canvasSize(video){
     const vw=Math.max(1,Number(video.videoWidth||360)),vh=Math.max(1,Number(video.videoHeight||640));
@@ -49,7 +50,9 @@
       const canvas=document.createElement('canvas');
       canvas.className='cafasso-holo-cutout-canvas';
       canvas.setAttribute('aria-hidden','true');
-      const ctx=canvas.getContext('2d',{alpha:true,desynchronized:true});
+      const ctx=canvas.getContext('2d',{alpha:true});
+      const frameCanvas=document.createElement('canvas');
+      const frameCtx=frameCanvas.getContext('2d',{alpha:true});
       const loading=document.createElement('span');
       loading.className='cafasso-holo-cutout-loading';
       loading.textContent='Preparando recorte…';
@@ -104,7 +107,9 @@
       try{
         await waitMeta();
         if(stopped)return resolve(cleanup);
-        const size=canvasSize(video);canvas.width=size.width;canvas.height=size.height;
+        const size=canvasSize(video);
+        canvas.width=size.width;canvas.height=size.height;
+        frameCanvas.width=size.width;frameCanvas.height=size.height;
         // Keep the original video visible until a real foreground mask exists.
         // This prevents a transparent cutout from making the hologram disappear.
         canvas.style.position='absolute';
@@ -190,18 +195,24 @@
         };
         const draw=()=>{
           if(stopped)return;
-          if(video.readyState>=2){
+          if(video.readyState>=2&&foregroundConfirmed&&maskCanvas){
+            // Compose the complete cutout off-screen first. Only the finished,
+            // already-masked frame is copied to the visible canvas. This avoids
+            // one-frame flashes of the full rectangular source video.
+            frameCtx.clearRect(0,0,frameCanvas.width,frameCanvas.height);
+            frameCtx.globalCompositeOperation='source-over';
+            frameCtx.filter='none';
+            frameCtx.drawImage(video,0,0,frameCanvas.width,frameCanvas.height);
+            frameCtx.globalCompositeOperation='destination-in';
+            frameCtx.filter='blur(1.05px)';
+            frameCtx.drawImage(maskCanvas,0,0,frameCanvas.width,frameCanvas.height);
+            frameCtx.filter='none';
+            frameCtx.globalCompositeOperation='source-over';
+
             ctx.clearRect(0,0,canvas.width,canvas.height);
             ctx.globalCompositeOperation='source-over';
             ctx.filter='none';
-            ctx.drawImage(video,0,0,canvas.width,canvas.height);
-            if(maskCanvas){
-              ctx.globalCompositeOperation='destination-in';
-              ctx.filter='blur(1.25px)';
-              ctx.drawImage(maskCanvas,0,0,canvas.width,canvas.height);
-              ctx.filter='none';
-              ctx.globalCompositeOperation='source-over';
-            }
+            ctx.drawImage(frameCanvas,0,0,canvas.width,canvas.height);
           }
           const now=performance.now();
           if(!video.paused&&!video.ended&&!busy&&now-lastSeg>=interval&&video.currentTime!==lastVideoTime){
