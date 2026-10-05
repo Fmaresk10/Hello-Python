@@ -191,7 +191,7 @@
     let raf=0,stopped=false;
     const layout=()=>{
       if(stopped||!stage.isConnected)return;
-      const host=spot.host;
+      const host=spot.kind==='world'&&window.CafassoHologramSpots?.scene?window.CafassoHologramSpots.scene(spot.space):spot.host;
       if(!host?.isConnected){raf=requestAnimationFrame(layout);return}
       const raw=host.getBoundingClientRect();
       const rect=imageFitRect(raw,spot.kind);
