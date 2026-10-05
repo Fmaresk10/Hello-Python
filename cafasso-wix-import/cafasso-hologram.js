@@ -12,6 +12,7 @@
   let lastMissionKey='';
   let lastSpaceKey='';
   let syncTimer=0;
+  let globalLoadState={status:'idle',count:0,error:'',loadedAt:0};
   const GLOBAL_CONFIG_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
   const GLOBAL_CONFIG_TITLE='__CAFASSO_GLOBAL_HOLOGRAMS__';
   const PREVIEW_MODE=new URLSearchParams(location.search).get('holoPreview')==='1';
@@ -414,22 +415,48 @@
     removeSignal();
   }
 
-  async function loadGlobalRules(){
-    try{
-      let token='';
-      try{token=String(JSON.parse(localStorage.getItem('cafassoAuth')||'null')?.sessionToken||'')}catch(error){}
-      const response=await fetch(GLOBAL_CONFIG_API+'?title='+encodeURIComponent(GLOBAL_CONFIG_TITLE)+'&holo='+Date.now(),{
-        cache:'no-store',
-        headers:token?{'Authorization':'Bearer '+token}:{}
-      });
-      const json=await response.json();
-      const list=json?.course?.modules?.[0]?.settings?.holograms;
-      globalRules=Array.isArray(list)?list.map((item,index)=>({id:item.id||('global-hologram-'+index),trigger:item.trigger||'space-enter',...item})):[];
-    }catch(error){globalRules=[]}
+  async function loadGlobalRules(options={}){
+    const attempts=Math.max(1,Number(options.attempts||3));
+    let lastError='';
+    globalLoadState={status:'loading',count:globalRules.length,error:'',loadedAt:globalLoadState.loadedAt||0};
+
+    for(let attempt=1;attempt<=attempts;attempt+=1){
+      try{
+        let token='';
+        try{token=String(JSON.parse(localStorage.getItem('cafassoAuth')||'null')?.sessionToken||'')}catch(error){}
+        const response=await fetch(GLOBAL_CONFIG_API+'?title='+encodeURIComponent(GLOBAL_CONFIG_TITLE)+'&holo='+Date.now()+'&attempt='+attempt,{
+          cache:'no-store',
+          headers:token?{'Authorization':'Bearer '+token}:{}
+        });
+        const json=await response.json().catch(()=>null);
+        if(!response.ok||!json?.ok||!json?.course)throw new Error(json?.error||('HTTP '+response.status));
+        const list=json?.course?.modules?.[0]?.settings?.holograms;
+        globalRules=Array.isArray(list)?list.map((item,index)=>({
+          id:item.id||('global-hologram-'+index),
+          trigger:item.trigger||'space-enter',
+          ...item
+        })):[];
+        globalLoadState={status:'ready',count:globalRules.length,error:'',loadedAt:Date.now()};
+
+        // Critical: the first space check may have happened while rules were still empty.
+        // Reset the key so Casa/Patio/etc. is evaluated again now that rules exist.
+        lastSpaceKey='';
+        scheduleSync();
+        try{window.dispatchEvent(new CustomEvent('cafasso:hologram-rules-ready',{detail:{count:globalRules.length}}))}catch(error){}
+        return globalRules;
+      }catch(error){
+        lastError=String(error?.message||error||'No se pudieron cargar los hologramas');
+        if(attempt<attempts)await new Promise(resolve=>setTimeout(resolve,350*attempt));
+      }
+    }
+
+    globalRules=[];
+    globalLoadState={status:'error',count:0,error:lastError,loadedAt:Date.now()};
+    lastSpaceKey='';
     scheduleSync();
+    console.warn('CAFASSO holograms: global rules unavailable',lastError);
     return globalRules;
   }
-
   function scheduleSync(){
     clearTimeout(syncTimer);
     syncTimer=setTimeout(syncExperience,120);
@@ -447,18 +474,24 @@
     }catch(error){return false}
   }
 
-  window.CafassoHologram={show,announce,close,register,fire,context,loadGlobalRules,get globalRules(){return globalRules.slice()},get current(){return current;}};
+  window.CafassoHologram={
+    show,announce,close,register,fire,context,loadGlobalRules,
+    async refresh(){lastSpaceKey='';await loadGlobalRules({attempts:3});syncExperience();return globalRules.slice()},
+    get globalRules(){return globalRules.slice()},
+    get loadState(){return {...globalLoadState}},
+    get current(){return current;}
+  };
 
   window.addEventListener('cafasso:course-experience-ready',scheduleSync);
-  window.addEventListener('cafasso:state-ready',scheduleSync);
+  window.addEventListener('cafasso:state-ready',()=>loadGlobalRules({attempts:2}));
   window.addEventListener('cafasso:block-completed',event=>fire('block-completed',event?.detail||{}));
   window.addEventListener('cafasso:module-completed',event=>fire('module-completed',event?.detail||{}));
   window.addEventListener('hashchange',scheduleSync);
   window.addEventListener('pagehide',close);
   window.addEventListener('cafasso:navigate',close);
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{installStyles();loadGlobalRules();scheduleSync();previewFromStorage();},{once:true});
-  else {installStyles();loadGlobalRules();scheduleSync();previewFromStorage()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{installStyles();loadGlobalRules({attempts:3});scheduleSync();previewFromStorage();},{once:true});
+  else {installStyles();loadGlobalRules({attempts:3});scheduleSync();previewFromStorage()}
 
   const observer=new MutationObserver(()=>scheduleSync());
   const observe=()=>{const host=document.getElementById('main')||document.getElementById('app');if(host)observer.observe(host,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});else setTimeout(observe,180);};
