@@ -76,7 +76,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
           <span class="blank"></span><button type="button" data-nudge="0,0.25" aria-label="Bajar">↓</button><span class="blank"></span>
         </div>
         <div class="control-actions"><button class="btn" id="resetObject" type="button">Restablecer objeto</button><button class="btn danger" id="resetScene" type="button">Restablecer escena</button></div>
-        <div class="help">La cuadrícula divide la escena en 10 × 10. Las flechas mueven de a 0,25%. “Restablecer” vuelve a la posición original programada.</div>
+        <div class="help">La cuadrícula divide la escena en 10 × 10. Las flechas mueven de a 0,25%. El tamaño se guarda como proporción real de la escena, así la vista del mapa coincide con CAFASSO. “Restablecer” vuelve a la posición original programada.</div>
       </div>
     </aside>
 
@@ -89,7 +89,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 </main>
 </div>
 
-<script src="./cafasso-scene-layouts.js?v=3"></script>
+<script src="./cafasso-scene-layouts.js?v=4"></script>
 <script>
 (()=>{
   const api=window.CafassoSceneLayouts;
@@ -102,6 +102,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
   let selected='';
   let dirty=false;
   let presence={};
+  let metrics={};
   let saveBusy=false;
 
   function guard(){
@@ -142,17 +143,24 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 
   function currentValue(id=selected){
     const value=draft.spaces?.[space]?.[profile]?.[id];
-    return value?{dx:Number(value.dx)||0,dy:Number(value.dy)||0,scale:Number(value.scale)||1}:{dx:0,dy:0,scale:1};
+    if(!value)return {dx:0,dy:0,scale:1};
+    const out={dx:Number(value.dx)||0,dy:Number(value.dy)||0,scale:Number(value.scale)||1};
+    if(Number.isFinite(Number(value.sizePct))&&Number(value.sizePct)>0)out.sizePct=Number(value.sizePct);
+    return out;
   }
 
   function setValue(id,value){
     if(!id)return;
     const bucket=ensurePath();
-    bucket[id]={
+    const base=metrics[id]?.baseSizePct;
+    const next={
       dx:round(Math.max(-100,Math.min(100,Number(value.dx)||0))),
       dy:round(Math.max(-100,Math.min(100,Number(value.dy)||0))),
       scale:Math.round(Math.max(.35,Math.min(2.5,Number(value.scale)||1))*1000)/1000
     };
+    if(Number.isFinite(Number(value.sizePct))&&Number(value.sizePct)>0)next.sizePct=round(Number(value.sizePct));
+    else if(Number.isFinite(Number(base))&&Number(base)>0)next.sizePct=round(Number(base)*next.scale);
+    bucket[id]=next;
     updateDirty(true);
     syncPreviewState();
     renderSelected();
@@ -220,7 +228,11 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     const value=currentValue();
     $('xReadout').textContent=(value.dx>=0?'+':'')+value.dx.toFixed(2)+'%';
     $('yReadout').textContent=(value.dy>=0?'+':'')+value.dy.toFixed(2)+'%';
-    const scale=Math.round(value.scale*100);
+    const base=metrics[selected]?.baseSizePct;
+    const resolvedScale=Number.isFinite(Number(value.sizePct))&&Number(value.sizePct)>0&&Number(base)>0
+      ? Number(value.sizePct)/Number(base)
+      : value.scale;
+    const scale=Math.max(35,Math.min(250,Math.round(resolvedScale*100)));
     $('scaleReadout').textContent=scale+'%';
     $('scale').value=String(scale);
     $('scaleValue').textContent=scale+'%';
@@ -235,7 +247,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       space,
       sceneEditor:'1',
       sceneProfile:profile,
-      __cafassoBuild:'1163'
+      __cafassoBuild:'1164'
     });
     return './world.html?'+query.toString();
   }
@@ -321,7 +333,9 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     if(data.type!=='cafasso-scene-editor'||data.space!==space)return;
     if(data.action==='presence'){
       presence=data.presence||{};
+      metrics=data.metrics||{};
       renderObjectList();
+      renderSelected();
       return;
     }
     if(data.action==='select'){
