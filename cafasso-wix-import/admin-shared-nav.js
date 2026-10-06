@@ -13,6 +13,7 @@
     {key:'groups',label:'Grupos',icon:'◉',href:'./grupos.html'},
     {key:'assignments',label:'Asignaciones',icon:'↗',href:'./asignaciones.html'},
     {key:'resources',label:'Recursos',icon:'🗂',href:'./resource-admin.html'},
+    {key:'scenes',label:'Diseño de escenas',icon:'⌖',href:'./scene-layouts.html'},
     {key:'songbook',label:'Cancionero',icon:'🎵',href:'./parish-songbook-admin.html'},
     {key:'reports',label:'Reportes',icon:'📊',href:'./reportes.html'},
     {key:'cafasso',label:'Volver a CAFASSO',icon:'←',href:'./'}
@@ -28,6 +29,7 @@
     if(page==='grupos.html'||page==='grupo.html')return'groups';
     if(page==='asignaciones.html')return'assignments';
     if(page==='resource-admin.html')return'resources';
+    if(page==='scene-layouts.html')return'scenes';
     if(page==='parish-songbook-admin.html')return'songbook';
     if(page==='reportes.html')return'reports';
     return'more';
