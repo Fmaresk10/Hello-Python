@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="https://static.wixstatic.com/media/47bf07_b667216374584c098ec5e04f8c4df87b~mv2.png">
 <link rel="apple-touch-icon-precomposed" sizes="180x180" href="https://static.wixstatic.com/media/47bf07_b667216374584c098ec5e04f8c4df87b~mv2.png">
 <link rel="icon" href="./cafasso-app-icon.svg" type="image/svg+xml">
-<script defer src="./pwa-register.js?v=20261006-01" data-install-ui="off"></script>
+<script defer src="./pwa-register.js?v=20261006-02" data-install-ui="off"></script>
 <style>
 :root{
   --deep:#102f33;
@@ -77,8 +77,8 @@ button{cursor:pointer}
   z-index:1;
   left:50%;
   top:50%;
-  width:max(100vw,150vh);
-  height:max(100vh,66.667vw);
+  width:max(100vw,177.68vh);
+  height:max(100vh,56.28vw);
   transform:translate3d(-50%,-50%,0);
   transform-origin:center;
   container-type:size;
@@ -138,14 +138,14 @@ button{cursor:pointer}
 }
 #loginBox .field{
   position:absolute;
-  left:8.59%;
-  width:22.14%;
-  height:5.47%;
+  left:41.567%;
+  width:25.299%;
+  height:6.376%;
   margin:0;
   pointer-events:auto;
 }
-#loginBox .field:nth-child(1){top:46.48%}
-#loginBox .field:nth-child(2){top:53.13%}
+#loginBox .field:nth-child(1){top:55.367%}
+#loginBox .field:nth-child(2){top:63.337%}
 
 .field label{
   position:absolute;
@@ -159,18 +159,18 @@ button{cursor:pointer}
   border:0;
 }
 #loginBox .field input{
-  width:100%;
-  height:100%;
+  width:calc(100% - .26cqw);
+  height:calc(100% - .26cqw);
   min-height:0;
-  margin:0;
-  padding:0 3.7cqw;
+  margin:.13cqw;
+  padding:0 1.05cqw;
   border:0;
-  border-radius:1.65cqw;
+  border-radius:.66cqw;
   outline:0;
-  background:linear-gradient(90deg,rgba(17,16,13,.08) 0 13%,rgba(17,16,13,.95) 18% 83%,rgba(17,16,13,.10) 88% 100%);
-  color:#f4eee6;
-  caret-color:#f4eee6;
-  box-shadow:none;
+  background:rgba(49,28,18,.96);
+  color:#f2e1c0;
+  caret-color:#f2e1c0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
   font:500 .93cqw/1 Inter,system-ui,sans-serif;
   letter-spacing:.005em;
 }
@@ -184,22 +184,22 @@ button{cursor:pointer}
 #loginBox .field input:-webkit-autofill:hover,
 #loginBox .field input:-webkit-autofill:focus,
 #loginBox .field input:-webkit-autofill:active{
-  -webkit-text-fill-color:#f4eee6!important;
-  caret-color:#f4eee6!important;
+  -webkit-text-fill-color:#f2e1c0!important;
+  caret-color:#f2e1c0!important;
   -webkit-box-shadow:
-    0 0 0 1000px rgb(24,21,17) inset!important;
+    0 0 0 1000px rgb(49,28,18) inset!important;
   box-shadow:
-    0 0 0 1000px rgb(24,21,17) inset!important;
+    0 0 0 1000px rgb(49,28,18) inset!important;
   border-color:transparent!important;
   transition:background-color 9999s ease-out 0s!important;
 }
 
 #go{
   position:absolute;
-  left:8.59%;
-  top:61.23%;
-  width:22.14%;
-  height:5.37%;
+  left:41.507%;
+  top:72.051%;
+  width:25.359%;
+  height:7.970%;
   min-height:0;
   margin:0;
   padding:0;
@@ -221,9 +221,9 @@ button{cursor:pointer}
 .message{
   position:absolute;
   z-index:6;
-  left:8.59%;
-  top:75.1%;
-  width:22.14%;
+  left:41.507%;
+  top:80.65%;
+  width:25.359%;
   display:none;
   margin:0;
   padding:.55cqw .7cqw;
@@ -247,9 +247,9 @@ button{cursor:pointer}
 .session-note{
   position:absolute;
   z-index:6;
-  left:8.59%;
-  top:74.8%;
-  width:22.14%;
+  left:41.507%;
+  top:81.15%;
+  width:25.359%;
   display:none;
   padding:.55cqw .7cqw;
   border:1px solid rgba(233,216,176,.28);
@@ -427,24 +427,60 @@ button{cursor:pointer}
 }
 @media(max-width:760px) and (orientation:portrait){
   /*
-    Mobile usa la misma portada 3:2 aprobada.
-    La escena se desplaza horizontalmente para conservar completo el panel
-    sin estirar la imagen ni perder el mundo formativo del fondo.
+    Escena vertical propia de CAFASSO para mobile.
+    La etapa conserva la proporción 2:3 de la imagen y cubre el viewport;
+    los controles comparten sus mismas coordenadas.
   */
   .login-scene-stage{
-    left:145%;
+    left:50%;
     top:50%;
-    width:max(100vw,150svh);
-    height:max(100svh,66.667vw);
+    width:max(100vw,66.667svh);
+    height:max(100svh,150vw);
     transform:translate3d(-50%,-50%,0);
   }
   .login-scene-image{object-fit:fill}
 
+  #loginBox .field{
+    left:34.65%;
+    width:43.15%;
+    height:4.95%;
+  }
+  #loginBox .field:nth-child(1){top:53.15%}
+  #loginBox .field:nth-child(2){top:59.05%}
+
   #loginBox .field input{
+    width:calc(100% - 4px);
+    height:calc(100% - 4px);
+    margin:2px;
+    padding:0 14px;
+    border:0;
+    border-radius:12px;
+    background:rgba(54,30,19,.96);
+    color:#f2e1c0;
+    caret-color:#f2e1c0;
+    box-shadow:none;
     font-size:16px;
+  }
+  #loginBox .field input::placeholder{color:rgba(242,225,192,.56)}
+  #loginBox .field input:focus{
+    box-shadow:0 0 0 2px rgba(229,199,143,.16);
+  }
+  #loginBox .field input:-webkit-autofill,
+  #loginBox .field input:-webkit-autofill:hover,
+  #loginBox .field input:-webkit-autofill:focus,
+  #loginBox .field input:-webkit-autofill:active{
+    -webkit-text-fill-color:#f2e1c0!important;
+    caret-color:#f2e1c0!important;
+    -webkit-box-shadow:0 0 0 1000px rgb(54,30,19) inset!important;
+    box-shadow:0 0 0 1000px rgb(54,30,19) inset!important;
   }
 
   #go{
+    left:34.65%;
+    top:65.20%;
+    width:43.15%;
+    height:5.55%;
+    border-radius:14px;
     color:transparent;
     background:transparent;
     box-shadow:none;
@@ -457,6 +493,9 @@ button{cursor:pointer}
   }
 
   .message{
+    left:34.65%;
+    top:71.35%;
+    width:43.15%;
     padding:8px 10px;
     border-radius:10px;
     font-size:12px;
@@ -464,6 +503,9 @@ button{cursor:pointer}
   }
 
   .session-note{
+    left:34.65%;
+    top:71.35%;
+    width:43.15%;
     padding:9px 10px;
     border-radius:10px;
   }
@@ -530,8 +572,8 @@ button{cursor:pointer}
 @supports not (height:100svh){
   @media(max-width:760px) and (orientation:portrait){
     .login-scene-stage{
-      width:max(100vw,150vh);
-      height:max(100vh,66.667vw);
+      width:max(100vw,66.667vh);
+      height:max(100vh,150vw);
     }
   }
 }
@@ -545,9 +587,12 @@ button{cursor:pointer}
 <main class="login-shell" id="loginShell">
   <div class="login-scene-stage">
     <picture class="login-scene-picture">
+      <source
+        media="(max-width: 760px) and (orientation: portrait)"
+        srcset="https://static.wixstatic.com/media/47bf07_bf751eae8fd94ca2bd6d956e90b1c191~mv2.png">
       <img
         class="login-scene-image"
-        src="https://static.wixstatic.com/media/47bf07_522938aeaaaa4ff2802523b250fb2a08~mv2.png"
+        src="https://static.wixstatic.com/media/47bf07_8b2cea8727f749adab08dedca208311b~mv2.jpg"
         alt=""
         aria-hidden="true"
         fetchpriority="high"
