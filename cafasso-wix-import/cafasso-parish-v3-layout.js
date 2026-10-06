@@ -10,6 +10,7 @@
   const SPATIAL_SELECTORS = [
     '.cafasso-parroquia__image',
     '.cafasso-space-link--parroquia-patio',
+    '.cafasso-role-tool--parish',
     '.cafasso-parish-lectionary',
     '.cafasso-parish-songbook',
     '.cafasso-parish-candle',
@@ -34,22 +35,19 @@
   }
 
   function referenceSize() {
-    const screenWidth = Math.max(1, Number(window.screen?.width) || viewportSize().width);
-    return { width: screenWidth, height: screenWidth / SCENE_ASPECT };
+    return { width: 1672, height: 941 };
   }
 
   function sizeDesktopScene() {
     if (!desktopScene || isMobile()) return;
     const viewport = viewportSize();
     const base = referenceSize();
-    const scale = Math.max(viewport.width / base.width, viewport.height / base.height);
-    const renderedWidth = base.width * scale;
-    const renderedHeight = base.height * scale;
+    const scale = viewport.width / base.width;
     desktopScene.style.setProperty('--cafasso-parish-base-w', base.width + 'px');
     desktopScene.style.setProperty('--cafasso-parish-base-h', base.height + 'px');
     desktopScene.style.setProperty('--cafasso-parish-scene-scale', String(scale));
-    desktopScene.style.left = ((viewport.width - renderedWidth) / 2) + 'px';
-    desktopScene.style.top = ((viewport.height - renderedHeight) / 2) + 'px';
+    desktopScene.style.left = '0px';
+    desktopScene.style.top = '0px';
     document.documentElement.dataset.cafassoParishSceneScale = scale.toFixed(4);
   }
 
