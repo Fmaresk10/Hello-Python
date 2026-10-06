@@ -341,7 +341,15 @@ async function saveLibraryMap(){
   }
   const ok=await save();
   if(!ok){renderLibraryMap();return}
-  try{localStorage.setItem('cafasso-resources-updated',String(Date.now()))}catch(error){}
+  try{
+    const slots={};
+    resources().forEach(r=>{
+      const slot=slotNumber(r.bibliotecaSlot);
+      if(slot)slots[String(r.id)]=slot;
+    });
+    localStorage.setItem('cafassoLibraryPlacements:v1',JSON.stringify({savedAt:Date.now(),slots}));
+    localStorage.setItem('cafasso-resources-updated',String(Date.now()));
+  }catch(error){}
   libraryOriginal=new Map(resources().map(r=>[String(r.id),slotNumber(r.bibliotecaSlot)]));
   libraryDraft=new Map(libraryOriginal);
   $('libraryMapWrap').classList.remove('show');
