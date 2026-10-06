@@ -80,9 +80,36 @@
       Boolean(window.matchMedia?.('(max-width: 820px), (pointer: coarse)').matches);
   }
 
-  function viewportWidth(){
-    const vv = window.visualViewport;
-    return Math.max(1, Math.round(vv?.width || window.innerWidth || 1));
+  let baseline=null;
+
+  function viewportSize(){
+    const vv=window.visualViewport;
+    return {
+      width:Math.max(1,Math.round(vv?.width||window.innerWidth||1)),
+      height:Math.max(1,Math.round(vv?.height||window.innerHeight||1))
+    };
+  }
+
+  function baselineForViewport(){
+    const current=viewportSize();
+    if(!baseline){
+      baseline={
+        viewportWidth:current.width,
+        viewportHeight:current.height,
+        scale:Math.min(current.width/BASE_W,current.height/BASE_H)
+      };
+      return baseline;
+    }
+    // Recalcular solo si cambia realmente el ancho. Un cambio solo de altura
+    // suele ser barra del navegador / fullscreen y no debe mover la escena.
+    if(Math.abs(current.width-baseline.viewportWidth)>8){
+      baseline={
+        viewportWidth:current.width,
+        viewportHeight:current.height,
+        scale:Math.min(current.width/BASE_W,current.height/BASE_H)
+      };
+    }
+    return baseline;
   }
 
   function ensureStyles(){
@@ -119,11 +146,15 @@
 
   function sizeScene(){
     if(!scene || isMobile()) return;
-    const scale=viewportWidth()/BASE_W;
+    const base=baselineForViewport();
+    const current=viewportSize();
+    const scale=base.scale;
+    const renderedWidth=BASE_W*scale;
     scene.style.setProperty('--cafasso-desktop-scene-scale',String(scale));
-    scene.style.left='0px';
+    scene.style.left=Math.max(0,(current.width-renderedWidth)/2)+'px';
     scene.style.top='0px';
     scene.dataset.cafassoLockedScale=scale.toFixed(6);
+    scene.dataset.cafassoBaselineViewport=base.viewportWidth+'x'+base.viewportHeight;
     document.documentElement.dataset.cafassoDesktopSceneScale=scale.toFixed(6);
   }
 
