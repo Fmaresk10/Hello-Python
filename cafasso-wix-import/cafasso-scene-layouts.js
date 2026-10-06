@@ -14,6 +14,7 @@
       objects:[
         {id:'door-patio',label:'Acceso al Patio',selector:'.cafasso-space-link--casa[data-space="patio"]'},
         {id:'door-resources',label:'Acceso a Recursos',selector:'.cafasso-space-link--house-recursos'},
+        {id:'admin-button',label:'Botón Administración',selector:'.cafasso-admin-button'},
         {id:'bitacora',label:'Bitácora',selector:'.cafasso-bitacora-object'},
         {id:'personal-corner',label:'Mi rincón',selector:'.cafasso-house-corner'},
         {id:'animator-sheet',label:'Ficha del animador',selector:'.cafasso-animator-sheet'},
@@ -29,6 +30,8 @@
         {id:'door-house',label:'Acceso a Casa',selector:'.cafasso-space-link--patio-home'},
         {id:'door-school',label:'Acceso a Escuela',selector:'.cafasso-space-link--patio-escuela'},
         {id:'door-parish',label:'Acceso a Parroquia',selector:'.cafasso-space-link--patio-parroquia'},
+        {id:'admin-groups',label:'Botón Grupos',selector:'.cafasso-role-tool--patio'},
+        {id:'young-person',label:'Joven del Patio',selector:'.cafasso-patio-encounter-alone'},
         {id:'secret',label:'Secreto del Patio',selector:'.cafasso-patio-secret'},
         {id:'presence-ball',label:'Pelota Presencia',selector:'.cafasso-presencia-ball'},
         {id:'heart',label:'Huella del corazón',selector:'.cafasso-corazon-huella'}
@@ -51,6 +54,7 @@
       sceneSelectors:['.cafasso-parish-panorama','.cafasso-parish-desktop-scene','.cafasso-parroquia'],
       objects:[
         {id:'door-patio',label:'Acceso al Patio',selector:'.cafasso-space-link--parroquia-patio'},
+        {id:'admin-songbook',label:'Botón Cancionero',selector:'.cafasso-role-tool--parish'},
         {id:'lectionary',label:'Palabra del día / Leccionario',selector:'.cafasso-parish-lectionary'},
         {id:'songbook',label:'Cancionero',selector:'.cafasso-parish-songbook'},
         {id:'candle',label:'Vela',selector:'.cafasso-parish-candle'},
