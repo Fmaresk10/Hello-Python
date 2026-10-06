@@ -28,7 +28,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 .scale-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;margin:9px 0 12px;color:#5d6a78;font-size:9px;font-weight:800}.scale-row input{width:100%}
 .nudge{display:grid;grid-template-columns:repeat(3,44px);justify-content:center;gap:5px;margin:8px 0 13px}.nudge button{height:40px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--navy);font-size:18px;font-weight:900;cursor:pointer}.nudge button:hover{background:#FFF7D8}.nudge .blank{visibility:hidden}.control-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.control-actions .btn{padding:9px;font-size:10px}.help{margin-top:11px;padding:10px 11px;border-radius:11px;background:#F1F6F4;color:#52706A;font-size:9px;line-height:1.45}
 .preview-card{min-width:0;overflow:hidden}.preview-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line)}.preview-head strong{color:var(--navy);font:18px Georgia,serif}.preview-head span{color:var(--muted);font-size:9px}.preview-stage{display:grid;place-items:center;min-height:520px;padding:13px;background:radial-gradient(circle at 50% 40%,rgba(242,201,76,.08),transparent 52%),#173033;overflow:auto}
-.frame-shell{position:relative;width:100%;overflow:hidden;border:1px solid rgba(255,237,191,.25);border-radius:12px;background:#0e2427;box-shadow:0 18px 48px rgba(0,0,0,.28)}.frame-shell.desktop{aspect-ratio:var(--cafasso-editor-desktop-aspect,16/9)}.frame-shell.mobile{width:390px;max-width:100%;height:min(780px,calc(100vh - 180px));min-height:640px;border-radius:24px}.frame-shell iframe{display:block;width:100%;height:100%;border:0;background:#102f33}
+.frame-shell{position:relative;width:100%;overflow:hidden;border:1px solid rgba(255,237,191,.25);border-radius:12px;background:#0e2427;box-shadow:0 18px 48px rgba(0,0,0,.28)}.frame-shell.desktop{aspect-ratio:var(--cafasso-editor-desktop-aspect,16/9)}.frame-shell.mobile{width:390px;max-width:100%;height:min(780px,calc(100vh - 180px));min-height:640px;border-radius:24px}.frame-shell iframe{display:block;border:0;background:#102f33}.frame-shell.mobile iframe{width:100%;height:100%}.frame-shell.desktop iframe{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
 .preview-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-top:1px solid var(--line);color:var(--muted);font-size:9px}.dirty-dot{display:inline-block;width:7px;height:7px;margin-right:5px;border-radius:50%;background:#bfc4c8;vertical-align:0}.dirty-dot.on{background:#d9a91d;box-shadow:0 0 0 3px rgba(217,169,29,.13)}
 @media(max-width:1080px){.shell{grid-template-columns:86px minmax(0,1fr)}.brand div,.side-foot{display:none}.brand{justify-content:center}.menu a{text-align:center;padding:12px 5px}.workspace{grid-template-columns:270px minmax(0,1fr)}}
 @media(max-width:780px){.shell{display:block}.side{position:static;height:auto;padding:10px 12px;display:flex;align-items:center;gap:8px}.brand img{width:34px;height:40px}.brand div{display:none}.menu{margin:0;display:flex;overflow:auto;gap:4px}.menu a{white-space:nowrap;padding:9px 10px;font-size:11px}main{padding:18px 10px 30px}.head{flex-direction:column}.head h1{font-size:30px}.toolbar{align-items:flex-start}.workspace{grid-template-columns:1fr}.panel{position:static}.object-list{display:flex;overflow:auto;max-height:none}.object{flex:0 0 190px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}.selected-name,.help{grid-column:1/-1}.preview-stage{min-height:460px;padding:7px}.frame-shell.mobile{height:700px}.side-foot{display:none}}
@@ -81,7 +81,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     </aside>
 
     <section class="preview-card">
-      <div class="preview-head"><strong id="previewTitle">Casa · Escritorio</strong><span>Vista real · misma proporción que tu pantalla actual</span></div>
+      <div class="preview-head"><strong id="previewTitle">Casa · Escritorio</strong><span>Vista espejo · mismo viewport interno que CAFASSO real</span></div>
       <div class="preview-stage"><div class="frame-shell desktop" id="frameShell"><iframe id="preview" title="Vista previa editable de CAFASSO"></iframe></div></div>
       <div class="preview-foot"><span><i class="dirty-dot" id="dirtyDot"></i><span id="dirtyText">Sin cambios pendientes</span></span><span id="presenceText">Cargando objetos…</span></div>
     </section>
@@ -257,19 +257,44 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       space,
       sceneEditor:'1',
       sceneProfile:profile,
-      __cafassoBuild:'1167'
+      __cafassoBuild:'1168'
     });
     return './world.html?'+query.toString();
   }
 
+  function realViewportSize(){
+    const vv=window.visualViewport;
+    return {
+      width:Math.max(1,Math.round(vv?.width||window.innerWidth||document.documentElement.clientWidth||1)),
+      height:Math.max(1,Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||1))
+    };
+  }
+
   function syncDesktopPreviewAspect(){
     const shell=$('frameShell');
-    if(!shell||profile!=='desktop')return;
-    const vv=window.visualViewport;
-    const width=Math.max(1,Math.round(vv?.width||window.innerWidth||document.documentElement.clientWidth||1));
-    const height=Math.max(1,Math.round(vv?.height||window.innerHeight||document.documentElement.clientHeight||1));
-    shell.style.setProperty('--cafasso-editor-desktop-aspect',width+' / '+height);
-    shell.dataset.viewportReference=width+'×'+height;
+    const frame=$('preview');
+    if(!shell||!frame||profile!=='desktop')return;
+    const viewport=realViewportSize();
+    shell.style.setProperty('--cafasso-editor-desktop-aspect',viewport.width+' / '+viewport.height);
+    shell.dataset.viewportReference=viewport.width+'×'+viewport.height;
+
+    const shellWidth=Math.max(1,shell.clientWidth||shell.getBoundingClientRect().width||1);
+    const scale=shellWidth/viewport.width;
+    frame.style.width=viewport.width+'px';
+    frame.style.height=viewport.height+'px';
+    frame.style.transform='scale('+scale+')';
+    frame.dataset.layoutViewport=viewport.width+'×'+viewport.height;
+    frame.dataset.previewScale=String(scale);
+  }
+
+  function resetMobilePreviewFrame(){
+    const frame=$('preview');
+    if(!frame)return;
+    frame.style.removeProperty('width');
+    frame.style.removeProperty('height');
+    frame.style.removeProperty('transform');
+    delete frame.dataset.layoutViewport;
+    delete frame.dataset.previewScale;
   }
 
   function loadFrame(){
@@ -278,7 +303,8 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     const shell=$('frameShell');
     shell.classList.toggle('desktop',profile==='desktop');
     shell.classList.toggle('mobile',profile==='mobile');
-    syncDesktopPreviewAspect();
+    if(profile==='desktop')syncDesktopPreviewAspect();
+    else resetMobilePreviewFrame();
     $('preview').src=frameUrl();
     $('presenceText').textContent='Cargando objetos…';
   }
@@ -407,13 +433,14 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     $('resetScene').addEventListener('click',resetScene);
     $('save').addEventListener('click',save);
     $('discard').addEventListener('click',discard);
-    $('preview').addEventListener('load',()=>setTimeout(syncPreviewState,120));
+    $('preview').addEventListener('load',()=>setTimeout(()=>{
+      if(profile==='desktop')syncDesktopPreviewAspect();
+      syncPreviewState();
+    },120));
     window.addEventListener('message',handleEditorMessage);
     window.addEventListener('resize',()=>{
       if(profile!=='desktop')return;
       syncDesktopPreviewAspect();
-      clearTimeout(window.__cafassoSceneEditorResizeTimer);
-      window.__cafassoSceneEditorResizeTimer=setTimeout(loadFrame,120);
     },{passive:true});
     window.visualViewport?.addEventListener('resize',()=>{
       if(profile!=='desktop')return;
