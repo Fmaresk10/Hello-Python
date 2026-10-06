@@ -66,7 +66,8 @@
       label:'Recursos',
       sceneSelectors:['.cafasso-resources-panorama','.cafasso-recursos'],
       objects:[
-        {id:'door-house',label:'Volver a Casa',selector:'.cafasso-space-link--recursos-home'}
+        {id:'door-house',label:'Volver a Casa',selector:'.cafasso-space-link--recursos-home'},
+        {id:'admin-library',label:'Botón Biblioteca',selector:'.cafasso-role-tool--resources'}
       ]
     }
   };
@@ -256,7 +257,7 @@
     style.id='cafassoSceneEditorRuntimeStyles';
     style.textContent=[
       'html[data-cafasso-scene-editor="1"] body{user-select:none!important}',
-      'html[data-cafasso-scene-editor="1"] .cafasso-admin-button,html[data-cafasso-scene-editor="1"] .cafasso-admin-home-link,html[data-cafasso-scene-editor="1"] .cafasso-global-counters,html[data-cafasso-scene-editor="1"] .cafasso-level-pill,html[data-cafasso-scene-editor="1"] .cafasso-profile-global-anchor{opacity:.18!important;pointer-events:none!important}',
+      'html[data-cafasso-scene-editor="1"] .cafasso-admin-home-link,html[data-cafasso-scene-editor="1"] .cafasso-global-counters,html[data-cafasso-scene-editor="1"] .cafasso-level-pill,html[data-cafasso-scene-editor="1"] .cafasso-profile-global-anchor{opacity:.18!important;pointer-events:none!important}',
       'html[data-cafasso-scene-editor="1"] .cafasso-school-board,html[data-cafasso-scene-editor="1"] .cafasso-school-resume{display:block!important;visibility:visible!important;opacity:1!important}',
       'html[data-cafasso-scene-editor="1"] [data-cafasso-scene-object]{outline:1px dashed rgba(255,232,151,.76)!important;outline-offset:3px!important;cursor:grab!important;pointer-events:auto!important}',
       'html[data-cafasso-scene-editor="1"] [data-cafasso-scene-object].cafasso-scene-editor-selected{outline:3px solid #f2c94c!important;outline-offset:5px!important;filter:drop-shadow(0 0 8px rgba(242,201,76,.55))!important;z-index:999!important}',
