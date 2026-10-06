@@ -21,6 +21,7 @@
   let parish = null;
   let desktopScene = null;
   let sceneObserver = null;
+  let desktopBaseline = null;
 
   function isMobile() {
     return document.documentElement.classList.contains('cafasso-mobile');
@@ -42,11 +43,25 @@
     if (!desktopScene || isMobile()) return;
     const viewport = viewportSize();
     const base = referenceSize();
-    const scale = viewport.width / base.width;
+    if(!desktopBaseline){
+      desktopBaseline={
+        width:viewport.width,
+        height:viewport.height,
+        scale:Math.min(viewport.width/base.width,viewport.height/base.height)
+      };
+    }else if(Math.abs(viewport.width-desktopBaseline.width)>8){
+      desktopBaseline={
+        width:viewport.width,
+        height:viewport.height,
+        scale:Math.min(viewport.width/base.width,viewport.height/base.height)
+      };
+    }
+    const scale=desktopBaseline.scale;
+    const renderedWidth=base.width*scale;
     desktopScene.style.setProperty('--cafasso-parish-base-w', base.width + 'px');
     desktopScene.style.setProperty('--cafasso-parish-base-h', base.height + 'px');
     desktopScene.style.setProperty('--cafasso-parish-scene-scale', String(scale));
-    desktopScene.style.left = '0px';
+    desktopScene.style.left = Math.max(0,(viewport.width-renderedWidth)/2) + 'px';
     desktopScene.style.top = '0px';
     document.documentElement.dataset.cafassoParishSceneScale = scale.toFixed(4);
   }
