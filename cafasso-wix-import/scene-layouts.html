@@ -76,7 +76,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
           <span class="blank"></span><button type="button" data-nudge="0,0.25" aria-label="Bajar">↓</button><span class="blank"></span>
         </div>
         <div class="control-actions"><button class="btn" id="resetObject" type="button">Restablecer objeto</button><button class="btn danger" id="resetScene" type="button">Restablecer escena</button></div>
-        <div class="help">En Escritorio, el rectángulo verde marca la zona segura común entre pantallas 4:3 y 21:9. Si un objeto aparece como Parcial o Fuera, puede recortarse en otra pantalla. Mobile se ajusta por separado. Las flechas mueven de a 0,25%.</div>
+        <div class="help">En Escritorio, el rectángulo verde es la parte que está realmente visible en tu ventana actual y que además sigue siendo segura hasta 21:9. Con la escena anclada arriba, el recorte ocurre principalmente abajo. Mobile se ajusta por separado.</div>
       </div>
     </aside>
 
@@ -89,7 +89,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 </main>
 </div>
 
-<script src="./cafasso-scene-layouts.js?v=7"></script>
+<script src="./cafasso-scene-layouts.js?v=8"></script>
 <script>
 (()=>{
   const api=window.CafassoSceneLayouts;
@@ -257,7 +257,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       space,
       sceneEditor:'1',
       sceneProfile:profile,
-      __cafassoBuild:'1170'
+      __cafassoBuild:'1171'
     });
     return './world.html?'+query.toString();
   }
