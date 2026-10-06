@@ -65,7 +65,7 @@
     },
     recursos:{
       label:'Recursos',
-      sceneSelectors:['.cafasso-resources-panorama','.cafasso-recursos'],
+      sceneSelectors:['.cafasso-resources-panorama','.cafasso-resources-desktop-scene','.cafasso-recursos'],
       objects:[
         {id:'door-house',label:'Volver a Casa',selector:'.cafasso-space-link--recursos-home'},
         {id:'admin-library',label:'Botón Biblioteca',selector:'.cafasso-role-tool--resources'}
