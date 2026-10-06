@@ -4,6 +4,7 @@
   const STATIC_CATALOG = './data/resources.json';
   const COLORS = ['#744936','#3f5e53','#6c5a38','#584967','#7b3f45','#355765','#6d513f','#4f603f','#734f2f','#4f4d6f'];
   const REFRESH_MS = 30000;
+  const PLACEMENT_CACHE_KEY='cafassoLibraryPlacements:v1';
   let loadInFlight = null;
 
   // Sistema de coordenadas fijo sobre la imagen original de Biblioteca: 1672 x 941 px.
@@ -211,20 +212,65 @@
 
   function mergeResources(staticResources, liveResources) {
     const merged = new Map();
-    staticResources.forEach((resource, index) => {
-      const normalized = normalizeCatalogResource(resource, index);
-      if (normalized) merged.set(String(normalized.id), normalized);
-    });
+    const liveIds = new Set();
+
     liveResources.forEach(resource => {
       if (!resource) return;
       const key = String(resource.id);
-      const previous = merged.get(key) || {};
-      merged.set(key, { ...previous, ...resource });
+      liveIds.add(key);
+      merged.set(key, { ...resource, __cafassoSource:'wix-live' });
     });
+
+    staticResources.forEach((resource, index) => {
+      const normalized = normalizeCatalogResource(resource, index);
+      if (!normalized) return;
+      const key = String(normalized.id);
+
+      // If Wix already returned this resource, Wix owns all mutable library state
+      // (especially bibliotecaSlot and mostrarEnBiblioteca). Static data may only
+      // fill descriptive fields that are genuinely absent.
+      if (liveIds.has(key)) {
+        const live = merged.get(key) || {};
+        merged.set(key, {
+          ...normalized,
+          ...live,
+          bibliotecaSlot: live.bibliotecaSlot,
+          mostrarEnBiblioteca: live.mostrarEnBiblioteca,
+          disponibleParaCursos: live.disponibleParaCursos,
+          __cafassoSource:'wix-live'
+        });
+        return;
+      }
+
+      merged.set(key, { ...normalized, __cafassoSource:'static-fallback' });
+    });
+
     return Array.from(merged.values()).sort((a, b) => {
       const aSlot = Number(a.bibliotecaSlot) || 999;
       const bSlot = Number(b.bibliotecaSlot) || 999;
       return aSlot - bSlot;
+    });
+  }
+
+  function placementSnapshot() {
+    try {
+      const data=JSON.parse(localStorage.getItem(PLACEMENT_CACHE_KEY)||'null');
+      if(!data||!data.slots||typeof data.slots!=='object')return null;
+      if(Date.now()-Number(data.savedAt||0)>24*60*60*1000)return null;
+      return data;
+    } catch(error) {
+      return null;
+    }
+  }
+
+  function applyPlacementSnapshot(resources=[]) {
+    const snapshot=placementSnapshot();
+    if(!snapshot)return resources;
+    return resources.map(resource=>{
+      const id=String(resource?.id||'');
+      if(!id||!Object.prototype.hasOwnProperty.call(snapshot.slots,id))return resource;
+      const slot=Number(snapshot.slots[id]);
+      return {...resource,bibliotecaSlot:Number.isInteger(slot)&&slot>=1&&slot<=BOOK_SLOTS.length?slot:resource.bibliotecaSlot};
     });
   }
 
@@ -560,7 +606,7 @@
     alignShelfToLibraryImage();
 
     const [staticResources, liveResources] = await Promise.all([loadStatic(), loadLive()]);
-    const mergedResources = mergeResources(staticResources, liveResources);
+    const mergedResources = applyPlacementSnapshot(mergeResources(staticResources, liveResources));
     const source = liveResources.length
       ? (staticResources.length ? 'wix-live+static' : 'wix-live')
       : 'static';
