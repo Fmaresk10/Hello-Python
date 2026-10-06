@@ -14,6 +14,8 @@
   let syncTimer=0;
   let closeTimer=0;
   let globalLoadState={status:'idle',count:0,error:'',loadedAt:0};
+  const videoBlobCache=new Map();
+  const GLOBAL_WARM_CACHE_KEY='cafassoHologramWarmRules:v1';
   const GLOBAL_CONFIG_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
   const GLOBAL_CONFIG_TITLE='__CAFASSO_GLOBAL_HOLOGRAMS__';
   const PREVIEW_MODE=new URLSearchParams(location.search).get('holoPreview')==='1';
@@ -358,22 +360,149 @@
     return spot;
   }
 
+  function ensureVideoConnection(){
+    if(document.querySelector('link[data-cafasso-holo-video-preconnect]'))return;
+    const link=document.createElement('link');
+    link.rel='preconnect';
+    link.href='https://video.wixstatic.com';
+    link.crossOrigin='anonymous';
+    link.dataset.cafassoHoloVideoPreconnect='1';
+    document.head.appendChild(link);
+  }
+
   function wixMp4Url(fileId,quality='720p'){
     const id=normalize(fileId);
     if(!id)return'';
     return 'https://video.wixstatic.com/video/'+encodeURIComponent(id)+'/'+quality+'/mp4/file.mp4';
   }
 
+  function preferredVideoUrl(config={}){
+    return wixMp4Url(config.videoFileId,'720p')||
+      normalize(config.videoMp4)||
+      normalize(config.videoWebm)||
+      normalize(config.videoMov)||
+      '';
+  }
+
+  function preloadVideoHint(url){
+    if(!url||document.querySelector('link[data-cafasso-holo-preload="'+CSS.escape(url)+'"]'))return;
+    try{
+      const link=document.createElement('link');
+      link.rel='preload';
+      link.as='video';
+      link.href=url;
+      link.crossOrigin='anonymous';
+      link.dataset.cafassoHoloPreload=url;
+      document.head.appendChild(link);
+    }catch(error){}
+  }
+
+  function preloadVideoBlob(config={}){
+    const url=preferredVideoUrl(config);
+    if(!url)return Promise.resolve('');
+    ensureVideoConnection();
+
+    const cached=videoBlobCache.get(url);
+    if(cached?.state==='ready'&&cached.objectUrl)return Promise.resolve(cached.objectUrl);
+    if(cached?.promise)return cached.promise;
+
+    preloadVideoHint(url);
+
+    const controller=typeof AbortController==='function'?new AbortController():null;
+    const timer=controller?setTimeout(()=>controller.abort(),15000):0;
+    const promise=fetch(url,{
+      method:'GET',
+      mode:'cors',
+      credentials:'omit',
+      cache:'force-cache',
+      signal:controller?.signal
+    }).then(response=>{
+      if(!response.ok)throw new Error('HTTP '+response.status);
+      return response.blob();
+    }).then(blob=>{
+      if(!blob||blob.size<1024)throw new Error('video vacío');
+      const objectUrl=URL.createObjectURL(blob);
+      videoBlobCache.set(url,{state:'ready',objectUrl,size:blob.size,promise:Promise.resolve(objectUrl)});
+      return objectUrl;
+    }).catch(error=>{
+      videoBlobCache.set(url,{state:'error',error:String(error?.message||error),promise:null});
+      console.warn('CAFASSO hologram video preload',error);
+      return '';
+    }).finally(()=>{if(timer)clearTimeout(timer)});
+
+    videoBlobCache.set(url,{state:'loading',promise});
+    return promise;
+  }
+
+  function preparedVideoUrl(config={}){
+    const url=preferredVideoUrl(config);
+    if(!url)return'';
+    const cached=videoBlobCache.get(url);
+    return cached?.state==='ready'?normalize(cached.objectUrl):'';
+  }
+
+  function withPreparedVideo(config={}){
+    const prepared=preparedVideoUrl(config);
+    return prepared?{...config,__cafassoPreparedVideoUrl:prepared}:{...config};
+  }
+
+  function warmRuleSnapshot(rule={}){
+    return {
+      id:rule.id||'',trigger:rule.trigger||'',space:rule.space||'',
+      courseId:rule.courseId||'',moduleId:rule.moduleId||'',
+      missionId:rule.missionId||'',blockId:rule.blockId||'',
+      videoFileId:rule.videoFileId||'',videoMp4:rule.videoMp4||'',
+      videoWebm:rule.videoWebm||'',videoMov:rule.videoMov||'',
+      removeBackground:rule.removeBackground!==false
+    };
+  }
+
+  function saveWarmRules(list=[]){
+    try{
+      const compact=list.filter(item=>preferredVideoUrl(item)).map(warmRuleSnapshot).slice(0,30);
+      localStorage.setItem(GLOBAL_WARM_CACHE_KEY,JSON.stringify({savedAt:Date.now(),rules:compact}));
+    }catch(error){}
+  }
+
+  function cachedWarmRules(){
+    try{
+      const data=JSON.parse(localStorage.getItem(GLOBAL_WARM_CACHE_KEY)||'null');
+      if(!data||!Array.isArray(data.rules))return[];
+      if(Date.now()-Number(data.savedAt||0)>7*24*60*60*1000)return[];
+      return data.rules;
+    }catch(error){return[]}
+  }
+
+  function relevantRule(pool=[]){
+    const ctx=context();
+    const triggers=ctx.view==='module'
+      ?(ctx.missionId?['mission-enter','module-enter']:['module-enter'])
+      :(ctx.space?['space-enter']:[]);
+    for(const trigger of triggers){
+      const found=pool.find(item=>preferredVideoUrl(item)&&matches(item,trigger,ctx,{}));
+      if(found)return found;
+    }
+    return pool.find(item=>preferredVideoUrl(item)&&(!item.space||normalize(item.space).toLowerCase()===normalize(ctx.space).toLowerCase()))||null;
+  }
+
+  function warmRelevantVideo(pool=globalRules){
+    const rule=relevantRule(Array.isArray(pool)?pool:[]);
+    if(!rule)return Promise.resolve('');
+    return preloadVideoBlob(rule);
+  }
+
   function mediaHtml(config){
     const sources=[];
+    const prepared=normalize(config.__cafassoPreparedVideoUrl);
+    if(prepared)sources.push('<source src="'+esc(prepared)+'" type="video/mp4">');
     const wixMp4=wixMp4Url(config.videoFileId,'720p');
-    if(wixMp4)sources.push('<source src="'+esc(wixMp4)+'" type="video/mp4">');
+    if(!prepared&&wixMp4)sources.push('<source src="'+esc(wixMp4)+'" type="video/mp4">');
     if(normalize(config.videoWebm))sources.push('<source src="'+esc(config.videoWebm)+'" type="video/webm">');
     if(normalize(config.videoMov))sources.push('<source src="'+esc(config.videoMov)+'" type="video/quicktime">');
     if(normalize(config.videoMp4))sources.push('<source src="'+esc(config.videoMp4)+'" type="video/mp4">');
     if(sources.length){
       const cors=config.removeBackground?'crossorigin="anonymous" ':'';
-      return '<video '+cors+'playsinline preload="metadata" '+(config.loop?'loop ':'')+(config.muted?'muted ':'')+(normalize(config.poster)?'poster="'+esc(config.poster)+'" ':'')+'>'+sources.join('')+'</video>';
+      return '<video '+cors+'playsinline preload="auto" '+(config.loop?'loop ':'')+(config.muted?'muted ':'')+(normalize(config.poster)?'poster="'+esc(config.poster)+'" ':'')+'>'+sources.join('')+'</video>';
     }
     if(normalize(config.poster))return '<img src="'+esc(config.poster)+'" alt="">';
     return '<div class="cafasso-holo-fallback" aria-hidden="true"><div class="cafasso-holo-fallback__head"></div><div class="cafasso-holo-fallback__body"></div></div>';
@@ -383,6 +512,7 @@
     installStyles();
     close({immediate:true});
     removeSignal();
+    config=withPreparedVideo(config);
     current={...config};
     const stage=document.createElement('section');
     stage.id=STAGE_ID;
@@ -390,7 +520,7 @@
     stage.setAttribute('role','dialog');
     stage.setAttribute('aria-modal','true');
     stage.setAttribute('aria-label','Mensaje holográfico del formador');
-    const hasVideo=Boolean(normalize(config.videoWebm)||normalize(config.videoMov)||normalize(config.videoMp4));
+    const hasVideo=Boolean(normalize(config.videoFileId)||normalize(config.videoWebm)||normalize(config.videoMov)||normalize(config.videoMp4)||normalize(config.__cafassoPreparedVideoUrl));
     stage.innerHTML=`
       <button class="cafasso-holo-close" type="button" aria-label="Cerrar holograma">×</button>
       <div class="cafasso-holo-scene">
@@ -482,6 +612,8 @@
   function announce(config={}){
     installStyles();
     if(!config||hasSeen(config))return null;
+    warmCutoutEngine();
+    preloadVideoBlob(config);
     removeSignal();
     const signal=document.createElement('button');
     signal.id=SIGNAL_ID;
@@ -621,7 +753,9 @@
         // Critical: the first space check may have happened while rules were still empty.
         // Reset the key so Casa/Patio/etc. is evaluated again now that rules exist.
         lastSpaceKey='';
+        saveWarmRules(globalRules);
         warmCutoutEngine();
+        warmRelevantVideo(globalRules);
         scheduleSync();
         try{window.dispatchEvent(new CustomEvent('cafasso:hologram-rules-ready',{detail:{count:globalRules.length}}))}catch(error){}
         return globalRules;
@@ -675,7 +809,7 @@
   }
 
   window.CafassoHologram={
-    show,announce,close,register,fire,context,loadGlobalRules,wixMp4Url,
+    show,announce,close,register,fire,context,loadGlobalRules,wixMp4Url,preloadVideoBlob,warmRelevantVideo,
     async refresh(){lastSpaceKey='';await loadGlobalRules({attempts:3});syncExperience();return globalRules.slice()},
     get globalRules(){return globalRules.slice()},
     get loadState(){return {...globalLoadState}},
@@ -690,8 +824,22 @@
   window.addEventListener('pagehide',()=>close({immediate:true}));
   window.addEventListener('cafasso:navigate',()=>close({immediate:true}));
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{installStyles();warmCutoutEngine();loadGlobalRules({attempts:3});scheduleSync();previewFromStorage();},{once:true});
-  else {installStyles();warmCutoutEngine();loadGlobalRules({attempts:3});scheduleSync();previewFromStorage()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{
+    installStyles();
+    warmCutoutEngine();
+    warmRelevantVideo(cachedWarmRules());
+    loadGlobalRules({attempts:3});
+    scheduleSync();
+    previewFromStorage();
+  },{once:true});
+  else {
+    installStyles();
+    warmCutoutEngine();
+    warmRelevantVideo(cachedWarmRules());
+    loadGlobalRules({attempts:3});
+    scheduleSync();
+    previewFromStorage();
+  }
 
   const observer=new MutationObserver(()=>scheduleSync());
   const observe=()=>{const host=document.getElementById('main')||document.getElementById('app');if(host)observer.observe(host,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});else setTimeout(observe,180);};
