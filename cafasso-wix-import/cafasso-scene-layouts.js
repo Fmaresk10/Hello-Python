@@ -338,6 +338,10 @@
       const width=Math.max(1,rect.width);
       const height=Math.max(1,rect.height);
       const initial=storedValue(space,currentProfile(),spec.id)||{dx:0,dy:0,scale:1};
+      if(!Number.isFinite(Number(initial.sizePct))||Number(initial.sizePct)<=0){
+        const basePct=measureBaseWidthPct(space,node);
+        if(basePct>0)initial.sizePct=round(basePct*(Number(initial.scale)||1));
+      }
       const startX=event.clientX,startY=event.clientY;
       const pointerId=event.pointerId;
       try{node.setPointerCapture(pointerId)}catch(error){}
@@ -348,7 +352,8 @@
         const next={
           dx:round(clamp(initial.dx+(moveEvent.clientX-startX)/width*100,-100,100)),
           dy:round(clamp(initial.dy+(moveEvent.clientY-startY)/height*100,-100,100)),
-          scale:initial.scale
+          scale:initial.scale,
+          ...(Number.isFinite(Number(initial.sizePct))&&Number(initial.sizePct)>0?{sizePct:initial.sizePct}:{})
         };
         const layouts=normalizeLayouts(state.preview||state.layouts);
         if(!layouts.spaces[space])layouts.spaces[space]={};
@@ -401,7 +406,7 @@
       const key=JSON.stringify(presence);
       if(state.editorPresence[space]!==key){
         state.editorPresence[space]=key;
-        postEditor({action:'presence',presence});
+        postEditor({action:'presence',presence,metrics});
       }
     }
   }
