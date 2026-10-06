@@ -91,11 +91,15 @@
         REGISTRY[space].objects.forEach(spec=>{
           const raw=sourceProfile[spec.id];
           if(!raw||typeof raw!=='object')return;
-          target[spec.id]={
+          const item={
             dx:round(clamp(raw.dx,-100,100)),
             dy:round(clamp(raw.dy,-100,100)),
             scale:Math.round(clamp(raw.scale||1,.35,2.5)*1000)/1000
           };
+          if(Number.isFinite(Number(raw.sizePct))&&Number(raw.sizePct)>0){
+            item.sizePct=round(clamp(raw.sizePct,.05,100));
+          }
+          target[spec.id]=item;
         });
         if(Object.keys(target).length){
           if(!out.spaces[space])out.spaces[space]={};
@@ -218,11 +222,13 @@
   function storedValue(space,profile,id,layouts){
     const raw=(layouts||sourceLayouts()).spaces?.[space]?.[profile]?.[id];
     if(!raw)return null;
-    return {
+    const value={
       dx:round(clamp(raw.dx,-100,100)),
       dy:round(clamp(raw.dy,-100,100)),
       scale:Math.round(clamp(raw.scale||1,.35,2.5)*1000)/1000
     };
+    if(Number.isFinite(Number(raw.sizePct))&&Number(raw.sizePct)>0)value.sizePct=round(clamp(raw.sizePct,.05,100));
+    return value;
   }
 
   function clearApplied(node){
@@ -230,6 +236,26 @@
     node.style.removeProperty('translate');
     node.style.removeProperty('scale');
     delete node.dataset.cafassoSceneLayoutApplied;
+  }
+
+  function measureBaseWidthPct(space,node){
+    const scene=sceneNode(space);
+    if(!scene||!node)return 0;
+    const oldValue=node.style.getPropertyValue('scale');
+    const oldPriority=node.style.getPropertyPriority('scale');
+    node.style.setProperty('scale','1','important');
+    const sceneWidth=Math.max(1,scene.getBoundingClientRect().width||scene.clientWidth||1);
+    const nodeWidth=Math.max(0,node.getBoundingClientRect().width||0);
+    if(oldValue)node.style.setProperty('scale',oldValue,oldPriority||'');
+    else node.style.removeProperty('scale');
+    return round(nodeWidth/sceneWidth*100);
+  }
+
+  function measureVisualWidthPct(space,node){
+    const scene=sceneNode(space);
+    if(!scene||!node)return 0;
+    const sceneWidth=Math.max(1,scene.getBoundingClientRect().width||scene.clientWidth||1);
+    return round(Math.max(0,node.getBoundingClientRect().width||0)/sceneWidth*100);
   }
 
   function applyOne(space,profile,spec,node,layouts){
@@ -246,7 +272,12 @@
     const tx=width*layout.dx/100;
     const ty=height*layout.dy/100;
     node.style.setProperty('translate',round(tx)+'px '+round(ty)+'px','important');
-    node.style.setProperty('scale',String(layout.scale),'important');
+    let factor=layout.scale;
+    if(Number.isFinite(Number(layout.sizePct))&&Number(layout.sizePct)>0){
+      const basePct=measureBaseWidthPct(space,node);
+      if(basePct>0)factor=clamp(Number(layout.sizePct)/basePct,.1,6);
+    }
+    node.style.setProperty('scale',String(Math.round(factor*10000)/10000),'important');
     node.dataset.cafassoSceneLayoutApplied='1';
   }
 
@@ -350,12 +381,19 @@
     const profile=currentProfile();
     const layouts=sourceLayouts();
     const presence={};
+    const metrics={};
     REGISTRY[space].objects.forEach(spec=>{
       const node=findNode(space,spec);
       presence[spec.id]=Boolean(node);
       if(node){
         applyOne(space,profile,spec,node,layouts);
         bindEditorNode(space,profile,spec,node);
+        if(EDITOR){
+          metrics[spec.id]={
+            baseSizePct:measureBaseWidthPct(space,node),
+            visualSizePct:measureVisualWidthPct(space,node)
+          };
+        }
       }
     });
     if(EDITOR){
