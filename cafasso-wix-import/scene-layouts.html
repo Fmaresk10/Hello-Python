@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="es">
+<head>
+<script src="./auth-guard.js?v=20260923-2"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<title>CAFASSO · Diseño de escenas</title>
+<style>
+:root{--navy:#0F2D4D;--cream:#F6EFE4;--gold:#F2C94C;--green:#2E7D59;--red:#A64747;--muted:#687386;--card:#FFFDF9;--line:#E8DCCB;--ink:#11233A}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--cream);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input{font:inherit}
+.shell{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;padding:26px 20px;background:linear-gradient(180deg,var(--navy),#0A2440);color:#fff}
+.brand{display:flex;gap:12px;align-items:center;color:#fff;text-decoration:none}.brand img{width:42px;height:50px;object-fit:contain}.brand b{font:25px Georgia,serif}.brand small{display:block;opacity:.72;margin-top:4px}
+.menu{display:grid;gap:8px;margin-top:32px}.menu a{padding:12px 13px;border-radius:13px;color:#fff;text-decoration:none;font-weight:800}.menu a.active,.menu a:hover{background:rgba(255,255,255,.11)}
+.side-foot{position:absolute;left:20px;right:20px;bottom:24px}.motto{margin-bottom:16px;color:#F7D276;font:italic 14px/1.45 Georgia,serif}.back{display:block;padding-top:16px;border-top:1px solid rgba(255,255,255,.18);color:#fff;text-decoration:none;font-weight:700}
+main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:18px}.eyebrow{color:#B77D00;font-size:11px;font-weight:850;letter-spacing:.13em;text-transform:uppercase}.head h1{margin:7px 0 5px;color:var(--navy);font:37px Georgia,serif}.head p{max-width:860px;margin:0;color:var(--muted);line-height:1.5}.status{flex:0 0 auto;padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--muted);font-size:11px;font-weight:850}.status.ok{color:var(--green)}.status.warn{color:#8A6811}.status.bad{color:var(--red)}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}.scene-tabs,.device-tabs,.toolbar-actions{display:flex;gap:7px;flex-wrap:wrap}.chip,.btn{border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--navy);font-weight:850;cursor:pointer}.chip{padding:9px 12px}.chip.active{border-color:#d5b032;background:#FFF4CC}.btn{padding:10px 13px}.btn.primary{border-color:#e2bb38;background:var(--gold)}.btn.danger{color:var(--red);background:#fff8f7;border-color:#eccbc7}.btn:disabled{opacity:.45;cursor:default}
+.workspace{display:grid;grid-template-columns:310px minmax(0,1fr);gap:14px;align-items:start}
+.panel,.preview-card{border:1px solid var(--line);border-radius:19px;background:var(--card);box-shadow:0 9px 24px rgba(25,37,54,.05)}
+.panel{position:sticky;top:16px;overflow:hidden}
+.panel-head{padding:17px 18px 14px;border-bottom:1px solid var(--line)}.panel-head strong{display:block;color:var(--navy);font:24px Georgia,serif}.panel-head small{display:block;margin-top:4px;color:var(--muted);font-size:10px;line-height:1.45}
+.object-list{display:grid;gap:6px;max-height:310px;overflow:auto;padding:12px}.object{display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);text-align:left;cursor:pointer}.object:hover{background:#fcf8f0}.object.active{border-color:#d4ac31;background:#FFF7D8;box-shadow:inset 3px 0 #e1b82f}.object .ico{display:grid;place-items:center;width:25px;height:25px;border-radius:8px;background:#F3EEE5;font-size:13px}.object strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--navy);font-size:11px}.object small{display:block;margin-top:2px;color:var(--muted);font-size:8px}.presence{width:7px;height:7px;border-radius:50%;background:#c6cbd0}.presence.on{background:#5fa477;box-shadow:0 0 0 3px rgba(95,164,119,.13)}
+.controls{padding:14px 16px 17px;border-top:1px solid var(--line)}.selected-name{margin-bottom:12px}.selected-name small{display:block;color:#A27317;font-size:8px;font-weight:900;letter-spacing:.11em;text-transform:uppercase}.selected-name strong{display:block;margin-top:4px;color:var(--navy);font:20px Georgia,serif}
+.readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:11px}.readout{padding:8px;border:1px solid var(--line);border-radius:9px;background:#fbf8f2;text-align:center}.readout small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;letter-spacing:.08em}.readout b{display:block;margin-top:3px;color:var(--navy);font-size:11px}
+.scale-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;margin:9px 0 12px;color:#5d6a78;font-size:9px;font-weight:800}.scale-row input{width:100%}
+.nudge{display:grid;grid-template-columns:repeat(3,44px);justify-content:center;gap:5px;margin:8px 0 13px}.nudge button{height:40px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--navy);font-size:18px;font-weight:900;cursor:pointer}.nudge button:hover{background:#FFF7D8}.nudge .blank{visibility:hidden}.control-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.control-actions .btn{padding:9px;font-size:10px}.help{margin-top:11px;padding:10px 11px;border-radius:11px;background:#F1F6F4;color:#52706A;font-size:9px;line-height:1.45}
+.preview-card{min-width:0;overflow:hidden}.preview-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line)}.preview-head strong{color:var(--navy);font:18px Georgia,serif}.preview-head span{color:var(--muted);font-size:9px}.preview-stage{display:grid;place-items:center;min-height:520px;padding:13px;background:radial-gradient(circle at 50% 40%,rgba(242,201,76,.08),transparent 52%),#173033;overflow:auto}
+.frame-shell{position:relative;width:100%;overflow:hidden;border:1px solid rgba(255,237,191,.25);border-radius:12px;background:#0e2427;box-shadow:0 18px 48px rgba(0,0,0,.28)}.frame-shell.desktop{aspect-ratio:16/9}.frame-shell.mobile{width:390px;max-width:100%;height:min(780px,calc(100vh - 180px));min-height:640px;border-radius:24px}.frame-shell iframe{display:block;width:100%;height:100%;border:0;background:#102f33}
+.preview-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-top:1px solid var(--line);color:var(--muted);font-size:9px}.dirty-dot{display:inline-block;width:7px;height:7px;margin-right:5px;border-radius:50%;background:#bfc4c8;vertical-align:0}.dirty-dot.on{background:#d9a91d;box-shadow:0 0 0 3px rgba(217,169,29,.13)}
+@media(max-width:1080px){.shell{grid-template-columns:86px minmax(0,1fr)}.brand div,.side-foot{display:none}.brand{justify-content:center}.menu a{text-align:center;padding:12px 5px}.workspace{grid-template-columns:270px minmax(0,1fr)}}
+@media(max-width:780px){.shell{display:block}.side{position:static;height:auto;padding:10px 12px;display:flex;align-items:center;gap:8px}.brand img{width:34px;height:40px}.brand div{display:none}.menu{margin:0;display:flex;overflow:auto;gap:4px}.menu a{white-space:nowrap;padding:9px 10px;font-size:11px}main{padding:18px 10px 30px}.head{flex-direction:column}.head h1{font-size:30px}.toolbar{align-items:flex-start}.workspace{grid-template-columns:1fr}.panel{position:static}.object-list{display:flex;overflow:auto;max-height:none}.object{flex:0 0 190px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}.selected-name,.help{grid-column:1/-1}.preview-stage{min-height:460px;padding:7px}.frame-shell.mobile{height:700px}.side-foot{display:none}}
+</style>
+<link rel="stylesheet" href="./admin-center.css?v=2">
+</head>
+<body class="cafasso-admin-center">
+<div class="shell">
+<aside class="side">
+  <a class="brand" href="./admin.html#resumen"><img src="./cafasso-mark.svg" alt="CAFASSO"><div><b>CAFASSO</b><small>Centro de Administración</small></div></a>
+  <nav class="menu">
+    <a href="./admin.html#resumen">⌂ &nbsp; Inicio</a>
+    <a href="./animadores.html">👥 &nbsp; Personas</a>
+    <a href="./admin.html#cursos">📚 &nbsp; Cursos</a>
+    <a href="./resource-admin.html">🗂 &nbsp; Recursos</a>
+    <a href="./hologramas.html">✦ &nbsp; Hologramas</a>
+    <a class="active" href="./scene-layouts.html">⌖ &nbsp; Escenas</a>
+  </nav>
+  <div class="side-foot"><div class="motto">Caminamos juntos,<br>animamos con el corazón.</div><a class="back" href="./">← Ir a CAFASSO</a></div>
+</aside>
+
+<main>
+  <header class="head">
+    <div><div class="eyebrow">CAFASSO · Editor visual</div><h1>Diseño de escenas</h1><p>Mové los objetos directamente sobre la escena real. Cada ajuste se guarda por separado para escritorio y móvil, sin tocar las posiciones base del código.</p></div>
+    <div class="status" id="status">Conectando…</div>
+  </header>
+
+  <div class="toolbar">
+    <div class="scene-tabs" id="sceneTabs"></div>
+    <div class="device-tabs"><button class="chip active" data-profile="desktop">🖥 Escritorio</button><button class="chip" data-profile="mobile">📱 Móvil</button></div>
+    <div class="toolbar-actions"><button class="btn" id="discard" type="button">Descartar cambios</button><button class="btn primary" id="save" type="button">Guardar distribución</button></div>
+  </div>
+
+  <div class="workspace">
+    <aside class="panel">
+      <div class="panel-head"><strong id="panelTitle">Objetos</strong><small>Elegí uno o tocá directamente el objeto en la escena. Después arrastralo hasta donde quieras.</small></div>
+      <div class="object-list" id="objectList"></div>
+      <div class="controls">
+        <div class="selected-name"><small>Objeto seleccionado</small><strong id="selectedName">Ninguno</strong></div>
+        <div class="readouts"><div class="readout"><small>Horizontal</small><b id="xReadout">0%</b></div><div class="readout"><small>Vertical</small><b id="yReadout">0%</b></div><div class="readout"><small>Escala</small><b id="scaleReadout">100%</b></div></div>
+        <label class="scale-row"><span>Tamaño</span><input id="scale" type="range" min="35" max="250" value="100" step="1"><b id="scaleValue">100%</b></label>
+        <div class="nudge" aria-label="Ajuste fino">
+          <span class="blank"></span><button type="button" data-nudge="0,-0.25" aria-label="Subir">↑</button><span class="blank"></span>
+          <button type="button" data-nudge="-0.25,0" aria-label="Izquierda">←</button><button type="button" data-nudge="0,0" aria-label="Centrar ajustes">•</button><button type="button" data-nudge="0.25,0" aria-label="Derecha">→</button>
+          <span class="blank"></span><button type="button" data-nudge="0,0.25" aria-label="Bajar">↓</button><span class="blank"></span>
+        </div>
+        <div class="control-actions"><button class="btn" id="resetObject" type="button">Restablecer objeto</button><button class="btn danger" id="resetScene" type="button">Restablecer escena</button></div>
+        <div class="help">La cuadrícula divide la escena en 10 × 10. Las flechas mueven de a 0,25%. “Restablecer” vuelve a la posición original programada.</div>
+      </div>
+    </aside>
+
+    <section class="preview-card">
+      <div class="preview-head"><strong id="previewTitle">Casa · Escritorio</strong><span>Vista real de CAFASSO · arrastrá los objetos marcados</span></div>
+      <div class="preview-stage"><div class="frame-shell desktop" id="frameShell"><iframe id="preview" title="Vista previa editable de CAFASSO"></iframe></div></div>
+      <div class="preview-foot"><span><i class="dirty-dot" id="dirtyDot"></i><span id="dirtyText">Sin cambios pendientes</span></span><span id="presenceText">Cargando objetos…</span></div>
+    </section>
+  </div>
+</main>
+</div>
+
+<script src="./cafasso-scene-layouts.js?v=1"></script>
+<script>
+(()=>{
+  const api=window.CafassoSceneLayouts;
+  const $=id=>document.getElementById(id);
+  const icons={house:'⌂',patio:'✦',escuela:'◇',parroquia:'✝',recursos:'▥'};
+  let space='house';
+  let profile='desktop';
+  let saved=api.normalizeLayouts(api.getLayouts());
+  let draft=api.normalizeLayouts(saved);
+  let selected='';
+  let dirty=false;
+  let presence={};
+  let saveBusy=false;
+
+  function guard(){
+    try{
+      const session=JSON.parse(localStorage.getItem('cafassoSession')||'null');
+      if(!session?.user||!String(session.user.role||'').toLowerCase().includes('admin')){
+        location.replace('./');
+        return false;
+      }
+      return true;
+    }catch(error){
+      location.replace('./login.html');
+      return false;
+    }
+  }
+
+  function clone(value){return JSON.parse(JSON.stringify(value||{}))}
+  function round(value){return Math.round(Number(value||0)*100)/100}
+
+  function setStatus(text,type){
+    $('status').textContent=text;
+    $('status').className='status'+(type?' '+type:'');
+  }
+
+  function updateDirty(next=true){
+    dirty=Boolean(next);
+    $('dirtyDot').classList.toggle('on',dirty);
+    $('dirtyText').textContent=dirty?'Hay cambios sin guardar':'Sin cambios pendientes';
+    $('save').disabled=saveBusy||!dirty;
+    $('discard').disabled=saveBusy||!dirty;
+  }
+
+  function ensurePath(){
+    if(!draft.spaces[space])draft.spaces[space]={};
+    if(!draft.spaces[space][profile])draft.spaces[space][profile]={};
+    return draft.spaces[space][profile];
+  }
+
+  function currentValue(id=selected){
+    const value=draft.spaces?.[space]?.[profile]?.[id];
+    return value?{dx:Number(value.dx)||0,dy:Number(value.dy)||0,scale:Number(value.scale)||1}:{dx:0,dy:0,scale:1};
+  }
+
+  function setValue(id,value){
+    if(!id)return;
+    const bucket=ensurePath();
+    bucket[id]={
+      dx:round(Math.max(-100,Math.min(100,Number(value.dx)||0))),
+      dy:round(Math.max(-100,Math.min(100,Number(value.dy)||0))),
+      scale:Math.round(Math.max(.35,Math.min(2.5,Number(value.scale)||1))*1000)/1000
+    };
+    updateDirty(true);
+    syncPreviewState();
+    renderSelected();
+  }
+
+  function deleteValue(id){
+    const bucket=draft.spaces?.[space]?.[profile];
+    if(bucket&&bucket[id]){
+      delete bucket[id];
+      if(!Object.keys(bucket).length)delete draft.spaces[space][profile];
+      if(draft.spaces[space]&&!Object.keys(draft.spaces[space]).length)delete draft.spaces[space];
+      updateDirty(true);
+      syncPreviewState();
+      renderSelected();
+    }
+  }
+
+  function sceneEntry(){return api.REGISTRY[space]}
+
+  function renderTabs(){
+    $('sceneTabs').innerHTML=Object.entries(api.REGISTRY).map(([key,entry])=>{
+      return '<button class="chip '+(key===space?'active':'')+'" type="button" data-space="'+key+'">'+(icons[key]||'•')+' '+entry.label+'</button>';
+    }).join('');
+    $('sceneTabs').querySelectorAll('[data-space]').forEach(button=>button.addEventListener('click',()=>{
+      if(space===button.dataset.space)return;
+      space=button.dataset.space;
+      selected='';
+      presence={};
+      renderTabs();
+      renderObjectList();
+      renderSelected();
+      loadFrame();
+    }));
+  }
+
+  function renderObjectList(){
+    const entry=sceneEntry();
+    $('panelTitle').textContent=entry.label+' · objetos';
+    $('objectList').innerHTML=entry.objects.map((item,index)=>{
+      const active=item.id===selected?' active':'';
+      const found=presence[item.id]?' on':'';
+      const has=draft.spaces?.[space]?.[profile]?.[item.id]?'Ajustado':'Base';
+      return '<button class="object'+active+'" type="button" data-object="'+item.id+'"><span class="ico">'+(index+1)+'</span><span><strong>'+item.label+'</strong><small>'+has+'</small></span><i class="presence'+found+'"></i></button>';
+    }).join('');
+    $('objectList').querySelectorAll('[data-object]').forEach(button=>button.addEventListener('click',()=>{
+      selectObject(button.dataset.object,true);
+    }));
+    const present=Object.values(presence).filter(Boolean).length;
+    $('presenceText').textContent=Object.keys(presence).length?(present+' de '+entry.objects.length+' objetos cargados'):'Cargando objetos…';
+  }
+
+  function selectObject(id,notify){
+    selected=id||'';
+    renderObjectList();
+    renderSelected();
+    if(notify){
+      const frame=$('preview').contentWindow;
+      if(frame)frame.postMessage({type:'cafasso-scene-editor-control',action:'select',objectId:selected},location.origin);
+    }
+  }
+
+  function renderSelected(){
+    const spec=sceneEntry().objects.find(item=>item.id===selected);
+    $('selectedName').textContent=spec?spec.label:'Ninguno';
+    const value=currentValue();
+    $('xReadout').textContent=(value.dx>=0?'+':'')+value.dx.toFixed(2)+'%';
+    $('yReadout').textContent=(value.dy>=0?'+':'')+value.dy.toFixed(2)+'%';
+    const scale=Math.round(value.scale*100);
+    $('scaleReadout').textContent=scale+'%';
+    $('scale').value=String(scale);
+    $('scaleValue').textContent=scale+'%';
+    const disabled=!spec;
+    $('scale').disabled=disabled;
+    $('resetObject').disabled=disabled;
+    document.querySelectorAll('[data-nudge]').forEach(button=>button.disabled=disabled);
+  }
+
+  function frameUrl(){
+    const query=new URLSearchParams({
+      space,
+      sceneEditor:'1',
+      sceneProfile:profile,
+      __cafassoBuild:'1160'
+    });
+    return './world.html?'+query.toString();
+  }
+
+  function loadFrame(){
+    const entry=sceneEntry();
+    $('previewTitle').textContent=entry.label+' · '+(profile==='mobile'?'Móvil':'Escritorio');
+    const shell=$('frameShell');
+    shell.classList.toggle('desktop',profile==='desktop');
+    shell.classList.toggle('mobile',profile==='mobile');
+    $('preview').src=frameUrl();
+    $('presenceText').textContent='Cargando objetos…';
+  }
+
+  function syncPreviewState(){
+    const frame=$('preview').contentWindow;
+    if(!frame)return;
+    frame.postMessage({type:'cafasso-scene-editor-control',action:'state',layouts:clone(draft)},location.origin);
+    if(selected)frame.postMessage({type:'cafasso-scene-editor-control',action:'select',objectId:selected},location.origin);
+  }
+
+  function setProfile(next){
+    if(next!== 'desktop'&&next!=='mobile'||profile===next)return;
+    profile=next;
+    selected='';
+    presence={};
+    document.querySelectorAll('[data-profile]').forEach(button=>button.classList.toggle('active',button.dataset.profile===profile));
+    renderObjectList();
+    renderSelected();
+    loadFrame();
+  }
+
+  function resetScene(){
+    const current=draft.spaces?.[space];
+    if(!current||!current[profile]||!Object.keys(current[profile]).length)return;
+    delete current[profile];
+    if(!Object.keys(current).length)delete draft.spaces[space];
+    updateDirty(true);
+    renderObjectList();
+    renderSelected();
+    syncPreviewState();
+  }
+
+  async function save(){
+    if(saveBusy||!dirty)return;
+    saveBusy=true;
+    $('save').disabled=true;
+    $('discard').disabled=true;
+    setStatus('Guardando en Wix…','warn');
+    try{
+      const result=await api.saveRemote(draft);
+      saved=api.normalizeLayouts(result);
+      draft=api.normalizeLayouts(result);
+      updateDirty(false);
+      renderObjectList();
+      renderSelected();
+      syncPreviewState();
+      setStatus('Guardado en Wix ✓','ok');
+    }catch(error){
+      console.error(error);
+      setStatus('No se pudo guardar','bad');
+      alert('No se pudo guardar la distribución: '+(error.message||'error desconocido'));
+      updateDirty(true);
+    }finally{
+      saveBusy=false;
+      $('save').disabled=!dirty;
+      $('discard').disabled=!dirty;
+    }
+  }
+
+  function discard(){
+    draft=api.normalizeLayouts(saved);
+    updateDirty(false);
+    renderObjectList();
+    renderSelected();
+    syncPreviewState();
+    setStatus('Cambios descartados');
+  }
+
+  function handleEditorMessage(event){
+    if(event.origin!==location.origin)return;
+    const data=event.data||{};
+    if(data.type!=='cafasso-scene-editor'||data.space!==space)return;
+    if(data.action==='presence'){
+      presence=data.presence||{};
+      renderObjectList();
+      return;
+    }
+    if(data.action==='select'){
+      selectObject(data.objectId||'',false);
+      return;
+    }
+    if(data.action==='change'&&data.objectId&&data.value){
+      selected=data.objectId;
+      const bucket=ensurePath();
+      bucket[data.objectId]={
+        dx:round(Number(data.value.dx)||0),
+        dy:round(Number(data.value.dy)||0),
+        scale:Number(data.value.scale)||1
+      };
+      updateDirty(true);
+      renderObjectList();
+      renderSelected();
+    }
+  }
+
+  function bind(){
+    document.querySelectorAll('[data-profile]').forEach(button=>button.addEventListener('click',()=>setProfile(button.dataset.profile)));
+    $('scale').addEventListener('input',()=>{
+      if(!selected)return;
+      const value=currentValue();
+      value.scale=Number($('scale').value)/100;
+      setValue(selected,value);
+    });
+    document.querySelectorAll('[data-nudge]').forEach(button=>button.addEventListener('click',()=>{
+      if(!selected)return;
+      const parts=button.dataset.nudge.split(',').map(Number);
+      if(parts[0]===0&&parts[1]===0){
+        const value=currentValue();
+        value.dx=0;value.dy=0;
+        setValue(selected,value);
+        return;
+      }
+      const value=currentValue();
+      value.dx+=parts[0];value.dy+=parts[1];
+      setValue(selected,value);
+    }));
+    $('resetObject').addEventListener('click',()=>selected&&deleteValue(selected));
+    $('resetScene').addEventListener('click',resetScene);
+    $('save').addEventListener('click',save);
+    $('discard').addEventListener('click',discard);
+    $('preview').addEventListener('load',()=>setTimeout(syncPreviewState,120));
+    window.addEventListener('message',handleEditorMessage);
+    window.addEventListener('beforeunload',event=>{
+      if(!dirty)return;
+      event.preventDefault();
+      event.returnValue='';
+    });
+  }
+
+  async function init(){
+    if(!guard())return;
+    renderTabs();
+    renderObjectList();
+    renderSelected();
+    bind();
+    updateDirty(false);
+    loadFrame();
+    setStatus('Conectando…');
+    try{
+      const remote=await api.loadRemote(true);
+      saved=api.normalizeLayouts(remote);
+      draft=api.normalizeLayouts(remote);
+      updateDirty(false);
+      renderObjectList();
+      renderSelected();
+      syncPreviewState();
+      setStatus('Conectado a Wix CMS','ok');
+    }catch(error){
+      console.warn(error);
+      saved=api.normalizeLayouts(api.getLayouts());
+      draft=api.normalizeLayouts(saved);
+      setStatus('Usando copia local','warn');
+    }
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
