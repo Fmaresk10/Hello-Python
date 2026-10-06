@@ -89,7 +89,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 </main>
 </div>
 
-<script src="./cafasso-scene-layouts.js?v=4"></script>
+<script src="./cafasso-scene-layouts.js?v=5"></script>
 <script>
 (()=>{
   const api=window.CafassoSceneLayouts;
@@ -189,6 +189,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       space=button.dataset.space;
       selected='';
       presence={};
+      metrics={};
       renderTabs();
       renderObjectList();
       renderSelected();
@@ -247,7 +248,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       space,
       sceneEditor:'1',
       sceneProfile:profile,
-      __cafassoBuild:'1164'
+      __cafassoBuild:'1165'
     });
     return './world.html?'+query.toString();
   }
@@ -274,6 +275,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     profile=next;
     selected='';
     presence={};
+    metrics={};
     document.querySelectorAll('[data-profile]').forEach(button=>button.classList.toggle('active',button.dataset.profile===profile));
     renderObjectList();
     renderSelected();
@@ -345,11 +347,13 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     if(data.action==='change'&&data.objectId&&data.value){
       selected=data.objectId;
       const bucket=ensurePath();
-      bucket[data.objectId]={
+      const next={
         dx:round(Number(data.value.dx)||0),
         dy:round(Number(data.value.dy)||0),
         scale:Number(data.value.scale)||1
       };
+      if(Number.isFinite(Number(data.value.sizePct))&&Number(data.value.sizePct)>0)next.sizePct=round(Number(data.value.sizePct));
+      bucket[data.objectId]=next;
       updateDirty(true);
       renderObjectList();
       renderSelected();
@@ -362,6 +366,8 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       if(!selected)return;
       const value=currentValue();
       value.scale=Number($('scale').value)/100;
+      const base=metrics[selected]?.baseSizePct;
+      if(Number.isFinite(Number(base))&&Number(base)>0)value.sizePct=round(Number(base)*value.scale);
       setValue(selected,value);
     });
     document.querySelectorAll('[data-nudge]').forEach(button=>button.addEventListener('click',()=>{
