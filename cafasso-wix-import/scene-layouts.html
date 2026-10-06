@@ -22,7 +22,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 .panel,.preview-card{border:1px solid var(--line);border-radius:19px;background:var(--card);box-shadow:0 9px 24px rgba(25,37,54,.05)}
 .panel{position:sticky;top:16px;overflow:hidden}
 .panel-head{padding:17px 18px 14px;border-bottom:1px solid var(--line)}.panel-head strong{display:block;color:var(--navy);font:24px Georgia,serif}.panel-head small{display:block;margin-top:4px;color:var(--muted);font-size:10px;line-height:1.45}
-.object-list{display:grid;gap:6px;max-height:310px;overflow:auto;padding:12px}.object{display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);text-align:left;cursor:pointer}.object:hover{background:#fcf8f0}.object.active{border-color:#d4ac31;background:#FFF7D8;box-shadow:inset 3px 0 #e1b82f}.object .ico{display:grid;place-items:center;width:25px;height:25px;border-radius:8px;background:#F3EEE5;font-size:13px}.object strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--navy);font-size:11px}.object small{display:block;margin-top:2px;color:var(--muted);font-size:8px}.presence{width:7px;height:7px;border-radius:50%;background:#c6cbd0}.presence.on{background:#5fa477;box-shadow:0 0 0 3px rgba(95,164,119,.13)}
+.object-list{display:grid;gap:6px;max-height:310px;overflow:auto;padding:12px}.object{display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);text-align:left;cursor:pointer}.object:hover{background:#fcf8f0}.object.active{border-color:#d4ac31;background:#FFF7D8;box-shadow:inset 3px 0 #e1b82f}.object .ico{display:grid;place-items:center;width:25px;height:25px;border-radius:8px;background:#F3EEE5;font-size:13px}.object strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--navy);font-size:11px}.object small{display:block;margin-top:2px;color:var(--muted);font-size:8px}.object small.safe{color:#4f8b68}.object small.partial{color:#a36c0d}.object small.outside{color:#a94840}.presence{width:7px;height:7px;border-radius:50%;background:#c6cbd0}.presence.on{background:#5fa477;box-shadow:0 0 0 3px rgba(95,164,119,.13)}
 .controls{padding:14px 16px 17px;border-top:1px solid var(--line)}.selected-name{margin-bottom:12px}.selected-name small{display:block;color:#A27317;font-size:8px;font-weight:900;letter-spacing:.11em;text-transform:uppercase}.selected-name strong{display:block;margin-top:4px;color:var(--navy);font:20px Georgia,serif}
 .readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:11px}.readout{padding:8px;border:1px solid var(--line);border-radius:9px;background:#fbf8f2;text-align:center}.readout small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;letter-spacing:.08em}.readout b{display:block;margin-top:3px;color:var(--navy);font-size:11px}
 .scale-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;margin:9px 0 12px;color:#5d6a78;font-size:9px;font-weight:800}.scale-row input{width:100%}
@@ -76,7 +76,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
           <span class="blank"></span><button type="button" data-nudge="0,0.25" aria-label="Bajar">↓</button><span class="blank"></span>
         </div>
         <div class="control-actions"><button class="btn" id="resetObject" type="button">Restablecer objeto</button><button class="btn danger" id="resetScene" type="button">Restablecer escena</button></div>
-        <div class="help">La cuadrícula divide la escena en 10 × 10. Las flechas mueven de a 0,25%. El tamaño se guarda como proporción real de la escena, así la vista del mapa coincide con CAFASSO. “Restablecer” vuelve a la posición original programada.</div>
+        <div class="help">En Escritorio, el rectángulo verde marca la zona segura común entre pantallas 4:3 y 21:9. Si un objeto aparece como Parcial o Fuera, puede recortarse en otra pantalla. Mobile se ajusta por separado. Las flechas mueven de a 0,25%.</div>
       </div>
     </aside>
 
@@ -89,7 +89,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 </main>
 </div>
 
-<script src="./cafasso-scene-layouts.js?v=5"></script>
+<script src="./cafasso-scene-layouts.js?v=6"></script>
 <script>
 (()=>{
   const api=window.CafassoSceneLayouts;
@@ -204,13 +204,22 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       const active=item.id===selected?' active':'';
       const found=presence[item.id]?' on':'';
       const has=draft.spaces?.[space]?.[profile]?.[item.id]?'Ajustado':'Base';
-      return '<button class="object'+active+'" type="button" data-object="'+item.id+'"><span class="ico">'+(index+1)+'</span><span><strong>'+item.label+'</strong><small>'+has+'</small></span><i class="presence'+found+'"></i></button>';
+      const safety=profile==='desktop'?(metrics[item.id]?.safeStatus||''):'';
+      const safetyText=safety==='safe'?' · Seguro':safety==='partial'?' · Parcial':safety==='outside'?' · Fuera':'';
+      return '<button class="object'+active+'" type="button" data-object="'+item.id+'"><span class="ico">'+(index+1)+'</span><span><strong>'+item.label+'</strong><small class="'+safety+'">'+has+safetyText+'</small></span><i class="presence'+found+'"></i></button>';
     }).join('');
     $('objectList').querySelectorAll('[data-object]').forEach(button=>button.addEventListener('click',()=>{
       selectObject(button.dataset.object,true);
     }));
     const present=Object.values(presence).filter(Boolean).length;
-    $('presenceText').textContent=Object.keys(presence).length?(present+' de '+entry.objects.length+' objetos cargados'):'Cargando objetos…';
+    if(!Object.keys(presence).length){
+      $('presenceText').textContent='Cargando objetos…';
+    }else if(profile==='desktop'){
+      const warnings=entry.objects.filter(item=>['partial','outside'].includes(metrics[item.id]?.safeStatus)).length;
+      $('presenceText').textContent=present+' de '+entry.objects.length+' objetos · '+(warnings?warnings+' fuera/parciales':'todos en zona segura');
+    }else{
+      $('presenceText').textContent=present+' de '+entry.objects.length+' objetos cargados';
+    }
   }
 
   function selectObject(id,notify){
@@ -248,7 +257,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       space,
       sceneEditor:'1',
       sceneProfile:profile,
-      __cafassoBuild:'1166'
+      __cafassoBuild:'1167'
     });
     return './world.html?'+query.toString();
   }
