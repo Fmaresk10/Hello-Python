@@ -7,6 +7,82 @@
 <title>CAFASSO · Recursos</title>
 <style>
 :root{--navy:#0F2D4D;--cream:#F6EFE4;--gold:#F2C94C;--green:#2E7D59;--red:#A64747;--muted:#687386;--card:#FFFDF9;--line:#E8DCCB;--ink:#11233A}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.shell{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh}.side{background:linear-gradient(180deg,var(--navy),#0A2440);color:#fff;padding:26px 20px;position:sticky;top:0;height:100vh}.brand{display:flex;gap:12px;align-items:center;color:#fff;text-decoration:none}.brand img{width:42px;height:50px;object-fit:contain}.brand b{font-family:Georgia,serif;font-size:25px}.brand small{display:block;opacity:.72;margin-top:4px}.menu{margin-top:32px;display:grid;gap:8px}.menu a{display:block;color:#fff;text-decoration:none;padding:12px 13px;border-radius:13px;font-weight:700}.menu a:hover,.menu a.active{background:rgba(255,255,255,.11)}.side-foot{position:absolute;bottom:24px;left:20px;right:20px}.motto{font-family:Georgia,serif;font-style:italic;color:#F7D276;margin-bottom:16px}.back{display:block;color:#fff;text-decoration:none;border-top:1px solid rgba(255,255,255,.18);padding-top:16px;font-weight:700}main{padding:34px 36px 50px;max-width:1450px;width:100%;margin:auto;min-width:0}.head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:22px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:#B77D00}.head h1{font-family:Georgia,serif;color:var(--navy);font-size:38px;margin:8px 0 5px}.head p{margin:0;color:var(--muted);line-height:1.5}.status{background:#fff;border:1px solid var(--line);padding:9px 13px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}.status.ok{color:var(--green)}.status.bad{color:var(--red)}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}.btn{border:0;background:var(--gold);color:var(--navy);font-weight:800;border-radius:12px;padding:11px 14px;cursor:pointer;text-decoration:none;display:inline-block}.btn.alt{background:#fff;border:1px solid var(--line)}.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:0 9px 24px rgba(25,37,54,.05)}.metric{padding:17px}.metric small{display:block;color:var(--muted);font-weight:700}.metric strong{display:block;margin-top:4px;font:30px Georgia,serif;color:var(--navy)}.box{padding:20px}.filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}.filters input,.filters select,.modal input,.modal select,.modal textarea{padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;font:inherit}.filters input{flex:1;min-width:240px}.table{overflow:auto;border:1px solid var(--line);border-radius:17px;background:#fff}table{width:100%;border-collapse:collapse;min-width:860px}th,td{padding:13px 14px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);background:#FBF7F0}td strong{color:var(--navy)}.badge{display:inline-block;padding:5px 8px;border-radius:999px;background:#EDF5F1;color:var(--green);font-size:10px;font-weight:800}.badge.gray{background:#F0F1F2;color:#687386}.badge.gold{background:#FFF4CC;color:#876700}.tiny{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:9px;padding:7px 9px;font-size:11px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block}.tiny.danger{color:var(--red);border-color:#ebc7c7;background:#fff8f8}.empty{padding:32px;text-align:center;color:var(--muted)}.note{margin-top:14px;padding:13px 15px;border-radius:14px;background:#FFF7D7;border:1px solid #F3DF91;color:#6C5500;font-size:12px;line-height:1.5}.modal-wrap{position:fixed;inset:0;background:rgba(10,25,45,.48);display:none;place-items:center;padding:18px;z-index:50}.modal-wrap.show{display:grid}.modal{width:min(650px,100%);max-height:90vh;overflow:auto;background:var(--card);border-radius:22px;padding:24px;border:1px solid var(--line);box-shadow:0 22px 70px rgba(0,0,0,.22)}.modal h2{font:29px Georgia,serif;color:var(--navy);margin:0 0 18px}.field{margin:12px 0}.field label{display:block;font-size:12px;font-weight:800;color:var(--navy);margin-bottom:6px}.field input,.field select,.field textarea{width:100%}.field textarea{min-height:92px;resize:vertical}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.checks{display:grid;gap:9px;margin-top:12px}.check{display:flex;align-items:center;gap:9px;color:var(--navy);font-size:13px;font-weight:700}.check input{width:auto}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}.busy{opacity:.55;pointer-events:none}
+.library-map-wrap{position:fixed;inset:0;z-index:80;display:none;background:rgba(7,21,35,.72);padding:18px;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.library-map-wrap.show{display:grid;place-items:center}
+.library-map-dialog{width:min(1510px,100%);height:min(900px,calc(100dvh - 36px));display:grid;grid-template-columns:300px minmax(0,1fr);overflow:hidden;border:1px solid rgba(230,214,183,.28);border-radius:24px;background:#f8f2e7;box-shadow:0 30px 90px rgba(0,0,0,.38)}
+.library-map-sidebar{min-width:0;display:flex;flex-direction:column;padding:20px;background:linear-gradient(180deg,#102f33,#0e292d);color:#fff}
+.library-map-sidebar__head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.library-map-sidebar__eyebrow{color:#f0c85b;font-size:9px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+.library-map-sidebar h2{margin:5px 0 5px;font:600 27px/1.05 Georgia,serif;color:#fff5d8}
+.library-map-sidebar p{margin:0;color:#c8d9d4;font-size:11px;line-height:1.45}
+.library-map-close{flex:0 0 auto;width:34px;height:34px;border:1px solid rgba(255,255,255,.18);border-radius:50%;background:rgba(255,255,255,.06);color:#fff;font:25px/1 Georgia,serif}
+.library-map-selected{margin-top:14px;padding:10px 11px;border:1px solid rgba(242,201,76,.25);border-radius:12px;background:rgba(242,201,76,.08)}
+.library-map-selected small{display:block;color:#a7c7c0;font-size:8px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+.library-map-selected strong{display:block;margin-top:4px;color:#fff4cf;font:600 14px/1.2 Georgia,serif}
+.library-map-list{min-height:0;overflow:auto;margin-top:12px;display:grid;gap:7px;padding-right:3px}
+.library-map-resource{display:grid;grid-template-columns:16px minmax(0,1fr) auto;align-items:center;gap:9px;width:100%;padding:8px 9px;border:1px solid rgba(255,255,255,.09);border-radius:11px;background:rgba(255,255,255,.035);color:#fff;text-align:left}
+.library-map-resource:hover{background:rgba(255,255,255,.07)}
+.library-map-resource.selected{border-color:rgba(242,201,76,.62);background:rgba(242,201,76,.12)}
+.library-map-resource__spine{width:10px;height:32px;border-radius:2px;background:var(--map-book-color,#744936);box-shadow:inset 2px 0 rgba(255,255,255,.10),inset -2px 0 rgba(0,0,0,.16)}
+.library-map-resource__copy{min-width:0}
+.library-map-resource__copy strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#f8f5eb;font-size:11px}
+.library-map-resource__copy small{display:block;margin-top:2px;color:#92b8b1;font-size:8px}
+.library-map-resource__slot{color:#f1cf77;font-size:9px;font-weight:900}
+.library-map-sidebar__footer{margin-top:12px;display:grid;gap:7px}
+.library-map-status{min-height:29px;padding:7px 9px;border-radius:9px;background:rgba(255,255,255,.045);color:#bdd2cd;font-size:9px;line-height:1.35}
+.library-map-status.warn{background:rgba(242,201,76,.13);color:#ffe6a2}
+.library-map-status.ok{background:rgba(94,185,133,.12);color:#c9efd8}
+.library-map-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.library-map-actions .btn{width:100%;padding:9px 10px;font-size:10px}
+.library-map-actions .btn:disabled{opacity:.45;cursor:default}
+.library-map-main{min-width:0;min-height:0;display:flex;flex-direction:column;background:#182d2d}
+.library-map-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;background:#f7f0e4;border-bottom:1px solid rgba(100,76,49,.18);color:#54483c}
+.library-map-topbar strong{font:600 14px Georgia,serif;color:#3e342b}
+.library-map-topbar span{font-size:9px;color:#7a6c5d}
+.library-map-stage-scroll{min-height:0;flex:1;display:grid;place-items:center;overflow:auto;padding:12px;background:radial-gradient(circle at 50% 45%,rgba(220,194,141,.07),transparent 50%),#173033}
+.library-map-canvas{position:relative;width:min(100%,1170px);aspect-ratio:1672/941;flex:0 0 auto;overflow:hidden;border:1px solid rgba(248,224,174,.22);border-radius:10px;background:#0e282a;box-shadow:0 16px 46px rgba(0,0,0,.28);touch-action:pan-x pan-y}
+.library-map-canvas>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.library-map-slots{position:absolute;inset:0}
+.library-map-slot{position:absolute;z-index:2;padding:0;border:1px dashed rgba(255,226,151,.38);border-radius:3px;background:rgba(247,218,145,.035);cursor:pointer;transition:border-color .12s,background .12s,box-shadow .12s;touch-action:manipulation}
+.library-map-slot:hover,.library-map-slot.drag-over{z-index:6;border-color:#ffe69a;background:rgba(246,207,100,.13);box-shadow:0 0 0 2px rgba(246,207,100,.18),0 0 18px rgba(246,207,100,.28)}
+.library-map-slot.selected{z-index:7;border-color:#ffd557;box-shadow:0 0 0 2px rgba(255,213,87,.48),0 0 22px rgba(255,213,87,.36)}
+.library-map-slot.reserved{border-color:rgba(196,209,209,.26);background:rgba(130,143,143,.12);cursor:not-allowed}
+.library-map-slot__book{position:absolute;left:50%;bottom:0;width:71.43%;height:89.4%;transform:translateX(-50%);border-radius:2px 2px 1px 1px;background:var(--map-book-color,#744936);box-shadow:inset 3px 0 rgba(255,255,255,.10),inset -3px 0 rgba(0,0,0,.18),0 2px 4px rgba(0,0,0,.22)}
+.library-map-slot__book:after{content:"";position:absolute;left:18%;right:18%;top:12%;height:1px;background:rgba(255,235,183,.45);box-shadow:0 6px rgba(255,235,183,.19)}
+.library-map-slot.reserved .library-map-slot__book{background:#596666;opacity:.66}
+.library-map-slot__number{position:absolute;left:50%;top:-16px;transform:translateX(-50%);min-width:18px;padding:2px 4px;border-radius:999px;background:rgba(8,29,31,.78);color:#e9dcc1;font-size:7px;font-weight:900;line-height:1;pointer-events:none}
+.library-map-slot.free .library-map-slot__number{opacity:.72}
+.library-map-slot__lock{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#edf3ef;font-size:11px;text-shadow:0 1px 2px #000;pointer-events:none}
+.library-map-legend{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+.library-map-legend i{display:inline-block;width:10px;height:10px;margin-right:4px;border-radius:2px;vertical-align:-1px}
+.library-map-legend .free{border:1px dashed #9e8966;background:transparent}
+.library-map-legend .used{background:#744936}
+.library-map-legend .reserved{background:#596666}
+body.library-map-open{overflow:hidden}
+@media(max-width:980px){
+  .library-map-dialog{grid-template-columns:240px minmax(0,1fr)}
+  .library-map-sidebar{padding:15px}
+  .library-map-sidebar h2{font-size:22px}
+}
+@media(max-width:760px){
+  .library-map-wrap{padding:0}
+  .library-map-dialog{width:100%;height:100dvh;border:0;border-radius:0;grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}
+  .library-map-sidebar{padding:10px 12px;max-height:38dvh}
+  .library-map-sidebar__head p{display:none}
+  .library-map-sidebar h2{font-size:20px;margin:3px 0}
+  .library-map-selected{margin-top:6px;padding:7px 9px}
+  .library-map-list{display:flex;overflow:auto;gap:6px;margin-top:7px;padding-bottom:2px}
+  .library-map-resource{flex:0 0 180px;padding:6px 7px}
+  .library-map-resource__spine{height:27px}
+  .library-map-sidebar__footer{margin-top:7px}
+  .library-map-status{min-height:24px;padding:5px 7px}
+  .library-map-actions{display:flex}
+  .library-map-actions .btn{padding:8px 9px}
+  .library-map-topbar{padding:7px 10px}
+  .library-map-topbar span{display:none}
+  .library-map-stage-scroll{display:block;padding:8px;overflow:auto}
+  .library-map-canvas{width:900px;max-width:none}
+}
 @media(max-width:900px){.shell{grid-template-columns:88px minmax(0,1fr)}.brand div,.menu span,.side-foot{display:none}.brand{justify-content:center}.menu a{text-align:center}.summary{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:700px){.shell{display:block}.side{height:auto;position:static;padding:11px 12px;display:flex;align-items:center;gap:8px}.brand img{width:34px;height:40px}.menu{margin:0;display:flex;overflow:auto;gap:4px}.menu a{white-space:nowrap;padding:10px}.brand div{display:none}main{padding:20px 14px 36px}.head{flex-direction:column}.head h1{font-size:31px}.summary{grid-template-columns:repeat(3,1fr);gap:8px}.metric{padding:13px}.metric strong{font-size:24px}.filters{display:grid;grid-template-columns:1fr}.filters input{min-width:0;width:100%}.table{overflow:visible;border:0;background:transparent}table{min-width:0;display:block}thead{display:none}tbody{display:grid;gap:10px}tr{display:block;background:#fff;border:1px solid var(--line);border-radius:17px;padding:8px 13px}td{display:grid;grid-template-columns:105px minmax(0,1fr);gap:9px;padding:9px 0;border-bottom:1px solid #EEE6DB}td:before{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800}td:nth-child(1):before{content:'Recurso'}td:nth-child(2):before{content:'Categoría'}td:nth-child(3):before{content:'Tipo'}td:nth-child(4):before{content:'Biblioteca'}td:nth-child(5):before{content:'Cursos'}td:nth-child(6):before{content:'Acciones'}td:last-child{border-bottom:0}.two{grid-template-columns:1fr}.modal-wrap{align-items:end;padding:10px}.modal{border-radius:24px 24px 16px 16px;padding:20px}.modal-actions{display:grid;grid-template-columns:1fr}.modal-actions .btn{width:100%}}
 </style>
@@ -14,14 +90,72 @@
 <body class="cafasso-admin-center cafasso-resource-admin">
 <div class="shell">
 <aside class="side"><a class="brand" href="./admin.html"><img src="./cafasso-mark.svg" alt="CAFASSO"><div><b>CAFASSO</b><small>Centro de Administración</small></div></a><nav class="menu"><a href="./admin.html"><span>⌂ &nbsp; Inicio</span></a><a href="./animadores.html"><span>👥 &nbsp; Personas</span></a><a href="./admin.html#cursos"><span>📚 &nbsp; Cursos</span></a><a class="active" href="./resource-admin.html"><span>🗂 &nbsp; Recursos</span></a><a href="./entregas.html"><span>📥 &nbsp; Entregas</span></a></nav><div class="side-foot"><div class="motto">Caminamos juntos,<br>animamos con el corazón.</div><a class="back" href="./admin.html">← Centro de Administración</a></div></aside>
-<main id="main"><header class="head"><div><div class="eyebrow">CAFASSO · Formación</div><h1>Recursos y Biblioteca</h1><p>Administrá el catálogo que alimenta la Biblioteca y reutilizá los mismos materiales dentro de los cursos.</p></div><div class="status" id="status">Conectando…</div></header><div class="toolbar"><button class="btn" id="newResource">＋ Nuevo recurso</button><a class="btn alt" href="./?space=recursos">Ver biblioteca</a><button class="btn alt" id="reload">Recargar</button></div><section class="summary"><article class="card metric"><small>Recursos</small><strong id="mTotal">0</strong></article><article class="card metric"><small>En biblioteca</small><strong id="mLibrary">0</strong></article><article class="card metric"><small>Para cursos</small><strong id="mCourses">0</strong></article></section><section class="card box"><div class="filters"><input id="search" placeholder="Buscar recurso"><select id="category"><option value="">Todas las categorías</option></select></div><div class="table"><table><thead><tr><th>Recurso</th><th>Categoría</th><th>Tipo</th><th>Biblioteca</th><th>Cursos</th><th>Acciones</th></tr></thead><tbody id="body"></tbody></table></div><div class="note">Cada recurso se carga una sola vez. Si marcás “Mostrar como libro”, CAFASSO le asigna automáticamente el primer lugar libre de la Biblioteca y esa ubicación queda reservada para ese recurso.</div></section></main>
+<main id="main"><header class="head"><div><div class="eyebrow">CAFASSO · Formación</div><h1>Recursos y Biblioteca</h1><p>Administrá el catálogo que alimenta la Biblioteca y reutilizá los mismos materiales dentro de los cursos.</p></div><div class="status" id="status">Conectando…</div></header><div class="toolbar"><button class="btn" id="newResource">＋ Nuevo recurso</button><button class="btn alt" id="openLibraryMap">📚 Ubicar libros</button><a class="btn alt" href="./?space=recursos">Ver biblioteca</a><button class="btn alt" id="reload">Recargar</button></div><section class="summary"><article class="card metric"><small>Recursos</small><strong id="mTotal">0</strong></article><article class="card metric"><small>En biblioteca</small><strong id="mLibrary">0</strong></article><article class="card metric"><small>Para cursos</small><strong id="mCourses">0</strong></article></section><section class="card box"><div class="filters"><input id="search" placeholder="Buscar recurso"><select id="category"><option value="">Todas las categorías</option></select></div><div class="table"><table><thead><tr><th>Recurso</th><th>Categoría</th><th>Tipo</th><th>Biblioteca</th><th>Cursos</th><th>Acciones</th></tr></thead><tbody id="body"></tbody></table></div><div class="note">Cada recurso se carga una sola vez. Si marcás “Mostrar como libro”, CAFASSO le asigna automáticamente un lugar libre. Después podés usar <b>“Ubicar libros”</b> para acomodarlos visualmente en los estantes.</div></section></main>
 </div>
 <div class="modal-wrap" id="modalWrap"><section class="modal"><h2 id="modalTitle">Nuevo recurso</h2><form id="resourceForm"><input type="hidden" id="resourceId"><div class="field"><label>Título</label><input id="title" required placeholder="Ej.: Sistema Preventivo · presentación"></div><div class="two"><div class="field"><label>Categoría</label><input id="resourceCategory" placeholder="Formación, oración, dinámica…"></div><div class="field"><label>Tipo</label><select id="type"><option>Presentación</option><option>PDF</option><option>Documento</option><option>Video</option><option>Imagen</option><option>Link</option><option>Dinámica</option><option>Oración</option></select></div></div><div class="field"><label>Archivo o enlace</label><input id="url" type="url" placeholder="https://…"><small style="display:block;color:var(--muted);margin-top:6px">Puede ser un enlace de Drive, Canva, YouTube, Wix Media u otra fuente.</small></div><div class="field"><label>Descripción</label><textarea id="description" placeholder="Breve descripción del material"></textarea></div><div class="field"><label>Cursos donde se usa (opcional)</label><input id="courses" placeholder="Separados por coma"></div><div class="checks"><label class="check"><input type="checkbox" id="showLibrary" checked> Mostrar como libro en la Biblioteca</label><label class="check"><input type="checkbox" id="availableCourses" checked> Disponible para usar en cursos</label></div><div class="modal-actions"><button type="button" class="btn alt" id="cancel">Cancelar</button><button type="submit" class="btn">Guardar recurso</button></div></form></section></div>
+
+<div class="library-map-wrap" id="libraryMapWrap" aria-hidden="true">
+  <section class="library-map-dialog" role="dialog" aria-modal="true" aria-labelledby="libraryMapTitle">
+    <aside class="library-map-sidebar">
+      <div class="library-map-sidebar__head">
+        <div>
+          <div class="library-map-sidebar__eyebrow">CAFASSO · Biblioteca</div>
+          <h2 id="libraryMapTitle">Ubicar libros</h2>
+          <p>Elegí un libro y tocá un hueco, o arrastralo directamente. Si soltás sobre otro libro, intercambian posiciones.</p>
+        </div>
+        <button class="library-map-close" id="closeLibraryMap" type="button" aria-label="Cerrar">×</button>
+      </div>
+      <div class="library-map-selected">
+        <small>Libro seleccionado</small>
+        <strong id="libraryMapSelected">Ninguno</strong>
+      </div>
+      <div class="library-map-list" id="libraryMapList"></div>
+      <div class="library-map-sidebar__footer">
+        <div class="library-map-status" id="libraryMapStatus">Los cambios todavía no están guardados.</div>
+        <div class="library-map-actions">
+          <button class="btn alt" id="resetLibraryMap" type="button">Restablecer</button>
+          <button class="btn" id="saveLibraryMap" type="button" disabled>Guardar distribución</button>
+        </div>
+      </div>
+    </aside>
+    <div class="library-map-main">
+      <div class="library-map-topbar">
+        <strong>Mapa visual de la Biblioteca</strong>
+        <div class="library-map-legend">
+          <span><i class="free"></i>Libre</span>
+          <span><i class="used"></i>Libro</span>
+          <span><i class="reserved"></i>Reservado</span>
+        </div>
+        <span>33 posiciones · misma geometría que ve el animador</span>
+      </div>
+      <div class="library-map-stage-scroll">
+        <div class="library-map-canvas" id="libraryMapCanvas">
+          <img src="./assets/cafasso-biblioteca-vacia-v1.png" alt="Biblioteca CAFASSO">
+          <div class="library-map-slots" id="libraryMapSlots"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
 <script>
 const API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
 const RESOURCE_TITLE='CAFASSO · Recursos internos';
 const MAX_LIBRARY_SLOTS=33;
+const LIBRARY_MAP_WIDTH=1672;
+const LIBRARY_MAP_HEIGHT=941;
+const LIBRARY_BOOK_WIDTH=40;
+const LIBRARY_BOOK_HEIGHT=118;
+const BOOK_SLOTS=[
+  {id:1,x:555,shelfY:619},{id:2,x:617,shelfY:623},{id:3,x:672,shelfY:623},{id:4,x:734,shelfY:623},{id:5,x:792,shelfY:623},
+  {id:6,x:555,shelfY:491},{id:7,x:612,shelfY:491},{id:8,x:672,shelfY:491},{id:9,x:727,shelfY:491},{id:10,x:789,shelfY:491},
+  {id:11,x:555,shelfY:368},{id:12,x:612,shelfY:368},{id:13,x:672,shelfY:368},{id:14,x:727,shelfY:368},{id:15,x:787,shelfY:368},
+  {id:16,x:912,shelfY:630},{id:17,x:974,shelfY:630},{id:18,x:1030,shelfY:630},{id:19,x:1091,shelfY:630},{id:20,x:1153,shelfY:630},{id:21,x:1211,shelfY:630},
+  {id:22,x:912,shelfY:479},{id:23,x:970,shelfY:479},{id:24,x:1030,shelfY:479},{id:25,x:1085,shelfY:479},{id:26,x:1147,shelfY:479},{id:27,x:1202,shelfY:479},
+  {id:28,x:912,shelfY:348},{id:29,x:970,shelfY:348},{id:30,x:1030,shelfY:348},{id:31,x:1085,shelfY:348},{id:32,x:1147,shelfY:348},{id:33,x:1202,shelfY:348}
+];
+const LIBRARY_COLORS=['#744936','#3f5e53','#6c5a38','#584967','#7b3f45','#355765','#6d513f','#4f603f','#734f2f','#4f4d6f'];
 const $=id=>document.getElementById(id);let catalog=null,editingId='',busy=false;
+let libraryDraft=new Map(),libraryOriginal=new Map(),librarySelectedId='',libraryDragId='';
 function uid(){return 'local-'+(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2))}
 function emptyCatalog(){return{title:RESOURCE_TITLE,slug:'cafasso-recursos-internos',description:'Catálogo central de recursos de CAFASSO',subtitle:'Uso interno',status:'Oculto',version:1,certificateEnabled:false,modules:[{_id:uid(),title:'Biblioteca',desc:'',status:'Publicado',required:false,unlockAfterPrevious:false,estimatedMinutes:0,settings:{resourceCatalog:true},contents:[]}]}}
 function normalize(c){const base=emptyCatalog();if(!c)return base;return{_id:c._id,title:RESOURCE_TITLE,slug:c.slug||base.slug,description:c.description||base.description,subtitle:c.subtitle||base.subtitle,status:'Oculto',version:Number(c.version||1),certificateEnabled:false,modules:(c.modules&&c.modules.length?c.modules:base.modules).map(m=>({_id:m._id||uid(),title:m.title||'Biblioteca',desc:m.desc||m.description||'',status:m.status||'Publicado',required:false,unlockAfterPrevious:false,estimatedMinutes:Number(m.estimatedMinutes||0),settings:m.settings||{},contents:(m.contents||[]).map(b=>({_id:b._id||uid(),type:b.type||'Documento',title:b.title||'Recurso',required:false,content:b.content||{body:b.body||''},settings:b.settings||{}}))}))}}
@@ -30,7 +164,7 @@ function slotNumber(value){const n=Number(value);return Number.isInteger(n)&&n>=
 function slotIsAvailable(slot,excludeId=''){return !blocks().some(b=>b?._id!==excludeId&&b?.settings?.cafassoResource===true&&slotNumber(b?.settings?.bibliotecaSlot)===slot)}
 function firstFreeLibrarySlot(excludeId=''){const used=new Set(blocks().filter(b=>b?._id!==excludeId&&b?.settings?.cafassoResource===true).map(b=>slotNumber(b?.settings?.bibliotecaSlot)).filter(Boolean));for(let slot=1;slot<=MAX_LIBRARY_SLOTS;slot+=1){if(!used.has(slot))return slot}return null}
 function ensureLibrarySlots(){const assigned=new Set();let changed=false;const list=blocks().filter(b=>b?.settings?.cafassoResource===true);for(const block of list){block.settings=block.settings||{};let slot=slotNumber(block.settings.bibliotecaSlot);if(slot&&assigned.has(slot)){delete block.settings.bibliotecaSlot;slot=null;changed=true}if(slot){assigned.add(slot);continue}if(block.settings.mostrarEnBiblioteca===true){let free=null;for(let i=1;i<=MAX_LIBRARY_SLOTS;i+=1){if(!assigned.has(i)){free=i;break}}if(free){block.settings.bibliotecaSlot=free;assigned.add(free);changed=true}}}return changed}
-function resources(){return blocks().filter(b=>b?.settings?.cafassoResource===true).map(b=>({id:b._id,titulo:b.title,categoria:b.settings.categoria||'',tipo:b.settings.resourceType||b.type||'Documento',url:b.content?.body||'',descripcion:b.settings.descripcion||'',mostrarEnBiblioteca:b.settings.mostrarEnBiblioteca===true,disponibleParaCursos:b.settings.disponibleParaCursos===true,cursos:Array.isArray(b.settings.cursos)?b.settings.cursos:[],bibliotecaSlot:slotNumber(b.settings.bibliotecaSlot)}))}
+function resources(){return blocks().filter(b=>b?.settings?.cafassoResource===true).map(b=>({id:b._id,titulo:b.title,categoria:b.settings.categoria||'',tipo:b.settings.resourceType||b.type||'Documento',url:b.content?.body||'',descripcion:b.settings.descripcion||'',mostrarEnBiblioteca:b.settings.mostrarEnBiblioteca===true,disponibleParaCursos:b.settings.disponibleParaCursos===true,cursos:Array.isArray(b.settings.cursos)?b.settings.cursos:[],bibliotecaSlot:slotNumber(b.settings.bibliotecaSlot),color:b.settings.color||''}))}
 function courseType(t){if(t==='Video')return'Video';if(t==='Imagen')return'Imagen';return'Documento'}
 function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function setStatus(text,kind=''){const s=$('status');s.textContent=text;s.className='status'+(kind?' '+kind:'')}
@@ -40,8 +174,199 @@ async function save(){setBusy(true);setStatus('Guardando…');try{const r=await 
 function render(){const list=resources(),q=$('search').value.trim().toLowerCase(),cat=$('category').value;const cats=[...new Set(list.map(r=>r.categoria).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));const old=$('category').value;$('category').innerHTML='<option value="">Todas las categorías</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join('');$('category').value=cats.includes(old)?old:'';const filtered=list.filter(r=>(!q||[r.titulo,r.categoria,r.tipo,r.descripcion].join(' ').toLowerCase().includes(q))&&(!cat||r.categoria===cat));$('mTotal').textContent=list.length;$('mLibrary').textContent=list.filter(r=>r.mostrarEnBiblioteca).length;$('mCourses').textContent=list.filter(r=>r.disponibleParaCursos).length;$('body').innerHTML=filtered.length?filtered.map(r=>{const libraryBadge=r.mostrarEnBiblioteca?`<span class="badge">Sí${r.bibliotecaSlot?` · #${r.bibliotecaSlot}`:''}</span>`:(r.bibliotecaSlot?`<span class="badge gray">No · reserva #${r.bibliotecaSlot}</span>`:'<span class="badge gray">No</span>');return `<tr><td><strong>${esc(r.titulo)}</strong>${r.url?`<div style="margin-top:5px"><a class="tiny" href="${esc(r.url)}" target="_blank" rel="noopener">Abrir</a></div>`:''}</td><td>${esc(r.categoria||'—')}</td><td>${esc(r.tipo)}</td><td>${libraryBadge}</td><td>${r.disponibleParaCursos?'<span class="badge gold">Disponible</span>':'<span class="badge gray">No</span>'}</td><td><button class="tiny" data-edit="${esc(r.id)}">Editar</button> <button class="tiny danger" data-delete="${esc(r.id)}">Eliminar</button></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">Todavía no hay recursos.</td></tr>'}
 function openForm(id=''){editingId=id;const r=resources().find(x=>x.id===id);$('modalTitle').textContent=r?'Editar recurso':'Nuevo recurso';$('title').value=r?.titulo||'';$('resourceCategory').value=r?.categoria||'';$('type').value=r?.tipo||'Presentación';$('url').value=r?.url||'';$('description').value=r?.descripcion||'';$('courses').value=(r?.cursos||[]).join(', ');$('showLibrary').checked=r?r.mostrarEnBiblioteca:true;$('availableCourses').checked=r?r.disponibleParaCursos:true;$('modalWrap').classList.add('show');setTimeout(()=>$('title').focus(),30)}
 function closeForm(){$('modalWrap').classList.remove('show');editingId=''}
+
+function mapHashText(value){let hash=0;const text=String(value||'recurso');for(let i=0;i<text.length;i+=1){hash=((hash<<5)-hash)+text.charCodeAt(i);hash|=0}return Math.abs(hash)}
+function mapBookColor(r){return r?.color||LIBRARY_COLORS[mapHashText(r?.categoria||r?.id||r?.titulo)%LIBRARY_COLORS.length]}
+function draftSlot(id){return slotNumber(libraryDraft.get(String(id)))}
+function originalSlot(id){return slotNumber(libraryOriginal.get(String(id)))}
+function mapDirty(){const ids=new Set([...libraryOriginal.keys(),...libraryDraft.keys()]);for(const id of ids){if(originalSlot(id)!==draftSlot(id))return true}return false}
+function mapResourceById(id){return resources().find(r=>String(r.id)===String(id))||null}
+function mapOccupant(slot){return resources().find(r=>draftSlot(r.id)===Number(slot))||null}
+function setMapStatus(text,kind=''){const node=$('libraryMapStatus');node.textContent=text;node.className='library-map-status'+(kind?' '+kind:'')}
+function updateMapSaveState(){$('saveLibraryMap').disabled=!mapDirty()}
+function selectMapResource(id){
+  const r=mapResourceById(id);
+  if(!r||!r.mostrarEnBiblioteca)return;
+  librarySelectedId=String(r.id);
+  renderLibraryMap();
+}
+function mapSlotStyle(slot){
+  const hitW=56,hitH=132;
+  const left=(slot.x-(hitW-LIBRARY_BOOK_WIDTH)/2)/LIBRARY_MAP_WIDTH*100;
+  const top=(slot.shelfY-hitH)/LIBRARY_MAP_HEIGHT*100;
+  return 'left:'+left+'%;top:'+top+'%;width:'+(hitW/LIBRARY_MAP_WIDTH*100)+'%;height:'+(hitH/LIBRARY_MAP_HEIGHT*100)+'%';
+}
+function placeMapResource(resourceId,slotId){
+  const source=mapResourceById(resourceId);
+  const slot=slotNumber(slotId);
+  if(!source||!source.mostrarEnBiblioteca||!slot)return;
+  const current=draftSlot(source.id);
+  if(current===slot){selectMapResource(source.id);return}
+  const target=mapOccupant(slot);
+  if(target&&String(target.id)!==String(source.id)){
+    if(!target.mostrarEnBiblioteca){
+      setMapStatus('El lugar #'+slot+' está reservado por “'+target.titulo+'”. Ese recurso no se muestra ahora, pero conserva su ubicación.','warn');
+      return;
+    }
+    if(current)libraryDraft.set(String(target.id),current);
+    else{
+      const used=new Set(Array.from(libraryDraft.values()).map(slotNumber).filter(Boolean));
+      let free=null;for(let i=1;i<=MAX_LIBRARY_SLOTS;i+=1){if(i!==slot&&!used.has(i)){free=i;break}}
+      libraryDraft.set(String(target.id),free);
+    }
+  }
+  libraryDraft.set(String(source.id),slot);
+  librarySelectedId=String(source.id);
+  setMapStatus(target?'Intercambiamos “'+source.titulo+'” con “'+target.titulo+'”.':'“'+source.titulo+'” quedó en la posición #'+slot+'.','ok');
+  renderLibraryMap();
+}
+function renderLibraryMap(){
+  const all=resources();
+  const visible=all.filter(r=>r.mostrarEnBiblioteca);
+  if(!librarySelectedId||!visible.some(r=>String(r.id)===librarySelectedId))librarySelectedId=visible[0]?String(visible[0].id):'';
+  const selected=mapResourceById(librarySelectedId);
+  $('libraryMapSelected').textContent=selected?selected.titulo:'No hay libros visibles';
+
+  const list=$('libraryMapList');list.innerHTML='';
+  visible.forEach(r=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='library-map-resource'+(String(r.id)===librarySelectedId?' selected':'');
+    button.dataset.mapResource=String(r.id);
+    button.style.setProperty('--map-book-color',mapBookColor(r));
+    const spine=document.createElement('span');spine.className='library-map-resource__spine';
+    const copy=document.createElement('span');copy.className='library-map-resource__copy';
+    const strong=document.createElement('strong');strong.textContent=r.titulo;
+    const small=document.createElement('small');small.textContent=r.categoria||r.tipo||'Recurso';
+    copy.append(strong,small);
+    const pos=document.createElement('span');pos.className='library-map-resource__slot';pos.textContent=draftSlot(r.id)?'#'+draftSlot(r.id):'—';
+    button.append(spine,copy,pos);
+    button.addEventListener('click',()=>selectMapResource(r.id));
+    list.appendChild(button);
+  });
+  if(!visible.length){
+    const empty=document.createElement('div');empty.className='empty';empty.style.color='#c3d4cf';empty.textContent='No hay recursos marcados para mostrarse como libro.';
+    list.appendChild(empty);
+  }
+
+  const slots=$('libraryMapSlots');slots.innerHTML='';
+  BOOK_SLOTS.forEach(slot=>{
+    const occupant=mapOccupant(slot.id);
+    const node=document.createElement('button');
+    node.type='button';
+    node.className='library-map-slot '+(occupant?(occupant.mostrarEnBiblioteca?'occupied':'reserved'):'free');
+    if(occupant&&String(occupant.id)===librarySelectedId)node.classList.add('selected');
+    node.dataset.librarySlot=String(slot.id);
+    node.style.cssText=mapSlotStyle(slot);
+    node.title=occupant?(occupant.titulo+' · posición '+slot.id):('Posición '+slot.id+' libre');
+
+    const number=document.createElement('span');number.className='library-map-slot__number';number.textContent=String(slot.id);node.appendChild(number);
+    if(occupant){
+      const book=document.createElement('span');book.className='library-map-slot__book';book.style.setProperty('--map-book-color',mapBookColor(occupant));node.appendChild(book);
+      if(!occupant.mostrarEnBiblioteca){
+        const lock=document.createElement('span');lock.className='library-map-slot__lock';lock.textContent='•';node.appendChild(lock);
+      }else{
+        node.draggable=true;
+        node.dataset.mapResource=String(occupant.id);
+        node.addEventListener('dragstart',event=>{
+          libraryDragId=String(occupant.id);
+          librarySelectedId=libraryDragId;
+          try{event.dataTransfer.effectAllowed='move';event.dataTransfer.setData('text/plain',libraryDragId)}catch(error){}
+        });
+        node.addEventListener('dragend',()=>{libraryDragId='';document.querySelectorAll('.library-map-slot.drag-over').forEach(x=>x.classList.remove('drag-over'))});
+      }
+    }
+    node.addEventListener('click',()=>{
+      if(!librarySelectedId){
+        if(occupant?.mostrarEnBiblioteca)selectMapResource(occupant.id);
+        return;
+      }
+      placeMapResource(librarySelectedId,slot.id);
+    });
+    node.addEventListener('dragover',event=>{
+      if(!libraryDragId)return;
+      event.preventDefault();node.classList.add('drag-over');
+      try{event.dataTransfer.dropEffect='move'}catch(error){}
+    });
+    node.addEventListener('dragleave',()=>node.classList.remove('drag-over'));
+    node.addEventListener('drop',event=>{
+      if(!libraryDragId)return;
+      event.preventDefault();node.classList.remove('drag-over');
+      const id=libraryDragId||event.dataTransfer?.getData('text/plain');
+      placeMapResource(id,slot.id);
+      libraryDragId='';
+    });
+    slots.appendChild(node);
+  });
+
+  updateMapSaveState();
+}
+function openLibraryMap(){
+  if(!catalog)return;
+  const all=resources();
+  libraryOriginal=new Map(all.map(r=>[String(r.id),slotNumber(r.bibliotecaSlot)]));
+  libraryDraft=new Map(libraryOriginal);
+  const first=all.find(r=>r.mostrarEnBiblioteca);
+  librarySelectedId=first?String(first.id):'';
+  libraryDragId='';
+  setMapStatus('Seleccioná un libro y tocá un hueco, o arrastralo directamente.');
+  renderLibraryMap();
+  $('libraryMapWrap').classList.add('show');
+  $('libraryMapWrap').setAttribute('aria-hidden','false');
+  document.body.classList.add('library-map-open');
+}
+function closeLibraryMap(){
+  if(mapDirty()&&!confirm('Hay cambios de ubicación sin guardar. ¿Cerrar igualmente?'))return;
+  $('libraryMapWrap').classList.remove('show');
+  $('libraryMapWrap').setAttribute('aria-hidden','true');
+  document.body.classList.remove('library-map-open');
+  libraryDragId='';
+}
+function resetLibraryMap(){
+  libraryDraft=new Map(libraryOriginal);
+  setMapStatus('Volvimos a la distribución guardada.','ok');
+  renderLibraryMap();
+}
+async function saveLibraryMap(){
+  if(!mapDirty()){closeLibraryMap();return}
+  $('saveLibraryMap').disabled=true;
+  const all=resources();
+  for(const r of all){
+    const block=blocks().find(b=>String(b._id)===String(r.id));
+    if(!block)continue;
+    block.settings=block.settings||{};
+    const slot=draftSlot(r.id);
+    if(slot)block.settings.bibliotecaSlot=slot;
+    else delete block.settings.bibliotecaSlot;
+  }
+  const ok=await save();
+  if(!ok){renderLibraryMap();return}
+  try{localStorage.setItem('cafasso-resources-updated',String(Date.now()))}catch(error){}
+  libraryOriginal=new Map(resources().map(r=>[String(r.id),slotNumber(r.bibliotecaSlot)]));
+  libraryDraft=new Map(libraryOriginal);
+  $('libraryMapWrap').classList.remove('show');
+  $('libraryMapWrap').setAttribute('aria-hidden','true');
+  document.body.classList.remove('library-map-open');
+}
 $('resourceForm').onsubmit=async e=>{e.preventDefault();if(busy)return;const title=$('title').value.trim();if(!title)return;const wantsLibrary=$('showLibrary').checked;const list=blocks();let block=editingId?list.find(x=>x._id===editingId):null;let bibliotecaSlot=slotNumber(block?.settings?.bibliotecaSlot);const currentId=block?._id||editingId;if(wantsLibrary&&(!bibliotecaSlot||!slotIsAvailable(bibliotecaSlot,currentId))){bibliotecaSlot=firstFreeLibrarySlot(currentId);if(!bibliotecaSlot){alert('La Biblioteca ya tiene ocupadas sus 33 posiciones. Eliminá o liberá un recurso antes de agregar otro libro.');return}}if(!block){block={_id:uid(),type:'Documento',title:'',required:false,content:{body:''},settings:{cafassoResource:true}};list.push(block)}block.title=title;block.type=courseType($('type').value);block.required=false;block.content={body:$('url').value.trim()};const nextSettings={...(block.settings||{}),cafassoResource:true,categoria:$('resourceCategory').value.trim(),resourceType:$('type').value,descripcion:$('description').value.trim(),mostrarEnBiblioteca:wantsLibrary,disponibleParaCursos:$('availableCourses').checked,cursos:$('courses').value.split(',').map(x=>x.trim()).filter(Boolean)};if(bibliotecaSlot)nextSettings.bibliotecaSlot=bibliotecaSlot;else delete nextSettings.bibliotecaSlot;block.settings=nextSettings;const ok=await save();if(ok)closeForm()};
-document.addEventListener('click',async e=>{const edit=e.target.closest('[data-edit]');if(edit){openForm(edit.dataset.edit);return}const del=e.target.closest('[data-delete]');if(del){const r=resources().find(x=>x.id===del.dataset.delete);if(!r||!confirm(`¿Eliminar “${r.titulo}”?`))return;const list=blocks(),i=list.findIndex(x=>x._id===r.id);if(i>=0)list.splice(i,1);await save()}});$('newResource').onclick=()=>openForm();$('cancel').onclick=closeForm;$('reload').onclick=load;$('search').oninput=render;$('category').onchange=render;$('modalWrap').onclick=e=>{if(e.target===$('modalWrap'))closeForm()};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeForm()});load();
+document.addEventListener('click',async e=>{const edit=e.target.closest('[data-edit]');if(edit){openForm(edit.dataset.edit);return}const del=e.target.closest('[data-delete]');if(del){const r=resources().find(x=>x.id===del.dataset.delete);if(!r||!confirm(`¿Eliminar “${r.titulo}”?`))return;const list=blocks(),i=list.findIndex(x=>x._id===r.id);if(i>=0)list.splice(i,1);await save()}});
+$('newResource').onclick=()=>openForm();
+$('openLibraryMap').onclick=openLibraryMap;
+$('closeLibraryMap').onclick=closeLibraryMap;
+$('resetLibraryMap').onclick=resetLibraryMap;
+$('saveLibraryMap').onclick=saveLibraryMap;
+$('cancel').onclick=closeForm;
+$('reload').onclick=load;
+$('search').oninput=render;
+$('category').onchange=render;
+$('modalWrap').onclick=e=>{if(e.target===$('modalWrap'))closeForm()};
+$('libraryMapWrap').onclick=e=>{if(e.target===$('libraryMapWrap'))closeLibraryMap()};
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  if($('libraryMapWrap').classList.contains('show'))closeLibraryMap();
+  else closeForm();
+});
+load();
 </script>
 <script src="./admin-shared-nav.js?v=20261005-3"></script></body>
 </html>
