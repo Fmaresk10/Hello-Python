@@ -25,7 +25,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 .object-list{display:grid;gap:6px;max-height:310px;overflow:auto;padding:12px}.object{display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);text-align:left;cursor:pointer}.object:hover{background:#fcf8f0}.object.active{border-color:#d4ac31;background:#FFF7D8;box-shadow:inset 3px 0 #e1b82f}.object .ico{display:grid;place-items:center;width:25px;height:25px;border-radius:8px;background:#F3EEE5;font-size:13px}.object strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--navy);font-size:11px}.object small{display:block;margin-top:2px;color:var(--muted);font-size:8px}.object small.safe{color:#4f8b68}.object small.partial{color:#a36c0d}.object small.outside{color:#a94840}.presence{width:7px;height:7px;border-radius:50%;background:#c6cbd0}.presence.on{background:#5fa477;box-shadow:0 0 0 3px rgba(95,164,119,.13)}
 .controls{padding:14px 16px 17px;border-top:1px solid var(--line)}.selected-name{margin-bottom:12px}.selected-name small{display:block;color:#A27317;font-size:8px;font-weight:900;letter-spacing:.11em;text-transform:uppercase}.selected-name strong{display:block;margin-top:4px;color:var(--navy);font:20px Georgia,serif}
 .readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:11px}.readout{padding:8px;border:1px solid var(--line);border-radius:9px;background:#fbf8f2;text-align:center}.readout small{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;letter-spacing:.08em}.readout b{display:block;margin-top:3px;color:var(--navy);font-size:11px}
-.scale-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;margin:9px 0 12px;color:#5d6a78;font-size:9px;font-weight:800}.scale-row input{width:100%}
+.scale-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;margin:9px 0 12px;color:#5d6a78;font-size:9px;font-weight:800}.scale-row input{width:100%}.depth-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;margin:8px 0 10px}.depth-row button{padding:8px 7px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--navy);font-size:9px;font-weight:900;cursor:pointer}.depth-row button:hover{background:#FFF7D8}.depth-value{min-width:64px;text-align:center;color:var(--navy);font-size:10px;font-weight:900}
 .nudge{display:grid;grid-template-columns:repeat(3,44px);justify-content:center;gap:5px;margin:8px 0 13px}.nudge button{height:40px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--navy);font-size:18px;font-weight:900;cursor:pointer}.nudge button:hover{background:#FFF7D8}.nudge .blank{visibility:hidden}.control-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.control-actions .btn{padding:9px;font-size:10px}.help{margin-top:11px;padding:10px 11px;border-radius:11px;background:#F1F6F4;color:#52706A;font-size:9px;line-height:1.45}
 .preview-card{min-width:0;overflow:hidden}.preview-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line)}.preview-head strong{color:var(--navy);font:18px Georgia,serif}.preview-head span{color:var(--muted);font-size:9px}.preview-stage{display:grid;place-items:center;min-height:520px;padding:13px;background:radial-gradient(circle at 50% 40%,rgba(242,201,76,.08),transparent 52%),#173033;overflow:auto}
 .frame-shell{position:relative;width:100%;overflow:hidden;border:1px solid rgba(255,237,191,.25);border-radius:12px;background:#0e2427;box-shadow:0 18px 48px rgba(0,0,0,.28)}.frame-shell.desktop{aspect-ratio:var(--cafasso-editor-desktop-aspect,16/9)}.frame-shell.mobile{width:390px;max-width:100%;height:min(780px,calc(100vh - 180px));min-height:640px;border-radius:24px}.frame-shell iframe{display:block;border:0;background:#102f33}.frame-shell.mobile iframe{width:100%;height:100%}.frame-shell.desktop iframe{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
@@ -84,13 +84,15 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
         <div class="selected-name"><small>Objeto seleccionado</small><strong id="selectedName">Ninguno</strong></div>
         <div class="readouts"><div class="readout"><small>Horizontal</small><b id="xReadout">0%</b></div><div class="readout"><small>Vertical</small><b id="yReadout">0%</b></div><div class="readout"><small>Escala</small><b id="scaleReadout">100%</b></div></div>
         <label class="scale-row"><span>Tamaño</span><input id="scale" type="range" min="35" max="250" value="100" step="1"><b id="scaleValue">100%</b></label>
+        <label class="scale-row"><span>Rotación</span><input id="rotation" type="range" min="-15" max="15" value="0" step="0.5"><b id="rotationValue">0°</b></label>
+        <div class="depth-row" aria-label="Profundidad"><button type="button" id="layerBack">← Atrás</button><span class="depth-value" id="layerValue">Capa base</span><button type="button" id="layerFront">Adelante →</button></div>
         <div class="nudge" aria-label="Ajuste fino">
           <span class="blank"></span><button type="button" data-nudge="0,-0.25" aria-label="Subir">↑</button><span class="blank"></span>
           <button type="button" data-nudge="-0.25,0" aria-label="Izquierda">←</button><button type="button" data-nudge="0,0" aria-label="Centrar ajustes">•</button><button type="button" data-nudge="0.25,0" aria-label="Derecha">→</button>
           <span class="blank"></span><button type="button" data-nudge="0,0.25" aria-label="Bajar">↓</button><span class="blank"></span>
         </div>
         <div class="control-actions"><button class="btn" id="resetObject" type="button">Restablecer objeto</button><button class="btn danger" id="resetScene" type="button">Restablecer escena</button></div>
-        <div class="help">Acomodá una vez y usá “Ver todas”. Un 5/5 significa que cada objeto quedó completamente visible en Notebook, 16:10, 16:9, 4:3 y 21:9. El símbolo ↔ indica que CAFASSO necesitó adaptar ese objeto para mantenerlo visible.</div>
+        <div class="help">Además de posición y tamaño, podés ajustar una rotación suave y mover el objeto por capas. “Capa base” conserva su profundidad original; Atrás/Adelante suma o resta niveles sin pisar el z-index de origen. Después usá “Ver todas” para volver a certificar 5/5.</div>
       </div>
     </aside>
 
@@ -103,7 +105,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 </main>
 </div>
 
-<script src="./cafasso-scene-layouts.js?v=11"></script>
+<script src="./cafasso-scene-layouts.js?v=12"></script>
 <script>
 (()=>{
   const api=window.CafassoSceneLayouts;
@@ -231,8 +233,14 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 
   function currentValue(id=selected){
     const value=draft.spaces?.[space]?.[profile]?.[id];
-    if(!value)return {dx:0,dy:0,scale:1};
-    const out={dx:Number(value.dx)||0,dy:Number(value.dy)||0,scale:Number(value.scale)||1};
+    if(!value)return {dx:0,dy:0,scale:1,rotate:0,layer:0};
+    const out={
+      dx:Number(value.dx)||0,
+      dy:Number(value.dy)||0,
+      scale:Number(value.scale)||1,
+      rotate:Number(value.rotate)||0,
+      layer:Math.round(Number(value.layer)||0)
+    };
     if(Number.isFinite(Number(value.sizePct))&&Number(value.sizePct)>0)out.sizePct=Number(value.sizePct);
     return out;
   }
@@ -248,6 +256,10 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     };
     if(Number.isFinite(Number(value.sizePct))&&Number(value.sizePct)>0)next.sizePct=round(Number(value.sizePct));
     else if(Number.isFinite(Number(base))&&Number(base)>0)next.sizePct=round(Number(base)*next.scale);
+    const rotate=Math.max(-15,Math.min(15,Number(value.rotate)||0));
+    const layer=Math.max(-20,Math.min(20,Math.round(Number(value.layer)||0)));
+    if(Math.abs(rotate)>.001)next.rotate=round(rotate);
+    if(layer)next.layer=layer;
     bucket[id]=next;
     updateDirty(true);
     syncPreviewState();
@@ -337,8 +349,16 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     $('scaleReadout').textContent=scale+'%';
     $('scale').value=String(scale);
     $('scaleValue').textContent=scale+'%';
+    const rotate=Math.max(-15,Math.min(15,Number(value.rotate)||0));
+    const layer=Math.max(-20,Math.min(20,Math.round(Number(value.layer)||0)));
+    $('rotation').value=String(rotate);
+    $('rotationValue').textContent=(rotate>0?'+':'')+rotate.toFixed(1).replace('.0','')+'°';
+    $('layerValue').textContent=layer===0?'Capa base':(layer>0?'+'+layer:String(layer));
     const disabled=!spec;
     $('scale').disabled=disabled;
+    $('rotation').disabled=disabled;
+    $('layerBack').disabled=disabled||layer<=-20;
+    $('layerFront').disabled=disabled||layer>=20;
     $('resetObject').disabled=disabled;
     document.querySelectorAll('[data-nudge]').forEach(button=>button.disabled=disabled);
   }
@@ -348,7 +368,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       space,
       sceneEditor:'1',
       sceneProfile:profile,
-      __cafassoBuild:'1177'
+      __cafassoBuild:'1178'
     });
     return './world.html?'+query.toString();
   }
@@ -579,6 +599,8 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
         scale:Number(data.value.scale)||1
       };
       if(Number.isFinite(Number(data.value.sizePct))&&Number(data.value.sizePct)>0)next.sizePct=round(Number(data.value.sizePct));
+      if(Number.isFinite(Number(data.value.rotate))&&Math.abs(Number(data.value.rotate))>.001)next.rotate=round(Number(data.value.rotate));
+      if(Number.isFinite(Number(data.value.layer))&&Math.round(Number(data.value.layer))!==0)next.layer=Math.round(Number(data.value.layer));
       bucket[data.objectId]=next;
       updateDirty(true);
       renderObjectList();
@@ -596,6 +618,24 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       value.scale=Number($('scale').value)/100;
       const base=metrics[selected]?.baseSizePct;
       if(Number.isFinite(Number(base))&&Number(base)>0)value.sizePct=round(Number(base)*value.scale);
+      setValue(selected,value);
+    });
+    $('rotation').addEventListener('input',()=>{
+      if(!selected)return;
+      const value=currentValue();
+      value.rotate=Number($('rotation').value)||0;
+      setValue(selected,value);
+    });
+    $('layerBack').addEventListener('click',()=>{
+      if(!selected)return;
+      const value=currentValue();
+      value.layer=Math.max(-20,(Number(value.layer)||0)-1);
+      setValue(selected,value);
+    });
+    $('layerFront').addEventListener('click',()=>{
+      if(!selected)return;
+      const value=currentValue();
+      value.layer=Math.min(20,(Number(value.layer)||0)+1);
       setValue(selected,value);
     });
     document.querySelectorAll('[data-nudge]').forEach(button=>button.addEventListener('click',()=>{
