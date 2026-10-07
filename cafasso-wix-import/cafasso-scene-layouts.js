@@ -6,7 +6,7 @@
   const CACHE_KEY='cafassoSceneLayouts:v1';
   const params=new URLSearchParams(location.search);
   const EDITOR=params.get('sceneEditor')==='1';
-  const SAFE_ZONE={minAspect:4/3,maxAspect:21/9};
+  const SAFE_ZONE={left:12.5,right:12.5,top:11.9,bottom:11.9};
 
   const REGISTRY={
     house:{
@@ -295,8 +295,8 @@
       'html[data-cafasso-scene-editor="1"] [data-cafasso-scene-object].cafasso-scene-editor-selected{outline:3px solid #f2c94c!important;outline-offset:5px!important;filter:drop-shadow(0 0 8px rgba(242,201,76,.55))!important;z-index:999!important}',
       'html[data-cafasso-scene-editor="1"] [data-cafasso-scene-object]:active{cursor:grabbing!important}',
       'html[data-cafasso-scene-editor="1"] .cafasso-scene-editor-grid{position:absolute!important;inset:0!important;z-index:998!important;pointer-events:none!important;background-image:linear-gradient(rgba(255,255,255,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.13) 1px,transparent 1px)!important;background-size:10% 10%!important}',
-      'html[data-cafasso-scene-editor="1"] .cafasso-scene-editor-safe-zone{position:absolute!important;left:var(--cafasso-safe-zone-left,0%)!important;right:var(--cafasso-safe-zone-right,0%)!important;top:var(--cafasso-safe-zone-top,0%)!important;bottom:var(--cafasso-safe-zone-bottom,24%)!important;z-index:997!important;pointer-events:none!important;border:2px solid rgba(100,232,164,.95)!important;border-radius:8px!important;box-shadow:0 0 0 9999px rgba(7,24,25,.30),inset 0 0 0 1px rgba(255,255,255,.22)!important}',
-      'html[data-cafasso-scene-editor="1"] .cafasso-scene-editor-safe-zone:before{content:"ZONA SEGURA · VENTANA ACTUAL + 21:9";position:absolute;left:8px;top:8px;padding:5px 7px;border-radius:999px;background:rgba(8,48,42,.82);color:#d8ffe9;font:800 8px/1 Inter,system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 3px 10px rgba(0,0,0,.25)}',
+      'html[data-cafasso-scene-editor="1"] .cafasso-scene-editor-safe-zone{position:absolute!important;left:12.5%!important;right:12.5%!important;top:11.9%!important;bottom:11.9%!important;z-index:997!important;pointer-events:none!important;border:2px solid rgba(100,232,164,.95)!important;border-radius:8px!important;box-shadow:0 0 0 9999px rgba(7,24,25,.30),inset 0 0 0 1px rgba(255,255,255,.22)!important}',
+      'html[data-cafasso-scene-editor="1"] .cafasso-scene-editor-safe-zone:before{content:"ZONA SEGURA · 4:3 → 21:9";position:absolute;left:8px;top:8px;padding:5px 7px;border-radius:999px;background:rgba(8,48,42,.82);color:#d8ffe9;font:800 8px/1 Inter,system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 3px 10px rgba(0,0,0,.25)}',
       'html[data-cafasso-scene-editor="1"] [data-cafasso-safe-status="partial"]{outline-color:#f0b84a!important}',
       'html[data-cafasso-scene-editor="1"] [data-cafasso-safe-status="outside"]{outline-color:#f06f64!important}'
     ].join('\n');
@@ -312,28 +312,16 @@
     const scene=sceneNode(space);
     if(!scene||currentProfile()!=='desktop')return null;
     const sr=scene.getBoundingClientRect();
-    const vv=window.visualViewport;
-    const viewportLeft=Number(vv?.offsetLeft)||0;
-    const viewportTop=Number(vv?.offsetTop)||0;
-    const viewportRight=viewportLeft+Math.max(1,Number(vv?.width)||window.innerWidth||1);
-    const viewportBottom=viewportTop+Math.max(1,Number(vv?.height)||window.innerHeight||1);
-
-    // La escena desktop queda anclada arriba y escala por ancho.
-    // Para compatibilidad universal limitamos además la altura visible a 21:9.
-    const sceneAspect=Math.max(.01,sr.width/Math.max(1,sr.height));
-    const universalVisibleFraction=Math.min(1,sceneAspect/SAFE_ZONE.maxAspect);
-
-    const left=Math.max(sr.left,viewportLeft);
-    const right=Math.min(sr.right,viewportRight);
-    const top=Math.max(sr.top,viewportTop);
-    const universalBottom=sr.top+sr.height*universalVisibleFraction;
-    const bottom=Math.min(sr.bottom,viewportBottom,universalBottom);
-
-    const leftPct=clamp((left-sr.left)/Math.max(1,sr.width)*100,0,100);
-    const rightPct=clamp((sr.right-right)/Math.max(1,sr.width)*100,0,100);
-    const topPct=clamp((top-sr.top)/Math.max(1,sr.height)*100,0,100);
-    const bottomPct=clamp((sr.bottom-bottom)/Math.max(1,sr.height)*100,0,100);
-    return {left,right,top,bottom,leftPct,rightPct,topPct,bottomPct};
+    return {
+      left:sr.left+sr.width*SAFE_ZONE.left/100,
+      right:sr.right-sr.width*SAFE_ZONE.right/100,
+      top:sr.top+sr.height*SAFE_ZONE.top/100,
+      bottom:sr.bottom-sr.height*SAFE_ZONE.bottom/100,
+      leftPct:SAFE_ZONE.left,
+      rightPct:SAFE_ZONE.right,
+      topPct:SAFE_ZONE.top,
+      bottomPct:SAFE_ZONE.bottom
+    };
   }
 
   function ensureEditorGrid(space){
