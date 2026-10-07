@@ -17,7 +17,7 @@ button,input{font:inherit}
 .side-foot{position:absolute;left:20px;right:20px;bottom:24px}.motto{margin-bottom:16px;color:#F7D276;font:italic 14px/1.45 Georgia,serif}.back{display:block;padding-top:16px;border-top:1px solid rgba(255,255,255,.18);color:#fff;text-decoration:none;font-weight:700}
 main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 .head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:18px}.eyebrow{color:#B77D00;font-size:11px;font-weight:850;letter-spacing:.13em;text-transform:uppercase}.head h1{margin:7px 0 5px;color:var(--navy);font:37px Georgia,serif}.head p{max-width:860px;margin:0;color:var(--muted);line-height:1.5}.status{flex:0 0 auto;padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--muted);font-size:11px;font-weight:850}.status.ok{color:var(--green)}.status.warn{color:#8A6811}.status.bad{color:var(--red)}
-.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}.scene-tabs,.device-tabs,.toolbar-actions{display:flex;gap:7px;flex-wrap:wrap}.chip,.btn{border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--navy);font-weight:850;cursor:pointer}.chip{padding:9px 12px}.chip.active{border-color:#d5b032;background:#FFF4CC}.btn{padding:10px 13px}.btn.primary{border-color:#e2bb38;background:var(--gold)}.btn.danger{color:var(--red);background:#fff8f7;border-color:#eccbc7}.btn:disabled{opacity:.45;cursor:default}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}.compat-strip{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:#fff}.compat-copy strong{display:block;color:var(--navy);font-size:11px}.compat-copy small{display:block;margin-top:2px;color:var(--muted);font-size:8px}.screen-presets{display:flex;gap:5px;flex-wrap:wrap}.screen-presets .chip{padding:7px 9px;font-size:9px}.compat-summary{padding:8px 11px;border-radius:999px;background:#eef2f0;color:#60706b;font-size:10px;font-weight:900;white-space:nowrap}.compat-summary.ok{background:#e7f5eb;color:#397451}.compat-summary.warn{background:#fff0d7;color:#925f0a}.compat-summary.bad{background:#fde8e5;color:#9b3e37}.scene-tabs,.device-tabs,.toolbar-actions{display:flex;gap:7px;flex-wrap:wrap}.chip,.btn{border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--navy);font-weight:850;cursor:pointer}.chip{padding:9px 12px}.chip.active{border-color:#d5b032;background:#FFF4CC}.btn{padding:10px 13px}.btn.primary{border-color:#e2bb38;background:var(--gold)}.btn.danger{color:var(--red);background:#fff8f7;border-color:#eccbc7}.btn:disabled{opacity:.45;cursor:default}
 .workspace{display:grid;grid-template-columns:310px minmax(0,1fr);gap:14px;align-items:start}
 .panel,.preview-card{border:1px solid var(--line);border-radius:19px;background:var(--card);box-shadow:0 9px 24px rgba(25,37,54,.05)}
 .panel{position:sticky;top:16px;overflow:hidden}
@@ -62,6 +62,20 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     <div class="toolbar-actions"><button class="btn" id="discard" type="button">Descartar cambios</button><button class="btn primary" id="save" type="button">Guardar distribución</button></div>
   </div>
 
+  <div class="compat-strip" id="compatStrip">
+    <div class="compat-copy"><strong>Compatibilidad Desktop</strong><small>Probá el mismo diseño en cinco formatos reales antes de guardarlo.</small></div>
+    <div class="screen-presets" id="screenPresets">
+      <button class="chip active" type="button" data-viewport="current">Esta pantalla</button>
+      <button class="chip" type="button" data-viewport="notebook">Notebook</button>
+      <button class="chip" type="button" data-viewport="16x10">16:10</button>
+      <button class="chip" type="button" data-viewport="16x9">16:9</button>
+      <button class="chip" type="button" data-viewport="4x3">4:3</button>
+      <button class="chip" type="button" data-viewport="21x9">21:9</button>
+      <button class="btn" type="button" id="testAll">✓ Ver todas</button>
+    </div>
+    <div class="compat-summary" id="compatSummary">Sin verificar</div>
+  </div>
+
   <div class="workspace">
     <aside class="panel">
       <div class="panel-head"><strong id="panelTitle">Objetos</strong><small>Elegí uno o tocá directamente el objeto en la escena. Después arrastralo hasta donde quieras.</small></div>
@@ -76,7 +90,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
           <span class="blank"></span><button type="button" data-nudge="0,0.25" aria-label="Bajar">↓</button><span class="blank"></span>
         </div>
         <div class="control-actions"><button class="btn" id="resetObject" type="button">Restablecer objeto</button><button class="btn danger" id="resetScene" type="button">Restablecer escena</button></div>
-        <div class="help">En Escritorio, el fondo llena la pantalla y los objetos interactivos quedan protegidos dentro del viewport. Si entrás en pantalla completa con el mismo ancho, mantienen su posición y tamaño de pantalla. Mobile se ajusta por separado.</div>
+        <div class="help">Acomodá una vez y usá “Ver todas”. Un 5/5 significa que cada objeto quedó completamente visible en Notebook, 16:10, 16:9, 4:3 y 21:9. El símbolo ↔ indica que CAFASSO necesitó adaptar ese objeto para mantenerlo visible.</div>
       </div>
     </aside>
 
@@ -89,7 +103,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 </main>
 </div>
 
-<script src="./cafasso-scene-layouts.js?v=10"></script>
+<script src="./cafasso-scene-layouts.js?v=11"></script>
 <script>
 (()=>{
   const api=window.CafassoSceneLayouts;
@@ -104,6 +118,17 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
   let presence={};
   let metrics={};
   let saveBusy=false;
+  const VIEWPORT_PRESETS={
+    notebook:{label:'Notebook',width:1366,height:650},
+    '16x10':{label:'16:10',width:1440,height:900},
+    '16x9':{label:'16:9',width:1920,height:1080},
+    '4x3':{label:'4:3',width:1024,height:768},
+    '21x9':{label:'21:9',width:2560,height:1080}
+  };
+  let viewportMode='current';
+  let compatResults={};
+  let audit=null;
+  let reportSeq=0;
 
   function guard(){
     try{
@@ -122,6 +147,54 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
   function clone(value){return JSON.parse(JSON.stringify(value||{}))}
   function round(value){return Math.round(Number(value||0)*100)/100}
 
+  function activeViewportSize(){
+    if(profile==='desktop'&&VIEWPORT_PRESETS[viewportMode]){
+      const p=VIEWPORT_PRESETS[viewportMode];
+      return {width:p.width,height:p.height};
+    }
+    return realViewportSize();
+  }
+
+  function compatibilityForObject(id){
+    const keys=Object.keys(VIEWPORT_PRESETS);
+    if(!keys.every(key=>compatResults[key]))return null;
+    let ok=0,adapted=0;
+    keys.forEach(key=>{
+      const item=compatResults[key]?.objects?.[id];
+      if(item?.visible)ok++;
+      if(item?.adjusted)adapted++;
+    });
+    return {ok,total:keys.length,adapted};
+  }
+
+  function renderCompatibility(){
+    const desktop=profile==='desktop';
+    $('compatStrip').style.display=desktop?'flex':'none';
+    if(!desktop)return;
+    document.querySelectorAll('[data-viewport]').forEach(button=>{
+      button.classList.toggle('active',button.dataset.viewport===viewportMode);
+      button.disabled=Boolean(audit?.running);
+    });
+    $('testAll').disabled=Boolean(audit?.running);
+    const keys=Object.keys(VIEWPORT_PRESETS);
+    const tested=keys.filter(key=>compatResults[key]).length;
+    const passed=keys.filter(key=>compatResults[key]?.ok).length;
+    const summary=$('compatSummary');
+    if(audit?.running){
+      summary.textContent='Verificando '+tested+'/'+keys.length+'…';
+      summary.className='compat-summary warn';
+    }else if(tested===keys.length){
+      const adapted=keys.reduce((sum,key)=>sum+(compatResults[key]?.adaptedCount||0),0);
+      summary.textContent='Compatibilidad '+passed+'/'+keys.length+(passed===keys.length?' ✓':'');
+      summary.className='compat-summary '+(passed===keys.length?(adapted?'warn':'ok'):'bad');
+      summary.title=adapted&&passed===keys.length?'Todo visible; CAFASSO adaptó algunos objetos en '+adapted+' casos.':'';
+    }else{
+      summary.textContent=tested?('Verificados '+tested+'/'+keys.length):'Sin verificar';
+      summary.className='compat-summary';
+      summary.title='';
+    }
+  }
+
   function setStatus(text,type){
     $('status').textContent=text;
     $('status').className='status'+(type?' '+type:'');
@@ -129,6 +202,10 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 
   function updateDirty(next=true){
     dirty=Boolean(next);
+    if(next&&Object.keys(compatResults).length){
+      compatResults={};
+      renderCompatibility();
+    }
     $('dirtyDot').classList.toggle('on',dirty);
     $('dirtyText').textContent=dirty?'Hay cambios sin guardar':'Sin cambios pendientes';
     $('save').disabled=saveBusy||!dirty;
@@ -206,7 +283,9 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       const has=draft.spaces?.[space]?.[profile]?.[item.id]?'Ajustado':'Base';
       const safety=profile==='desktop'?(metrics[item.id]?.safeStatus||''):'';
       const safetyText=safety==='safe'?' · Seguro':safety==='partial'?' · Parcial':safety==='outside'?' · Fuera':'';
-      return '<button class="object'+active+'" type="button" data-object="'+item.id+'"><span class="ico">'+(index+1)+'</span><span><strong>'+item.label+'</strong><small class="'+safety+'">'+has+safetyText+'</small></span><i class="presence'+found+'"></i></button>';
+      const compat=compatibilityForObject(item.id);
+      const compatText=compat?' · '+compat.ok+'/'+compat.total+(compat.adapted?' ↔':''):'';
+      return '<button class="object'+active+'" type="button" data-object="'+item.id+'"><span class="ico">'+(index+1)+'</span><span><strong>'+item.label+'</strong><small class="'+safety+'">'+has+safetyText+compatText+'</small></span><i class="presence'+found+'"></i></button>';
     }).join('');
     $('objectList').querySelectorAll('[data-object]').forEach(button=>button.addEventListener('click',()=>{
       selectObject(button.dataset.object,true);
@@ -257,7 +336,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       space,
       sceneEditor:'1',
       sceneProfile:profile,
-      __cafassoBuild:'1175'
+      __cafassoBuild:'1176'
     });
     return './world.html?'+query.toString();
   }
@@ -274,7 +353,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     const shell=$('frameShell');
     const frame=$('preview');
     if(!shell||!frame||profile!=='desktop')return;
-    const viewport=realViewportSize();
+    const viewport=activeViewportSize();
     shell.style.setProperty('--cafasso-editor-desktop-aspect',viewport.width+' / '+viewport.height);
     shell.dataset.viewportReference=viewport.width+'×'+viewport.height;
 
@@ -299,7 +378,8 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 
   function loadFrame(){
     const entry=sceneEntry();
-    $('previewTitle').textContent=entry.label+' · '+(profile==='mobile'?'Móvil':'Escritorio');
+    const viewportLabel=profile==='desktop'&&VIEWPORT_PRESETS[viewportMode]?' · '+VIEWPORT_PRESETS[viewportMode].label:'';
+    $('previewTitle').textContent=entry.label+' · '+(profile==='mobile'?'Móvil':'Escritorio')+viewportLabel;
     const shell=$('frameShell');
     shell.classList.toggle('desktop',profile==='desktop');
     shell.classList.toggle('mobile',profile==='mobile');
@@ -314,6 +394,11 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     if(!frame)return;
     frame.postMessage({type:'cafasso-scene-editor-control',action:'state',layouts:clone(draft)},location.origin);
     if(selected)frame.postMessage({type:'cafasso-scene-editor-control',action:'select',objectId:selected},location.origin);
+    const token='report-'+(++reportSeq);
+    if(audit?.running&&audit.current===viewportMode)audit.expectedToken=token;
+    setTimeout(()=>{
+      try{frame.postMessage({type:'cafasso-scene-editor-control',action:'report',token},location.origin)}catch(error){}
+    },100);
   }
 
   function setProfile(next){
@@ -322,9 +407,11 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     selected='';
     presence={};
     metrics={};
+    if(profile!=='desktop')viewportMode='current';
     document.querySelectorAll('[data-profile]').forEach(button=>button.classList.toggle('active',button.dataset.profile===profile));
     renderObjectList();
     renderSelected();
+    renderCompatibility();
     loadFrame();
   }
 
@@ -375,6 +462,76 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     setStatus('Cambios descartados');
   }
 
+  function evaluateAuditResult(data){
+    const entry=sceneEntry();
+    const objects={};
+    let ok=true,adaptedCount=0;
+    entry.objects.forEach(item=>{
+      const found=Boolean(data.presence?.[item.id]);
+      const metric=data.metrics?.[item.id]||{};
+      const visible=found&&metric.viewportStatus==='visible';
+      const adjusted=Boolean(metric.screenAdjusted);
+      objects[item.id]={visible,adjusted,status:metric.viewportStatus||'missing'};
+      if(!visible)ok=false;
+      if(adjusted)adaptedCount++;
+    });
+    return {ok,adaptedCount,objects};
+  }
+
+  function finishAudit(){
+    if(!audit)return;
+    const restore=audit.originalMode||'current';
+    audit.running=false;
+    audit.current='';
+    audit.expectedToken='';
+    viewportMode=restore;
+    renderCompatibility();
+    renderObjectList();
+    loadFrame();
+    setStatus('Compatibilidad verificada',Object.values(compatResults).every(result=>result.ok)?'ok':'warn');
+    audit=null;
+  }
+
+  function runNextAudit(){
+    if(!audit?.running)return;
+    if(!audit.queue.length){finishAudit();return}
+    viewportMode=audit.queue.shift();
+    audit.current=viewportMode;
+    audit.expectedToken='';
+    presence={};metrics={};
+    renderCompatibility();
+    loadFrame();
+  }
+
+  function startAudit(){
+    if(audit?.running)return;
+    if(profile!=='desktop'){
+      setProfile('desktop');
+      setTimeout(startAudit,250);
+      return;
+    }
+    compatResults={};
+    audit={
+      running:true,
+      originalMode:viewportMode,
+      queue:Object.keys(VIEWPORT_PRESETS),
+      current:'',
+      expectedToken:''
+    };
+    renderCompatibility();
+    setStatus('Verificando compatibilidad…','warn');
+    runNextAudit();
+  }
+
+  function setViewportMode(next){
+    if(profile!=='desktop'||audit?.running)return;
+    if(next!=='current'&&!VIEWPORT_PRESETS[next])return;
+    viewportMode=next;
+    presence={};metrics={};
+    renderCompatibility();
+    loadFrame();
+  }
+
   function handleEditorMessage(event){
     if(event.origin!==location.origin)return;
     const data=event.data||{};
@@ -382,6 +539,14 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     if(data.action==='presence'){
       presence=data.presence||{};
       metrics=data.metrics||{};
+      if(audit?.running&&audit.current===viewportMode&&audit.expectedToken&&data.reportToken===audit.expectedToken){
+        compatResults[viewportMode]=evaluateAuditResult(data);
+        audit.expectedToken='';
+        renderCompatibility();
+        renderObjectList();
+        setTimeout(runNextAudit,80);
+        return;
+      }
       renderObjectList();
       renderSelected();
       return;
@@ -408,6 +573,8 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 
   function bind(){
     document.querySelectorAll('[data-profile]').forEach(button=>button.addEventListener('click',()=>setProfile(button.dataset.profile)));
+    document.querySelectorAll('[data-viewport]').forEach(button=>button.addEventListener('click',()=>setViewportMode(button.dataset.viewport)));
+    $('testAll').addEventListener('click',startAudit);
     $('scale').addEventListener('input',()=>{
       if(!selected)return;
       const value=currentValue();
@@ -458,6 +625,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     renderTabs();
     renderObjectList();
     renderSelected();
+    renderCompatibility();
     bind();
     updateDirty(false);
     loadFrame();
