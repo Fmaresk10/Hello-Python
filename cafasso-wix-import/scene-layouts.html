@@ -76,7 +76,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
           <span class="blank"></span><button type="button" data-nudge="0,0.25" aria-label="Bajar">↓</button><span class="blank"></span>
         </div>
         <div class="control-actions"><button class="btn" id="resetObject" type="button">Restablecer objeto</button><button class="btn danger" id="resetScene" type="button">Restablecer escena</button></div>
-        <div class="help">En Escritorio, la escena llena siempre la pantalla. El rectángulo verde marca la zona que permanece visible entre formatos 4:3 y 21:9. Fondo y objetos escalan juntos, así no aparecen franjas vacías. Mobile se ajusta por separado.</div>
+        <div class="help">En Escritorio, el fondo llena la pantalla y los objetos interactivos quedan protegidos dentro del viewport. Si entrás en pantalla completa con el mismo ancho, mantienen su posición y tamaño de pantalla. Mobile se ajusta por separado.</div>
       </div>
     </aside>
 
@@ -89,7 +89,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 </main>
 </div>
 
-<script src="./cafasso-scene-layouts.js?v=9"></script>
+<script src="./cafasso-scene-layouts.js?v=10"></script>
 <script>
 (()=>{
   const api=window.CafassoSceneLayouts;
@@ -257,7 +257,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       space,
       sceneEditor:'1',
       sceneProfile:profile,
-      __cafassoBuild:'1174'
+      __cafassoBuild:'1175'
     });
     return './world.html?'+query.toString();
   }
