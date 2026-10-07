@@ -435,7 +435,6 @@
     const url=preferredVideoUrl(config);
     if(!url)return Promise.resolve('');
     ensureVideoConnection();
-    preloadVideoHint(url);
     const existing=videoStreamWarmCache.get(url);
     if(existing?.video)return Promise.resolve(url);
     try{
@@ -464,6 +463,19 @@
     }
   }
 
+  function releaseStreamingWarm(config={}){
+    const url=preferredVideoUrl(config);
+    if(!url)return;
+    const cached=videoStreamWarmCache.get(url);
+    if(!cached?.video)return;
+    try{
+      cached.video.pause();
+      cached.video.removeAttribute('src');
+      cached.video.load();
+    }catch(error){}
+    videoStreamWarmCache.delete(url);
+  }
+
   function cancelVideoBlobPreload(config={}){
     const url=preferredVideoUrl(config);
     if(!url)return;
@@ -483,7 +495,6 @@
     if(cached?.state==='ready'&&cached.objectUrl)return Promise.resolve(cached.objectUrl);
     if(cached?.promise)return cached.promise;
 
-    preloadVideoHint(url);
     if(constrainedClient())return warmStreamingVideo(config);
 
     const controller=typeof AbortController==='function'?new AbortController():null;
@@ -591,6 +602,7 @@
     close({immediate:true});
     removeSignal();
     const preparedBeforeShow=preparedVideoUrl(config);
+    releaseStreamingWarm(config);
     if(!preparedBeforeShow)cancelVideoBlobPreload(config);
     if(config.removeBackground!==false){
       warmCutoutAssets();
@@ -918,7 +930,7 @@
   }
 
   window.CafassoHologram={
-    show,announce,close,register,fire,context,loadGlobalRules,wixMp4Url,preloadVideoBlob,warmStreamingVideo,warmRelevantVideo,constrainedClient,
+    show,announce,close,register,fire,context,loadGlobalRules,wixMp4Url,preloadVideoBlob,warmStreamingVideo,warmRelevantVideo,releaseStreamingWarm,constrainedClient,
     async refresh(){lastSpaceKey='';await loadGlobalRules({attempts:3});syncExperience();return globalRules.slice()},
     get globalRules(){return globalRules.slice()},
     get loadState(){return {...globalLoadState}},
