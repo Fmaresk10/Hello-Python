@@ -15,7 +15,10 @@
   let closeTimer=0;
   let globalLoadState={status:'idle',count:0,error:'',loadedAt:0};
   const videoBlobCache=new Map();
+  const videoStreamWarmCache=new Map();
   const GLOBAL_WARM_CACHE_KEY='cafassoHologramWarmRules:v1';
+  const CUTOUT_MODULE='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/+esm';
+  const CUTOUT_MODEL='https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite';
   const GLOBAL_CONFIG_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
   const GLOBAL_CONFIG_TITLE='__CAFASSO_GLOBAL_HOLOGRAMS__';
   const PREVIEW_MODE=new URLSearchParams(location.search).get('holoPreview')==='1';
@@ -360,6 +363,37 @@
     return spot;
   }
 
+  function constrainedClient(){
+    try{
+      const connection=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+      if(connection?.saveData)return true;
+      if(/(^|-)2g|3g/.test(String(connection?.effectiveType||'')))return true;
+    }catch(error){}
+    return Boolean(window.matchMedia?.('(max-width: 900px), (pointer: coarse)').matches);
+  }
+
+  function ensureLink(rel,href,extra={}){
+    if(!href||document.querySelector('link[data-cafasso-warm="'+CSS.escape(href)+'"]'))return;
+    try{
+      const link=document.createElement('link');
+      link.rel=rel;
+      link.href=href;
+      Object.entries(extra).forEach(([key,value])=>{
+        if(key==='crossOrigin')link.crossOrigin=value;
+        else link.setAttribute(key,value);
+      });
+      link.dataset.cafassoWarm=href;
+      document.head.appendChild(link);
+    }catch(error){}
+  }
+
+  function warmCutoutAssets(){
+    ensureLink('preconnect','https://cdn.jsdelivr.net',{crossOrigin:'anonymous'});
+    ensureLink('preconnect','https://storage.googleapis.com',{crossOrigin:'anonymous'});
+    ensureLink('modulepreload',CUTOUT_MODULE,{crossOrigin:'anonymous'});
+    ensureLink('preload',CUTOUT_MODEL,{as:'fetch',crossOrigin:'anonymous'});
+  }
+
   function ensureVideoConnection(){
     if(document.querySelector('link[data-cafasso-holo-video-preconnect]'))return;
     const link=document.createElement('link');
@@ -397,6 +431,49 @@
     }catch(error){}
   }
 
+  function warmStreamingVideo(config={}){
+    const url=preferredVideoUrl(config);
+    if(!url)return Promise.resolve('');
+    ensureVideoConnection();
+    preloadVideoHint(url);
+    const existing=videoStreamWarmCache.get(url);
+    if(existing?.video)return Promise.resolve(url);
+    try{
+      const video=document.createElement('video');
+      video.preload='auto';
+      video.muted=true;
+      video.playsInline=true;
+      video.crossOrigin=config.removeBackground?'anonymous':null;
+      video.src=url;
+      videoStreamWarmCache.set(url,{video,startedAt:Date.now()});
+      const release=()=>{
+        setTimeout(()=>{
+          const current=videoStreamWarmCache.get(url);
+          if(current?.video===video&&Date.now()-current.startedAt>12000){
+            try{video.pause();video.removeAttribute('src');video.load()}catch(error){}
+            videoStreamWarmCache.delete(url);
+          }
+        },14000);
+      };
+      video.addEventListener('canplay',release,{once:true});
+      video.addEventListener('error',release,{once:true});
+      try{video.load()}catch(error){}
+      return Promise.resolve(url);
+    }catch(error){
+      return Promise.resolve('');
+    }
+  }
+
+  function cancelVideoBlobPreload(config={}){
+    const url=preferredVideoUrl(config);
+    if(!url)return;
+    const cached=videoBlobCache.get(url);
+    if(cached?.state==='loading'&&cached.controller){
+      try{cached.controller.abort()}catch(error){}
+      videoBlobCache.delete(url);
+    }
+  }
+
   function preloadVideoBlob(config={}){
     const url=preferredVideoUrl(config);
     if(!url)return Promise.resolve('');
@@ -407,6 +484,7 @@
     if(cached?.promise)return cached.promise;
 
     preloadVideoHint(url);
+    if(constrainedClient())return warmStreamingVideo(config);
 
     const controller=typeof AbortController==='function'?new AbortController():null;
     const timer=controller?setTimeout(()=>controller.abort(),15000):0;
@@ -430,7 +508,7 @@
       return '';
     }).finally(()=>{if(timer)clearTimeout(timer)});
 
-    videoBlobCache.set(url,{state:'loading',promise});
+    videoBlobCache.set(url,{state:'loading',promise,controller});
     return promise;
   }
 
@@ -488,7 +566,7 @@
   function warmRelevantVideo(pool=globalRules){
     const rule=relevantRule(Array.isArray(pool)?pool:[]);
     if(!rule)return Promise.resolve('');
-    return preloadVideoBlob(rule);
+    return constrainedClient()?warmStreamingVideo(rule):preloadVideoBlob(rule);
   }
 
   function mediaHtml(config){
@@ -512,6 +590,12 @@
     installStyles();
     close({immediate:true});
     removeSignal();
+    const preparedBeforeShow=preparedVideoUrl(config);
+    if(!preparedBeforeShow)cancelVideoBlobPreload(config);
+    if(config.removeBackground!==false){
+      warmCutoutAssets();
+      warmCutoutEngine(true);
+    }
     config=withPreparedVideo(config);
     current={...config};
     const stage=document.createElement('section');
@@ -594,11 +678,26 @@
 
       video.addEventListener('error',fallbackWithoutCors,{once:true});
 
-      const play=()=>video.play().catch(()=>{
-        const hint=stage.querySelector('.cafasso-holo-audio-hint');
-        if(hint){hint.textContent='Tocá Repetir para escuchar';hint.style.pointerEvents='auto';}
-      });
-      setTimeout(play,80);
+      let playRetryBound=false;
+      const play=()=>{
+        let attempt;
+        try{attempt=video.play()}catch(error){attempt=Promise.reject(error)}
+        return Promise.resolve(attempt).catch(error=>{
+          const blocked=String(error?.name||'')==='NotAllowedError';
+          if(!blocked&&!playRetryBound){
+            playRetryBound=true;
+            video.addEventListener('canplay',()=>{
+              playRetryBound=false;
+              try{video.play().catch(()=>{})}catch(retryError){}
+            },{once:true});
+          }
+          if(blocked){
+            const hint=stage.querySelector('.cafasso-holo-audio-hint');
+            if(hint){hint.textContent='Tocá Repetir para escuchar';hint.style.pointerEvents='auto';}
+          }
+        });
+      };
+      play();
       stage.querySelector('[data-holo-replay]')?.addEventListener('click',()=>{try{video.currentTime=0;}catch(error){}play();});
     }
     stage.querySelector('.cafasso-holo-close')?.addEventListener('click',close);
@@ -612,8 +711,12 @@
   function announce(config={}){
     installStyles();
     if(!config||hasSeen(config))return null;
-    warmCutoutEngine();
-    preloadVideoBlob(config);
+    if(config.removeBackground!==false){
+      warmCutoutAssets();
+      warmCutoutEngine(true);
+    }
+    if(constrainedClient())warmStreamingVideo(config);
+    else preloadVideoBlob(config);
     removeSignal();
     const signal=document.createElement('button');
     signal.id=SIGNAL_ID;
@@ -754,7 +857,11 @@
         // Reset the key so Casa/Patio/etc. is evaluated again now that rules exist.
         lastSpaceKey='';
         saveWarmRules(globalRules);
-        warmCutoutEngine();
+        const relevant=relevantRule(globalRules);
+        if(relevant?.removeBackground!==false){
+          warmCutoutAssets();
+          warmCutoutEngine(true);
+        }
         warmRelevantVideo(globalRules);
         scheduleSync();
         try{window.dispatchEvent(new CustomEvent('cafasso:hologram-rules-ready',{detail:{count:globalRules.length}}))}catch(error){}
@@ -773,9 +880,10 @@
     return globalRules;
   }
   let cutoutWarmStarted=false;
-  function warmCutoutEngine(){
+  function warmCutoutEngine(urgent=false){
     if(cutoutWarmStarted)return;
     cutoutWarmStarted=true;
+    warmCutoutAssets();
     const start=()=>{
       const run=window.CafassoHologramCutout?.engine;
       if(typeof run!=='function'){cutoutWarmStarted=false;return}
@@ -784,11 +892,12 @@
         console.warn('CAFASSO cutout warmup',error);
       });
     };
-    if('requestIdleCallback' in window){
-      requestIdleCallback(start,{timeout:1200});
-    }else{
-      setTimeout(start,350);
+    if(urgent){
+      setTimeout(start,0);
+      return;
     }
+    // Start shortly after first paint instead of waiting up to 1.2s for idle time.
+    setTimeout(start,120);
   }
 
   function scheduleSync(){
@@ -809,7 +918,7 @@
   }
 
   window.CafassoHologram={
-    show,announce,close,register,fire,context,loadGlobalRules,wixMp4Url,preloadVideoBlob,warmRelevantVideo,
+    show,announce,close,register,fire,context,loadGlobalRules,wixMp4Url,preloadVideoBlob,warmStreamingVideo,warmRelevantVideo,constrainedClient,
     async refresh(){lastSpaceKey='';await loadGlobalRules({attempts:3});syncExperience();return globalRules.slice()},
     get globalRules(){return globalRules.slice()},
     get loadState(){return {...globalLoadState}},
@@ -826,16 +935,22 @@
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{
     installStyles();
-    warmCutoutEngine();
-    warmRelevantVideo(cachedWarmRules());
+    warmCutoutAssets();
+    const warmRules=cachedWarmRules();
+    const warmRule=relevantRule(warmRules);
+    if(warmRule?.removeBackground!==false)warmCutoutEngine(false);
+    warmRelevantVideo(warmRules);
     loadGlobalRules({attempts:3});
     scheduleSync();
     previewFromStorage();
   },{once:true});
   else {
     installStyles();
-    warmCutoutEngine();
-    warmRelevantVideo(cachedWarmRules());
+    warmCutoutAssets();
+    const warmRules=cachedWarmRules();
+    const warmRule=relevantRule(warmRules);
+    if(warmRule?.removeBackground!==false)warmCutoutEngine(false);
+    warmRelevantVideo(warmRules);
     loadGlobalRules({attempts:3});
     scheduleSync();
     previewFromStorage();
