@@ -85,6 +85,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
         <div class="readouts"><div class="readout"><small>Horizontal</small><b id="xReadout">0%</b></div><div class="readout"><small>Vertical</small><b id="yReadout">0%</b></div><div class="readout"><small>Escala</small><b id="scaleReadout">100%</b></div></div>
         <label class="scale-row"><span>Tamaño</span><input id="scale" type="range" min="35" max="250" value="100" step="1"><b id="scaleValue">100%</b></label>
         <label class="scale-row"><span>Rotación</span><input id="rotation" type="range" min="-15" max="15" value="0" step="0.5"><b id="rotationValue">0°</b></label>
+        <label class="scale-row"><span>Área de clic</span><input id="hitScale" type="range" min="100" max="250" value="100" step="5"><b id="hitScaleValue">100%</b></label>
         <div class="depth-row" aria-label="Profundidad"><button type="button" id="layerBack">← Atrás</button><span class="depth-value" id="layerValue">Capa base</span><button type="button" id="layerFront">Adelante →</button></div>
         <div class="nudge" aria-label="Ajuste fino">
           <span class="blank"></span><button type="button" data-nudge="0,-0.25" aria-label="Subir">↑</button><span class="blank"></span>
@@ -92,7 +93,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
           <span class="blank"></span><button type="button" data-nudge="0,0.25" aria-label="Bajar">↓</button><span class="blank"></span>
         </div>
         <div class="control-actions"><button class="btn" id="resetObject" type="button">Restablecer objeto</button><button class="btn danger" id="resetScene" type="button">Restablecer escena</button></div>
-        <div class="help">Además de posición y tamaño, podés ajustar una rotación suave y mover el objeto por capas. “Capa base” conserva su profundidad original; Atrás/Adelante suma o resta niveles sin pisar el z-index de origen. Después usá “Ver todas” para volver a certificar 5/5.</div>
+        <div class="help">“Área de clic” agranda únicamente la zona interactiva, no el objeto. El contorno celeste se ve solo en el editor; en CAFASSO real es invisible y reenvía el clic al objeto original. 100% usa exactamente el tamaño visual.</div>
       </div>
     </aside>
 
@@ -105,7 +106,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 </main>
 </div>
 
-<script src="./cafasso-scene-layouts.js?v=12"></script>
+<script src="./cafasso-scene-layouts.js?v=13"></script>
 <script>
 (()=>{
   const api=window.CafassoSceneLayouts;
@@ -233,13 +234,14 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 
   function currentValue(id=selected){
     const value=draft.spaces?.[space]?.[profile]?.[id];
-    if(!value)return {dx:0,dy:0,scale:1,rotate:0,layer:0};
+    if(!value)return {dx:0,dy:0,scale:1,rotate:0,layer:0,hitScale:100};
     const out={
       dx:Number(value.dx)||0,
       dy:Number(value.dy)||0,
       scale:Number(value.scale)||1,
       rotate:Number(value.rotate)||0,
-      layer:Math.round(Number(value.layer)||0)
+      layer:Math.round(Number(value.layer)||0),
+      hitScale:Math.max(100,Math.min(250,Number(value.hitScale)||100))
     };
     if(Number.isFinite(Number(value.sizePct))&&Number(value.sizePct)>0)out.sizePct=Number(value.sizePct);
     return out;
@@ -260,6 +262,8 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     const layer=Math.max(-20,Math.min(20,Math.round(Number(value.layer)||0)));
     if(Math.abs(rotate)>.001)next.rotate=round(rotate);
     if(layer)next.layer=layer;
+    const hitScale=Math.max(100,Math.min(250,Number(value.hitScale)||100));
+    if(hitScale>100)next.hitScale=round(hitScale);
     bucket[id]=next;
     updateDirty(true);
     syncPreviewState();
@@ -354,9 +358,13 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     $('rotation').value=String(rotate);
     $('rotationValue').textContent=(rotate>0?'+':'')+rotate.toFixed(1).replace('.0','')+'°';
     $('layerValue').textContent=layer===0?'Capa base':(layer>0?'+'+layer:String(layer));
+    const hitScale=Math.max(100,Math.min(250,Number(value.hitScale)||100));
+    $('hitScale').value=String(hitScale);
+    $('hitScaleValue').textContent=Math.round(hitScale)+'%';
     const disabled=!spec;
     $('scale').disabled=disabled;
     $('rotation').disabled=disabled;
+    $('hitScale').disabled=disabled;
     $('layerBack').disabled=disabled||layer<=-20;
     $('layerFront').disabled=disabled||layer>=20;
     $('resetObject').disabled=disabled;
@@ -368,7 +376,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       space,
       sceneEditor:'1',
       sceneProfile:profile,
-      __cafassoBuild:'1178'
+      __cafassoBuild:'1179'
     });
     return './world.html?'+query.toString();
   }
@@ -601,6 +609,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       if(Number.isFinite(Number(data.value.sizePct))&&Number(data.value.sizePct)>0)next.sizePct=round(Number(data.value.sizePct));
       if(Number.isFinite(Number(data.value.rotate))&&Math.abs(Number(data.value.rotate))>.001)next.rotate=round(Number(data.value.rotate));
       if(Number.isFinite(Number(data.value.layer))&&Math.round(Number(data.value.layer))!==0)next.layer=Math.round(Number(data.value.layer));
+      if(Number.isFinite(Number(data.value.hitScale))&&Number(data.value.hitScale)>100)next.hitScale=round(Number(data.value.hitScale));
       bucket[data.objectId]=next;
       updateDirty(true);
       renderObjectList();
@@ -624,6 +633,12 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       if(!selected)return;
       const value=currentValue();
       value.rotate=Number($('rotation').value)||0;
+      setValue(selected,value);
+    });
+    $('hitScale').addEventListener('input',()=>{
+      if(!selected)return;
+      const value=currentValue();
+      value.hitScale=Number($('hitScale').value)||100;
       setValue(selected,value);
     });
     $('layerBack').addEventListener('click',()=>{
