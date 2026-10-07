@@ -73,6 +73,7 @@
     }
   };
 
+  const screenLockState={width:0,items:{}};
   const clone=value=>JSON.parse(JSON.stringify(value||{}));
   const clamp=(value,min,max)=>Math.min(max,Math.max(min,Number(value)||0));
   const round=value=>Math.round(Number(value||0)*100)/100;
@@ -237,6 +238,7 @@
     node.style.removeProperty('translate');
     node.style.removeProperty('scale');
     delete node.dataset.cafassoSceneLayoutApplied;
+    delete node.dataset.cafassoScreenLocked;
   }
 
   function measureBaseWidthPct(space,node){
@@ -257,6 +259,105 @@
     if(!scene||!node)return 0;
     const sceneWidth=Math.max(1,scene.getBoundingClientRect().width||scene.clientWidth||1);
     return round(Math.max(0,node.getBoundingClientRect().width||0)/sceneWidth*100);
+  }
+
+  function viewportRect(){
+    const vv=window.visualViewport;
+    const left=Number(vv?.offsetLeft)||0;
+    const top=Number(vv?.offsetTop)||0;
+    const width=Math.max(1,Number(vv?.width)||window.innerWidth||1);
+    const height=Math.max(1,Number(vv?.height)||window.innerHeight||1);
+    return {left,top,right:left+width,bottom:top+height,width,height};
+  }
+
+  function screenLockSignature(layout){
+    return [
+      round(layout?.dx||0),
+      round(layout?.dy||0),
+      Math.round(Number(layout?.scale||1)*1000)/1000,
+      Number.isFinite(Number(layout?.sizePct))?round(layout.sizePct):''
+    ].join('|');
+  }
+
+  function sceneVisualScale(space){
+    const scene=sceneNode(space);
+    if(!scene)return 1;
+    const logical=Math.max(1,scene.clientWidth||1);
+    const visual=Math.max(1,scene.getBoundingClientRect().width||logical);
+    return visual/logical;
+  }
+
+  function resetScreenLockIfNeeded(){
+    const vp=viewportRect();
+    if(!screenLockState.width||Math.abs(vp.width-screenLockState.width)>8){
+      screenLockState.width=vp.width;
+      screenLockState.items={};
+    }
+    return vp;
+  }
+
+  function applyDesktopScreenLock(space,spec,node,layout,baseTx,baseTy,baseFactor){
+    if(currentProfile()!=='desktop'||!node)return;
+    const vp=resetScreenLockIfNeeded();
+    const key=space+':'+spec.id;
+    const signature=screenLockSignature(layout);
+    let item=screenLockState.items[key];
+
+    // Cada cambio real de posición/tamaño crea un nuevo punto de referencia.
+    if(item&&item.signature!==signature){
+      delete screenLockState.items[key];
+      item=null;
+    }
+
+    let rect=node.getBoundingClientRect();
+    if(!rect.width||!rect.height)return;
+
+    if(!item){
+      const margin=8;
+      let dx=0,dy=0;
+      if(rect.left<vp.left+margin)dx=(vp.left+margin)-rect.left;
+      else if(rect.right>vp.right-margin)dx=(vp.right-margin)-rect.right;
+      if(rect.top<vp.top+margin)dy=(vp.top+margin)-rect.top;
+      else if(rect.bottom>vp.bottom-margin)dy=(vp.bottom-margin)-rect.bottom;
+
+      if(dx||dy){
+        const s=Math.max(.0001,sceneVisualScale(space));
+        node.style.setProperty(
+          'translate',
+          round(baseTx+dx/s)+'px '+round(baseTy+dy/s)+'px',
+          'important'
+        );
+        rect=node.getBoundingClientRect();
+      }
+
+      screenLockState.items[key]={
+        signature,
+        left:rect.left,
+        top:rect.top,
+        width:rect.width,
+        height:rect.height
+      };
+      node.dataset.cafassoScreenLocked='1';
+      return;
+    }
+
+    // Si solo cambió la altura del viewport (fullscreen / barras del navegador),
+    // conservar tamaño y posición de pantalla.
+    rect=node.getBoundingClientRect();
+    const widthRatio=rect.width>0?item.width/rect.width:1;
+    const lockFactor=Number.isFinite(widthRatio)&&widthRatio>0?widthRatio:1;
+    node.style.setProperty('scale',String(Math.round(baseFactor*lockFactor*10000)/10000),'important');
+
+    rect=node.getBoundingClientRect();
+    const dx=item.left-rect.left;
+    const dy=item.top-rect.top;
+    const s=Math.max(.0001,sceneVisualScale(space));
+    node.style.setProperty(
+      'translate',
+      round(baseTx+dx/s)+'px '+round(baseTy+dy/s)+'px',
+      'important'
+    );
+    node.dataset.cafassoScreenLocked='1';
   }
 
   function applyOne(space,profile,spec,node,layouts){
@@ -280,6 +381,7 @@
     }
     node.style.setProperty('scale',String(Math.round(factor*10000)/10000),'important');
     node.dataset.cafassoSceneLayoutApplied='1';
+    applyDesktopScreenLock(space,spec,node,layout,tx,ty,factor);
   }
 
   function editorCss(){
@@ -544,7 +646,7 @@
   }
 
   window.CafassoSceneLayouts={
-    API,CONFIG_TITLE,CACHE_KEY,REGISTRY,SAFE_ZONE,safeGeometry,
+    API,CONFIG_TITLE,CACHE_KEY,REGISTRY,SAFE_ZONE,safeGeometry,screenLockState,
     normalizeLayouts,loadRemote,saveRemote,
     getLayouts,getEffectiveLayouts,setPreview,clearPreview,
     apply:scheduleApply,sceneNode,currentSpace,currentProfile,selectObject
