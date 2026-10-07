@@ -108,6 +108,9 @@
           if(Number.isFinite(Number(raw.layer))&&Math.round(Number(raw.layer))!==0){
             item.layer=Math.round(clamp(raw.layer,-20,20));
           }
+          if(Number.isFinite(Number(raw.hitScale))&&Number(raw.hitScale)>100){
+            item.hitScale=round(clamp(raw.hitScale,100,250));
+          }
           target[spec.id]=item;
         });
         if(Object.keys(target).length){
@@ -240,6 +243,7 @@
     if(Number.isFinite(Number(raw.sizePct))&&Number(raw.sizePct)>0)value.sizePct=round(clamp(raw.sizePct,.05,100));
     if(Number.isFinite(Number(raw.rotate))&&Math.abs(Number(raw.rotate))>.001)value.rotate=round(clamp(raw.rotate,-15,15));
     if(Number.isFinite(Number(raw.layer))&&Math.round(Number(raw.layer))!==0)value.layer=Math.round(clamp(raw.layer,-20,20));
+    if(Number.isFinite(Number(raw.hitScale))&&Number(raw.hitScale)>100)value.hitScale=round(clamp(raw.hitScale,100,250));
     return value;
   }
 
@@ -335,7 +339,8 @@
       Math.round(Number(layout?.scale||1)*1000)/1000,
       Number.isFinite(Number(layout?.sizePct))?round(layout.sizePct):'',
       Number.isFinite(Number(layout?.rotate))?round(layout.rotate):0,
-      Number.isFinite(Number(layout?.layer))?Math.round(layout.layer):0
+      Number.isFinite(Number(layout?.layer))?Math.round(layout.layer):0,
+      Number.isFinite(Number(layout?.hitScale))?round(layout.hitScale):100
     ].join('|');
   }
 
@@ -455,12 +460,88 @@
     node.dataset.cafassoDepthApplied=(Math.abs(rotate)>.001||layer)?'1':'0';
   }
 
+  function hitZoneSelector(id){
+    return '.cafasso-scene-hit-zone[data-cafasso-hit-for="'+String(id).replace(/"/g,'')+'"]';
+  }
+
+  function removeHitZone(space,spec){
+    const scene=sceneNode(space);
+    if(!scene)return;
+    scene.querySelectorAll(hitZoneSelector(spec.id)).forEach(zone=>zone.remove());
+  }
+
+  function ensureHitZoneStyles(){
+    if(document.getElementById('cafassoSceneHitZoneStyles'))return;
+    const style=document.createElement('style');
+    style.id='cafassoSceneHitZoneStyles';
+    style.textContent=[
+      '.cafasso-scene-hit-zone{position:absolute;display:block;background:transparent;border:0;padding:0;margin:0;pointer-events:auto;cursor:pointer;box-sizing:border-box;}',
+      'html[data-cafasso-scene-editor="1"] .cafasso-scene-hit-zone{pointer-events:none!important;border:2px dashed rgba(82,196,219,.95)!important;background:rgba(82,196,219,.08)!important;border-radius:10px!important;}',
+      'html[data-cafasso-scene-editor="1"] .cafasso-scene-hit-zone:not(.cafasso-scene-hit-zone-selected){opacity:.16!important;}',
+      'html[data-cafasso-scene-editor="1"] .cafasso-scene-hit-zone-selected{opacity:1!important;box-shadow:0 0 0 1px rgba(255,255,255,.28),0 0 14px rgba(82,196,219,.22)!important;}'
+    ].join('');
+    document.head.appendChild(style);
+  }
+
+  function applyHitZone(space,spec,node,layout){
+    if(!node)return;
+    const scene=sceneNode(space);
+    if(!scene)return;
+    const hitScale=clamp(Number(layout?.hitScale)||100,100,250);
+    if(hitScale<=100.01){
+      removeHitZone(space,spec);
+      return;
+    }
+
+    ensureHitZoneStyles();
+    let zone=scene.querySelector(hitZoneSelector(spec.id));
+    if(!zone){
+      zone=document.createElement('span');
+      zone.className='cafasso-scene-hit-zone';
+      zone.dataset.cafassoHitFor=spec.id;
+      zone.setAttribute('aria-hidden','true');
+      zone.addEventListener('click',event=>{
+        if(EDITOR)return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const current=findNode(space,spec);
+        if(current&&current.isConnected){
+          try{current.click()}catch(error){
+            current.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}));
+          }
+        }
+      },true);
+      scene.appendChild(zone);
+    }
+
+    const sr=scene.getBoundingClientRect();
+    const nr=node.getBoundingClientRect();
+    const sx=Math.max(.0001,sr.width/Math.max(1,scene.clientWidth||sr.width||1));
+    const sy=Math.max(.0001,sr.height/Math.max(1,scene.clientHeight||sr.height||1));
+    const renderedW=nr.width*hitScale/100;
+    const renderedH=nr.height*hitScale/100;
+    const left=(nr.left-sr.left+(nr.width-renderedW)/2)/sx;
+    const top=(nr.top-sr.top+(nr.height-renderedH)/2)/sy;
+    const width=renderedW/sx;
+    const height=renderedH/sy;
+
+    zone.style.left=round(left)+'px';
+    zone.style.top=round(top)+'px';
+    zone.style.width=round(width)+'px';
+    zone.style.height=round(height)+'px';
+    const z=Number.parseInt(getComputedStyle(node).zIndex,10);
+    zone.style.zIndex=String(Number.isFinite(z)?z:0);
+    zone.classList.toggle('cafasso-scene-hit-zone-selected',EDITOR&&state.selected===spec.id);
+    zone.dataset.cafassoHitScale=String(hitScale);
+  }
+
   function applyOne(space,profile,spec,node,layouts){
     if(!node)return;
     const stored=storedValue(space,profile,spec.id,layouts);
     if(!stored){
       clearApplied(node);
       applyDepthRotation(node,{rotate:0,layer:0});
+      removeHitZone(space,spec);
       if(profile==='desktop'){
         applyDesktopScreenLock(space,spec,node,{dx:0,dy:0,scale:1,rotate:0,layer:0},0,0,1);
       }
@@ -483,6 +564,7 @@
     applyDepthRotation(node,layout);
     node.dataset.cafassoSceneLayoutApplied='1';
     applyDesktopScreenLock(space,spec,node,layout,tx,ty,factor);
+    applyHitZone(space,spec,node,layout);
   }
 
   function editorCss(){
@@ -611,7 +693,8 @@
           scale:initial.scale,
           ...(Number.isFinite(Number(initial.sizePct))&&Number(initial.sizePct)>0?{sizePct:initial.sizePct}:{}),
           ...(Number.isFinite(Number(initial.rotate))&&Math.abs(Number(initial.rotate))>.001?{rotate:initial.rotate}:{}),
-          ...(Number.isFinite(Number(initial.layer))&&Math.round(Number(initial.layer))!==0?{layer:initial.layer}:{})
+          ...(Number.isFinite(Number(initial.layer))&&Math.round(Number(initial.layer))!==0?{layer:initial.layer}:{}),
+          ...(Number.isFinite(Number(initial.hitScale))&&Number(initial.hitScale)>100?{hitScale:initial.hitScale}:{})
         };
         const layouts=normalizeLayouts(state.preview||state.layouts);
         if(!layouts.spaces[space])layouts.spaces[space]={};
@@ -651,6 +734,8 @@
       if(node){
         applyOne(space,profile,spec,node,layouts);
         bindEditorNode(space,profile,spec,node);
+        const activeLayout=storedValue(space,profile,spec.id,layouts);
+        if(activeLayout?.hitScale>100)applyHitZone(space,spec,node,activeLayout);
         if(!EDITOR)delete node.dataset.cafassoSafeStatus;
         if(EDITOR){
           const safety=safeStatus(space,node);
@@ -666,7 +751,8 @@
             pixelHeight:round(rect.height),
             zIndex:Number.parseInt(getComputedStyle(node).zIndex,10)||0,
             rotate:Number(storedValue(space,profile,spec.id,layouts)?.rotate)||0,
-            layer:Number(storedValue(space,profile,spec.id,layouts)?.layer)||0
+            layer:Number(storedValue(space,profile,spec.id,layouts)?.layer)||0,
+            hitScale:Number(storedValue(space,profile,spec.id,layouts)?.hitScale)||100
           };
         }
       }
@@ -761,7 +847,7 @@
     API,CONFIG_TITLE,CACHE_KEY,REGISTRY,SAFE_ZONE,safeGeometry,screenLockState,
     normalizeLayouts,loadRemote,saveRemote,
     getLayouts,getEffectiveLayouts,setPreview,clearPreview,
-    apply:scheduleApply,sceneNode,currentSpace,currentProfile,selectObject
+    apply:scheduleApply,sceneNode,currentSpace,currentProfile,selectObject,applyHitZone
   };
 
   if(EDITOR){
