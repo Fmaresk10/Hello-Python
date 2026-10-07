@@ -166,7 +166,8 @@
     raf:0,
     observer:null,
     selected:'',
-    editorPresence:{}
+    editorPresence:{},
+    reportToken:''
   };
 
   function currentSpace(){
@@ -234,11 +235,14 @@
   }
 
   function clearApplied(node){
-    if(!node||node.dataset.cafassoSceneLayoutApplied!=='1')return;
-    node.style.removeProperty('translate');
-    node.style.removeProperty('scale');
+    if(!node)return;
+    if(node.dataset.cafassoSceneLayoutApplied==='1'||node.dataset.cafassoScreenLocked==='1'){
+      node.style.removeProperty('translate');
+      node.style.removeProperty('scale');
+    }
     delete node.dataset.cafassoSceneLayoutApplied;
     delete node.dataset.cafassoScreenLocked;
+    delete node.dataset.cafassoScreenAdjusted;
   }
 
   function measureBaseWidthPct(space,node){
@@ -320,7 +324,8 @@
       if(rect.top<vp.top+margin)dy=(vp.top+margin)-rect.top;
       else if(rect.bottom>vp.bottom-margin)dy=(vp.bottom-margin)-rect.bottom;
 
-      if(dx||dy){
+      const adjusted=Boolean(dx||dy);
+      if(adjusted){
         const s=Math.max(.0001,sceneVisualScale(space));
         node.style.setProperty(
           'translate',
@@ -335,9 +340,11 @@
         left:rect.left,
         top:rect.top,
         width:rect.width,
-        height:rect.height
+        height:rect.height,
+        adjusted
       };
       node.dataset.cafassoScreenLocked='1';
+      node.dataset.cafassoScreenAdjusted=adjusted?'1':'0';
       return;
     }
 
@@ -358,15 +365,32 @@
       'important'
     );
     node.dataset.cafassoScreenLocked='1';
+    node.dataset.cafassoScreenAdjusted=item.adjusted?'1':'0';
+  }
+
+  function viewportStatus(node){
+    if(!node)return 'missing';
+    const vp=viewportRect();
+    const r=node.getBoundingClientRect();
+    if(!r.width||!r.height)return 'missing';
+    const margin=2;
+    const fully=r.left>=vp.left+margin&&r.right<=vp.right-margin&&r.top>=vp.top+margin&&r.bottom<=vp.bottom-margin;
+    if(fully)return 'visible';
+    const intersects=r.right>vp.left&&r.left<vp.right&&r.bottom>vp.top&&r.top<vp.bottom;
+    return intersects?'partial':'outside';
   }
 
   function applyOne(space,profile,spec,node,layouts){
     if(!node)return;
-    const layout=storedValue(space,profile,spec.id,layouts);
-    if(!layout){
+    const stored=storedValue(space,profile,spec.id,layouts);
+    if(!stored){
       clearApplied(node);
+      if(profile==='desktop'){
+        applyDesktopScreenLock(space,spec,node,{dx:0,dy:0,scale:1},0,0,1);
+      }
       return;
     }
+    const layout=stored;
     const scene=sceneNode(space);
     if(!scene)return;
     const width=Math.max(1,scene.clientWidth||scene.getBoundingClientRect().width||1);
@@ -552,20 +576,26 @@
         if(EDITOR){
           const safety=safeStatus(space,node);
           node.dataset.cafassoSafeStatus=safety;
+          const rect=node.getBoundingClientRect();
           metrics[spec.id]={
             baseSizePct:measureBaseWidthPct(space,node),
             visualSizePct:measureVisualWidthPct(space,node),
-            safeStatus:safety
+            safeStatus:safety,
+            viewportStatus:viewportStatus(node),
+            screenAdjusted:node.dataset.cafassoScreenAdjusted==='1',
+            pixelWidth:round(rect.width),
+            pixelHeight:round(rect.height)
           };
         }
       }
     });
     if(EDITOR){
       ensureEditorGrid(space);
-      const key=JSON.stringify(presence);
+      const key=JSON.stringify({presence,metrics,reportToken:state.reportToken||''});
       if(state.editorPresence[space]!==key){
         state.editorPresence[space]=key;
-        postEditor({action:'presence',presence,metrics});
+        postEditor({action:'presence',presence,metrics,reportToken:state.reportToken||''});
+        state.reportToken='';
       }
     }
   }
@@ -667,6 +697,11 @@
       if(data.action==='state')setPreview(data.layouts||emptyLayouts());
       if(data.action==='select')selectObject(data.objectId||'');
       if(data.action==='clear')clearPreview();
+      if(data.action==='report'){
+        state.reportToken=String(data.token||'');
+        state.editorPresence[currentSpace()]='';
+        scheduleApply();
+      }
     });
   }
 
