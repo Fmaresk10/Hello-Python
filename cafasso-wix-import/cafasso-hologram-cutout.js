@@ -70,6 +70,11 @@
         pointerEvents:video.style.pointerEvents,
         visibility:video.style.visibility
       };
+      // Never flash the rectangular source while a transparent cutout is expected.
+      video.style.opacity='0';
+      video.style.visibility='visible';
+      video.style.pointerEvents='none';
+
       const restoreVideo=()=>{
         video.style.position=previousVideoStyle.position;
         video.style.left=previousVideoStyle.left;
@@ -124,6 +129,7 @@
         const e=await engine();
         if(stopped)return resolve(cleanup);
         loading.textContent='Detectando persona…';
+        const mobileCutout=Boolean(matchMedia?.('(max-width: 900px), (pointer: coarse)')?.matches);
         fallbackTimer=setTimeout(()=>{
           if(stopped||foregroundConfirmed)return;
           stopped=true;
@@ -133,7 +139,7 @@
           restoreVideo();
           video.style.opacity='1';
           host.classList.add('cafasso-holo-cutout-fallback');
-        },1800);
+        },mobileCutout?5200:2600);
         const fps=Math.max(6,Math.min(18,Number(config.cutoutFps||((matchMedia?.('(pointer:coarse)')?.matches)?10:14))));
         const interval=1000/fps;
 
@@ -223,7 +229,8 @@
             }catch(error){
               busy=false;frameErrors+=1;
               console.warn('CAFASSO cutout frame',error);
-              if(!foregroundConfirmed&&frameErrors>=3){
+              const errorLimit=Boolean(matchMedia?.('(max-width: 900px), (pointer: coarse)')?.matches)?7:4;
+              if(!foregroundConfirmed&&frameErrors>=errorLimit){
                 stopped=true;
                 revealOriginal();
                 video.style.opacity='1';
