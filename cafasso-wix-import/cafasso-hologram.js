@@ -87,6 +87,7 @@
       .cafasso-holo-person:after{content:"";position:absolute;z-index:5;left:12%;right:12%;height:2px;top:5%;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(210,255,251,.94) 22%,rgba(115,244,237,.95) 50%,rgba(210,255,251,.94) 78%,transparent);box-shadow:0 0 8px rgba(112,246,238,.72),0 0 18px rgba(70,218,213,.34);opacity:0;animation:cafassoHoloMaterializeScan .64s ease-out both}
       .cafasso-holo-person video,.cafasso-holo-person img{display:block;max-width:100%;max-height:100%;height:100%;width:auto;object-fit:contain;object-position:center bottom;filter:brightness(var(--cafasso-holo-ambient-brightness,1)) saturate(var(--cafasso-holo-ambient-saturation,.82)) contrast(var(--cafasso-holo-ambient-contrast,1.04)) sepia(var(--cafasso-holo-ambient-sepia,0)) hue-rotate(var(--cafasso-holo-ambient-hue,0deg)) drop-shadow(0 0 12px rgba(83,226,218,.18))}
       .cafasso-holo-person video{background:transparent}
+      .cafasso-holo-cutout-fallback video{-webkit-mask-image:radial-gradient(ellipse 58% 70% at 50% 48%,#000 56%,rgba(0,0,0,.78) 68%,transparent 88%);mask-image:radial-gradient(ellipse 58% 70% at 50% 48%,#000 56%,rgba(0,0,0,.78) 68%,transparent 88%);filter:brightness(.92) saturate(.66) contrast(1.08) sepia(.10) hue-rotate(150deg) drop-shadow(0 0 16px rgba(83,226,218,.28))!important}
       .cafasso-holo-cutout-canvas{display:block;max-width:100%;max-height:100%;height:100%;width:auto;object-fit:contain;object-position:center bottom;filter:brightness(var(--cafasso-holo-ambient-brightness,1)) saturate(var(--cafasso-holo-ambient-saturation,.82)) contrast(var(--cafasso-holo-ambient-contrast,1.04)) sepia(var(--cafasso-holo-ambient-sepia,0)) hue-rotate(var(--cafasso-holo-ambient-hue,0deg)) drop-shadow(0 0 12px rgba(83,226,218,.18))}
       .cafasso-holo-cutout-loading{position:absolute;left:50%;bottom:28%;transform:translateX(-50%);padding:7px 10px;border:1px solid rgba(181,255,249,.28);border-radius:999px;background:rgba(5,32,37,.74);color:#cdf8f3;font:800 8px/1 Inter,system-ui;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
       .cafasso-holo-fallback{position:relative;width:min(250px,48vw);height:70%;min-height:270px;opacity:.82}
@@ -112,7 +113,7 @@
         .cafasso-holo-stage--spatial .cafasso-holo-base{bottom:var(--cafasso-holo-contact-bottom,-2px);width:var(--cafasso-holo-contact-width,46%);height:var(--cafasso-holo-contact-height,16px)}
         .cafasso-holo-card{bottom:8px;width:calc(100vw - 16px);padding:13px 14px;border-radius:15px}
         .cafasso-holo-card__meta strong{font-size:15px}.cafasso-holo-card p{font-size:12px;line-height:1.42}
-        .cafasso-holo-stage--spatial .cafasso-holo-card{width:max-content;max-width:min(190px,calc(100vw - 16px));padding:5px 6px;border-radius:8px}
+        .cafasso-holo-stage--spatial .cafasso-holo-card{width:max-content;max-width:min(178px,calc(100vw - 16px));padding:4px 6px;border-radius:8px;background:rgba(6,35,39,.76);box-shadow:0 6px 16px rgba(0,0,0,.18)}
         .cafasso-holo-stage--spatial .cafasso-holo-card__meta strong{font-size:9.5px}.cafasso-holo-stage--spatial .cafasso-holo-card p{font-size:7.5px;line-height:1.2}
         .cafasso-holo-audio-hint{top:max(13px,env(safe-area-inset-top))}
       }
@@ -411,7 +412,8 @@
   }
 
   function preferredVideoUrl(config={}){
-    return wixMp4Url(config.videoFileId,'720p')||
+    const quality=constrainedClient()?'480p':'720p';
+    return wixMp4Url(config.videoFileId,quality)||
       normalize(config.videoMp4)||
       normalize(config.videoWebm)||
       normalize(config.videoMov)||
@@ -584,13 +586,16 @@
     const sources=[];
     const prepared=normalize(config.__cafassoPreparedVideoUrl);
     if(prepared)sources.push('<source src="'+esc(prepared)+'" type="video/mp4">');
-    const wixMp4=wixMp4Url(config.videoFileId,'720p');
-    if(!prepared&&wixMp4)sources.push('<source src="'+esc(wixMp4)+'" type="video/mp4">');
+    const primaryQuality=constrainedClient()?'480p':'720p';
+    const wixPrimary=wixMp4Url(config.videoFileId,primaryQuality);
+    const wixFallback=primaryQuality==='480p'?wixMp4Url(config.videoFileId,'720p'):'';
+    if(!prepared&&wixPrimary)sources.push('<source src="'+esc(wixPrimary)+'" type="video/mp4">');
+    if(!prepared&&wixFallback)sources.push('<source src="'+esc(wixFallback)+'" type="video/mp4">');
     if(normalize(config.videoWebm))sources.push('<source src="'+esc(config.videoWebm)+'" type="video/webm">');
     if(normalize(config.videoMov))sources.push('<source src="'+esc(config.videoMov)+'" type="video/quicktime">');
     if(normalize(config.videoMp4))sources.push('<source src="'+esc(config.videoMp4)+'" type="video/mp4">');
     if(sources.length){
-      const cors=config.removeBackground?'crossorigin="anonymous" ':'';
+      const cors=config.removeBackground!==false?'crossorigin="anonymous" ':'';
       return '<video '+cors+'playsinline preload="auto" '+(config.loop?'loop ':'')+(config.muted?'muted ':'')+(normalize(config.poster)?'poster="'+esc(config.poster)+'" ':'')+'>'+sources.join('')+'</video>';
     }
     if(normalize(config.poster))return '<img src="'+esc(config.poster)+'" alt="">';
@@ -664,7 +669,7 @@
       };
 
       const fallbackWithoutCors=()=>{
-        if(corsFallbackTried||!config.removeBackground)return;
+        if(corsFallbackTried||config.removeBackground===false)return;
         corsFallbackTried=true;
         restoreNormalVideo();
         try{
@@ -678,7 +683,7 @@
         }catch(error){console.warn('CAFASSO original video fallback',error)}
       };
 
-      if(config.removeBackground&&window.CafassoHologramCutout?.attach&&person){
+      if(config.removeBackground!==false&&window.CafassoHologramCutout?.attach&&person){
         Promise.resolve(window.CafassoHologramCutout.attach(video,person,config)).then(cleanup=>{
           if(!stage.isConnected){try{cleanup?.()}catch(error){};return}
           stage.__cafassoCutoutCleanup=cleanup;
