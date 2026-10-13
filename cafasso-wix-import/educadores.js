@@ -2,12 +2,16 @@
 'use strict';
 const ME_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoMe';
 const COURSE_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
+const RESOURCE_TITLE='CAFASSO · Recursos internos';
+const RESOURCE_STATIC='./data/resources.json';
 const $=s=>document.querySelector(s);
 const $$=s=>Array.from(document.querySelectorAll(s));
 let session=readJson('cafassoSession');
 let data=null;
 let courses=[];
 let currentCourse=null;
+let resourceLibrary=[];
+let resourceLoadPromise=null;
 const cache=new Map();
 
 function readJson(key){try{return JSON.parse(localStorage.getItem(key)||'null')}catch(e){return null}}
@@ -61,9 +65,102 @@ function activeModuleInfo(course){
   const minutes=Number(next?.minutes||next?.settings?.minutes||next?.settings?.estimatedMinutes||0);
   return {module:next,index:Math.max(0,mods.findIndex(m=>moduleId(m)===moduleId(next))),total:mods.length,minutes};
 }
+function asObject(value){
+  if(value&&typeof value==='object')return value;
+  if(typeof value!=='string')return {};
+  try{const parsed=JSON.parse(value);return parsed&&typeof parsed==='object'?parsed:{}}catch(e){return {}}
+}
+function truthy(value){
+  if(value===true||value===1)return true;
+  const s=String(value??'').trim().toLowerCase();
+  return ['true','1','yes','si','sí','on'].includes(s);
+}
+function explicitlyFalse(value){
+  if(value===false||value===0)return true;
+  const s=String(value??'').trim().toLowerCase();
+  return ['false','0','no','off'].includes(s);
+}
+function collectResourceBlocks(payload){
+  const blocks=[],seen=new Set(),ids=new Set();
+  function walk(value){
+    if(!value||typeof value!=='object'||seen.has(value))return;
+    seen.add(value);
+    if(Array.isArray(value)){value.forEach(walk);return}
+    const settings=asObject(value.settings||value.config||value.metadata||{});
+    const marked=truthy(settings.cafassoResource)||
+      Object.prototype.hasOwnProperty.call(settings,'mostrarEnBiblioteca')||
+      Object.prototype.hasOwnProperty.call(settings,'resourceType')||
+      Object.prototype.hasOwnProperty.call(settings,'categoria');
+    if(marked){
+      const id=String(value._id||value.id||'');
+      if(!id||!ids.has(id)){blocks.push(value);if(id)ids.add(id)}
+    }
+    Object.values(value).forEach(walk);
+  }
+  walk(payload);return blocks;
+}
+function normalizeLiveResource(block,index){
+  const settings=asObject(block?.settings||block?.config||block?.metadata||{});
+  const content=asObject(block?.content||{});
+  const marked=truthy(settings.cafassoResource)||
+    Object.prototype.hasOwnProperty.call(settings,'mostrarEnBiblioteca')||
+    Object.prototype.hasOwnProperty.call(settings,'resourceType')||
+    Object.prototype.hasOwnProperty.call(settings,'categoria');
+  if(!marked)return null;
+  const showValue=settings.mostrarEnBiblioteca??block.mostrarEnBiblioteca;
+  return {
+    id:String(block._id||block.id||('recurso-'+index)),
+    titulo:String(block.title||block.titulo||block.name||'Recurso'),
+    categoria:String(settings.categoria||block.categoria||'General'),
+    tipo:String(settings.resourceType||block.tipo||block.type||'Documento'),
+    url:String(content.body||content.url||block.url||block.archivo||''),
+    descripcion:String(settings.descripcion||block.descripcion||block.description||''),
+    mostrarEnBiblioteca:showValue==null?true:!explicitlyFalse(showValue),
+    disponibleParaCursos:truthy(settings.disponibleParaCursos??block.disponibleParaCursos),
+    bibliotecaSlot:Number(settings.bibliotecaSlot??block.bibliotecaSlot??block.slot)||null
+  };
+}
+function normalizeStaticResource(resource,index){
+  if(!resource||typeof resource!=='object')return null;
+  return {
+    id:String(resource.id||resource._id||('static-'+index)),
+    titulo:String(resource.titulo||resource.title||resource.name||'Recurso'),
+    categoria:String(resource.categoria||'General'),
+    tipo:String(resource.tipo||resource.type||'Documento'),
+    url:String(resource.url||resource.archivo||''),
+    descripcion:String(resource.descripcion||resource.description||''),
+    mostrarEnBiblioteca:resource.mostrarEnBiblioteca==null?true:!explicitlyFalse(resource.mostrarEnBiblioteca),
+    disponibleParaCursos:truthy(resource.disponibleParaCursos),
+    bibliotecaSlot:Number(resource.bibliotecaSlot??resource.slot)||null
+  };
+}
+async function loadResources(){
+  if(resourceLibrary.length)return resourceLibrary;
+  if(resourceLoadPromise)return resourceLoadPromise;
+  resourceLoadPromise=(async()=>{
+    let staticList=[],liveList=[];
+    try{
+      const r=await fetch(RESOURCE_STATIC+'?v='+Date.now(),{cache:'no-store'});
+      if(r.ok){const j=await r.json();if(Array.isArray(j))staticList=j.map(normalizeStaticResource).filter(Boolean)}
+    }catch(e){console.warn('CAFASSO Educadores: respaldo de Recursos no disponible.',e)}
+    try{
+      const r=await fetch(COURSE_API+'?title='+encodeURIComponent(RESOURCE_TITLE)+'&_='+Date.now(),{headers:authHeaders(),cache:'no-store'});
+      const j=await r.json().catch(()=>null);
+      if(r.ok&&j)liveList=collectResourceBlocks(j).map(normalizeLiveResource).filter(Boolean);
+    }catch(e){console.warn('CAFASSO Educadores: Recursos de Wix no disponibles.',e)}
+    const merged=new Map();
+    staticList.forEach(x=>merged.set(String(x.id),x));
+    liveList.forEach(x=>merged.set(String(x.id),{...(merged.get(String(x.id))||{}),...x}));
+    resourceLibrary=Array.from(merged.values())
+      .filter(x=>x&&x.mostrarEnBiblioteca!==false)
+      .sort((a,b)=>(Number(a.bibliotecaSlot)||999)-(Number(b.bibliotecaSlot)||999)||a.titulo.localeCompare(b.titulo,'es'));
+    return resourceLibrary;
+  })().finally(()=>{resourceLoadPromise=null});
+  return resourceLoadPromise;
+}
 function suggestedResource(){
-  const list=[...(Array.isArray(data?.resources)?data.resources:[]),...(Array.isArray(data?.libraryResources)?data.libraryResources:[])].filter(Boolean);
-  return list.find(item=>item?.title||item?.name)||null;
+  const list=resourceLibrary.length?resourceLibrary:[...(Array.isArray(data?.resources)?data.resources:[]),...(Array.isArray(data?.libraryResources)?data.libraryResources:[])].filter(Boolean);
+  return list.find(item=>item?.titulo||item?.title||item?.name)||null;
 }
 function warmGreeting(){return 'Qué bueno verte de nuevo, '+esc(firstName())+'.'}
 function home(){
@@ -161,6 +258,91 @@ async function courseView(id){
   '</div>';
 }
 
+
+function resourceKind(resource){
+  const t=String(resource?.tipo||'').toLowerCase(),u=String(resource?.url||'').toLowerCase().split('?')[0].split('#')[0];
+  if(t.includes('video')||/youtube\.com|youtu\.be|\.(mp4|webm|mov|m4v)$/.test(u))return 'video';
+  if(t.includes('imagen')||/\.(png|jpe?g|webp|gif|svg)$/.test(u))return 'image';
+  if(t.includes('audio')||/\.(mp3|wav|m4a|ogg)$/.test(u))return 'audio';
+  return 'document';
+}
+function resourceIcon(resource){
+  return ({video:'▶',image:'◇',audio:'♪',document:'▤'})[resourceKind(resource)]||'▤';
+}
+function resourceCard(resource,index,featured=false){
+  const category=resource.categoria||'General',kind=resourceKind(resource);
+  return '<article class="resource-card '+(featured?'featured ':'')+'resource-'+kind+'" data-resource-card data-category="'+esc(category.toLowerCase())+'" data-search="'+esc((resource.titulo+' '+resource.descripcion+' '+category+' '+resource.tipo).toLowerCase())+'">'+
+    '<div class="resource-card-art"><span>'+resourceIcon(resource)+'</span><small>'+esc(resource.tipo||'Recurso')+'</small></div>'+
+    '<div class="resource-card-copy"><span class="resource-category">'+esc(category)+'</span><h3>'+esc(resource.titulo||'Recurso')+'</h3><p>'+esc(resource.descripcion||'Un material para volver, preparar o abrir nuevas preguntas.')+'</p>'+
+      '<div class="resource-card-foot"><span>'+(resource.disponibleParaCursos?'También disponible para cursos':'Biblioteca CAFASSO')+'</span>'+
+      (resource.url?'<button class="edu-primary" data-resource-open="'+esc(resource.id)+'">Abrir →</button>':'<span class="resource-unavailable">Sin enlace</span>')+'</div></div>'+
+  '</article>';
+}
+async function resourcesView(){
+  const resources=await loadResources();
+  const featured=resources[0]||null;
+  const rest=featured?resources.slice(1):resources;
+  const categories=[...new Set(resources.map(r=>String(r.categoria||'General').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+  return '<div class="resources-page">'+
+    '<button class="back" data-nav="home">← Volver a Casa</button>'+
+    '<section class="resources-intro"><div><div class="edu-eyebrow">CAFASSO · Recursos</div><h1>Recursos</h1><p>Algunas cosas sirven para resolver. Otras, para volver a pensar. Este es un lugar para buscar materiales, abrir preguntas y preparar tu tarea con otros recursos a mano.</p></div><aside><span>Una biblioteca no es un depósito.</span><p>Es un lugar al que volvemos cuando necesitamos mirar algo de nuevo.</p></aside></section>'+
+    (resources.length?
+      '<section class="resources-tools"><label class="resource-search"><span>⌕</span><input id="resourceSearch" type="search" placeholder="Buscar un recurso, tema o tipo…" autocomplete="off"></label>'+
+      '<div class="resource-chips"><button class="active" data-resource-category="">Todos</button>'+categories.map(c=>'<button data-resource-category="'+esc(c.toLowerCase())+'">'+esc(c)+'</button>').join('')+'</div>'+
+      (isAdmin()?'<button class="resource-manage" id="manageResources" type="button">⚙ Gestionar recursos</button>':'')+'</section>'+
+      (featured?'<section class="resource-feature"><div class="section-head"><div><span class="school-kicker">Sobre la mesa</span><h2>Para abrir hoy</h2><p>Un material destacado de la biblioteca.</p></div></div>'+resourceCard(featured,0,true)+'</section>':'')+
+      '<section class="resource-shelf"><div class="section-head"><div><span class="school-kicker">La estantería</span><h2>Para volver cuando lo necesites</h2><p><span id="resourceCount">'+resources.length+'</span> recurso'+(resources.length===1?'':'s')+' disponible'+(resources.length===1?'':'s')+'.</p></div></div>'+
+      '<div class="resource-grid" id="resourceGrid">'+rest.map((r,i)=>resourceCard(r,i+1,false)).join('')+'</div><div class="resource-no-results" id="resourceNoResults" hidden>No encontré materiales con esa búsqueda.</div></section>'
+      :'<div class="resource-empty"><span>▥</span><h2>La estantería está preparada.</h2><p>Todavía no hay recursos visibles en la biblioteca. Cuando se publiquen desde Administración van a aparecer acá automáticamente.</p></div>')+
+    '<section class="resource-viewer" id="resourceViewer" hidden><div class="resource-viewer-backdrop" data-resource-close></div><article class="resource-viewer-book" role="dialog" aria-modal="true" aria-labelledby="resourceViewerTitle"><button class="resource-viewer-close" data-resource-close aria-label="Cerrar">×</button><aside><span class="school-kicker" id="resourceViewerCategory">Recursos</span><h2 id="resourceViewerTitle">Recurso</h2><b id="resourceViewerType">Documento</b><p id="resourceViewerDescription"></p><div class="resource-viewer-actions"><a id="resourceViewerOriginal" class="edu-primary" target="_blank" rel="noopener">Abrir original ↗</a><button class="edu-secondary" data-resource-close>Volver a Recursos</button></div></aside><div class="resource-viewer-stage" id="resourceViewerStage"></div></article></section>'+
+  '</div>';
+}
+function resourceEmbedUrl(raw){
+  const url=String(raw||'').trim();if(!url)return '';
+  try{
+    const parsed=new URL(url,location.href),s=parsed.toString();
+    const yt=s.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/);
+    if(yt)return 'https://www.youtube.com/embed/'+yt[1]+'?rel=0';
+    const drive=s.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
+    if(drive)return 'https://drive.google.com/file/d/'+drive[1]+'/preview';
+    const docs=s.match(/docs\.google\.com\/(document|presentation|spreadsheets)\/d\/([^/]+)/i);
+    if(docs)return 'https://docs.google.com/'+docs[1]+'/d/'+docs[2]+'/preview';
+    return s;
+  }catch(e){return url}
+}
+function openEducatorResource(id){
+  const r=resourceLibrary.find(x=>String(x.id)===String(id));if(!r||!r.url)return;
+  const viewer=$('#resourceViewer'),stage=$('#resourceViewerStage');if(!viewer||!stage)return;
+  $('#resourceViewerCategory').textContent=r.categoria||'Recursos';
+  $('#resourceViewerTitle').textContent=r.titulo||'Recurso';
+  $('#resourceViewerType').textContent=r.tipo||'Documento';
+  $('#resourceViewerDescription').textContent=r.descripcion||'Un material de la biblioteca CAFASSO.';
+  $('#resourceViewerOriginal').href=r.url;
+  const kind=resourceKind(r),embed=resourceEmbedUrl(r.url);
+  stage.innerHTML=kind==='image'?'<img src="'+esc(r.url)+'" alt="'+esc(r.titulo||'Recurso')+'">':
+    kind==='video'&&/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(r.url)?'<video controls playsinline src="'+esc(r.url)+'"></video>':
+    kind==='audio'?'<div class="resource-audio"><span>♪</span><strong>'+esc(r.titulo||'Audio')+'</strong><audio controls src="'+esc(r.url)+'"></audio></div>':
+    '<iframe src="'+esc(embed)+'" title="'+esc(r.titulo||'Recurso')+'" loading="eager"></iframe>';
+  viewer.hidden=false;document.body.classList.add('resource-viewer-open');
+}
+function closeEducatorResource(){
+  const viewer=$('#resourceViewer');if(!viewer)return;
+  viewer.hidden=true;const stage=$('#resourceViewerStage');if(stage)stage.innerHTML='';
+  document.body.classList.remove('resource-viewer-open');
+}
+function bindResourceFilters(){
+  const input=$('#resourceSearch'),chips=$('[data-resource-category]'),cards=$('[data-resource-card]'),count=$('#resourceCount'),empty=$('#resourceNoResults');
+  if(!input)return;
+  let category='';
+  const apply=()=>{
+    const q=input.value.trim().toLowerCase();let visible=0;
+    cards.forEach(card=>{const okCat=!category||card.dataset.category===category;const okSearch=!q||(card.dataset.search||'').includes(q);const show=okCat&&okSearch;card.hidden=!show;if(show)visible++});
+    if(count)count.textContent=String(visible);if(empty)empty.hidden=visible!==0;
+  };
+  input.addEventListener('input',apply);
+  chips.forEach(btn=>btn.onclick=()=>{category=btn.dataset.resourceCategory||'';chips.forEach(x=>x.classList.toggle('active',x===btn));apply()});
+}
+
 function placeholder(view){
   const map={biblioteca:['▥','Recursos','Algunas cosas sirven para resolver. Otras, para volver a pensar. Acá vamos a reunir textos, videos y materiales para tu tarea.'],interioridad:['♧','Parroquia','Un espacio más sereno para la Palabra, la oración y las pausas personales.'],comunidad:['◎','Patio','Donde lo que cada uno vive puede encontrarse con lo de otros: experiencias, preguntas y encuentros.'],camino:['◇','Mi camino','Lo que vas viviendo también forma parte de tu formación. Acá vamos a reunir lo recorrido y lo que sigue.']};
   const x=map[view]||['⌂','Casa de Formación','Estamos preparando este espacio.'];
@@ -171,6 +353,7 @@ async function render(){
   if(r.view==='home')html=home();
   else if(r.view==='formacion')html=formation();
   else if(r.view==='curso'&&r.id)html=await courseView(r.id);
+  else if(r.view==='biblioteca')html=await resourcesView();
   else html=placeholder(r.view);
   if(route().view!==r.view||route().id!==r.id)return;
   $('#main').innerHTML=html;bindDynamic();window.scrollTo({top:0,behavior:'instant'});
@@ -178,7 +361,11 @@ async function render(){
 function bindDynamic(){
   $$('[data-nav]').forEach(b=>b.onclick=()=>go(b.dataset.nav));
   $$('[data-course]').forEach(b=>b.onclick=()=>go('curso',b.dataset.course));
-  $$('[data-module]').forEach(b=>b.onclick=()=>{
+  $('[data-resource-open]').forEach(b=>b.onclick=()=>openEducatorResource(b.dataset.resourceOpen));
+  $('[data-resource-close]').forEach(b=>b.onclick=closeEducatorResource);
+  bindResourceFilters();
+  const manage=$('#manageResources');if(manage)manage.onclick=()=>location.href='./resource-admin.html?from=educadores';
+  $('[data-module]').forEach(b=>b.onclick=()=>{
     const url=new URL('./course-player.html',location.href);
     url.searchParams.set('player','1');url.searchParams.set('course',b.dataset.courseId);url.searchParams.set('module',b.dataset.module);url.searchParams.set('educator','1');url.hash='modulo';location.href=url.toString();
   });
@@ -215,6 +402,7 @@ function staticBind(){
   $('#logout').onclick=closeSession;
   $('#mobileLogout').onclick=closeSession;
   window.addEventListener('popstate',render);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#resourceViewer')?.hidden)closeEducatorResource()});
 }
 staticBind();load();
 })();
