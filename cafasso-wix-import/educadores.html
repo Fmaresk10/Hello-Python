@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#173f42">
+<title>CAFASSO · Casa de Formación</title>
+<link rel="icon" href="./favicon.svg">
+<link rel="stylesheet" href="./educadores.css?v=1">
+</head>
+<body>
+<div class="edu-app" id="eduApp">
+  <header class="edu-header">
+    <a class="edu-brand" href="./educadores.html" aria-label="CAFASSO Casa de Formación">
+      <img src="./cafasso-logo.svg" alt="">
+      <span><strong>CAFASSO</strong><small>Casa de Formación</small></span>
+    </a>
+    <nav class="edu-nav" aria-label="Navegación principal">
+      <button data-nav="home" class="active">Inicio</button>
+      <button data-nav="formacion">Formación</button>
+      <button data-nav="biblioteca">Biblioteca</button>
+      <button data-nav="interioridad">Interioridad</button>
+      <button data-nav="comunidad">Comunidad</button>
+    </nav>
+    <div class="edu-user">
+      <button class="edu-switch" id="switchExperience" type="button">Cambiar experiencia</button>
+      <button class="edu-avatar" id="userMenu" type="button" aria-label="Mi cuenta">FM</button>
+      <div class="edu-user-menu" id="userMenuPanel" hidden>
+        <strong id="userMenuName">Mi cuenta</strong>
+        <button type="button" data-nav="camino">Mi camino</button>
+        <button type="button" id="logout">Cerrar sesión</button>
+      </div>
+    </div>
+  </header>
+  <main class="edu-main" id="main" aria-live="polite">
+    <div class="edu-loading"><span></span><strong>Preparando tu Casa de Formación…</strong></div>
+  </main>
+  <nav class="edu-mobile-nav" aria-label="Navegación móvil">
+    <button data-nav="home" class="active"><i>⌂</i><span>Inicio</span></button>
+    <button data-nav="formacion"><i>◇</i><span>Formación</span></button>
+    <button data-nav="biblioteca"><i>▥</i><span>Biblioteca</span></button>
+    <button data-nav="camino"><i>○</i><span>Mi camino</span></button>
+  </nav>
+</div>
+<script src="./educadores.js?v=1"></script>
+</body>
+</html>
