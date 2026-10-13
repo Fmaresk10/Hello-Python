@@ -1,5 +1,6 @@
 ﻿(() => {
   if (window.__cafassoGamifiedCourseInstalled) return;
+  if (new URLSearchParams(location.search).get('educator') === '1') return;
   window.__cafassoGamifiedCourseInstalled = true;
 
   const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
