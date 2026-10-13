@@ -519,7 +519,16 @@ function bindDynamic(){
 }
 async function load(){
   if(!session?.authenticated||!session?.user){location.replace('./login.html');return}
+  const access=window.CafassoExperienceAccess;
+  const allowed=access?.allowedExperiences(session.user)||['animadores'];
+  if(!allowed.includes('educadores')){
+    const target=access?.targetFor(allowed[0]||'animadores')||'./';
+    location.replace(target);return;
+  }
   localStorage.setItem('cafassoExperience','educadores');
+  const canSwitch=allowed.length>1;
+  $('#switchExperience').hidden=!canSwitch;
+  $('#mobileSwitchExperience').hidden=!canSwitch;
   $('#userMenu').textContent=initials();$('#userMenuName').textContent=session.user.name||session.user.email||'Mi cuenta';
   $('#sidebarAvatar').textContent=initials();$('#sidebarUserName').textContent=session.user.name||session.user.email||'Mi cuenta';
   const adminAllowed=isAdmin();
