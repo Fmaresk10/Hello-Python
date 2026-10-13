@@ -163,26 +163,104 @@ button{cursor:pointer}
 .login-shell.entering .login-transition{opacity:1;visibility:visible}
 
 @media(max-width:760px) and (orientation:portrait){
-  .login-scene-stage{left:50%;top:50%;width:max(150vw,150svh)}
-  .login-scene-image{object-fit:cover}
-  .formative-panel{
-    position:fixed;left:5vw;right:5vw;top:auto;bottom:max(4.5vh,env(safe-area-inset-bottom));
-    width:auto;min-height:0;padding:22px 20px 20px;border-radius:22px;
-    background:linear-gradient(155deg,rgba(255,250,240,.975),rgba(247,239,223,.975))
+  html,body,.login-shell{height:100dvh;min-height:100dvh}
+  .login-shell:after{
+    background:linear-gradient(180deg,rgba(10,30,26,.02) 0%,rgba(10,30,26,.06) 36%,rgba(10,30,26,.52) 100%);
+    box-shadow:none
   }
-  .brand{width:190px;max-width:68%;padding:10px 13px;border-radius:10px}
-  .formative-kicker{margin:19px 0 6px;font-size:8px}
-  .formative-title{font-size:34px}
-  .formative-lead{margin-top:8px;max-width:none;font-size:13px}
-  .login-form{margin-top:15px}.field{margin-top:9px}
-  .field input{height:52px;padding:0 15px 0 48px;border-radius:15px;font-size:16px}
-  .field:before{left:17px;width:13px;height:13px}.field.user:before{border-width:1.5px;box-shadow:0 9px 0 -3px #4b625d}
-  .field.pass:before{width:13px;height:10px;border-width:1.5px}.field.pass:after{left:20px;top:12px;width:8px;height:8px;border-width:1.5px}
-  #go{height:52px;margin-top:13px;font-size:15px}
-  .remember{gap:8px;margin-top:11px;font-size:11px}.remember-box{width:15px;height:15px}
-  .login-general-note{margin-top:14px;gap:10px;font-size:12px}
+  .login-scene-stage{
+    inset:0;left:0;top:0;width:100vw;height:100dvh;
+    aspect-ratio:auto;transform:none;container-type:inline-size
+  }
+  .login-scene-image{
+    object-fit:cover;
+    object-position:84% 47%;
+  }
+  .formative-panel{
+    position:fixed;
+    left:12px;right:12px;top:auto;
+    bottom:max(12px,env(safe-area-inset-bottom));
+    width:auto;min-height:0;
+    max-height:calc(100dvh - 148px);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+    padding:20px 18px max(18px,env(safe-area-inset-bottom));
+    border-radius:24px;
+    background:linear-gradient(155deg,rgba(255,250,240,.985),rgba(247,239,223,.985));
+    box-shadow:0 22px 48px rgba(30,24,16,.30)
+  }
+  .brand{
+    width:168px;min-width:0;max-width:67%;
+    padding:9px 11px;border-radius:10px
+  }
+  .formative-kicker{margin:16px 0 5px;font-size:7px}
+  .formative-title{font-size:31px}
+  .formative-lead{margin-top:7px;max-width:none;font-size:12.5px;line-height:1.45}
+  .login-form{margin-top:14px}
+  .field{margin-top:9px}
+  .field input{
+    height:50px;min-height:50px;
+    padding:0 15px 0 48px;
+    border-radius:15px;
+    font-size:16px
+  }
+  .field:before{left:17px;width:13px;height:13px}
+  .field.user:before{border-width:1.5px;box-shadow:0 9px 0 -3px #4b625d}
+  .field.pass:before{width:13px;height:10px;border-width:1.5px}
+  .field.pass:after{left:20px;top:12px;width:8px;height:8px;border-width:1.5px}
+  #go{height:50px;min-height:50px;margin-top:12px;font-size:15px}
+  .remember{gap:8px;margin-top:10px;font-size:11px}
+  .remember-box{width:15px;height:15px}
+  .login-general-note{margin-top:13px;gap:10px;font-size:11.5px}
   .message,.session-note{font-size:11px;padding:9px 10px}
   .session-note-actions button{font-size:10px}
+
+  /* Cuando aparece el teclado de iOS, se compacta sin perder los campos. */
+  .formative-panel:focus-within{
+    max-height:calc(100dvh - 12px);
+    padding-top:15px
+  }
+  .formative-panel:focus-within .brand{width:145px}
+  .formative-panel:focus-within .formative-kicker,
+  .formative-panel:focus-within .formative-lead,
+  .formative-panel:focus-within .login-general-note,
+  .formative-panel:focus-within .remember{display:none}
+  .formative-panel:focus-within .formative-title{font-size:27px}
+  .formative-panel:focus-within .login-form{margin-top:10px}
+}
+@media(max-width:760px) and (orientation:portrait) and (max-height:740px){
+  .formative-panel{
+    left:9px;right:9px;
+    bottom:max(8px,env(safe-area-inset-bottom));
+    max-height:calc(100dvh - 76px);
+    padding:16px
+  }
+  .brand{width:148px}
+  .formative-kicker{display:none}
+  .formative-title{font-size:27px}
+  .formative-lead{font-size:11.5px;line-height:1.4}
+  .login-form{margin-top:11px}
+  .field input,#go{height:46px;min-height:46px}
+  .login-general-note{display:none}
+}
+@media(max-width:760px) and (orientation:portrait) and (max-height:650px){
+  .formative-panel{
+    left:7px;right:7px;bottom:7px;
+    max-height:calc(100dvh - 14px);
+    padding:13px 14px
+  }
+  .brand{width:132px}
+  .formative-title{font-size:25px}
+  .formative-lead,.remember{display:none}
+  .field input,#go{height:44px;min-height:44px}
+}
+@supports not (height:100dvh){
+  @media(max-width:760px) and (orientation:portrait){
+    html,body,.login-shell,.login-scene-stage{height:100vh;min-height:100vh}
+    .formative-panel{max-height:calc(100vh - 148px)}
+    .formative-panel:focus-within{max-height:calc(100vh - 12px)}
+  }
 }
 @media(prefers-reduced-motion:reduce){.login-transition,#go{transition:none!important}}
 </style>
