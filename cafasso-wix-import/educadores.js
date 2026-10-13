@@ -114,17 +114,53 @@ function formation(){
 }
 async function getCourse(id){if(cache.has(id))return cache.get(id);const r=await fetch(COURSE_API+'?id='+encodeURIComponent(id),{headers:authHeaders(),cache:'no-store'});const j=await r.json().catch(()=>null);if(!r.ok||!j?.ok||!j?.course)throw new Error(j?.error||'No pudimos abrir este curso.');cache.set(id,j.course);return j.course}
 function moduleUnlocked(m,index,mods,done){if(index===0||m?.unlockAfterPrevious===false)return true;return done.has(moduleId(mods[index-1]))}
-function moduleRow(m,index,mods,done,cid){
-  const id=moduleId(m),isDone=done.has(id),unlocked=moduleUnlocked(m,index,mods,done);
-  const label=isDone?'Completado':unlocked?'Disponible':'Bloqueado';
-  return '<article class="module '+(isDone?'done ':'')+(!unlocked?'locked':'')+'"><span class="module-index">'+(isDone?'✓':index+1)+'</span><div><h3>'+esc(m.title||('Módulo '+(index+1)))+'</h3><p>'+esc(m.description||m.settings?.objective||m.settings?.stageLabel||'Una nueva etapa del itinerario.')+'</p></div>'+(unlocked?'<button class="edu-primary" data-module="'+esc(id)+'" data-course-id="'+esc(cid)+'">'+(isDone?'Volver a ver':'Entrar')+'</button>':'<span class="module-status">'+label+'</span>')+'</article>'
+function notebookModule(m,index,mods,done,cid,currentIndex){
+  const id=moduleId(m),isDone=done.has(id),unlocked=moduleUnlocked(m,index,mods,done),isCurrent=index===currentIndex;
+  const minutes=Number(m?.minutes||m?.settings?.minutes||m?.settings?.estimatedMinutes||0);
+  const state=isDone?'done':!unlocked?'locked':isCurrent?'current':'open';
+  const label=isDone?'Recorrido':!unlocked?'Más adelante':isCurrent?'Por acá seguís':'Disponible';
+  const action=isDone?'Volver a mirar':isCurrent?'Seguir por acá':'Abrir';
+  return '<article class="notebook-chapter '+state+'">'+
+    '<div class="chapter-marker"><span>'+(isDone?'✓':String(index+1).padStart(2,'0'))+'</span><i></i></div>'+
+    '<div class="chapter-copy"><div class="chapter-state">'+label+'</div><h3>'+esc(m.title||('Módulo '+(index+1)))+'</h3><p>'+esc(m.description||m.settings?.objective||m.settings?.stageLabel||'Una nueva etapa del recorrido.')+'</p>'+
+      '<div class="chapter-meta"><span>Capítulo '+(index+1)+'</span>'+(minutes?'<span>· '+minutes+' min aprox.</span>':'')+'</div></div>'+
+    (unlocked?'<button class="'+(isCurrent?'edu-primary':'edu-secondary')+'" data-module="'+esc(id)+'" data-course-id="'+esc(cid)+'">'+action+' →</button>':'<span class="chapter-lock">Todavía no</span>')+
+  '</article>';
 }
 async function courseView(id){
-  $('#main').innerHTML='<div class="edu-loading"><span></span><strong>Abriendo el itinerario…</strong></div>';
+  $('#main').innerHTML='<div class="edu-loading"><span></span><strong>Abriendo el cuaderno…</strong></div>';
   try{currentCourse=await getCourse(id)}catch(e){return '<div class="empty">'+esc(e.message)+'</div>'}
   const p=progressOf(id),mods=publishedModules(currentCourse),done=completedModules(id);
-  return '<button class="back" data-nav="formacion">← Volver a Escuela</button><section class="course-hero"><div><div class="edu-eyebrow">CAFASSO · Escuela</div><h1>'+esc(currentCourse.title||'Curso')+'</h1><p>'+esc(descriptionOf(currentCourse))+'</p><div class="course-meta"><span>'+mods.length+' módulos</span><span>·</span><span>'+esc(durationText(currentCourse))+'</span></div></div><aside class="course-summary"><small>Tu recorrido</small><strong>'+Math.round(p)+'%</strong><span>'+done.size+' de '+mods.length+' módulos completados</span><div class="progress"><i style="width:'+p+'%"></i></div></aside></section><section class="section"><div class="section-head"><div><h2>El recorrido</h2><p>Avanzá módulo a módulo, a tu ritmo.</p></div></div><div class="module-list">'+mods.map((m,i)=>moduleRow(m,i,mods,done,id)).join('')+'</div></section>';
+  let currentIndex=mods.findIndex((m,i)=>!done.has(moduleId(m))&&moduleUnlocked(m,i,mods,done));
+  if(currentIndex<0&&mods.length&&done.size<mods.length)currentIndex=0;
+  const current=currentIndex>=0?mods[currentIndex]:null;
+  const currentTitle=current?.title||current?.settings?.stageLabel||'Tu próximo capítulo';
+  const completed=mods.length>0&&done.size>=mods.length;
+  const continueText=completed?'Volver a recorrer':current?'Seguir por acá':'Abrir el recorrido';
+  const continueId=current?moduleId(current):(mods[0]?moduleId(mods[0]):'');
+  return '<div class="notebook-page">'+
+    '<button class="back" data-nav="formacion">← Volver a Escuela</button>'+
+    '<section class="notebook-cover">'+
+      '<div class="notebook-spine" aria-hidden="true"></div>'+
+      '<div class="notebook-cover-main"><div class="edu-eyebrow">CAFASSO · Escuela</div><span class="notebook-label">Cuaderno de formación</span><h1>'+esc(currentCourse.title||'Curso')+'</h1><p>'+esc(descriptionOf(currentCourse))+'</p>'+
+        '<div class="notebook-meta"><span>▥ '+mods.length+' capítulos</span><span>◷ '+esc(durationText(currentCourse))+'</span></div>'+
+      '</div>'+
+      '<aside class="notebook-resume"><small>'+(completed?'Lo recorriste completo':'Para retomar')+'</small><h2>'+esc(completed?'Este recorrido queda con vos':currentTitle)+'</h2>'+
+        '<p>'+(completed?'Podés volver cuando necesites mirar algo de nuevo.':'No hace falta empezar otra vez. Seguís exactamente desde acá.')+'</p>'+
+        '<div class="notebook-progress"><span>Tu recorrido</span><b>'+Math.round(p)+'%</b><div class="progress"><i style="width:'+p+'%"></i></div></div>'+
+        (continueId?'<button class="edu-primary" data-module="'+esc(continueId)+'" data-course-id="'+esc(id)+'">'+continueText+' →</button>':'')+
+      '</aside>'+
+    '</section>'+
+    '<section class="notebook-body">'+
+      '<div class="notebook-margin-note"><span>Tu recorrido</span><p>Andá capítulo por capítulo, a tu ritmo. Lo importante no es terminar rápido, sino dejar que algo de lo trabajado vuelva con vos a la práctica.</p></div>'+
+      '<div class="notebook-toc"><div class="notebook-heading"><span class="school-kicker">Índice</span><h2>El recorrido</h2><p>'+done.size+' de '+mods.length+' capítulos recorridos.</p></div>'+
+        '<div class="notebook-chapters">'+mods.map((m,i)=>notebookModule(m,i,mods,done,id,currentIndex)).join('')+'</div>'+
+      '</div>'+
+    '</section>'+
+    '<section class="notebook-closing"><span>Antes de seguir</span><blockquote>“La educación es cosa del corazón.”</blockquote><small>Don Bosco</small></section>'+
+  '</div>';
 }
+
 function placeholder(view){
   const map={biblioteca:['▥','Recursos','Algunas cosas sirven para resolver. Otras, para volver a pensar. Acá vamos a reunir textos, videos y materiales para tu tarea.'],interioridad:['♧','Parroquia','Un espacio más sereno para la Palabra, la oración y las pausas personales.'],comunidad:['◎','Patio','Donde lo que cada uno vive puede encontrarse con lo de otros: experiencias, preguntas y encuentros.'],camino:['◇','Mi camino','Lo que vas viviendo también forma parte de tu formación. Acá vamos a reunir lo recorrido y lo que sigue.']};
   const x=map[view]||['⌂','Casa de Formación','Estamos preparando este espacio.'];
