@@ -52,6 +52,7 @@ html.cafasso-app-ready #cafassoLaunch{opacity:0;visibility:hidden;pointer-events
 <div id="cafassoLaunch" aria-hidden="true"><div><img src="./cafasso-mark.svg" alt=""><strong>CAFASSO</strong><small>Caminamos juntos</small></div></div>
 <div id="cafassoNetworkState" role="status" aria-live="polite">Sin conexión · trabajando con lo disponible</div>
 <iframe id="cafassoWorld" title="CAFASSO" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>
+<script src="./cafasso-experience-access.js?v=1"></script>
 <script src="./auth-guard.js?v=20260923-3"></script>
 <script src="./cafasso-session-health.js?v=1"></script>
 <script src="./cafasso-user-cloud.js?v=8"></script>
@@ -60,6 +61,11 @@ html.cafasso-app-ready #cafassoLaunch{opacity:0;visibility:hidden;pointer-events
 <script src="./cafasso-global-music.js?v=10"></script>
 <script>
 (() => {
+  let session=null;try{session=JSON.parse(localStorage.getItem('cafassoSession')||'null')}catch(e){}
+  const access=window.CafassoExperienceAccess;
+  if(session?.authenticated&&session?.user&&access&&!access.canUse(session.user,'animadores')){
+    location.replace(access.targetFor(access.allowedExperiences(session.user)[0]||'educadores'));return;
+  }
   const root=document.documentElement;
   const frame=document.getElementById('cafassoWorld');
   if(!frame)return;
@@ -86,7 +92,7 @@ html.cafasso-app-ready #cafassoLaunch{opacity:0;visibility:hidden;pointer-events
     const url=new URL('./world.html',location.href);
     url.search=location.search;
     ['code','state','error','error_description'].forEach(key=>url.searchParams.delete(key));
-    url.searchParams.set('__cafassoBuild','1197');
+    url.searchParams.set('__cafassoBuild','1198');
     url.hash=location.hash;
     return url.href;
   };
