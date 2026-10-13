@@ -365,6 +365,7 @@ button{cursor:pointer}
     </div>
   </div>
 </main>
+<script src="./cafasso-experience-access.js?v=1"></script>
 <script>
 const AUTH_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoAuth';
 const $=id=>document.getElementById(id);
@@ -395,9 +396,10 @@ function clearLocalSession(){
   sessionNote.classList.remove('show');
 }
 function route(user){
-  const preference=localStorage.getItem('cafassoExperience')||'';
-  const target=preference==='educadores'?'./educadores.html':preference==='animadores'?'./':'./experiencia.html';
-  $('transitionTitle').textContent=preference==='educadores'?'Entrando a Casa de Formación…':preference==='animadores'?'Entrando a CAFASSO…':'Preparando tu experiencia…';
+  const access=window.CafassoExperienceAccess;
+  const allowed=access?.allowedExperiences(user)||['animadores'];
+  const target=access?.routeAfterLogin(user)||(allowed[0]==='educadores'?'./educadores.html':'./');
+  $('transitionTitle').textContent=allowed.length>1?'Eligiendo tu experiencia…':allowed[0]==='educadores'?'Entrando a Casa de Formación…':'Entrando a CAFASSO…';
   $('loginShell').classList.add('entering');
   $('loginTransition').setAttribute('aria-hidden','false');
   setTimeout(()=>location.replace(target),420);
