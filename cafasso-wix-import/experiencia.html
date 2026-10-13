@@ -45,16 +45,29 @@ url("https://static.wixstatic.com/media/47bf07_522938aeaaaa4ff2802523b250fb2a08~
     <div class="note">Podés cambiar de experiencia más adelante sin perder ningún avance.</div>
   </section>
 </main>
+<script src="./cafasso-experience-access.js?v=1"></script>
 <script>
 (()=>{
   let session=null;
   try{session=JSON.parse(localStorage.getItem('cafassoSession')||'null')}catch(e){}
   if(!session?.authenticated||!session?.user){location.replace('./login.html');return}
-  document.querySelectorAll('[data-experience]').forEach(btn=>btn.addEventListener('click',()=>{
+  const access=window.CafassoExperienceAccess;
+  const allowed=access?.allowedExperiences(session.user)||['animadores'];
+  if(allowed.length<=1){
+    const only=allowed[0]||'animadores';
+    localStorage.setItem('cafassoExperience',only);
+    location.replace(access?.targetFor(only)||(only==='educadores'?'./educadores.html':'./'));
+    return;
+  }
+  document.querySelectorAll('[data-experience]').forEach(btn=>{
     const mode=btn.dataset.experience;
-    localStorage.setItem('cafassoExperience',mode);
-    location.replace(mode==='educadores'?'./educadores.html':'./');
-  }));
+    btn.hidden=!allowed.includes(mode);
+    if(btn.hidden)return;
+    btn.addEventListener('click',()=>{
+      localStorage.setItem('cafassoExperience',mode);
+      location.replace(access?.targetFor(mode)||(mode==='educadores'?'./educadores.html':'./'));
+    });
+  });
 })();
 </script>
 </body>
