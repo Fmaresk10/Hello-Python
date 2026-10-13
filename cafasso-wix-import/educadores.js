@@ -12,6 +12,14 @@ let courses=[];
 let currentCourse=null;
 let resourceLibrary=[];
 let resourceLoadPromise=null;
+let parishSongs=[];
+let parishSilenceTimer=null;
+const PARISH_IMAGES={
+  morning:'https://static.wixstatic.com/media/47bf07_f64cd4cb65ad4fccb885553d8121dae0~mv2.png',
+  afternoon:'https://static.wixstatic.com/media/47bf07_1c9e484e5ec8490781a6e54d6c262e1a~mv2.png',
+  sunset:'https://static.wixstatic.com/media/47bf07_36ab84721e95485587152a40d3adce64~mv2.png',
+  night:'https://static.wixstatic.com/media/47bf07_18a734a77ca94196970c4be45eb416ff~mv2.png'
+};
 const cache=new Map();
 
 function readJson(key){try{return JSON.parse(localStorage.getItem(key)||'null')}catch(e){return null}}
@@ -343,6 +351,140 @@ function bindResourceFilters(){
   chips.forEach(btn=>btn.onclick=()=>{category=btn.dataset.resourceCategory||'';chips.forEach(x=>x.classList.toggle('active',x===btn));apply()});
 }
 
+
+const PARISH_BOOKS={
+ 'Genesis':'Génesis','Exodus':'Éxodo','Leviticus':'Levítico','Numbers':'Números','Deuteronomy':'Deuteronomio','Joshua':'Josué','Judges':'Jueces','Ruth':'Rut',
+ '1 Samuel':'1 Samuel','2 Samuel':'2 Samuel','1 Kings':'1 Reyes','2 Kings':'2 Reyes','1 Chronicles':'1 Crónicas','2 Chronicles':'2 Crónicas','Ezra':'Esdras','Nehemiah':'Nehemías',
+ 'Tobit':'Tobías','Judith':'Judit','Esther':'Ester','1 Maccabees':'1 Macabeos','2 Maccabees':'2 Macabeos','Job':'Job','Psalms':'Salmo','Psalm':'Salmo','Proverbs':'Proverbios',
+ 'Ecclesiastes':'Eclesiastés','Song of Songs':'Cantar de los Cantares','Wisdom':'Sabiduría','Sirach':'Eclesiástico','Isaiah':'Isaías','Jeremiah':'Jeremías','Lamentations':'Lamentaciones',
+ 'Baruch':'Baruc','Ezekiel':'Ezequiel','Daniel':'Daniel','Hosea':'Oseas','Joel':'Joel','Amos':'Amós','Obadiah':'Abdías','Jonah':'Jonás','Micah':'Miqueas','Nahum':'Nahúm',
+ 'Habakkuk':'Habacuc','Zephaniah':'Sofonías','Haggai':'Ageo','Zechariah':'Zacarías','Malachi':'Malaquías','Matthew':'Mateo','Mark':'Marcos','Luke':'Lucas','John':'Juan',
+ 'Acts':'Hechos','Romans':'Romanos','1 Corinthians':'1 Corintios','2 Corinthians':'2 Corintios','Galatians':'Gálatas','Ephesians':'Efesios','Philippians':'Filipenses','Colossians':'Colosenses',
+ '1 Thessalonians':'1 Tesalonicenses','2 Thessalonians':'2 Tesalonicenses','1 Timothy':'1 Timoteo','2 Timothy':'2 Timoteo','Titus':'Tito','Philemon':'Filemón','Hebrews':'Hebreos',
+ 'James':'Santiago','1 Peter':'1 Pedro','2 Peter':'2 Pedro','1 John':'1 Juan','2 John':'2 Juan','3 John':'3 Juan','Jude':'Judas','Revelation':'Apocalipsis'
+};
+const PARISH_SEASONS={'Ordinary Time':'Tiempo Ordinario','Advent':'Adviento','Christmas':'Navidad','Lent':'Cuaresma','Easter':'Pascua'};
+function parishPeriod(){
+  const h=new Date().getHours()+new Date().getMinutes()/60;
+  if(h>=6&&h<12)return 'morning';if(h>=12&&h<17.5)return 'afternoon';if(h>=17.5&&h<20.5)return 'sunset';return 'night';
+}
+function parishHeroImage(){return PARISH_IMAGES[parishPeriod()]||PARISH_IMAGES.afternoon}
+function localDateParts(){
+  const d=new Date(),year=d.getFullYear(),month=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
+  return {d,year,month,day,key:year+'-'+month+'-'+day};
+}
+function translateBibleRef(value){
+  let s=String(value||'').trim();
+  Object.keys(PARISH_BOOKS).sort((a,b)=>b.length-a.length).some(name=>{if(s.startsWith(name+' ')){s=PARISH_BOOKS[name]+s.slice(name.length);return true}return false});
+  return s.replace(/(\d):(\d)/,'$1,$2');
+}
+function vaticanDailyUrl(){
+  const x=localDateParts();return 'https://www.vaticannews.va/es/evangelio-de-hoy/'+x.year+'/'+x.month+'/'+x.day+'.html';
+}
+async function loadParishDailyWord(){
+  const x=localDateParts(),key='cafasso-daily-word-'+x.key;
+  try{const cached=JSON.parse(localStorage.getItem(key)||'null');if(cached?.readings)return cached}catch(e){}
+  const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),4500);
+  try{
+    const r=await fetch('https://cpbjr.github.io/catholic-readings-api/readings/'+x.year+'/'+x.month+'-'+x.day+'.json',{cache:'force-cache',signal:ctrl.signal});
+    if(!r.ok)throw new Error('Lecturas no disponibles');
+    const j=await r.json();try{localStorage.setItem(key,JSON.stringify(j))}catch(e){}return j;
+  }finally{clearTimeout(timer)}
+}
+function parishUserKey(){
+  const raw=session?.user?._id||session?.user?.id||session?.user?.email||session?.user?.name||'local';
+  return encodeURIComponent(String(raw).trim().toLowerCase()).slice(0,120);
+}
+function candleKeys(){
+  const date=localDateParts().key,u=parishUserKey();
+  return {lit:'cafasso-parish-candle-'+u+'-'+date,intention:'cafasso-parish-intention-'+u+'-'+date};
+}
+function candleState(){
+  const k=candleKeys();let lit=false,intention='';try{lit=localStorage.getItem(k.lit)==='lit';intention=localStorage.getItem(k.intention)||''}catch(e){}
+  return {lit,intention};
+}
+function parishView(){
+  const candle=candleState(),image=parishHeroImage();
+  return '<div class="parish-page" style="--parish-image:url(\''+esc(image)+'\')">'+
+    '<button class="back" data-nav="home">← Volver a Casa</button>'+
+    '<section class="parish-hero"><div class="parish-hero-copy"><div class="edu-eyebrow">CAFASSO · Parroquia</div><h1>Parroquia</h1><p>No todo se resuelve haciendo. A veces hay que volver a la Palabra, hacer silencio, encender una intención o dejar que una canción nos acompañe.</p><span>Quedate el tiempo que necesites.</span></div><div class="parish-cross" aria-hidden="true">✝</div></section>'+
+    '<section class="parish-word" id="parishWord"><div class="parish-word-icon">✝</div><div><span class="school-kicker">Palabra del día</span><h2>Abriendo las lecturas de hoy…</h2><p>Un momento. Estamos buscando la Palabra para este día.</p></div></section>'+
+    '<section class="parish-practices">'+
+      '<article class="parish-practice candle-card '+(candle.lit?'is-lit':'')+'"><div class="parish-practice-symbol"><span class="candle-flame">◆</span><i></i></div><div><span class="school-kicker">Una intención</span><h2>'+(candle.lit?'Tu vela está encendida':'Encender una vela')+'</h2><p>'+(candle.intention?esc(candle.intention):'Podés dejar por escrito una persona, una situación o algo que hoy quieras poner en manos de Dios. Queda solamente en este dispositivo.')+'</p></div><button class="edu-primary" id="parishCandleButton">'+(candle.lit?'Volver a mi intención':'Encender una vela')+' →</button></article>'+
+      '<article class="parish-practice silence-card"><div class="parish-practice-symbol">○</div><div><span class="school-kicker">Hacer silencio</span><h2>Un minuto</h2><p>No hay una consigna. Solo un minuto para parar. Si hay música sonando, CAFASSO la pausa.</p></div><button class="edu-secondary" id="parishSilenceButton">Comenzar el minuto →</button></article>'+
+    '</section>'+
+    '<section class="parish-songbook"><div class="section-head"><div><span class="school-kicker">Cancionero de la Parroquia</span><h2>Música para orar</h2><p>La música empieza solamente cuando vos la elegís.</p></div>'+(isAdmin()?'<button class="resource-manage" id="manageSongbook">⚙ Gestionar cancionero</button>':'')+'</div><div class="parish-songbook-body" id="parishSongbookBody"><div class="parish-songbook-loading">Abriendo el Cancionero CAFASSO…</div></div></section>'+
+    '<section class="parish-closing"><span>Antes de volver</span><blockquote>“Dios te ve.”</blockquote><p>No como vigilancia, sino como presencia. Podés volver a tu tarea desde acá.</p></section>'+
+    '<section class="parish-intention-modal" id="parishIntentionModal" hidden><div class="parish-modal-backdrop" data-parish-intention-close></div><article><button data-parish-intention-close class="parish-modal-close" aria-label="Cerrar">×</button><span class="school-kicker">Una intención</span><h2>¿Por quién o por qué querés encender una vela?</h2><p>Podés escribirlo o simplemente encenderla sin palabras. Esto queda guardado solo en este dispositivo y solo para hoy.</p><textarea id="parishIntentionText" maxlength="240" placeholder="Hoy quiero poner en tus manos…">'+esc(candle.intention)+'</textarea><div><button class="edu-secondary" data-parish-intention-close>Ahora no</button><button class="edu-primary" id="parishLightCandle">Encender la vela</button></div></article></section>'+
+    '<section class="parish-silence-overlay" id="parishSilenceOverlay" hidden><div class="parish-silence-inner"><span>Un minuto de silencio</span><strong id="parishSilenceClock">1:00</strong><p>No hace falta llenar este momento.</p><button class="edu-secondary" id="parishSilenceStop">Terminar antes</button></div></section>'+
+  '</div>';
+}
+async function hydrateParishWord(){
+  const el=$('#parishWord');if(!el)return;
+  try{
+    const data=await loadParishDailyWord();if(!$('#parishWord'))return;
+    const r=data?.readings||{},gospel=translateBibleRef(r.gospel||''),first=translateBibleRef(r.firstReading||''),psalm=translateBibleRef(r.psalm||''),second=translateBibleRef(r.secondReading||'');
+    const x=localDateParts(),date=x.d.toLocaleDateString('es-UY',{weekday:'long',day:'numeric',month:'long'}),season=PARISH_SEASONS[data?.season]||data?.season||'Liturgia del día';
+    el.innerHTML='<div class="parish-word-icon">✝</div><div class="parish-word-copy"><span class="school-kicker">Palabra del día · '+esc(season)+'</span><h2>'+esc(gospel||'Evangelio de hoy')+'</h2><p>'+esc(date)+'</p><div class="parish-readings">'+
+      (first?'<span><b>1ª lectura</b> '+esc(first)+'</span>':'')+(psalm?'<span><b>Salmo</b> '+esc(psalm)+'</span>':'')+(second?'<span><b>2ª lectura</b> '+esc(second)+'</span>':'')+
+      '</div></div><a class="edu-primary parish-word-link" href="'+esc(vaticanDailyUrl())+'" target="_blank" rel="noopener">Leer el Evangelio →</a>';
+  }catch(e){
+    const x=localDateParts(),date=x.d.toLocaleDateString('es-UY',{weekday:'long',day:'numeric',month:'long'});
+    el.innerHTML='<div class="parish-word-icon">✝</div><div class="parish-word-copy"><span class="school-kicker">Palabra del día</span><h2>Evangelio de hoy</h2><p>'+esc(date)+' · Hoy no pudimos cargar las referencias automáticamente.</p></div><a class="edu-primary parish-word-link" href="'+esc(vaticanDailyUrl())+'" target="_blank" rel="noopener">Leer →</a>';
+  }
+}
+async function hydrateParishSongbook(){
+  const host=$('#parishSongbookBody');if(!host)return;
+  const spotify=window.CafassoSpotify;
+  if(!spotify?.isConfigured?.()){
+    host.innerHTML='<div class="parish-songbook-empty"><span>♪</span><h3>El Cancionero todavía no está configurado en este dispositivo.</h3><p>Podés seguir usando la Palabra, la vela y el silencio sin conectar ningún servicio.</p></div>';return;
+  }
+  if(!spotify.isAuthenticated?.()){
+    host.innerHTML='<div class="parish-songbook-empty"><span>♪</span><h3>Conectá Spotify para abrir el Cancionero.</h3><p>CAFASSO busca la playlist “CAFASSO · Cancionero” de tu cuenta. Spotify Premium es necesario para reproducir dentro de la plataforma.</p><button class="edu-primary" id="connectParishSpotify">Conectar Spotify →</button></div>';
+    $('#connectParishSpotify').onclick=()=>spotify.connectAccount();return;
+  }
+  try{
+    const info=await spotify.getConnectionInfo?.(true);
+    if(info?.profile&&!info.premium){
+      host.innerHTML='<div class="parish-songbook-empty"><span>♪</span><h3>Spotify Premium es necesario para escuchar dentro de CAFASSO.</h3><p>La cuenta '+esc(info.profile.displayName||'conectada')+' está disponible, pero Spotify limita la reproducción integrada a cuentas Premium.</p></div>';return;
+    }
+    const result=await spotify.getCancioneroTracks();parishSongs=result?.tracks||[];
+    if(!parishSongs.length){
+      host.innerHTML='<div class="parish-songbook-empty"><span>♪</span><h3>No encontré canciones en “CAFASSO · Cancionero”.</h3><p>Cuando la playlist tenga temas disponibles, van a aparecer acá.</p></div>';return;
+    }
+    host.innerHTML='<div class="parish-tracks">'+parishSongs.slice(0,12).map((track,i)=>'<article class="parish-track" data-parish-track="'+esc(track.id)+'"><span>'+(String(i+1).padStart(2,'0'))+'</span><div><strong>'+esc(track.title||'Música')+'</strong><small>'+esc(track.subtitle||track.source||'Spotify')+'</small></div><button class="edu-secondary" data-parish-play="'+esc(track.id)+'">Escuchar</button></article>').join('')+'</div>';
+    $('[data-parish-play]').forEach(btn=>btn.onclick=async()=>{const track=parishSongs.find(x=>String(x.id)===String(btn.dataset.parishPlay));if(!track)return;btn.disabled=true;btn.textContent='Abriendo…';try{await window.CafassoGlobalMusic?.play?.(track)}finally{btn.disabled=false;btn.textContent='Escuchar'}});
+  }catch(e){host.innerHTML='<div class="parish-songbook-empty"><span>♪</span><h3>No pudimos abrir el Cancionero.</h3><p>'+esc(e?.message||'Probá nuevamente en un momento.')+'</p><button class="edu-secondary" id="retryParishSongbook">Reintentar</button></div>';$('#retryParishSongbook').onclick=hydrateParishSongbook}
+}
+function openParishIntention(){
+  const modal=$('#parishIntentionModal');if(!modal)return;modal.hidden=false;document.body.classList.add('parish-modal-open');setTimeout(()=>$('#parishIntentionText')?.focus(),40);
+}
+function closeParishIntention(){const modal=$('#parishIntentionModal');if(modal)modal.hidden=true;document.body.classList.remove('parish-modal-open')}
+function saveParishIntention(){
+  const k=candleKeys(),text=String($('#parishIntentionText')?.value||'').trim().slice(0,240);
+  try{localStorage.setItem(k.lit,'lit');if(text)localStorage.setItem(k.intention,text);else localStorage.removeItem(k.intention)}catch(e){}
+  closeParishIntention();render();
+}
+function startParishSilence(){
+  const overlay=$('#parishSilenceOverlay');if(!overlay)return;
+  window.CafassoGlobalMusic?.pause?.();overlay.hidden=false;document.body.classList.add('parish-silence-active');
+  let remaining=60;const clock=$('#parishSilenceClock');if(clock)clock.textContent='1:00';
+  clearInterval(parishSilenceTimer);parishSilenceTimer=setInterval(()=>{remaining--;if(clock)clock.textContent=Math.floor(remaining/60)+':'+String(remaining%60).padStart(2,'0');if(remaining<=0)stopParishSilence(true)},1000);
+}
+function stopParishSilence(done=false){
+  clearInterval(parishSilenceTimer);parishSilenceTimer=null;const overlay=$('#parishSilenceOverlay');if(overlay)overlay.hidden=true;document.body.classList.remove('parish-silence-active');
+  if(done){const btn=$('#parishSilenceButton');if(btn)btn.textContent='Volver a hacer un minuto →'}
+}
+function hydrateParish(){
+  hydrateParishWord();hydrateParishSongbook();
+  const candle=$('#parishCandleButton');if(candle)candle.onclick=openParishIntention;
+  $('[data-parish-intention-close]').forEach(x=>x.onclick=closeParishIntention);
+  const light=$('#parishLightCandle');if(light)light.onclick=saveParishIntention;
+  const silence=$('#parishSilenceButton');if(silence)silence.onclick=startParishSilence;
+  const stop=$('#parishSilenceStop');if(stop)stop.onclick=()=>stopParishSilence(false);
+  const manage=$('#manageSongbook');if(manage)manage.onclick=()=>location.href='./parish-songbook-admin.html?from=educadores';
+}
+
 function placeholder(view){
   const map={biblioteca:['▥','Recursos','Algunas cosas sirven para resolver. Otras, para volver a pensar. Acá vamos a reunir textos, videos y materiales para tu tarea.'],interioridad:['♧','Parroquia','Un espacio más sereno para la Palabra, la oración y las pausas personales.'],comunidad:['◎','Patio','Donde lo que cada uno vive puede encontrarse con lo de otros: experiencias, preguntas y encuentros.'],camino:['◇','Mi camino','Lo que vas viviendo también forma parte de tu formación. Acá vamos a reunir lo recorrido y lo que sigue.']};
   const x=map[view]||['⌂','Casa de Formación','Estamos preparando este espacio.'];
@@ -354,6 +496,7 @@ async function render(){
   else if(r.view==='formacion')html=formation();
   else if(r.view==='curso'&&r.id)html=await courseView(r.id);
   else if(r.view==='biblioteca')html=await resourcesView();
+  else if(r.view==='interioridad')html=parishView();
   else html=placeholder(r.view);
   if(route().view!==r.view||route().id!==r.id)return;
   $('#main').innerHTML=html;bindDynamic();window.scrollTo({top:0,behavior:'instant'});
@@ -365,6 +508,7 @@ function bindDynamic(){
   $('[data-resource-close]').forEach(b=>b.onclick=closeEducatorResource);
   bindResourceFilters();
   const manage=$('#manageResources');if(manage)manage.onclick=()=>location.href='./resource-admin.html?from=educadores';
+  if(route().view==='interioridad')hydrateParish();
   $('[data-module]').forEach(b=>b.onclick=()=>{
     const url=new URL('./course-player.html',location.href);
     url.searchParams.set('player','1');url.searchParams.set('course',b.dataset.courseId);url.searchParams.set('module',b.dataset.module);url.searchParams.set('educator','1');url.hash='modulo';location.href=url.toString();
@@ -402,7 +546,7 @@ function staticBind(){
   $('#logout').onclick=closeSession;
   $('#mobileLogout').onclick=closeSession;
   window.addEventListener('popstate',render);
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#resourceViewer')?.hidden)closeEducatorResource()});
+  document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#resourceViewer')?.hidden)closeEducatorResource();if(!$('#parishIntentionModal')?.hidden)closeParishIntention();if(!$('#parishSilenceOverlay')?.hidden)stopParishSilence(false)});
 }
 staticBind();load();
 })();
