@@ -395,10 +395,12 @@ function clearLocalSession(){
   sessionNote.classList.remove('show');
 }
 function route(user){
-  $('transitionTitle').textContent='Entrando a Casa…';
+  const preference=localStorage.getItem('cafassoExperience')||'';
+  const target=preference==='educadores'?'./educadores.html':preference==='animadores'?'./':'./experiencia.html';
+  $('transitionTitle').textContent=preference==='educadores'?'Entrando a Casa de Formación…':preference==='animadores'?'Entrando a CAFASSO…':'Preparando tu experiencia…';
   $('loginShell').classList.add('entering');
   $('loginTransition').setAttribute('aria-hidden','false');
-  setTimeout(()=>location.replace('./'),420);
+  setTimeout(()=>location.replace(target),420);
 }
 async function login(){
   const email=$('email').value.trim().toLowerCase();
