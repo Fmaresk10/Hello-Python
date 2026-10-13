@@ -3,279 +3,158 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CAFASSO · Login formativo</title>
+<title>CAFASSO · Ingreso</title>
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
 <style>
 :root{
-  --ink:#fffaf0;
-  --muted:rgba(255,250,240,.72);
-  --gold:#f2c267;
-  --panel:rgba(15,14,11,.965);
-  --line:rgba(255,255,255,.18);
+  --petrol:#103c3b;
+  --petrol-2:#173f3e;
+  --cream:#f7f0e3;
+  --paper:#fffaf0;
+  --gold:#d6b45a;
+  --ink:#173d3c;
+  --muted:#69766f;
+  --line:rgba(95,75,47,.18);
 }
 *{box-sizing:border-box}
-html,body{width:100%;height:100%;margin:0;background:#17271f}
+html,body{width:100%;height:100%;margin:0;background:#1b302c}
 body{
   overflow:hidden;
   color:var(--ink);
   font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
-  -webkit-font-smoothing:antialiased;
+  -webkit-font-smoothing:antialiased
 }
 button,input{font:inherit}
 button{cursor:pointer}
 .hidden{display:none!important}
 
-.login-shell{
-  position:fixed;
-  inset:0;
-  overflow:hidden;
-  background:#17271f;
-}
+.login-shell{position:fixed;inset:0;overflow:hidden;background:#1b302c}
 .login-shell:after{
-  content:"";
-  position:absolute;
-  z-index:2;
-  inset:0;
-  pointer-events:none;
-  box-shadow:inset 0 0 120px 35px rgba(10,20,15,.22);
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(90deg,rgba(23,47,43,.08),transparent 42%,rgba(23,47,43,.04));
+  box-shadow:inset 0 0 110px rgba(20,35,30,.16)
 }
-
 .login-scene-stage{
-  position:absolute;
-  z-index:1;
-  left:50%;
-  top:50%;
-  width:max(100vw,177.68vh);
-  aspect-ratio:1672/941;
-  transform:translate3d(-50%,-50%,0);
-  transform-origin:center;
-  container-type:size;
+  position:absolute;left:50%;top:50%;z-index:1;
+  width:max(100vw,150vh);aspect-ratio:3/2;
+  transform:translate3d(-50%,-50%,0);container-type:size
 }
 .login-scene-image{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:fill;
-  user-select:none;
-  -webkit-user-drag:none;
-  pointer-events:none;
+  position:absolute;inset:0;width:100%;height:100%;object-fit:fill;
+  user-select:none;-webkit-user-drag:none;pointer-events:none
 }
 
-/* Este panel cubre exclusivamente el panel dibujado en la imagen aprobada.
-   Todo lo que se ve acá es interfaz real. */
 .formative-panel{
-  position:absolute;
-  z-index:4;
-  left:5.68%;
-  top:6.60%;
-  width:24.72%;
-  height:74.45%;
-  min-height:0;
-  padding:3.4cqw 2.15cqw 2.4cqw;
-  border-radius:1.35cqw;
-  overflow:hidden;
+  position:absolute;z-index:4;
+  left:11.3%;top:9.6%;width:37.4%;min-height:69.8%;
+  padding:2.1cqw 2.4cqw 2.15cqw;
+  border:1px solid rgba(116,91,56,.15);
+  border-radius:1.55cqw;
   background:
-    radial-gradient(circle at 85% 12%,rgba(244,198,108,.06),transparent 28%),
-    linear-gradient(180deg,rgba(16,15,12,.985),rgba(20,18,14,.972));
-  box-shadow:0 1.3cqw 3cqw rgba(0,0,0,.30);
-  pointer-events:auto;
+    radial-gradient(circle at 86% 11%,rgba(214,180,90,.10),transparent 26%),
+    linear-gradient(155deg,rgba(255,250,240,.995),rgba(247,239,223,.995));
+  box-shadow:0 1.5cqw 3.6cqw rgba(53,41,23,.22);
+  pointer-events:auto;overflow:hidden
 }
-.formative-panel:before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  border:1px solid rgba(255,255,255,.035);
-  border-radius:inherit;
+.formative-panel:after{
+  content:"";position:absolute;right:-3cqw;bottom:-4cqw;width:11cqw;height:11cqw;
+  border:1px solid rgba(122,143,107,.11);border-radius:50%;pointer-events:none
 }
 .brand{
-  display:flex;
-  align-items:center;
-  height:7.1cqw;
+  position:relative;z-index:1;display:flex;align-items:center;
+  width:13.7cqw;min-width:190px;max-width:72%;
+  padding:.8cqw 1.05cqw;border-radius:.65cqw;
+  background:linear-gradient(135deg,var(--petrol),#164b47);
+  box-shadow:0 .55cqw 1.3cqw rgba(29,54,49,.14)
 }
-.brand img{
-  display:block;
-  width:100%;
-  height:auto;
+.brand img{display:block;width:100%;height:auto}
+.formative-kicker{
+  position:relative;z-index:1;margin:1.55cqw 0 .5cqw;
+  color:#9b7845;font:850 .55cqw/1.2 Inter,system-ui,sans-serif;
+  letter-spacing:.16em;text-transform:uppercase
 }
 .formative-title{
-  margin:2.6cqw 0 0;
-  max-width:18cqw;
-  color:#f0c986;
-  font:500 1.62cqw/1.28 Inter,system-ui,sans-serif;
-  letter-spacing:.105em;
-  text-transform:uppercase;
+  position:relative;z-index:1;margin:0;
+  color:var(--petrol);
+  font:600 2.35cqw/.98 Georgia,serif;letter-spacing:-.035em;
+  text-transform:none
 }
 .formative-lead{
-  margin:1.35cqw 0 0;
-  max-width:19.2cqw;
-  color:rgba(255,255,255,.84);
-  font:500 .88cqw/1.45 Inter,system-ui,sans-serif;
-  letter-spacing:.025em;
+  position:relative;z-index:1;margin:.75cqw 0 0;max-width:27cqw;
+  color:#5f6e68;font:500 .82cqw/1.52 Inter,system-ui,sans-serif
 }
-.login-form{
-  margin-top:2.15cqw;
-}
-.field{
-  position:relative;
-  margin-top:.78cqw;
-}
-.field label{
-  position:absolute;
-  width:1px;height:1px;
-  overflow:hidden;clip:rect(0,0,0,0);
-}
+.login-form{position:relative;z-index:1;margin-top:1.25cqw}
+.field{position:relative;margin-top:.68cqw}
+.field label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
 .field input{
-  width:100%;
-  height:3.05cqw;
-  min-height:42px;
-  padding:0 1.05cqw 0 3.25cqw;
-  border:1px solid var(--line);
-  border-radius:1.55cqw;
-  outline:0;
-  color:#f7f4ee;
-  background:rgba(255,255,255,.025);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
-  font:500 .78cqw/1 Inter,system-ui,sans-serif;
+  width:100%;height:3.18cqw;min-height:46px;padding:0 1.05cqw 0 3.15cqw;
+  border:1px solid rgba(104,83,54,.19);border-radius:.9cqw;outline:0;
+  background:rgba(255,253,247,.78);color:#314b45;
+  box-shadow:inset 0 1px rgba(255,255,255,.7);
+  font:500 .78cqw/1 Inter,system-ui,sans-serif
 }
-.field input::placeholder{color:rgba(255,255,255,.58)}
-.field input:focus{
-  border-color:rgba(242,194,103,.50);
-  box-shadow:0 0 0 .11cqw rgba(242,194,103,.08);
-}
+.field input::placeholder{color:#89928d}
+.field input:focus{border-color:rgba(16,60,59,.42);box-shadow:0 0 0 .11cqw rgba(16,60,59,.07)}
 .field:before{
-  content:"";
-  position:absolute;
-  z-index:1;
-  left:1.12cqw;
-  top:50%;
-  width:.86cqw;
-  height:.86cqw;
-  transform:translateY(-50%);
-  opacity:.88;
-  pointer-events:none;
+  content:"";position:absolute;z-index:1;left:1.05cqw;top:50%;
+  width:.82cqw;height:.82cqw;transform:translateY(-50%);pointer-events:none;opacity:.72
 }
 .field.user:before{
-  border:.10cqw solid rgba(255,255,255,.82);
-  border-radius:50% 50% 44% 44%;
-  box-shadow:0 .62cqw 0 -.19cqw rgba(255,255,255,.82);
+  border:.09cqw solid #4b625d;border-radius:50% 50% 44% 44%;
+  box-shadow:0 .59cqw 0 -.19cqw #4b625d
 }
-.field.pass:before{
-  width:.78cqw;height:.63cqw;
-  border:.10cqw solid rgba(255,255,255,.82);
-  border-radius:.17cqw;
-}
+.field.pass:before{width:.75cqw;height:.60cqw;border:.09cqw solid #4b625d;border-radius:.16cqw}
 .field.pass:after{
-  content:"";
-  position:absolute;
-  z-index:1;
-  left:1.29cqw;
-  top:.72cqw;
-  width:.46cqw;
-  height:.42cqw;
-  border:.10cqw solid rgba(255,255,255,.82);
-  border-bottom:0;
-  border-radius:.35cqw .35cqw 0 0;
-  pointer-events:none;
+  content:"";position:absolute;z-index:1;left:1.21cqw;top:.73cqw;
+  width:.43cqw;height:.39cqw;border:.09cqw solid #4b625d;border-bottom:0;
+  border-radius:.32cqw .32cqw 0 0;pointer-events:none;opacity:.72
 }
 #go{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:100%;
-  height:3.05cqw;
-  min-height:44px;
-  margin-top:1.55cqw;
-  border:0;
-  border-radius:1.6cqw;
-  color:#211b14;
-  background:linear-gradient(90deg,#ffd8a8,#ffe5c5);
-  box-shadow:0 .35cqw .9cqw rgba(0,0,0,.12);
-  font:750 .88cqw/1 Inter,system-ui,sans-serif;
-  transition:transform .15s ease,filter .15s ease;
+  display:flex;align-items:center;justify-content:center;width:100%;
+  height:3.15cqw;min-height:48px;margin-top:1.05cqw;border:0;border-radius:999px;
+  color:#fff7df;background:linear-gradient(90deg,var(--petrol),#174b47);
+  box-shadow:0 .45cqw 1.15cqw rgba(25,57,52,.18);
+  font:800 .82cqw/1 Inter,system-ui,sans-serif;transition:.16s ease
 }
-#go:hover{filter:brightness(1.035);transform:translateY(-1px)}
-#go:active{transform:translateY(0)}
-#go:disabled{opacity:.58;cursor:wait}
+#go:hover{filter:brightness(1.06);transform:translateY(-1px)}
+#go:disabled{opacity:.56;cursor:wait;transform:none}
 .remember{
-  display:flex;
-  align-items:center;
-  gap:.65cqw;
-  margin-top:1.1cqw;
-  color:rgba(255,255,255,.80);
-  font:500 .72cqw/1 Inter,system-ui,sans-serif;
+  display:flex;align-items:center;gap:.55cqw;margin-top:.8cqw;
+  color:#737c77;font:600 .64cqw/1 Inter,system-ui,sans-serif
 }
-.remember-box{
-  width:1.1cqw;height:1.1cqw;
-  border:1px solid rgba(242,194,103,.70);
-  border-radius:.25cqw;
+.remember-box{width:.95cqw;height:.95cqw;border:1px solid rgba(99,79,49,.35);border-radius:.23cqw}
+.login-general-note{
+  position:relative;z-index:1;display:flex;align-items:center;gap:.7cqw;margin-top:1.15cqw;
+  color:#806d52;font:italic .72cqw/1.35 Georgia,serif
 }
-.message{
-  display:none;
-  margin-top:.85cqw;
-  padding:.62cqw .75cqw;
-  border-radius:.55cqw;
-  font:650 .62cqw/1.35 Inter,system-ui,sans-serif;
-}
-.message.show{display:block}
-.message.err{background:rgba(115,45,39,.88);color:#fff1ea}
-.message.ok{background:rgba(54,92,67,.88);color:#eff8ef}
+.login-general-note:before,.login-general-note:after{content:"";height:1px;flex:1;background:rgba(113,88,53,.18)}
 
-.session-note{
-  display:none;
-  margin-top:.8cqw;
-  padding:.65cqw .75cqw;
-  border:1px solid rgba(233,216,176,.22);
-  border-radius:.55cqw;
-  background:rgba(48,31,20,.78);
-}
+.message{display:none;position:relative;z-index:1;margin-top:.7cqw;padding:.58cqw .7cqw;border-radius:.55cqw;font:700 .59cqw/1.35 Inter,sans-serif}
+.message.show{display:block}.message.err{background:#f2ded7;color:#8a3e34}.message.ok{background:#e4eee2;color:#436451}
+.session-note{display:none;position:relative;z-index:1;margin-top:.68cqw;padding:.62cqw .7cqw;border:1px solid var(--line);border-radius:.55cqw;background:rgba(241,232,214,.92)}
 .session-note.show{display:block}
-.session-note-text{font:600 .61cqw/1.3 Inter,system-ui,sans-serif;color:#eadcc2}
-.session-note-actions{display:flex;gap:.65cqw;margin-top:.45cqw}
-.session-note-actions button{
-  border:0;background:transparent;color:#f0dfbd;
-  font:700 .58cqw Inter,system-ui,sans-serif;text-decoration:underline;
-}
+.session-note-text{font:650 .59cqw/1.3 Inter,sans-serif;color:#695d4d}
+.session-note-actions{display:flex;gap:.65cqw;margin-top:.4cqw}
+.session-note-actions button{border:0;background:transparent;color:var(--petrol);font:800 .57cqw Inter,sans-serif;text-decoration:underline}
 
 #changeBox{
-  position:absolute;
-  z-index:8;
-  left:50%;top:50%;
-  width:min(470px,90vw);
-  transform:translate(-50%,-50%);
-  padding:24px;
-  border-radius:20px;
-  color:#49372a;
-  background:linear-gradient(100deg,rgba(239,218,178,.99),rgba(249,236,207,.99));
-  box-shadow:0 24px 60px rgba(26,15,9,.35);
-  pointer-events:auto;
+  position:absolute;z-index:8;left:50%;top:50%;width:min(470px,90vw);
+  transform:translate(-50%,-50%);padding:24px;border:1px solid rgba(115,88,54,.16);
+  border-radius:20px;color:#49372a;background:linear-gradient(145deg,#fffaf0,#ead9ba);
+  box-shadow:0 24px 60px rgba(26,15,9,.35);pointer-events:auto
 }
-#changeBox .secure{margin-bottom:14px}
-#changeBox .secure b{display:block;font:700 19px Georgia,serif}
+#changeBox .secure{margin-bottom:14px}#changeBox .secure b{display:block;font:700 19px Georgia,serif}
 #changeBox .secure small{display:block;margin-top:5px;font:13px/1.4 Inter,sans-serif;color:#78624d}
-#changeBox .field{margin:12px 0}
-#changeBox .field:before,#changeBox .field:after{display:none}
-#changeBox .field label{
-  position:static;width:auto;height:auto;overflow:visible;clip:auto;
-  display:block;margin-bottom:5px;color:#775a41;font:800 11px Inter,sans-serif;
-  letter-spacing:.08em;text-transform:uppercase
-}
-#changeBox .field input{
-  min-height:48px;height:auto;padding:10px 12px;
-  border:1px solid rgba(103,75,49,.20);border-radius:10px;
-  background:rgba(255,253,245,.72);color:#423228;font-size:16px
-}
-#change{
-  width:100%;min-height:48px;margin-top:12px;border:1px solid #735239;
-  border-radius:10px;color:#fff7e7;background:#69503b;font:700 16px Georgia,serif
-}
-.login-shell.changing .formative-panel{filter:brightness(.72)}
+#changeBox .field{margin:12px 0}#changeBox .field:before,#changeBox .field:after{display:none}
+#changeBox .field label{position:static;width:auto;height:auto;overflow:visible;clip:auto;display:block;margin-bottom:5px;color:#775a41;font:800 11px Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+#changeBox .field input{min-height:48px;height:auto;padding:10px 12px;border:1px solid rgba(103,75,49,.20);border-radius:10px;background:rgba(255,253,245,.72);color:#423228;font-size:16px}
+#change{width:100%;min-height:48px;margin-top:12px;border:0;border-radius:999px;color:#fff7e7;background:var(--petrol);font:800 16px Inter,system-ui,sans-serif}
+.login-shell.changing .formative-panel{filter:brightness(.76)}
 
 .login-transition{
   position:fixed;inset:0;z-index:30;display:grid;place-items:center;
-  opacity:0;visibility:hidden;pointer-events:none;background:rgba(8,24,20,.80);
-  transition:opacity .32s ease,visibility .32s ease;
+  opacity:0;visibility:hidden;pointer-events:none;background:rgba(8,35,33,.84);
+  transition:opacity .32s ease,visibility .32s ease
 }
 .login-transition__inner{color:#fff1cf;text-align:center}
 .login-transition strong{display:block;font:500 clamp(29px,4.8vw,46px)/1 Georgia,serif}
@@ -284,50 +163,53 @@ button{cursor:pointer}
 .login-shell.entering .login-transition{opacity:1;visibility:visible}
 
 @media(max-width:760px) and (orientation:portrait){
-  .login-scene-stage{
-    left:173%;
-    top:50%;
-    width:max(100vw,177.68svh);
-  }
+  .login-scene-stage{left:50%;top:50%;width:max(150vw,150svh)}
+  .login-scene-image{object-fit:cover}
   .formative-panel{
-    padding:3.1cqw 2.15cqw 2.2cqw;
+    position:fixed;left:5vw;right:5vw;top:auto;bottom:max(4.5vh,env(safe-area-inset-bottom));
+    width:auto;min-height:0;padding:22px 20px 20px;border-radius:22px;
+    background:linear-gradient(155deg,rgba(255,250,240,.975),rgba(247,239,223,.975))
   }
-  .field input{font-size:16px}
-  .formative-title{font-size:1.75cqw}
-  .formative-lead{font-size:.93cqw}
+  .brand{width:190px;max-width:68%;padding:10px 13px;border-radius:10px}
+  .formative-kicker{margin:19px 0 6px;font-size:8px}
+  .formative-title{font-size:34px}
+  .formative-lead{margin-top:8px;max-width:none;font-size:13px}
+  .login-form{margin-top:15px}.field{margin-top:9px}
+  .field input{height:52px;padding:0 15px 0 48px;border-radius:15px;font-size:16px}
+  .field:before{left:17px;width:13px;height:13px}.field.user:before{border-width:1.5px;box-shadow:0 9px 0 -3px #4b625d}
+  .field.pass:before{width:13px;height:10px;border-width:1.5px}.field.pass:after{left:20px;top:12px;width:8px;height:8px;border-width:1.5px}
+  #go{height:52px;margin-top:13px;font-size:15px}
+  .remember{gap:8px;margin-top:11px;font-size:11px}.remember-box{width:15px;height:15px}
+  .login-general-note{margin-top:14px;gap:10px;font-size:12px}
+  .message,.session-note{font-size:11px;padding:9px 10px}
+  .session-note-actions button{font-size:10px}
 }
-@supports not (height:100svh){
-  @media(max-width:760px) and (orientation:portrait){
-    .login-scene-stage{width:max(100vw,177.68vh)}
-  }
-}
-@media(prefers-reduced-motion:reduce){
-  .login-transition{transition:none!important}
-}
+@media(prefers-reduced-motion:reduce){.login-transition,#go{transition:none!important}}
 </style>
 </head>
 <body>
 <main class="login-shell" id="loginShell">
   <div class="login-scene-stage">
     <img class="login-scene-image"
-      src="https://static.wixstatic.com/media/47bf07_522938aeaaaa4ff2802523b250fb2a08~mv2.png"
+      src="https://static.wixstatic.com/media/47bf07_9ae7bc72acc84453ae501afabf43eb35~mv2.png"
       alt="" aria-hidden="true" fetchpriority="high" decoding="async">
 
     <section class="formative-panel" aria-label="Ingreso a CAFASSO">
       <div class="brand"><img src="./cafasso-logo.svg" alt="CAFASSO"></div>
-      <h1 class="formative-title">Formación para<br>un futuro<br>más humano</h1>
-      <p class="formative-lead">Aprende, comparte y construye comunidades que transforman territorios.</p>
+      <div class="formative-kicker">Una misma puerta de entrada</div>
+      <h1 class="formative-title">Bienvenido/a</h1>
+      <p class="formative-lead">Ingresá para continuar en CAFASSO. Después te llevamos directamente a la experiencia que te corresponde.</p>
 
       <div id="loginBox" class="login-form">
         <div class="field user">
           <label for="email">Correo electrónico</label>
-          <input id="email" type="email" autocomplete="username" inputmode="email" placeholder="Usuario o correo">
+          <input id="email" type="email" autocomplete="username" inputmode="email" placeholder="Correo electrónico">
         </div>
         <div class="field pass">
           <label for="password">Contraseña</label>
           <input id="password" type="password" autocomplete="current-password" placeholder="Contraseña">
         </div>
-        <button id="go" type="button">Ingresar</button>
+        <button id="go" type="button">Ingresar →</button>
         <div class="remember" aria-hidden="true"><span class="remember-box"></span><span>Recordarme</span></div>
       </div>
 
@@ -339,6 +221,7 @@ button{cursor:pointer}
           <button id="newLogin" type="button">Ingresar de nuevo</button>
         </div>
       </div>
+      <div class="login-general-note"><span>Un mismo camino, distintas experiencias.</span></div>
     </section>
   </div>
 
@@ -422,7 +305,7 @@ async function login(){
     save(j);message('Bienvenido/a, '+(j.user.name||'')+'.','ok');
     setTimeout(()=>route(j.user),140);
   }catch(e){message(e.message,'err')}
-  finally{go.disabled=false;go.textContent='Ingresar'}
+  finally{go.disabled=false;go.textContent='Ingresar →'}
 }
 async function changePassword(){
   const a=$('newPassword').value,b=$('repeatPassword').value;
