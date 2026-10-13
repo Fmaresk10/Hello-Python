@@ -3,6 +3,7 @@
 const COURSE_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
 const SUBMISSION_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoSubmission';
 const PATIO_COURSE_ID='caf0f00d-0001-4a11-8000-000000000001';
+const PATIO_TITLE='CAFASSO · Patio';
 const PATIO_IMAGES={
   morning:'https://static.wixstatic.com/media/47bf07_1b5565dca9f446b38de8a368dfc8c4f3~mv2.png',
   afternoon:'https://static.wixstatic.com/media/47bf07_794847b8f87d4577a04e10fb9adf630c~mv2.png',
@@ -49,7 +50,7 @@ function patioOwnAnswerCard(submission,label){
 }
 async function loadPatio(){
   const [courseResult,submissionResult]=await Promise.allSettled([
-    fetch(COURSE_API+'?id='+encodeURIComponent(PATIO_COURSE_ID)+'&_='+Date.now(),{headers:authHeaders(),cache:'no-store'}).then(async r=>{const j=await r.json().catch(()=>null);if(!r.ok||!j?.ok||!j?.course)throw new Error(j?.error||'No pudimos abrir el Patio.');return j.course}),
+    fetch(COURSE_API+'?title='+encodeURIComponent(PATIO_TITLE)+'&_='+Date.now(),{headers:authHeaders(),cache:'no-store'}).then(async r=>{const j=await r.json().catch(()=>null);if(!r.ok||!j?.ok||!j?.course)throw new Error(j?.error||'No pudimos abrir el Patio.');return j.course}),
     fetch(SUBMISSION_API+'?userId='+encodeURIComponent(userId())+'&courseId='+encodeURIComponent(PATIO_COURSE_ID)+'&_='+Date.now(),{headers:authHeaders(),cache:'no-store'}).then(async r=>{const j=await r.json().catch(()=>null);if(!r.ok||!j?.ok)throw new Error(j?.error||'No pudimos leer tus aportes.');return j.submissions||[]})
   ]);
   if(courseResult.status!=='fulfilled')throw courseResult.reason;
