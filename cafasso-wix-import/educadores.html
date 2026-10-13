@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#103c3b">
 <title>CAFASSO · La Casa</title>
 <link rel="icon" href="./favicon.svg">
-<link rel="stylesheet" href="./educadores.css?v=4">
+<link rel="stylesheet" href="./educadores.css?v=5">
 </head>
 <body>
 <div class="edu-app" id="eduApp">
@@ -30,6 +30,7 @@
         <span class="house-person-avatar" id="sidebarAvatar">FM</span>
         <span><strong id="sidebarUserName">Mi cuenta</strong><small>Educador</small></span>
       </button>
+      <button class="house-side-action house-admin-entry" id="adminEntry" type="button" hidden><i>⚙</i><span>Administración</span></button>
       <button class="house-side-action" id="switchExperience" type="button"><i>↔</i><span>Cambiar experiencia</span></button>
       <button class="house-side-action" id="logout" type="button"><i>↪</i><span>Cerrar sesión</span></button>
     </div>
@@ -44,6 +45,7 @@
     <div class="edu-user-menu" id="userMenuPanel" hidden>
       <strong id="userMenuName">Mi cuenta</strong>
       <button type="button" data-nav="camino">Mi camino</button>
+      <button type="button" id="mobileAdminEntry" hidden>⚙ Administración</button>
       <button type="button" id="mobileSwitchExperience">Cambiar experiencia</button>
       <button type="button" id="mobileLogout">Cerrar sesión</button>
     </div>
@@ -61,6 +63,6 @@
     <button data-nav="biblioteca"><i>▥</i><span>Recursos</span></button>
   </nav>
 </div>
-<script src="./educadores.js?v=4"></script>
+<script src="./educadores.js?v=5"></script>
 </body>
 </html>
