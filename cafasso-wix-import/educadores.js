@@ -660,13 +660,13 @@ async function render(){
 function bindDynamic(){
   $$('[data-nav]').forEach(b=>b.onclick=()=>go(b.dataset.nav));
   $$('[data-course]').forEach(b=>b.onclick=()=>go('curso',b.dataset.course));
-  $('[data-resource-open]').forEach(b=>b.onclick=()=>openEducatorResource(b.dataset.resourceOpen));
-  $('[data-resource-close]').forEach(b=>b.onclick=closeEducatorResource);
+  $$('[data-resource-open]').forEach(b=>b.onclick=()=>openEducatorResource(b.dataset.resourceOpen));
+  $$('[data-resource-close]').forEach(b=>b.onclick=closeEducatorResource);
   bindResourceFilters();
   const manage=$('#manageResources');if(manage)manage.onclick=()=>location.href='./resource-admin.html?from=educadores';
   if(route().view==='interioridad')hydrateParish();
   if(route().view==='comunidad')bindPatio();
-  $('[data-module]').forEach(b=>b.onclick=()=>{
+  $$('[data-module]').forEach(b=>b.onclick=()=>{
     const url=new URL('./course-player.html',location.href);
     url.searchParams.set('player','1');url.searchParams.set('course',b.dataset.courseId);url.searchParams.set('module',b.dataset.module);url.searchParams.set('educator','1');url.hash='modulo';location.href=url.toString();
   });
