@@ -114,7 +114,13 @@ function bindShell(){
 }
 async function start(){
   if(!session?.authenticated||!session?.user){location.replace('./login.html');return}
-  localStorage.setItem('cafassoExperience','educadores');bindShell();
+  const access=window.CafassoExperienceAccess;
+  const allowed=access?.allowedExperiences(session.user)||['animadores'];
+  if(!allowed.includes('educadores')){location.replace(access?.targetFor(allowed[0]||'animadores')||'./');return}
+  localStorage.setItem('cafassoExperience','educadores');
+  const canSwitch=allowed.length>1;
+  $('#switchExperience').hidden=!canSwitch;$('#mobileSwitchExperience').hidden=!canSwitch;
+  bindShell();
   try{await loadPatio();renderPatio()}catch(e){$('#main').innerHTML='<div class="patio-page"><button class="back" data-nav="home">← Volver a Casa</button><div class="resource-empty"><span>◎</span><h2>No pudimos abrir el Patio</h2><p>'+esc(e?.message||'Probá nuevamente en un momento.')+'</p><button class="edu-secondary" id="retryPatio">Reintentar</button></div></div>';$$('[data-nav]').forEach(b=>b.onclick=()=>go(b.dataset.nav));$('#retryPatio').onclick=()=>location.reload()}
 }
 start();
