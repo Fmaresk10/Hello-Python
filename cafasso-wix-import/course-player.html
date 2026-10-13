@@ -20,6 +20,164 @@ html[data-cafasso-educator="1"] body.cafasso-linear-module-mode article.block{bo
 html[data-cafasso-educator="1"] .linear-module-nav{border-color:#ddd8cc!important;background:#fdfaf3!important;box-shadow:0 8px 24px rgba(33,56,52,.06)!important}
 html[data-cafasso-educator="1"] .linear-module-nav__back{color:#315b56!important}
 html[data-cafasso-educator="1"] .linear-module-nav__step--next{background:#173f42!important;border-color:#173f42!important;color:white!important}
+
+/* CAFASSO Educadores · cuaderno de formación */
+html[data-cafasso-educator="1"]{
+ --edu-petrol:#103c3b;--edu-ink:#173d3c;--edu-cream:#f7f0e3;--edu-paper:#fffaf0;
+ --edu-paper-2:#f3ead9;--edu-gold:#c7a45d;--edu-sage:#83957b;--edu-line:rgba(116,91,56,.17)
+}
+html[data-cafasso-educator="1"] body.cafasso-linear-module-mode{
+ background:
+ radial-gradient(circle at 88% 7%,rgba(199,164,93,.12),transparent 25%),
+ linear-gradient(180deg,#f8f2e7 0%,#f2eadc 100%)!important;color:var(--edu-ink)!important
+}
+html[data-cafasso-educator="1"] body.cafasso-linear-module-mode .module-detail{
+ width:min(1040px,calc(100% - 34px))!important;max-width:1040px!important;
+ margin:0 auto!important;padding:28px 0 62px!important
+}
+html[data-cafasso-educator="1"] .linear-module-nav{
+ border-color:var(--edu-line)!important;border-radius:16px!important;
+ background:rgba(255,250,240,.88)!important;box-shadow:0 8px 25px rgba(66,50,29,.07)!important;
+ backdrop-filter:blur(10px)
+}
+html[data-cafasso-educator="1"] .linear-module-nav__back,
+html[data-cafasso-educator="1"] .linear-module-nav__step{
+ border-color:rgba(102,78,47,.16)!important;background:rgba(255,252,245,.72)!important;
+ color:var(--edu-petrol)!important;font-size:11px!important
+}
+html[data-cafasso-educator="1"] .linear-module-nav__step--next{
+ background:var(--edu-petrol)!important;border-color:var(--edu-petrol)!important;color:#fff7df!important
+}
+html[data-cafasso-educator="1"] .linear-module-nav__meta strong{
+ color:var(--edu-petrol)!important;font:600 14px/1.2 Georgia,serif!important
+}
+html[data-cafasso-educator="1"] .linear-module-nav__meta small{color:#806f57!important;font-size:9px!important}
+
+.educator-chapter-head{
+ position:relative;overflow:hidden;margin:14px 0 18px;padding:36px 39px 32px;border:1px solid var(--edu-line);
+ border-radius:24px;background:
+ linear-gradient(112deg,rgba(255,250,239,.98),rgba(244,232,207,.92));
+ box-shadow:0 16px 42px rgba(63,48,27,.08)
+}
+.educator-chapter-head:after{
+ content:"";position:absolute;right:-58px;top:-82px;width:245px;height:245px;border-radius:50%;
+ border:1px solid rgba(152,120,70,.10);box-shadow:0 0 0 28px rgba(152,120,70,.035)
+}
+.educator-chapter-head__eyebrow{
+ color:#92713f;font-size:8.5px;font-weight:900;letter-spacing:.16em;text-transform:uppercase
+}
+.educator-chapter-head h1{
+ position:relative;z-index:1;max-width:780px;margin:10px 0 11px;
+ color:var(--edu-petrol);font:600 clamp(40px,5.7vw,68px)/.96 Georgia,serif;letter-spacing:-.03em
+}
+.educator-chapter-head p{position:relative;z-index:1;max-width:780px;margin:0;color:#596a64;font-size:15px;line-height:1.63}
+.educator-chapter-head__meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+.educator-chapter-head__meta span{
+ padding:6px 9px;border:1px solid rgba(130,101,60,.13);border-radius:999px;
+ background:rgba(255,253,246,.6);color:#78684f;font-size:9px;font-weight:800
+}
+
+.educator-progress-note{
+ display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;
+ margin-bottom:18px;padding:15px 17px;border:1px solid var(--edu-line);border-radius:15px;
+ background:rgba(255,251,243,.76)
+}
+.educator-progress-note strong{display:block;color:var(--edu-petrol);font:600 16px/1.2 Georgia,serif}
+.educator-progress-note p{margin:4px 0 0;color:#6b756f;font-size:10.5px;line-height:1.45}
+.educator-progress-note__meter{min-width:190px;text-align:right}
+.educator-progress-note__meter b{display:block;margin-bottom:7px;color:#5a6f67;font-size:10px}
+.educator-progress-note__meter .mini{margin:0;background:#e0d7c6}
+.educator-progress-note__meter .mini span{background:linear-gradient(90deg,#4a7165,#899b7d)}
+
+html[data-cafasso-educator="1"] article.block.educator-block{
+ position:relative;margin:0 0 15px;padding:24px 25px 23px;border:1px solid var(--edu-line)!important;
+ border-radius:18px!important;background:rgba(255,252,245,.91)!important;
+ box-shadow:0 9px 26px rgba(63,48,28,.055)!important
+}
+html[data-cafasso-educator="1"] article.block.educator-block:before{
+ content:"";position:absolute;left:0;top:20px;bottom:20px;width:3px;border-radius:4px;background:#bca16d
+}
+html[data-cafasso-educator="1"] article.block.educator-block--reflection:before{background:#82967c}
+html[data-cafasso-educator="1"] article.block.educator-block--practice:before{background:#a96d56}
+html[data-cafasso-educator="1"] article.block.educator-block--watch:before{background:#6f8e88}
+html[data-cafasso-educator="1"] article.block.educator-block--read:before{background:#a88c58}
+html[data-cafasso-educator="1"] article.block.educator-block--review:before{background:#8c7a9c}
+html[data-cafasso-educator="1"] .educator-block .block-meta{margin-bottom:9px}
+html[data-cafasso-educator="1"] .educator-block .block-type{
+ color:#8f7042!important;font-size:8px!important;letter-spacing:.16em!important
+}
+html[data-cafasso-educator="1"] .educator-block .required{
+ background:#eee6d6!important;color:#77654a!important;font-size:8px!important
+}
+html[data-cafasso-educator="1"] .educator-block .optional{font-size:8px!important;color:#8a8a7f!important}
+html[data-cafasso-educator="1"] .educator-block .badge{
+ background:#e4ede2!important;color:#4a6d56!important;font-size:8px!important
+}
+html[data-cafasso-educator="1"] .educator-block h4{
+ margin:0 0 12px!important;color:var(--edu-petrol)!important;font:600 27px/1.08 Georgia,serif!important
+}
+html[data-cafasso-educator="1"] .educator-block .block-text{
+ color:#405650!important;font-size:15.5px!important;line-height:1.72!important
+}
+html[data-cafasso-educator="1"] .educator-block .challenge-criteria{
+ border-left-color:#a98b55!important;background:#f6efdf!important;color:#685a43!important
+}
+html[data-cafasso-educator="1"] .educator-block .activity{
+ margin-top:17px!important;padding:18px!important;background:#f3ecdf!important;border:1px solid rgba(125,96,58,.11)
+}
+html[data-cafasso-educator="1"] .educator-block .activity label{
+ color:var(--edu-petrol)!important;font:600 16px/1.2 Georgia,serif!important
+}
+html[data-cafasso-educator="1"] .educator-block textarea{
+ border-color:rgba(105,80,49,.2)!important;background:#fffdf8!important;color:#344d47!important;
+ font-size:15px!important;line-height:1.55
+}
+html[data-cafasso-educator="1"] .educator-block .btn{
+ border-radius:999px!important;background:var(--edu-petrol)!important;color:#fff7df!important
+}
+html[data-cafasso-educator="1"] .educator-block .btn.alt{
+ background:#fffaf0!important;color:var(--edu-petrol)!important;border:1px solid rgba(91,70,43,.18)!important
+}
+html[data-cafasso-educator="1"] .educator-block .review-row{
+ margin-top:17px;padding-top:14px;border-top-color:rgba(112,87,53,.13)!important
+}
+html[data-cafasso-educator="1"] .educator-block .review-row small{color:#777d75!important;font-size:9.5px}
+html[data-cafasso-educator="1"] .educator-block .media-img,
+html[data-cafasso-educator="1"] .educator-block .video-frame{border-radius:14px!important;border-color:rgba(112,87,53,.15)!important}
+
+.educator-complete-box{
+ margin-top:20px!important;padding:20px 21px!important;border:1px solid rgba(116,91,56,.15)!important;
+ border-radius:18px!important;background:linear-gradient(135deg,#fffaf0,#efe8d7)!important;
+ box-shadow:0 10px 28px rgba(55,47,31,.06)!important
+}
+.educator-complete-box.ready{background:linear-gradient(135deg,#f5f5e9,#e5eee0)!important}
+.educator-complete-box strong{color:var(--edu-petrol);font:600 18px/1.2 Georgia,serif}
+.educator-complete-box p{color:#647068!important;font-size:11px!important;line-height:1.45}
+.educator-complete-box .btn{border-radius:999px!important;background:var(--edu-petrol)!important;color:#fff7df!important}
+.educator-complete-box .btn.done{background:#dfe9dd!important;color:#496b55!important;border-color:#c6d6c3!important}
+
+html[data-cafasso-educator="1"] .challenge-reward.educator-review-note{
+ background:#f1eadb!important;color:#715f44!important;border:1px solid rgba(120,92,55,.14)
+}
+html[data-cafasso-educator="1"] .cafasso-course-finale{background:rgba(17,54,52,.94)}
+html[data-cafasso-educator="1"] .cafasso-course-finale__card{
+ background:linear-gradient(145deg,#fffaf0,#eadfc7);color:#3f493f
+}
+@media(max-width:680px){
+ html[data-cafasso-educator="1"] body.cafasso-linear-module-mode .module-detail{
+  width:100%!important;padding:10px 12px 38px!important
+ }
+ .educator-chapter-head{margin:8px 0 13px;padding:26px 19px 23px;border-radius:18px}
+ .educator-chapter-head h1{font-size:39px}
+ .educator-chapter-head p{font-size:13px;line-height:1.55}
+ .educator-progress-note{grid-template-columns:1fr;padding:14px}
+ .educator-progress-note__meter{min-width:0;text-align:left}
+ html[data-cafasso-educator="1"] article.block.educator-block{padding:20px 17px 19px}
+ html[data-cafasso-educator="1"] .educator-block h4{font-size:23px!important}
+ html[data-cafasso-educator="1"] .educator-block .block-text{font-size:15px!important}
+ .educator-complete-box{padding:17px!important}
+}
+
 html[data-cafasso-boot="animator"] #app{visibility:hidden;opacity:0}
 html[data-cafasso-boot="animator"] #app.cafasso-boot-ready{visibility:visible;opacity:1;transition:opacity .16s ease-out}
 html[data-cafasso-boot="animator"] body.cafasso-mission-mode #app{visibility:hidden!important;opacity:0!important}
@@ -412,7 +570,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
       '<div class="cafasso-course-finale__seal" aria-hidden="true">✓</div>'+
       '<h2>El camino no termina acá.</h2>'+
       '<p class="cafasso-course-finale__lead">Completaste <strong>'+esc(selectedCourse.title||'este recorrido')+'</strong>. Todo lo que trabajaste queda guardado en tu camino CAFASSO y ahora puede volverse presencia, criterio y cuidado al acompañar a otros.</p>'+
-      '<div class="cafasso-course-finale__summary"><span>✓ '+esc(mods.length)+' módulo'+(mods.length===1?'':'s')+' completado'+(mods.length===1?'':'s')+'</span><span>100% del recorrido</span></div>'+
+      '<div class="cafasso-course-finale__summary"><span>✓ '+esc(mods.length)+' '+(EDUCATOR_MODE?(mods.length===1?'capítulo recorrido':'capítulos recorridos'):('módulo'+(mods.length===1?'':'s')+' completado'+(mods.length===1?'':'s')))+'</span><span>100% del recorrido</span></div>'+
       '<div class="cafasso-course-finale__reflection">Lo aprendido no se archiva: se vuelve gesto, vínculo y misión.</div>'+
       '<button type="button" class="cafasso-course-finale__action" data-course-finale-back>Volver a Escuela</button>'+
     '</article>';
@@ -436,7 +594,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     selectedModule=mods[idx];
     var target=new URL(location.href);
     target.searchParams.set('player','1');
-    target.searchParams.set('playerBuild','30');
+    target.searchParams.set('playerBuild','31');
     target.searchParams.set('course',String(selectedCourse._id));
     target.searchParams.set('module',String(moduleId));
     target.hash='modulo';
@@ -458,12 +616,13 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
   window.CafassoOpenModule=function(moduleId){return activatePlayerModule(moduleId,false);};
   function renderLinearNav(position){
     var nav=linearModuleNavData(),m=selectedModule||{},course=selectedCourse||{};
-    var prevLabel=nav.prev?'← '+esc(nav.prev.title||'Módulo anterior'):'← Módulo anterior';
-    var nextLabel=nav.next?(esc(nav.next.title||'Siguiente módulo')+' →'):'Fin del curso';
+    var prevLabel=nav.prev?'← '+esc(nav.prev.title||(EDUCATOR_MODE?'Capítulo anterior':'Módulo anterior')):'← '+(EDUCATOR_MODE?'Capítulo anterior':'Módulo anterior');
+    var nextLabel=nav.next?(esc(nav.next.title||(EDUCATOR_MODE?'Siguiente capítulo':'Siguiente módulo'))+' →'):(EDUCATOR_MODE?'Fin del recorrido':'Fin del curso');
     var nextDisabled=!nav.next||!nav.currentDone;
+    var metaSmall=EDUCATOR_MODE?('Capítulo '+(nav.index+1)+' de '+nav.mods.length+' · '+esc(m.title||'Recorrido')):esc(m.title||'Módulo');
     return '<nav class="linear-module-nav '+(position==='bottom'?'linear-module-nav--bottom':'')+'" aria-label="Navegación del curso">'+
       '<button type="button" class="linear-module-nav__back" data-linear-course-map>← Volver al recorrido</button>'+
-      '<div class="linear-module-nav__meta"><strong>'+esc(course.title||'Curso')+'</strong><small>'+esc(m.title||'Módulo')+'</small></div>'+
+      '<div class="linear-module-nav__meta"><strong>'+esc(course.title||'Curso')+'</strong><small>'+metaSmall+'</small></div>'+
       '<div class="linear-module-nav__controls">'+
         '<button type="button" class="linear-module-nav__step" data-linear-prev '+(!nav.prev?'disabled':'')+'>'+prevLabel+'</button>'+
         '<button type="button" class="linear-module-nav__step linear-module-nav__step--next" data-linear-next '+(nextDisabled?'disabled':'')+'>'+nextLabel+'</button>'+
@@ -559,11 +718,20 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
       renderModule();if(state.passed){try{window.dispatchEvent(new CustomEvent('cafasso:block-completed',{detail:{blockId:blockId,status:'Aprobada'}}));}catch(e){}}
     }
   }
-  function renderBlock(block,work){var type=String(block.type||'Texto'),low=type.toLowerCase(),body=blockText(block),required=block.required!==false,done=isBlockDone(block,work),submission=submissionFor(block._id),settings=block.settings||{},reward=Math.max(0,Number(settings.rewardAlmitas||0)),criteria=String(settings.reviewCriteria||'').trim(),html='<article class="card block" data-block-card="'+esc(block._id)+'"><div class="block-meta"><div class="block-type">'+esc(type)+'</div>'+(required?'<span class="required">OBLIGATORIO</span>':'<span class="optional">Opcional</span>')+(required&&done?'<span class="badge">✓ LISTO</span>':'')+(submission?'<span class="badge '+(submission.status==='Aprobada'?'':'gold')+'">'+esc(submission.status||'Pendiente')+'</span>':'')+'</div><h4>'+esc(block.title||type||'Contenido')+'</h4>';
+  function educatorBlockPresentation(low){
+    if(low==='video')return {label:'Miramos juntos',cls:'watch'};
+    if(low==='imagen')return {label:'Para mirar',cls:'watch'};
+    if(low==='documento')return {label:'Para profundizar',cls:'read'};
+    if(low==='reflexión')return {label:'Volver sobre nosotros',cls:'reflection'};
+    if(low==='entrega'||low==='desafío')return {label:'Llevarlo a la práctica',cls:'practice'};
+    if(low==='evaluación')return {label:'Para revisar',cls:'review'};
+    return {label:'Para detenerse',cls:'read'};
+  }
+  function renderBlock(block,work){var type=String(block.type||'Texto'),low=type.toLowerCase(),body=blockText(block),required=block.required!==false,done=isBlockDone(block,work),submission=submissionFor(block._id),settings=block.settings||{},reward=Math.max(0,Number(settings.rewardAlmitas||0)),criteria=String(settings.reviewCriteria||'').trim(),edu=educatorBlockPresentation(low),blockClass='card block'+(EDUCATOR_MODE?' educator-block educator-block--'+edu.cls:''),typeLabel=EDUCATOR_MODE?edu.label:type,requiredLabel=EDUCATOR_MODE?'Para seguir':'OBLIGATORIO',doneLabel=EDUCATOR_MODE?'✓ RECORRIDO':'✓ LISTO',html='<article class="'+blockClass+'" data-block-card="'+esc(block._id)+'"><div class="block-meta"><div class="block-type">'+esc(typeLabel)+'</div>'+(required?'<span class="required">'+requiredLabel+'</span>':'<span class="optional">Opcional</span>')+(required&&done?'<span class="badge">'+doneLabel+'</span>':'')+(submission?'<span class="badge '+(submission.status==='Aprobada'?'':'gold')+'">'+esc(submission.status||'Pendiente')+'</span>':'')+'</div><h4>'+esc(block.title||type||'Contenido')+'</h4>';
     if(low==='imagen'){var img=safeUrl(body),alt=String(settings.altText||block.title||'Imagen del módulo'),caption=String(settings.caption||'').trim();html+=img?'<img class="media-img" src="'+esc(img)+'" alt="'+esc(alt)+'">':'<div class="block-text">'+esc(body||'Agregá la URL de la imagen desde el editor del curso.')+'</div>';if(caption)html+='<div class="challenge-criteria" style="margin-top:10px">'+esc(caption)+'</div>';}
     else if(low==='video'){var emb=youtubeEmbed(body)||googleEmbed(body),url=safeUrl(body),caption=String(settings.caption||'').trim();if(emb)html+='<div class="video-frame"><iframe src="'+esc(emb)+'" title="'+esc(block.title||'Video')+'" allowfullscreen></iframe></div>';else if(url)html+='<a class="btn alt resource-link" href="'+esc(url)+'" target="_blank" rel="noopener">Abrir video ↗</a>';else html+='<div class="block-text">'+esc(body||'Agregá la URL del video desde el editor del curso.')+'</div>';if(caption)html+='<div class="challenge-criteria" style="margin-top:10px">'+esc(caption)+'</div>';}
     else if(low==='documento'){var doc=safeUrl(body),docEmbed=googleEmbed(body),label=String(settings.linkLabel||'Abrir material'),desc=String(settings.resourceDescription||'').trim();if(desc)html+='<div class="block-text" style="margin-bottom:10px">'+esc(desc)+'</div>';if(docEmbed)html+='<div class="video-frame"><iframe src="'+esc(docEmbed)+'" title="'+esc(block.title||'Documento')+'"></iframe></div>';else html+=doc?'<a class="btn alt resource-link" href="'+esc(doc)+'" target="_blank" rel="noopener">'+esc(label)+' ↗</a>':'<div class="block-text">'+esc(body||'Agregá el enlace al documento desde el editor del curso.')+'</div>';}
-    else if(low==='desafío'){var challengeAnswer=activityAnswer(block._id,work),approved=submission&&submission.status==='Aprobada',challengeReward=Number(submission?.rewardAlmitas||reward||0),placeholder=String(settings.responsePlaceholder||'').trim();html+='<div class="challenge-reward">⭐ '+esc(challengeReward||reward||0)+' almitas · aprobación del formador</div>'+(criteria?'<div class="challenge-criteria"><strong>Qué va a mirar el formador</strong><br>'+esc(criteria)+'</div>':'')+'<div class="block-text" style="margin-top:12px">'+esc(body||'Realizá el desafío y entregá tu evidencia para continuar.')+'</div>'+(approved?'<div class="activity challenge-approved"><strong>✓ Desafío aprobado</strong><br>Las almitas ya fueron acreditadas. ¡Gracias por poner el corazón en la misión!</div>':'<div class="activity"><label>Tu entrega</label><textarea data-answer="'+esc(block._id)+'" placeholder="'+esc(placeholder||'Contá qué hiciste y cómo lo realizaste…')+'">'+esc(challengeAnswer)+'</textarea><div class="activity-actions"><span class="saved-note">'+(submission?'✓ Entrega enviada · '+esc(submission.status||'Pendiente'):challengeAnswer?'✓ Guardada en este dispositivo':'')+'</span><button class="btn" data-save-answer="'+esc(block._id)+'">'+(submission?'Actualizar entrega':'Enviar desafío')+'</button></div></div>')+(submission&&submission.feedback?'<div class="feedback"><strong>Devolución del equipo formador</strong><p>'+esc(submission.feedback)+'</p></div>':'');}
+    else if(low==='desafío'){var challengeAnswer=activityAnswer(block._id,work),approved=submission&&submission.status==='Aprobada',challengeReward=Number(submission?.rewardAlmitas||reward||0),placeholder=String(settings.responsePlaceholder||'').trim();html+=(EDUCATOR_MODE?'<div class="challenge-reward educator-review-note">Acompañado por el equipo formador</div>':'<div class="challenge-reward">⭐ '+esc(challengeReward||reward||0)+' almitas · aprobación del formador</div>')+(criteria?'<div class="challenge-criteria"><strong>Qué va a mirar el formador</strong><br>'+esc(criteria)+'</div>':'')+'<div class="block-text" style="margin-top:12px">'+esc(body||(EDUCATOR_MODE?'Llevá esta propuesta a la práctica y compartí algo de lo vivido para poder seguir.':'Realizá el desafío y entregá tu evidencia para continuar.'))+'</div>'+(approved?'<div class="activity challenge-approved"><strong>✓ Propuesta revisada</strong><br>'+(EDUCATOR_MODE?'Este paso ya forma parte de tu recorrido.':'Las almitas ya fueron acreditadas. ¡Gracias por poner el corazón en la misión!')+'</div>':'<div class="activity"><label>'+ (EDUCATOR_MODE?'Lo que te llevás de la experiencia':'Tu entrega') +'</label><textarea data-answer="'+esc(block._id)+'" placeholder="'+esc(placeholder||(EDUCATOR_MODE?'Contá brevemente qué pasó, qué descubriste o qué te quedó resonando…':'Contá qué hiciste y cómo lo realizaste…'))+'">'+esc(challengeAnswer)+'</textarea><div class="activity-actions"><span class="saved-note">'+(submission?'✓ Entrega enviada · '+esc(submission.status||'Pendiente'):challengeAnswer?'✓ Guardada en este dispositivo':'')+'</span><button class="btn" data-save-answer="'+esc(block._id)+'">'+(submission?'Actualizar entrega':EDUCATOR_MODE?'Compartir':'Enviar desafío')+'</button></div></div>')+(submission&&submission.feedback?'<div class="feedback"><strong>Devolución del equipo formador</strong><p>'+esc(submission.feedback)+'</p></div>':'');}
     else if(low==='evaluación'&&String(settings.evaluationMode||'open')==='quiz'){html+=renderEvaluationQuiz(block,work,submission);}
     else if(low==='reflexión'||low==='entrega'||low==='evaluación'){var answer=activityAnswer(block._id,work),placeholder=String(settings.responsePlaceholder||'').trim(),guidance=String(settings.responseGuidance||'').trim(),expected=String(settings.expectedDelivery||'').trim(),minimum=low==='evaluación'?Math.max(0,Number(settings.minimumCharacters||0)):0,labelAnswer=low==='entrega'?'Tu entrega':'Tu respuesta';html+='<div class="block-text">'+esc(body||'Respondé la consigna para continuar.')+'</div>';if(guidance)html+='<div class="challenge-criteria"><strong>Una pista para responder</strong><br>'+esc(guidance)+'</div>';if(expected)html+='<div class="challenge-criteria"><strong>Qué se espera</strong><br>'+esc(expected)+'</div>';if(criteria)html+='<div class="challenge-criteria"><strong>Criterio de revisión</strong><br>'+esc(criteria)+'</div>';if(minimum)html+='<div class="challenge-criteria"><strong>Extensión mínima</strong><br>'+esc(minimum)+' caracteres.</div>';html+='<div class="activity"><label>'+labelAnswer+'</label><textarea data-answer="'+esc(block._id)+'" placeholder="'+esc(placeholder||(low==='entrega'?'Escribí o pegá acá tu entrega…':'Escribí acá…'))+'">'+esc(answer)+'</textarea><div class="activity-actions"><span class="saved-note">'+(submission?'✓ Guardada en CAFASSO':answer?'✓ Guardada en este dispositivo':'')+'</span><button class="btn" data-save-answer="'+esc(block._id)+'">'+(submission?'Actualizar respuesta':low==='entrega'?'Enviar entrega':'Guardar respuesta')+'</button></div></div>'+(submission&&submission.feedback?'<div class="feedback"><strong>Devolución del equipo formador</strong><p>'+esc(submission.feedback)+'</p></div>':'');}
     else {var textStyle=String(settings.textStyle||'normal'),style=textStyle==='highlight'?'padding:14px;border-radius:12px;background:#fff6d9;border:1px solid #ead38a;font-weight:700':textStyle==='quiet'?'padding:14px;border-radius:12px;background:#f3f7f4;border-left:4px solid #7ba08e':'';html+='<div class="block-text"'+(style?' style="'+style+'"':'')+'>'+esc(body||'Este contenido se completará desde el editor del curso.')+'</div>';}
@@ -580,18 +748,25 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     var status=requiredStatus();
     var blocks=(m.contents||[]).map(function(b){return renderBlock(b,status.work);}).join('');
     var pct=status.total?Math.round(status.done/status.total*100):100;
+    var navData=linearModuleNavData(),chapterNo=navData.index>=0?navData.index+1:1;
+    var chapterDescription=String(m.description||m.settings?.objective||m.settings?.stageLabel||'Un tramo para mirar la práctica, dejar resonar preguntas y seguir caminando.').trim();
+    var chapterMinutes=Number(m.minutes||m.settings?.minutes||m.settings?.estimatedMinutes||0);
+    var educatorHead=EDUCATOR_MODE?'<header class="educator-chapter-head"><div class="educator-chapter-head__eyebrow">CAFASSO · Escuela · Capítulo '+chapterNo+' de '+navData.mods.length+'</div><h1>'+esc(m.title||('Capítulo '+chapterNo))+'</h1><p>'+esc(chapterDescription)+'</p><div class="educator-chapter-head__meta"><span>'+esc(c.title||'Recorrido formativo')+'</span>'+(chapterMinutes?'<span>◷ '+chapterMinutes+' min aprox.</span>':'')+'</div></header>':'';
+    var progressBox=EDUCATOR_MODE?'<div class="educator-progress-note"><div><strong>Tu paso por este capítulo</strong><p>'+(status.ready?'Ya recorriste todo lo necesario. Podés cerrar este capítulo cuando quieras.':'Vas pasando por cada momento a tu ritmo. No hace falta apurarlo.')+'</p></div><div class="educator-progress-note__meter"><b>'+status.done+' de '+status.total+' momentos</b><div class="mini"><span style="width:'+pct+'%"></span></div></div></div>':'<div class="module-progress"><strong>Contenidos obligatorios: '+status.done+' de '+status.total+'</strong><div class="mini"><span style="width:'+pct+'%"></span></div><small style="color:var(--muted)">'+(status.ready?'Ya cumpliste todos los requisitos de este módulo.':'Completá los contenidos señalados como obligatorios para poder cerrar el módulo.')+'</small></div>';
+    var completeTitle=EDUCATOR_MODE?(done?'Este capítulo ya forma parte de tu recorrido':status.ready?'Este capítulo está pronto para cerrar':'Todavía quedan momentos por recorrer'):(done?'Módulo completado':status.ready?'¡Módulo listo para completar!':'Todavía faltan contenidos obligatorios');
+    var completeCopy=EDUCATOR_MODE?(done?'Tu avance quedó guardado. Podés volver a este capítulo cuando lo necesites.':status.ready?'Cuando lo cierres, CAFASSO te va a habilitar el próximo capítulo del recorrido.':'Pasá por los momentos necesarios antes de cerrar este capítulo.'):(done?'El progreso de esta etapa ya quedó guardado.':status.ready?'CAFASSO cerrará esta etapa cuando completes la última misión.':'Cuando completes los contenidos obligatorios se habilitará el cierre de la etapa.');
+    var completeButton=EDUCATOR_MODE?(done?'✓ Recorrido':'Cerrar capítulo'):(done?'✓ Completado':'Completar etapa');
 
-    main.innerHTML='<div class="module-detail">'+
+    main.innerHTML='<div class="module-detail '+(EDUCATOR_MODE?'educator-module-detail':'')+'">'+
       (!missionMode?renderLinearNav('top'):'')+
-      '<div class="module-progress"><strong>Contenidos obligatorios: '+status.done+' de '+status.total+'</strong>'+
-      '<div class="mini"><span style="width:'+pct+'%"></span></div>'+
-      '<small style="color:var(--muted)">'+(status.ready?'Ya cumpliste todos los requisitos de este módulo.':'Completá los contenidos señalados como obligatorios para poder cerrar el módulo.')+'</small></div>'+
-      (blocks||'<div class="card empty">Este módulo todavía no tiene contenidos cargados.</div>')+
-      '<div class="complete-box '+(status.ready?'ready':'')+'"><div><strong>'+
-      (done?'Módulo completado':status.ready?'¡Módulo listo para completar!':'Todavía faltan contenidos obligatorios')+
-      '</strong><p>'+(done?'El progreso de esta etapa ya quedó guardado.':status.ready?'CAFASSO cerrará esta etapa cuando completes la última misión.':'Cuando completes los contenidos obligatorios se habilitará el cierre de la etapa.')+
+      educatorHead+
+      progressBox+
+      (blocks||'<div class="card empty">'+(EDUCATOR_MODE?'Este capítulo todavía no tiene momentos cargados.':'Este módulo todavía no tiene contenidos cargados.')+'</div>')+
+      '<div class="complete-box '+(EDUCATOR_MODE?'educator-complete-box ':'')+(status.ready?'ready':'')+'"><div><strong>'+
+      completeTitle+
+      '</strong><p>'+completeCopy+
       '</p></div><button id="completeModule" class="btn '+(done?'done':'')+'" '+(done||!status.ready?'disabled':'')+'>'+
-      (done?'✓ Completado':'Completar etapa')+'</button></div>'+
+      completeButton+'</button></div>'+
       (!missionMode?renderLinearNav('bottom'):'')+
       '</div>';
 
