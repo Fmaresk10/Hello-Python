@@ -188,6 +188,9 @@ async function load(){
   localStorage.setItem('cafassoExperience','educadores');
   $('#userMenu').textContent=initials();$('#userMenuName').textContent=session.user.name||session.user.email||'Mi cuenta';
   $('#sidebarAvatar').textContent=initials();$('#sidebarUserName').textContent=session.user.name||session.user.email||'Mi cuenta';
+  const adminAllowed=isAdmin();
+  $('#adminEntry').hidden=!adminAllowed;
+  $('#mobileAdminEntry').hidden=!adminAllowed;
   try{
     const r=await fetch(ME_API,{headers:authHeaders(),cache:'no-store'});const j=await r.json().catch(()=>null);
     if(!r.ok||!j?.ok)throw new Error(j?.error||'No pudimos cargar tu espacio.');
@@ -201,6 +204,9 @@ async function load(){
 }
 function staticBind(){
   $$('.edu-header [data-nav],.edu-mobile-nav [data-nav]').forEach(b=>b.onclick=()=>go(b.dataset.nav));
+  const openAdmin=()=>{ if(!isAdmin())return; location.href='./admin.html?from=educadores'; };
+  $('#adminEntry').onclick=openAdmin;
+  $('#mobileAdminEntry').onclick=openAdmin;
   $('#switchExperience').onclick=()=>location.href='./experiencia.html';
   $('#mobileSwitchExperience').onclick=()=>location.href='./experiencia.html';
   $('#userMenu').onclick=()=>{$('#userMenuPanel').hidden=!$('#userMenuPanel').hidden};
