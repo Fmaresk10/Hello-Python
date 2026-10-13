@@ -456,7 +456,7 @@ async function hydrateParishSongbook(){
       host.innerHTML='<div class="parish-songbook-empty"><span>♪</span><h3>No encontré canciones en “CAFASSO · Cancionero”.</h3><p>Cuando la playlist tenga temas disponibles, van a aparecer acá.</p></div>';return;
     }
     host.innerHTML='<div class="parish-tracks">'+parishSongs.slice(0,12).map((track,i)=>'<article class="parish-track" data-parish-track="'+esc(track.id)+'"><span>'+(String(i+1).padStart(2,'0'))+'</span><div><strong>'+esc(track.title||'Música')+'</strong><small>'+esc(track.subtitle||track.source||'Spotify')+'</small></div><button class="edu-secondary" data-parish-play="'+esc(track.id)+'">Escuchar</button></article>').join('')+'</div>';
-    $('[data-parish-play]').forEach(btn=>btn.onclick=async()=>{const track=parishSongs.find(x=>String(x.id)===String(btn.dataset.parishPlay));if(!track)return;btn.disabled=true;btn.textContent='Abriendo…';try{await window.CafassoGlobalMusic?.play?.(track)}finally{btn.disabled=false;btn.textContent='Escuchar'}});
+    $$('[data-parish-play]').forEach(btn=>btn.onclick=async()=>{const track=parishSongs.find(x=>String(x.id)===String(btn.dataset.parishPlay));if(!track)return;btn.disabled=true;btn.textContent='Abriendo…';try{await window.CafassoGlobalMusic?.play?.(track)}finally{btn.disabled=false;btn.textContent='Escuchar'}});
   }catch(e){host.innerHTML='<div class="parish-songbook-empty"><span>♪</span><h3>No pudimos abrir el Cancionero.</h3><p>'+esc(e?.message||'Probá nuevamente en un momento.')+'</p><button class="edu-secondary" id="retryParishSongbook">Reintentar</button></div>';$('#retryParishSongbook').onclick=hydrateParishSongbook}
 }
 function openParishIntention(){
@@ -481,7 +481,7 @@ function stopParishSilence(done=false){
 function hydrateParish(){
   hydrateParishWord();hydrateParishSongbook();
   const candle=$('#parishCandleButton');if(candle)candle.onclick=openParishIntention;
-  $('[data-parish-intention-close]').forEach(x=>x.onclick=closeParishIntention);
+  $$('[data-parish-intention-close]').forEach(x=>x.onclick=closeParishIntention);
   const light=$('#parishLightCandle');if(light)light.onclick=saveParishIntention;
   const silence=$('#parishSilenceButton');if(silence)silence.onclick=startParishSilence;
   const stop=$('#parishSilenceStop');if(stop)stop.onclick=()=>stopParishSilence(false);
@@ -507,12 +507,12 @@ async function render(){
 function bindDynamic(){
   $$('[data-nav]').forEach(b=>b.onclick=()=>go(b.dataset.nav));
   $$('[data-course]').forEach(b=>b.onclick=()=>go('curso',b.dataset.course));
-  $('[data-resource-open]').forEach(b=>b.onclick=()=>openEducatorResource(b.dataset.resourceOpen));
-  $('[data-resource-close]').forEach(b=>b.onclick=closeEducatorResource);
+  $$('[data-resource-open]').forEach(b=>b.onclick=()=>openEducatorResource(b.dataset.resourceOpen));
+  $$('[data-resource-close]').forEach(b=>b.onclick=closeEducatorResource);
   bindResourceFilters();
   const manage=$('#manageResources');if(manage)manage.onclick=()=>location.href='./resource-admin.html?from=educadores';
   if(route().view==='interioridad')hydrateParish();
-  $('[data-module]').forEach(b=>b.onclick=()=>{
+  $$('[data-module]').forEach(b=>b.onclick=()=>{
     const url=new URL('./course-player.html',location.href);
     url.searchParams.set('player','1');url.searchParams.set('course',b.dataset.courseId);url.searchParams.set('module',b.dataset.module);url.searchParams.set('educator','1');url.hash='modulo';location.href=url.toString();
   });
