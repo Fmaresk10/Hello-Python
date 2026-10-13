@@ -3,45 +3,63 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#173f42">
-<title>CAFASSO · Casa de Formación</title>
+<meta name="theme-color" content="#103c3b">
+<title>CAFASSO · La Casa</title>
 <link rel="icon" href="./favicon.svg">
-<link rel="stylesheet" href="./educadores.css?v=1">
+<link rel="stylesheet" href="./educadores.css?v=2">
 </head>
 <body>
 <div class="edu-app" id="eduApp">
-  <header class="edu-header">
-    <a class="edu-brand" href="./educadores.html" aria-label="CAFASSO Casa de Formación">
+  <aside class="house-sidebar" aria-label="Navegación de La Casa">
+    <a class="house-brand" href="./educadores.html" aria-label="CAFASSO La Casa">
       <img src="./cafasso-logo.svg" alt="">
-      <span><strong>CAFASSO</strong><small>Casa de Formación</small></span>
+      <span><strong>CAFASSO</strong><small>La Casa</small></span>
     </a>
-    <nav class="edu-nav" aria-label="Navegación principal">
-      <button data-nav="home" class="active">Inicio</button>
-      <button data-nav="formacion">Formación</button>
-      <button data-nav="biblioteca">Biblioteca</button>
-      <button data-nav="interioridad">Interioridad</button>
-      <button data-nav="comunidad">Comunidad</button>
+
+    <nav class="house-nav">
+      <button data-nav="home" class="active"><i>⌂</i><span>La Casa</span></button>
+      <button data-nav="formacion"><i>▤</i><span>Mi formación</span></button>
+      <button data-nav="biblioteca"><i>▥</i><span>La biblioteca</span></button>
+      <button data-nav="comunidad"><i>◎</i><span>El Patio</span></button>
+      <button data-nav="interioridad"><i>♧</i><span>Un momento</span></button>
+      <button data-nav="camino"><i>◇</i><span>Mi camino</span></button>
     </nav>
-    <div class="edu-user">
-      <button class="edu-switch" id="switchExperience" type="button">Cambiar experiencia</button>
-      <button class="edu-avatar" id="userMenu" type="button" aria-label="Mi cuenta">FM</button>
-      <div class="edu-user-menu" id="userMenuPanel" hidden>
-        <strong id="userMenuName">Mi cuenta</strong>
-        <button type="button" data-nav="camino">Mi camino</button>
-        <button type="button" id="logout">Cerrar sesión</button>
-      </div>
+
+    <div class="house-sidebar-bottom">
+      <button class="house-person" id="sidebarUser" type="button">
+        <span class="house-person-avatar" id="sidebarAvatar">FM</span>
+        <span><strong id="sidebarUserName">Mi cuenta</strong><small>Educador</small></span>
+      </button>
+      <button class="house-side-action" id="switchExperience" type="button"><i>↔</i><span>Cambiar experiencia</span></button>
+      <button class="house-side-action" id="logout" type="button"><i>↪</i><span>Cerrar sesión</span></button>
+    </div>
+  </aside>
+
+  <header class="house-mobile-header">
+    <a class="house-mobile-brand" href="./educadores.html">
+      <img src="./cafasso-logo.svg" alt="">
+      <span><strong>CAFASSO</strong><small>La Casa</small></span>
+    </a>
+    <button class="edu-avatar" id="userMenu" type="button" aria-label="Mi cuenta">FM</button>
+    <div class="edu-user-menu" id="userMenuPanel" hidden>
+      <strong id="userMenuName">Mi cuenta</strong>
+      <button type="button" data-nav="camino">Mi camino</button>
+      <button type="button" id="mobileSwitchExperience">Cambiar experiencia</button>
+      <button type="button" id="mobileLogout">Cerrar sesión</button>
     </div>
   </header>
+
   <main class="edu-main" id="main" aria-live="polite">
-    <div class="edu-loading"><span></span><strong>Preparando tu Casa de Formación…</strong></div>
+    <div class="edu-loading"><span></span><strong>Abriendo La Casa…</strong></div>
   </main>
+
   <nav class="edu-mobile-nav" aria-label="Navegación móvil">
-    <button data-nav="home" class="active"><i>⌂</i><span>Inicio</span></button>
-    <button data-nav="formacion"><i>◇</i><span>Formación</span></button>
+    <button data-nav="home" class="active"><i>⌂</i><span>Casa</span></button>
+    <button data-nav="formacion"><i>▤</i><span>Formación</span></button>
     <button data-nav="biblioteca"><i>▥</i><span>Biblioteca</span></button>
-    <button data-nav="camino"><i>○</i><span>Mi camino</span></button>
+    <button data-nav="camino"><i>◇</i><span>Mi camino</span></button>
   </nav>
 </div>
-<script src="./educadores.js?v=1"></script>
+<script src="./educadores.js?v=2"></script>
 </body>
 </html>
