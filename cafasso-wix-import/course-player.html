@@ -3,12 +3,23 @@
 <head><script src="./auth-guard.js?v=20260923-3"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
-<script>document.documentElement.dataset.cafassoBoot='animator';document.documentElement.dataset.cafassoPlayer='1';delete document.documentElement.dataset.cafassoPlayerReady;if(location.hash==='#cursos')document.documentElement.dataset.cafassoCoursesBoot='1';if(!location.hash||location.hash==='#inicio')document.documentElement.dataset.cafassoHomeV2='1';</script>
+<script>document.documentElement.dataset.cafassoBoot='animator';document.documentElement.dataset.cafassoPlayer='1';if(new URLSearchParams(location.search).get('educator')==='1')document.documentElement.dataset.cafassoEducator='1';delete document.documentElement.dataset.cafassoPlayerReady;if(location.hash==='#cursos')document.documentElement.dataset.cafassoCoursesBoot='1';if(!location.hash||location.hash==='#inicio')document.documentElement.dataset.cafassoHomeV2='1';</script>
 <title>CAFASSO · Curso</title>
 <style>
 :root{--navy:#0F2D4D;--cream:#F6EFE4;--gold:#F2C94C;--green:#2E7D59;--muted:#687386;--card:#FFFDF9;--line:#E8DCCB;--ink:#11233A;--red:#A64747}
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;min-height:100%;background:#102f35;color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+html[data-cafasso-educator="1"],html[data-cafasso-educator="1"] body{background:#f5f0e6!important}
+html[data-cafasso-educator="1"] .cafasso-global-counters,
+html[data-cafasso-educator="1"] .cafasso-profile-global-anchor,
+html[data-cafasso-educator="1"] .cafasso-level-pill{display:none!important}
+html[data-cafasso-educator="1"] body.cafasso-linear-module-mode{background:#f5f0e6!important}
+html[data-cafasso-educator="1"] body.cafasso-linear-module-mode .module-detail{width:min(920px,calc(100% - 28px))!important;margin:0 auto!important;padding:28px 0 54px!important}
+html[data-cafasso-educator="1"] body.cafasso-linear-module-mode .module-progress{border-color:#ddd8cc!important;background:#fffdf8!important;box-shadow:0 8px 24px rgba(33,56,52,.06)!important}
+html[data-cafasso-educator="1"] body.cafasso-linear-module-mode article.block{border-color:#ddd8cc!important;background:#fffdf8!important;box-shadow:0 10px 28px rgba(33,56,52,.06)!important}
+html[data-cafasso-educator="1"] .linear-module-nav{border-color:#ddd8cc!important;background:#fdfaf3!important;box-shadow:0 8px 24px rgba(33,56,52,.06)!important}
+html[data-cafasso-educator="1"] .linear-module-nav__back{color:#315b56!important}
+html[data-cafasso-educator="1"] .linear-module-nav__step--next{background:#173f42!important;border-color:#173f42!important;color:white!important}
 html[data-cafasso-boot="animator"] #app{visibility:hidden;opacity:0}
 html[data-cafasso-boot="animator"] #app.cafasso-boot-ready{visibility:visible;opacity:1;transition:opacity .16s ease-out}
 html[data-cafasso-boot="animator"] body.cafasso-mission-mode #app{visibility:hidden!important;opacity:0!important}
@@ -235,6 +246,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
   var PROGRESS_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoProgress';
   var SUBMISSION_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoSubmission';
   var session=null,data=null,selectedCourse=null,selectedModule=null,courseSubmissions=[];
+  var EDUCATOR_MODE=new URLSearchParams(location.search).get('educator')==='1';
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c];});}
   function readSession(){try{return JSON.parse(localStorage.getItem('cafassoSession')||'null');}catch(e){return null;}}
   function initialDataApi(){var id=new URLSearchParams(location.search).get('previewUser');return id?PROFILE_API+'?userId='+encodeURIComponent(id):ME_API;}
@@ -262,6 +274,13 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
   function returnToSchool(){
     var params=new URLSearchParams(location.search);
     var courseId=String(params.get('course')||(selectedCourse&&selectedCourse._id)||'').trim();
+    if(EDUCATOR_MODE){
+      var educatorTarget=new URL('./educadores.html',location.href);
+      educatorTarget.searchParams.set('view','curso');
+      if(courseId)educatorTarget.searchParams.set('id',courseId);
+      location.replace(educatorTarget.toString());
+      return;
+    }
     var target=new URL('./world.html',location.href);
     target.searchParams.set('space','escuela');
     if(courseId)target.searchParams.set('course',courseId);
@@ -270,6 +289,7 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
     else location.replace(target.toString());
   }
   function moduleUsesMissions(module){
+    if(EDUCATOR_MODE)return false;
     var settings=module&&module.settings&&typeof module.settings==='object'?module.settings:{};
     if(settings.experienceMode==='linear')return false;
     return settings.experienceMode==='missions'||(Array.isArray(settings.missions)&&settings.missions.length>0);
@@ -739,8 +759,8 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
 <script src="./cafasso-huella-rewards-v2.js?v=2"></script>
 <script src="./gamified-course.js?v=20260924-1"></script>
 <script src="./cafasso-hologram-spots.js?v=3"></script>
-<script src="./cafasso-hologram-cutout.js?v=8"></script>
-<script src="./cafasso-hologram.js?v=23"></script>
+<script src="./cafasso-hologram-cutout.js?v=9"></script>
+<script src="./cafasso-hologram.js?v=26"></script>
 <script src="./course-mobile-native.js?v=20260924-3"></script>
 </body>
 </html>
