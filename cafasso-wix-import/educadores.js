@@ -38,9 +38,19 @@ function setActive(view){$$('[data-nav]').forEach(b=>b.classList.toggle('active'
 function greeting(){const h=new Date().getHours();return h<12?'Buen día':h<19?'Buenas tardes':'Buenas noches'}
 function firstName(){return String(session?.user?.name||session?.user?.firstName||session?.user?.email||'').trim().split(/\s+/)[0]||'educador'}
 function initials(){const n=String(session?.user?.name||session?.user?.email||'CAFASSO').trim().split(/\s+/);return ((n[0]?.[0]||'C')+(n[1]?.[0]||n[0]?.[1]||'F')).toUpperCase()}
-function courseCard(c){
-  const id=courseId(c),p=progressOf(id),mods=publishedModules(c).length;
-  return '<article class="course-card"><div class="course-cover"><span>'+(p>=100?'Completado':p>0?'En curso':'Disponible')+'</span></div><div class="course-body"><h3>'+esc(c.title||'Curso')+'</h3><p>'+esc(descriptionOf(c))+'</p><div class="course-meta"><span>'+mods+' módulo'+(mods===1?'':'s')+'</span><span>·</span><span>'+esc(durationText(c))+'</span></div><div class="course-actions"><div class="progress"><i style="width:'+p+'%"></i></div><b>'+Math.round(p)+'%</b><button class="edu-primary" data-course="'+esc(id)+'">'+(p?'Continuar':'Ver curso')+'</button></div></div></article>'
+function courseCard(c,kind='standard'){
+  const id=courseId(c),p=progressOf(id),mods=publishedModules(c).length,info=activeModuleInfo(c);
+  const state=p>=100?'Recorrido completo':p>0?'En camino':'Para empezar';
+  const next=info?.module?.title||info?.module?.settings?.stageLabel||'Abrir el recorrido';
+  return '<article class="school-book '+kind+'">'+
+    '<div class="school-book-cover"><span>'+state+'</span><b>'+esc(c.title||'Curso')+'</b></div>'+
+    '<div class="school-book-body"><div><small>'+mods+' módulo'+(mods===1?'':'s')+' · '+esc(durationText(c))+'</small><h3>'+esc(c.title||'Curso')+'</h3><p>'+esc(descriptionOf(c))+'</p></div>'+
+    '<div class="school-book-foot">'+
+      (p>0?'<div class="school-book-progress"><div class="progress"><i style="width:'+p+'%"></i></div><span>'+Math.round(p)+'%</span></div>':'<span class="school-book-note">Un recorrido listo para abrir.</span>')+
+      '<button class="edu-primary" data-course="'+esc(id)+'">'+(p>=100?'Volver a recorrer':p>0?'Retomar':'Entrar')+' →</button>'+
+    '</div>'+
+    (p>0&&p<100?'<div class="school-next">Seguís por: <strong>'+esc(next)+'</strong></div>':'')+
+    '</div></article>';
 }
 function activeCourse(){return courses.find(c=>progressOf(courseId(c))>0&&progressOf(courseId(c))<100)||courses.find(c=>progressOf(courseId(c))<100)||courses[0]||null}
 function activeModuleInfo(course){
@@ -71,16 +81,17 @@ function home(){
       '<article class="desk-card"><div class="desk-cover" aria-hidden="true"></div><div class="desk-copy"><small>Sobre tu mesa</small><h2>'+esc(active.title||'Tu formación')+'</h2><p>Tu próximo tramo: '+esc(moduleTitle)+'.</p><div class="desk-progress-row"><div class="progress"><i style="width:'+p+'%"></i></div><b>'+Math.round(p)+'%</b></div><div class="desk-meta"><span>▥ '+esc(moduleMeta)+'</span>'+(timeText?'<span>◷ '+esc(timeText)+'</span>':'')+'</div></div><div class="desk-action"><button class="edu-primary" data-course="'+esc(courseId(active))+'">Retomar &nbsp;→</button></div></article>'
       :'<article class="desk-card"><div class="desk-cover" aria-hidden="true"></div><div class="desk-copy"><small>Sobre tu mesa</small><h2>Tu espacio está preparado.</h2><p>Cuando tengas una formación asignada, va a aparecer acá para que puedas retomarla sin buscarla.</p></div><div class="desk-action"><button class="edu-primary" data-nav="formacion">Ver mi formación →</button></div></article>')+
     '<div class="house-content">'+
-      '<div class="house-section-title"><div><h2>Espacios de la casa</h2><p>Distintos lugares, un mismo hogar.</p></div></div>'+
-      '<div class="house-spaces">'+
-        houseSpace('biblioteca','library','▥','La biblioteca','Materiales para volver, preparar e inspirarte.')+
-        houseSpace('comunidad','patio','◎','El Patio','Donde lo que cada uno vive puede encontrarse con lo de otros.')+
-        houseSpace('interioridad','pause','♧','Un momento','Palabra, oración y silencio para seguir caminando.')+
+      '<div class="house-section-title"><div><h2>Espacios de CAFASSO</h2><p>La misma casa salesiana, habitada de otra manera.</p></div></div>'+
+      '<div class="house-spaces house-spaces-four">'+
+        houseSpace('formacion','school','▤','Escuela','El lugar para formarte, profundizar y volver a la práctica.')+
+        houseSpace('comunidad','patio','◎','Patio','Donde lo que cada uno vive puede encontrarse con lo de otros.')+
+        houseSpace('interioridad','pause','♧','Parroquia','Palabra, oración y silencio para detenerte un momento.')+
+        houseSpace('biblioteca','library','▥','Recursos','Materiales para volver, preparar, buscar e inspirarte.')+
       '</div>'+
       '<section class="today-strip"><h2>Para vos hoy</h2><div class="today-grid">'+
-        '<article class="today-card"><div class="today-thumb" aria-hidden="true"></div><div><small>Recurso sugerido</small><strong>'+esc(resource?.title||resource?.name||'Educar con presencia')+'</strong><span>'+(resource?esc(resource?.description||resource?.type||'Un recurso de la biblioteca para volver sobre tu tarea.'):'Una invitación breve para pensar cómo estamos presentes en la vida de otros.')+'</span></div><button data-nav="biblioteca" aria-label="Ir a la biblioteca">→</button></article>'+
+        '<article class="today-card"><div class="today-thumb" aria-hidden="true"></div><div><small>Recurso sugerido</small><strong>'+esc(resource?.title||resource?.name||'Educar con presencia')+'</strong><span>'+(resource?esc(resource?.description||resource?.type||'Un recurso de la biblioteca para volver sobre tu tarea.'):'Una invitación breve para pensar cómo estamos presentes en la vida de otros.')+'</span></div><button data-nav="biblioteca" aria-label="Ir a Recursos">→</button></article>'+
         '<article class="today-card quote"><div><small>Una frase para hoy</small><blockquote>“La educación es cosa del corazón.”</blockquote><cite>Don Bosco</cite></div></article>'+
-        '<article class="today-card path"><div><small>Tu casa</small><strong>'+esc(active?'Seguí desde donde quedaste':'Tu camino puede empezar hoy')+'</strong><span>'+esc(active?(moduleTitle+' · '+Math.round(p)+'% recorrido'):'Entrá a Formación para ver tus itinerarios disponibles.')+'</span></div><button '+(active?'data-course="'+esc(courseId(active))+'"':'data-nav="formacion"')+' aria-label="Seguir mi camino">→</button></article>'+
+        '<article class="today-card path"><div><small>Tu casa</small><strong>'+esc(active?'Seguí desde donde quedaste':'Tu camino puede empezar hoy')+'</strong><span>'+esc(active?(moduleTitle+' · '+Math.round(p)+'% recorrido'):'Entrá a Escuela para ver tus itinerarios disponibles.')+'</span></div><button '+(active?'data-course="'+esc(courseId(active))+'"':'data-nav="formacion"')+' aria-label="Seguir mi camino">→</button></article>'+
       '</div></section>'+
     '</div>'+
   '</section>';
@@ -89,9 +100,17 @@ function houseSpace(view,klass,icon,title,copy){return '<button class="house-spa
 function area(view,icon,title,copy){return '<button class="area-card" data-nav="'+view+'" type="button"><span class="area-icon">'+icon+'</span><h3>'+title+'</h3><p>'+copy+'</p></button>'}
 function formation(){
   const ongoing=courses.filter(c=>{const p=progressOf(courseId(c));return p>0&&p<100});
-  return '<button class="back" data-nav="home">← Volver a Mi Casa</button><div class="edu-eyebrow">Casa de Formación</div><h1 class="edu-page-title">Formación</h1><p class="edu-lead">Tus itinerarios reunidos en un mismo lugar. Podés continuar lo que empezaste o abrir un nuevo recorrido.</p>'+
-  (ongoing.length?'<section class="section"><div class="section-head"><div><h2>En curso</h2><p>Retomá desde donde quedaste.</p></div></div><div class="course-grid">'+ongoing.map(courseCard).join('')+'</div></section>':'')+
-  '<section class="section"><div class="section-head"><div><h2>Mis itinerarios</h2><p>'+courses.length+' curso'+(courses.length===1?'':'s')+' disponible'+(courses.length===1?'':'s')+'.</p></div></div>'+(courses.length?'<div class="course-grid">'+courses.map(courseCard).join('')+'</div>':'<div class="empty">Todavía no tenés itinerarios asignados.</div>')+'</section>';
+  const available=courses.filter(c=>progressOf(courseId(c))===0);
+  const completed=courses.filter(c=>progressOf(courseId(c))>=100);
+  const featured=ongoing[0]||available[0]||completed[0]||null;
+  return '<div class="school-page">'+
+    '<button class="back" data-nav="home">← Volver a Casa</button>'+
+    '<section class="school-intro"><div><div class="edu-eyebrow">CAFASSO · Escuela</div><h1>Escuela</h1><p>Un lugar para volver sobre la práctica, abrir preguntas y seguir creciendo como educador. No hace falta recorrer todo de una vez: cada itinerario puede tener su propio tiempo.</p></div><aside><span>“Educar es cosa del corazón.”</span><small>Don Bosco</small></aside></section>'+
+    (featured?'<section class="school-now"><div class="section-head"><div><span class="school-kicker">Lo que estamos recorriendo</span><h2>'+(ongoing.length?'Ahora':'Para empezar')+'</h2><p>'+(ongoing.length?'Retomá exactamente desde donde quedaste.':'Hay un recorrido preparado para vos.')+'</p></div></div>'+courseCard(featured,'featured')+'</section>':'')+
+    (available.length?'<section class="school-shelf"><div class="section-head"><div><span class="school-kicker">Para seguir creciendo</span><h2>Otros recorridos</h2><p>Formaciones disponibles para abrir cuando sea el momento.</p></div></div><div class="school-grid">'+available.filter(c=>!featured||courseId(c)!==courseId(featured)).map(c=>courseCard(c)).join('')+'</div></section>':'')+
+    (completed.length?'<section class="school-shelf completed"><div class="section-head"><div><span class="school-kicker">Lo que ya recorriste</span><h2>Queda con vos</h2><p>Podés volver a cualquiera de estos recorridos cuando lo necesites.</p></div></div><div class="school-grid">'+completed.filter(c=>!featured||courseId(c)!==courseId(featured)).map(c=>courseCard(c,'completed')).join('')+'</div></section>':'')+
+    (!courses.length?'<div class="empty">Todavía no tenés recorridos asignados en Escuela.</div>':'')+
+  '</div>';
 }
 async function getCourse(id){if(cache.has(id))return cache.get(id);const r=await fetch(COURSE_API+'?id='+encodeURIComponent(id),{headers:authHeaders(),cache:'no-store'});const j=await r.json().catch(()=>null);if(!r.ok||!j?.ok||!j?.course)throw new Error(j?.error||'No pudimos abrir este curso.');cache.set(id,j.course);return j.course}
 function moduleUnlocked(m,index,mods,done){if(index===0||m?.unlockAfterPrevious===false)return true;return done.has(moduleId(mods[index-1]))}
@@ -104,10 +123,10 @@ async function courseView(id){
   $('#main').innerHTML='<div class="edu-loading"><span></span><strong>Abriendo el itinerario…</strong></div>';
   try{currentCourse=await getCourse(id)}catch(e){return '<div class="empty">'+esc(e.message)+'</div>'}
   const p=progressOf(id),mods=publishedModules(currentCourse),done=completedModules(id);
-  return '<button class="back" data-nav="formacion">← Volver a Formación</button><section class="course-hero"><div><div class="edu-eyebrow">Itinerario formativo</div><h1>'+esc(currentCourse.title||'Curso')+'</h1><p>'+esc(descriptionOf(currentCourse))+'</p><div class="course-meta"><span>'+mods.length+' módulos</span><span>·</span><span>'+esc(durationText(currentCourse))+'</span></div></div><aside class="course-summary"><small>Tu recorrido</small><strong>'+Math.round(p)+'%</strong><span>'+done.size+' de '+mods.length+' módulos completados</span><div class="progress"><i style="width:'+p+'%"></i></div></aside></section><section class="section"><div class="section-head"><div><h2>El recorrido</h2><p>Avanzá módulo a módulo, a tu ritmo.</p></div></div><div class="module-list">'+mods.map((m,i)=>moduleRow(m,i,mods,done,id)).join('')+'</div></section>';
+  return '<button class="back" data-nav="formacion">← Volver a Escuela</button><section class="course-hero"><div><div class="edu-eyebrow">CAFASSO · Escuela</div><h1>'+esc(currentCourse.title||'Curso')+'</h1><p>'+esc(descriptionOf(currentCourse))+'</p><div class="course-meta"><span>'+mods.length+' módulos</span><span>·</span><span>'+esc(durationText(currentCourse))+'</span></div></div><aside class="course-summary"><small>Tu recorrido</small><strong>'+Math.round(p)+'%</strong><span>'+done.size+' de '+mods.length+' módulos completados</span><div class="progress"><i style="width:'+p+'%"></i></div></aside></section><section class="section"><div class="section-head"><div><h2>El recorrido</h2><p>Avanzá módulo a módulo, a tu ritmo.</p></div></div><div class="module-list">'+mods.map((m,i)=>moduleRow(m,i,mods,done,id)).join('')+'</div></section>';
 }
 function placeholder(view){
-  const map={biblioteca:['▥','La biblioteca','Algunas cosas sirven para resolver. Otras, para volver a pensar. Acá vamos a reunir textos, videos y materiales para tu tarea.'],interioridad:['♧','Un momento','Un espacio más sereno para la Palabra, la oración y las pausas personales.'],comunidad:['◎','El Patio','Donde lo que cada uno vive puede encontrarse con lo de otros: experiencias, preguntas y encuentros.'],camino:['◇','Mi camino','Lo que vas viviendo también forma parte de tu formación. Acá vamos a reunir lo recorrido y lo que sigue.']};
+  const map={biblioteca:['▥','Recursos','Algunas cosas sirven para resolver. Otras, para volver a pensar. Acá vamos a reunir textos, videos y materiales para tu tarea.'],interioridad:['♧','Parroquia','Un espacio más sereno para la Palabra, la oración y las pausas personales.'],comunidad:['◎','Patio','Donde lo que cada uno vive puede encontrarse con lo de otros: experiencias, preguntas y encuentros.'],camino:['◇','Mi camino','Lo que vas viviendo también forma parte de tu formación. Acá vamos a reunir lo recorrido y lo que sigue.']};
   const x=map[view]||['⌂','Casa de Formación','Estamos preparando este espacio.'];
   return '<button class="back" data-nav="home">← Volver a Mi Casa</button><div class="placeholder"><article><i>'+x[0]+'</i><h1>'+x[1]+'</h1><p>'+x[2]+'</p><button class="edu-secondary" data-nav="home">Volver al inicio</button></article></div>';
 }
