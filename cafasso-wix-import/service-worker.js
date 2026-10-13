@@ -1,4 +1,4 @@
-const CAFASSO_CACHE='cafasso-shell-20261013-12';
+const CAFASSO_CACHE='cafasso-shell-20261013-13';
 const SCOPE=self.registration.scope;
 const url=path=>new URL(path,SCOPE).href;
 const OFFLINE=url('./offline.html');
@@ -10,6 +10,8 @@ const PRECACHE=[
   './educadores.html',
   './educadores.css',
   './educadores.js',
+  './patio-educadores.html',
+  './patio-educadores.js',
   './cafasso-spotify.js',
   './cafasso-global-music.js',
   './world.html',
