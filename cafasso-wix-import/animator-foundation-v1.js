@@ -59,10 +59,37 @@
   document.documentElement.dataset.cafassoPeriod = INITIAL_PERIOD;
   document.documentElement.dataset.cafassoTimeModel = 'uruguay-seasonal-bootstrap';
 
-  function initialImageFor(targetSpace) {
-    const variants = TIME_IMAGES[targetSpace];
-    return variants?.[INITIAL_PERIOD] || variants?.afternoon || '';
+  // El fondo personalizado debe estar disponible ANTES de construir el HTML de la escena.
+  // Evita mostrar fugazmente el fondo general mientras se consulta Wix.
+  const HOUSE_BG_CACHE_KEY='cafasso-house-backgrounds-cache-v1';
+  const BLANK_BG='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="2" height="2"%3E%3Crect width="2" height="2" fill="%23173033"/%3E%3C/svg%3E';
+  function startupHouseId(){
+    try{
+      const session=JSON.parse(localStorage.getItem('cafassoSession')||'{}');
+      const user=session.user||{};
+      const role=String(user.role||'').toLowerCase();
+      const query=new URLSearchParams(location.search);
+      if(role.includes('admin')&&query.get('previewHouse'))return query.get('previewHouse').trim().toLowerCase();
+      return String(user.houseId||user.salesianHouseId||user.casaId||user.salesianHouse||'').trim().toLowerCase();
+    }catch(_){return ''}
   }
+  function initialImageFor(targetSpace) {
+    const variants=TIME_IMAGES[targetSpace];
+    const original=variants?.[INITIAL_PERIOD]||variants?.afternoon||'';
+    const slug=startupHouseId();
+    if(!slug||!variants)return original;
+    try{
+      const saved=JSON.parse(localStorage.getItem(HOUSE_BG_CACHE_KEY)||'{}');
+      const item=saved.houses?.[slug]?.backgrounds?.[targetSpace==='house'?'casa':targetSpace];
+      const record=typeof item==='string'?{default:item}:item;
+      const period=new URLSearchParams(location.search).get('previewPeriod')||INITIAL_PERIOD;
+      const url=record?.[period]||record?.default||'';
+      if(typeof url==='string'&&url.startsWith('https://'))return url;
+    }catch(_){}
+    // Casa vinculada sin caché: mostrar fondo neutro hasta resolver la imagen de Wix.
+    return BLANK_BG;
+  }
+  window.CafassoOriginalSceneBackgrounds=TIME_IMAGES;
 
   const HOUSE_BG = initialImageFor('house');
   const PATIO_BG = initialImageFor('patio');
@@ -75,7 +102,7 @@
     preload.rel = 'preload';
     preload.as = 'image';
     preload.href = initialImageFor(space);
-    document.head.appendChild(preload);
+    if(preload.href.startsWith('https://'))document.head.appendChild(preload);
   }
 
   const RECURSOS_BG = 'https://static.wixstatic.com/media/47bf07_8451eada7d72451a854df7cae47a80b6~mv2.png';
