@@ -7,10 +7,10 @@
   const SPACES = ['house','patio','escuela','parroquia'];
   const API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoHouses';
   const CONFIG_URL = './data/cafasso-house-backgrounds.json?v=1';
-  const session = (() => { try { return JSON.parse(localStorage.getItem('cafassoSession')||'{}'); } catch (_) { return {}; } })();
-  const user = session.user || {};
+  function currentUser(){try{return JSON.parse(localStorage.getItem('cafassoSession')||'{}')?.user||{}}catch(_){return {}}}
   // La casa es independiente del grupo de animadores; nunca inferirla del nombre del grupo.
   function houseId() {
+    const user=currentUser();
     const candidate = String(user.houseId || user.salesianHouseId || user.casaId || user.salesianHouse || '').trim().toLowerCase();
     if (candidate) return candidate;
     const groupId = String(user.groupId || '').trim();
@@ -87,7 +87,8 @@
     const observer = new MutationObserver(() => { if (Object.values(SELECTORS).some(selector => document.querySelector(selector))) apply(); });
     observer.observe(root, {childList:true, subtree:true, attributes:true, attributeFilter:['src']});
   }
-  window.addEventListener('pageshow',() => ready.then(apply));
+  window.addEventListener('pageshow',() => loadConfig().then(apply));
+  window.addEventListener('storage',event=>{if(event.key==='cafassoSession'||event.key==='cafassoAuth')loadConfig().then(apply)});
   document.addEventListener('cafasso:time-period',() => ready.then(apply));
   window.CafassoHouseBackgrounds = Object.freeze({
     ready, image, apply, houseId, houses:HOUSES, spaces:SPACES
