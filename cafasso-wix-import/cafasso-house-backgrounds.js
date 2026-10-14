@@ -66,7 +66,7 @@
           const normalized=key==='casa'?'house':key;
           if(SPACES.includes(normalized)&&typeof value==='string'&&validURL(value))backgrounds[normalized]=value;
         }
-        config.houses[house.slug]={...prev,backgrounds};
+        config.houses[house.slug]={...prev,name:house.name||prev.name||house.slug,backgrounds};
       }
     }catch(_){}
     return config;
