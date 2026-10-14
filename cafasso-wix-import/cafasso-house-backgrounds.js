@@ -77,7 +77,7 @@
     const record = config.houses?.[houseId()]?.backgrounds?.[space];
     if (typeof record === 'string') return validURL(record) ? record : '';
     if (record && typeof record === 'object') {
-      const candidate = record[period] || record.default || record.afternoon || '';
+      const candidate = record[period] || record.default || '';
       return validURL(candidate) ? candidate : '';
     }
     return '';
@@ -112,7 +112,7 @@
   }
   window.addEventListener('pageshow',() => loadConfig().then(apply));
   window.addEventListener('storage',event=>{if(event.key==='cafassoSession'||event.key==='cafassoAuth')loadConfig().then(apply)});
-  document.addEventListener('cafasso:time-period',() => ready.then(apply));
+  document.addEventListener('cafasso:time-period',() => loadConfig().then(apply));
   window.CafassoHouseBackgrounds = Object.freeze({
     ready, image, apply, houseId, houses:HOUSES, spaces:SPACES
   });
