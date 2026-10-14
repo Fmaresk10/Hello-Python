@@ -10,7 +10,7 @@ const SESSIONS='CafassoSessions';
 const HEADERS={
   'Content-Type':'application/json',
   'Access-Control-Allow-Origin':'https://fmaresk10.github.io',
-  'Access-Control-Allow-Headers':'Content-Type, X-Cafasso-Session-Hash',
+  'Access-Control-Allow-Headers':'Content-Type, Authorization, X-Cafasso-Session-Hash',
   'Access-Control-Allow-Methods':'GET, POST, OPTIONS',
   'Cache-Control':'no-store'
 };
