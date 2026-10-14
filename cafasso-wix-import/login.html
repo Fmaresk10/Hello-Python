@@ -44,17 +44,24 @@ button{cursor:pointer}
   user-select:none;-webkit-user-drag:none;pointer-events:none
 }
 
+.formative-backplate{
+  position:absolute;z-index:3;
+  left:8.8%;top:6.6%;width:42.5%;height:77.5%;
+  border:1px solid rgba(116,91,56,.15);
+  border-radius:1.8cqw;
+  background:
+    radial-gradient(circle at 86% 11%,rgba(214,180,90,.10),transparent 26%),
+    linear-gradient(155deg,#fffaf0 0%,#f7efdf 100%);
+  box-shadow:0 1.55cqw 3.8cqw rgba(53,41,23,.23);
+  pointer-events:none
+}
 .formative-panel{
   position:absolute;z-index:4;
   left:11.3%;top:9.6%;width:37.4%;min-height:69.8%;
   padding:2.1cqw 2.4cqw 2.15cqw;
-  border:1px solid rgba(116,91,56,.15);
-  border-radius:1.55cqw;
-  background:
-    radial-gradient(circle at 86% 11%,rgba(214,180,90,.10),transparent 26%),
-    linear-gradient(155deg,rgba(255,250,240,.995),rgba(247,239,223,.995));
-  box-shadow:0 1.5cqw 3.6cqw rgba(53,41,23,.22);
-  pointer-events:auto;overflow:hidden
+  border:0;border-radius:1.55cqw;
+  background:transparent;box-shadow:none;
+  pointer-events:auto;overflow:visible
 }
 .formative-panel:after{
   content:"";position:absolute;right:-3cqw;bottom:-4cqw;width:11cqw;height:11cqw;
@@ -151,7 +158,7 @@ button{cursor:pointer}
 #changeBox .field label{position:static;width:auto;height:auto;overflow:visible;clip:auto;display:block;margin-bottom:5px;color:#775a41;font:800 11px Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase}
 #changeBox .field input{min-height:48px;height:auto;padding:10px 12px;border:1px solid rgba(103,75,49,.20);border-radius:10px;background:rgba(255,253,245,.72);color:#423228;font-size:16px}
 #change{width:100%;min-height:48px;margin-top:12px;border:0;border-radius:999px;color:#fff7e7;background:var(--petrol);font:800 16px Inter,system-ui,sans-serif}
-.login-shell.changing .formative-panel{filter:brightness(.76)}
+.login-shell.changing .formative-panel,.login-shell.changing .formative-backplate{filter:brightness(.76)}
 
 .login-transition{
   position:fixed;inset:0;z-index:30;display:grid;place-items:center;
@@ -178,6 +185,7 @@ button{cursor:pointer}
     object-fit:cover;
     object-position:84% 47%;
   }
+  .formative-backplate{display:none}
   .formative-panel{
     position:fixed;
     left:12px;right:12px;top:auto;
@@ -188,9 +196,11 @@ button{cursor:pointer}
     overscroll-behavior:contain;
     -webkit-overflow-scrolling:touch;
     padding:20px 18px max(18px,env(safe-area-inset-bottom));
+    border:1px solid rgba(116,91,56,.15);
     border-radius:24px;
     background:linear-gradient(155deg,rgba(255,250,240,.985),rgba(247,239,223,.985));
-    box-shadow:0 22px 48px rgba(30,24,16,.30)
+    box-shadow:0 22px 48px rgba(30,24,16,.30);
+    overflow-y:auto
   }
   .brand{
     width:176px;min-width:0;max-width:69%;
@@ -274,6 +284,7 @@ button{cursor:pointer}
       src="https://static.wixstatic.com/media/47bf07_9ae7bc72acc84453ae501afabf43eb35~mv2.png"
       alt="" aria-hidden="true" fetchpriority="high" decoding="async">
 
+    <div class="formative-backplate" aria-hidden="true"></div>
     <section class="formative-panel" aria-label="Ingreso a CAFASSO">
       <div class="brand"><img src="./cafasso-logo-formative.svg?v=1" alt="CAFASSO"></div>
       <div class="formative-kicker">Una misma puerta de entrada</div>
@@ -413,6 +424,6 @@ $('repeatPassword').addEventListener('keydown',e=>{if(e.key==='Enter')changePass
   }catch(e){clearLocalSession()}
 })();
 </script>
-<script src="./pwa-register.js?v=20261014-01"></script>
+<script src="./pwa-register.js?v=20261014-02"></script>
 </body>
 </html>
