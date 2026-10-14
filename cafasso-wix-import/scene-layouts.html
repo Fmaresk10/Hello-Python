@@ -56,7 +56,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     <div class="status" id="status">Conectando…</div>
   </header>
 
-  <div class="toolbar"><div id="houseIndicator" style="width:100%;padding:9px 13px;border:1px solid #dfd1b8;border-radius:11px;background:#f9edcf;font-size:13px;font-weight:700">Diseño general · todas las casas</div>
+  <div class="toolbar"><div class="house-time-controls" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;width:100%;padding:12px 14px;background:#fffdf9;border:1px solid #e8dccb;border-radius:14px"><label style="display:grid;gap:5px;font-size:12px;font-weight:700">Casa salesiana<select id="houseSelect" style="min-width:215px;padding:10px;border:1px solid #d5c8b7;border-radius:10px;background:white"><option value="">Diseño general</option></select></label><label style="display:grid;gap:5px;font-size:12px;font-weight:700">Momento del día<select id="periodSelect" style="min-width:170px;padding:10px;border:1px solid #d5c8b7;border-radius:10px;background:white"><option value="default">Fondo general</option><option value="morning">Mañana</option><option value="afternoon">Tarde</option><option value="sunset">Atardecer</option><option value="night">Noche</option></select></label><label style="display:grid;gap:5px;font-size:12px;font-weight:700;flex:1;min-width:220px">Imagen de fondo para este horario<input id="periodBackground" type="url" placeholder="https://..." style="width:100%;padding:10px;border:1px solid #d5c8b7;border-radius:10px"></label><button class="btn" id="savePeriodBackground" type="button">Guardar fondo</button><button class="btn" id="clearPeriodBackground" type="button">Quitar fondo</button><span id="backgroundStatus" style="font-size:11px;color:#687386;flex-basis:100%">Seleccioná una casa para gestionar sus fondos. Los movimientos de objetos son independientes por casa y dispositivo.</span></div><div id="houseIndicator" style="width:100%;padding:9px 13px;border:1px solid #dfd1b8;border-radius:11px;background:#f9edcf;font-size:13px;font-weight:700">Diseño general · todas las casas</div>
     <div class="scene-tabs" id="sceneTabs"></div>
     <div class="device-tabs"><button class="chip active" data-profile="desktop">🖥 Escritorio</button><button class="chip" data-profile="mobile">📱 Móvil</button></div>
     <div class="toolbar-actions"><button class="btn" id="copyFromHouse" type="button" hidden>Copiar diseño de otra casa</button><button class="btn danger" id="resetHouse" type="button" hidden>Restablecer posiciones</button><button class="btn" id="discard" type="button">Descartar cambios</button><button class="btn primary" id="save" type="button">Guardar distribución</button></div>
@@ -113,9 +113,13 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
   const $=id=>document.getElementById(id);
   const icons={house:'⌂',patio:'✦',escuela:'◇',parroquia:'✝',recursos:'▥'};
   const HOUSE_SLUG=new URLSearchParams(location.search).get('house')||'';
+  const PERIODS=['default','morning','afternoon','sunset','night'];
+  let period=PERIODS.includes(new URLSearchParams(location.search).get('period'))?new URLSearchParams(location.search).get('period'):'default';
   const HOUSES_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoHouses';
   let houseId='';
   let availableHouses=[];
+  let activeBackgrounds={};
+  let backgroundBusy=false;
   let space='house';
   let profile='desktop';
   let saved=api.normalizeLayouts(api.getLayouts());
@@ -302,6 +306,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       renderTabs();
       renderObjectList();
       renderSelected();
+      fillBackgroundInput();
       loadFrame();
     }));
   }
@@ -382,7 +387,8 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       sceneProfile:profile,
       __cafassoBuild:'1179'
     });
-    if(HOUSE_SLUG)query.set('house',HOUSE_SLUG);
+    if(HOUSE_SLUG){query.set('house',HOUSE_SLUG);query.set('previewHouse',HOUSE_SLUG);}
+    if(period!=='default')query.set('previewPeriod',period);
     return './world.html?'+query.toString();
   }
 
@@ -424,7 +430,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
   function loadFrame(){
     const entry=sceneEntry();
     const viewportLabel=profile==='desktop'&&VIEWPORT_PRESETS[viewportMode]?' · '+VIEWPORT_PRESETS[viewportMode].label:'';
-    $('previewTitle').textContent=entry.label+' · '+(profile==='mobile'?'Móvil':'Escritorio')+viewportLabel;
+    $('previewTitle').textContent=entry.label+' · '+(profile==='mobile'?'Móvil':'Escritorio')+viewportLabel+' · '+({default:'Fondo general',morning:'Mañana',afternoon:'Tarde',sunset:'Atardecer',night:'Noche'}[period]);
     const shell=$('frameShell');
     shell.classList.toggle('desktop',profile==='desktop');
     shell.classList.toggle('mobile',profile==='mobile');
@@ -535,6 +541,58 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       setStatus('Diseño copiado · guardá para confirmar','warn');
     }catch(error){alert('No se pudo copiar la distribución: '+error.message)}
   }
+  function sceneBackgroundKey(){return space==='house'?'casa':space}
+  function fillBackgroundInput(){
+    const key=sceneBackgroundKey();
+    const record=activeBackgrounds[key]||{};
+    $('periodBackground').value=typeof record==='string'?(period==='default'?record:''):(record?.[period]||'');
+    const enabled=Boolean(HOUSE_SLUG&&houseId&&!backgroundBusy&&space!=='recursos');
+    $('periodBackground').disabled=!enabled;
+    $('savePeriodBackground').disabled=!enabled;
+    $('clearPeriodBackground').disabled=!enabled;
+    $('backgroundStatus').textContent=HOUSE_SLUG
+      ?(space==='recursos'?'La biblioteca conserva su fondo general.':'Editando fondo de '+({default:'cualquier horario',morning:'mañana',afternoon:'tarde',sunset:'atardecer',night:'noche'}[period])+'. Si está vacío se usa el fondo general de la casa.')
+      :'Elegí una casa para editar sus fondos.';
+  }
+  function fillHouseSelect(){
+    const select=$('houseSelect');
+    const options=[{slug:'',name:'Diseño general'},...availableHouses];
+    select.replaceChildren();
+    for(const h of options){const option=document.createElement('option');option.value=h.slug;option.textContent=h.name;select.append(option)}
+    select.value=HOUSE_SLUG;
+    $('periodSelect').value=period;
+    fillBackgroundInput();
+  }
+  function reloadEditor(house,periodValue){
+    if(dirty&&!confirm('Tenés posiciones sin guardar. ¿Salir sin guardarlas?'))return;
+    const url=new URL(location.href);
+    if(house)url.searchParams.set('house',house);else url.searchParams.delete('house');
+    if(periodValue!=='default')url.searchParams.set('period',periodValue);else url.searchParams.delete('period');
+    location.assign(url.toString());
+  }
+  async function saveBackgroundForPeriod(clear=false){
+    if(!HOUSE_SLUG||!houseId||backgroundBusy||space==='recursos')return;
+    const raw=clear?'':$('periodBackground').value.trim();
+    if(raw&&!/^https:\/\//i.test(raw)){alert('La imagen debe tener una URL pública HTTPS.');return}
+    const next=clone(activeBackgrounds);
+    const key=sceneBackgroundKey();
+    let record=next[key]||{};
+    if(typeof record==='string')record={default:record};
+    record[period]=raw;
+    next[key]=record;
+    backgroundBusy=true;fillBackgroundInput();$('backgroundStatus').textContent='Guardando imagen en Wix…';
+    try{
+      const response=await fetch(HOUSES_API,{method:'POST',headers:{'Content-Type':'application/json','X-Cafasso-Session-Hash':await authHash()},body:JSON.stringify({action:'update-backgrounds',id:houseId,backgrounds:next})});
+      const result=await response.json();
+      if(!response.ok||!result.ok)throw Error(result.error||'No se pudo guardar el fondo');
+      activeBackgrounds=next;
+      $('backgroundStatus').textContent='Fondo guardado en Wix ✓';
+      if(clear)$('periodBackground').value='';
+      // Recargar la vista real para mostrar el nuevo fondo y su horario.
+      loadFrame();
+    }catch(error){$('backgroundStatus').textContent='Error al guardar: '+error.message}
+    finally{backgroundBusy=false;$('periodBackground').disabled=false;$('savePeriodBackground').disabled=false;$('clearPeriodBackground').disabled=false}
+  }
   async function resolveHouse(){
     if(!HOUSE_SLUG)return;
     const response=await fetch(HOUSES_API,{headers:{'X-Cafasso-Session-Hash':await authHash()},cache:'no-store'});
@@ -546,6 +604,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     availableHouses=result.houses||[];
     $('copyFromHouse').hidden=false;
     $('resetHouse').hidden=false;
+    activeBackgrounds=clone(house.backgrounds||{});
     $('houseIndicator').textContent='Diseño exclusivo de '+house.name+' · los cambios no afectan las demás casas';
     return api.normalizeLayouts(house.layouts);
   }
@@ -750,6 +809,10 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     }));
     $('resetObject').addEventListener('click',()=>selected&&deleteValue(selected));
     $('resetScene').addEventListener('click',resetScene);
+    $('houseSelect').addEventListener('change',event=>reloadEditor(event.target.value,period));
+    $('periodSelect').addEventListener('change',event=>reloadEditor(HOUSE_SLUG,event.target.value));
+    $('savePeriodBackground').addEventListener('click',()=>saveBackgroundForPeriod(false));
+    $('clearPeriodBackground').addEventListener('click',()=>saveBackgroundForPeriod(true));
     $('resetHouse').addEventListener('click',resetHouse);
     $('copyFromHouse').addEventListener('click',copyFromHouse);
     $('save').addEventListener('click',save);
@@ -786,7 +849,11 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     setStatus('Conectando…');
     try{
       const remote=await api.loadRemote(true);
+      if(!HOUSE_SLUG){
+        try{const response=await fetch(HOUSES_API,{headers:{'X-Cafasso-Session-Hash':await authHash()},cache:'no-store'});const result=await response.json();if(response.ok&&result.ok)availableHouses=result.houses||[]}catch(error){console.warn('Casas no disponibles para selector',error)}
+      }
       saved=api.normalizeLayouts(HOUSE_SLUG?await resolveHouse():remote);
+      fillHouseSelect();
       draft=api.normalizeLayouts(saved);
       updateDirty(false);
       renderObjectList();
@@ -799,6 +866,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       draft=api.normalizeLayouts(saved);
       setStatus('No se pudo cargar desde Wix: '+error.message,'bad');
       if(HOUSE_SLUG){$('save').disabled=true;saveBusy=true;}
+      fillHouseSelect();
     }
   }
 
