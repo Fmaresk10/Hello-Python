@@ -453,3 +453,32 @@ input,select,textarea{
   }
 }
 
+
+
+/* CAFASSO: navegación reconocible por escenas, sin pictogramas genéricos. */
+:root{
+ --cafasso-scene-library:url("https://static.wixstatic.com/media/47bf07_8451eada7d72451a854df7cae47a80b6~mv2.png");
+}
+.house-nav button .cafasso-scene-mini,.edu-mobile-nav button .cafasso-scene-mini{
+ display:block;flex:none;width:29px;height:29px;border-radius:8px;
+ border:1px solid rgba(245,226,171,.4);box-shadow:0 2px 7px rgba(0,0,0,.2);
+ background-size:cover;background-position:center;background-repeat:no-repeat;
+ font-size:0;color:transparent;overflow:hidden;
+}
+.house-nav button{grid-template-columns:32px 1fr}
+.house-nav button.active .cafasso-scene-mini{border-color:#f5d98c;box-shadow:0 0 0 2px rgba(245,217,140,.18)}
+.cafasso-scene-mini.scene-casa{background-image:var(--animadores-casa)}
+.cafasso-scene-mini.scene-patio{background-image:var(--animadores-patio)}
+.cafasso-scene-mini.scene-escuela{background-image:var(--animadores-escuela)}
+.cafasso-scene-mini.scene-parroquia{background-image:var(--animadores-parroquia)}
+.cafasso-scene-mini.scene-recursos{background-image:var(--cafasso-scene-library)}
+.cafasso-scene-mini.scene-camino{background-image:linear-gradient(135deg,rgba(21,61,57,.12),rgba(21,61,57,.38)),var(--animadores-casa)}
+.house-space-copy{grid-template-columns:minmax(0,1fr) 30px;gap:12px;padding:16px 19px 16px}
+.house-space-copy h3{font-size:clamp(21px,2.4vw,27px)}
+.house-space-copy p{font-size:11px;max-width:420px}
+.house-space:before{background:linear-gradient(180deg,rgba(12,35,33,.04) 0%,rgba(12,35,33,.03) 38%,rgba(253,247,232,.85) 76%,rgba(255,249,237,.97) 100%)}
+.house-space:hover:before{background:linear-gradient(180deg,rgba(12,35,33,0) 0%,rgba(12,35,33,.03) 38%,rgba(253,247,232,.79) 76%,rgba(255,249,237,.96) 100%)}
+@media(max-width:700px){
+ .edu-mobile-nav button .cafasso-scene-mini{width:29px;height:29px;margin:0 auto 3px;border-radius:8px}
+ .house-space-copy{padding:15px 17px}
+}
