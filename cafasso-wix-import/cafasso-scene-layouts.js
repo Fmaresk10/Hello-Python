@@ -4,6 +4,7 @@
   const API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoCourse';
   const CONFIG_TITLE='__CAFASSO_SCENE_LAYOUTS__';
   const CACHE_KEY='cafassoSceneLayouts:v1';
+  const HOUSES_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoHouses';
   const params=new URLSearchParams(location.search);
   const EDITOR=params.get('sceneEditor')==='1';
   const SAFE_ZONE={left:12.5,right:12.5,top:11.9,bottom:11.9};
@@ -175,6 +176,8 @@
   const state={
     course:null,
     layouts:readCache(),
+    houseLayouts:emptyLayouts(),
+    houseLoading:null,
     preview:null,
     loaded:false,
     loading:null,
@@ -233,9 +236,54 @@
     try{return document.querySelector(spec.selector)}catch(error){return null}
   }
 
-  function sourceLayouts(){
-    return state.preview||state.layouts;
+  function currentHouseSlug(){
+    const session=(()=>{try{return JSON.parse(localStorage.getItem('cafassoSession')||'{}')}catch(_){return {}}})();
+    const user=session.user||{};
+    const role=String(user.role||'').toLowerCase();
+    if(role.includes('admin')){
+      const editorHouse=EDITOR?params.get('house'):params.get('previewHouse');
+      if(editorHouse)return String(editorHouse).toLowerCase();
+    }
+    return String(user.houseId||user.salesianHouseId||user.casaId||'').toLowerCase();
   }
+  async function houseHash(){
+    try{const auth=JSON.parse(localStorage.getItem('cafassoAuth')||'{}');
+      if(!auth.sessionToken)return '';
+      const bytes=new TextEncoder().encode(auth.sessionToken);
+      const digest=await crypto.subtle.digest('SHA-256',bytes);
+      return Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');
+    }catch(_){return ''}
+  }
+  function mergeLayouts(base,custom){
+    const out=normalizeLayouts(base),extra=normalizeLayouts(custom);
+    for(const [space,profiles] of Object.entries(extra.spaces||{})){
+      out.spaces[space]=out.spaces[space]||{};
+      for(const [profile,objects] of Object.entries(profiles)){
+        out.spaces[space][profile]={...(out.spaces[space][profile]||{}),...objects};
+      }
+    }
+    return out;
+  }
+  function sourceLayouts(){
+    const custom=state.preview||state.houseLayouts;
+    return mergeLayouts(state.layouts,custom);
+  }
+  async function loadHouseLayouts(){
+    const slug=currentHouseSlug();
+    if(!slug){state.houseLayouts=emptyLayouts();scheduleApply();return emptyLayouts()}
+    try{
+      const hash=await houseHash();if(!hash)return emptyLayouts();
+      const response=await fetch(HOUSES_API,{headers:{'X-Cafasso-Session-Hash':hash},cache:'no-store'});
+      const payload=await response.json();
+      if(!response.ok||!payload.ok)throw Error(payload.error||'Sin acceso a casas');
+      const house=(payload.houses||[]).find(h=>h.slug===slug);
+      state.houseLayouts=normalizeLayouts(house?.layouts||emptyLayouts());
+    }catch(error){state.houseLayouts=emptyLayouts()}
+    scheduleApply();
+    return clone(state.houseLayouts);
+  }
+  function getHouseLayouts(){return clone(state.houseLayouts)}
+
 
   function storedValue(space,profile,id,layouts){
     const raw=(layouts||sourceLayouts()).spaces?.[space]?.[profile]?.[id];
@@ -802,6 +850,7 @@
         state.loading=null;
         scheduleApply();
       }
+      await loadHouseLayouts();
       return clone(state.layouts);
     })();
     return state.loading;
@@ -851,7 +900,7 @@
   window.CafassoSceneLayouts={
     API,CONFIG_TITLE,CACHE_KEY,REGISTRY,SAFE_ZONE,safeGeometry,screenLockState,
     normalizeLayouts,loadRemote,saveRemote,
-    getLayouts,getEffectiveLayouts,setPreview,clearPreview,
+    getLayouts,getEffectiveLayouts,getHouseLayouts,loadHouseLayouts,setPreview,clearPreview,
     apply:scheduleApply,sceneNode,currentSpace,currentProfile,selectObject,applyHitZone
   };
 
