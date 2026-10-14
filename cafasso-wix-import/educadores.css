@@ -727,3 +727,20 @@ input,select,textarea,
   }
 }
 
+
+/* Iconos ilustrados aprobados: medallones CAFASSO Casa de Formación. */
+.cafasso-scene-mini.scene-casa{background-image:url("https://static.wixstatic.com/media/47bf07_7e573f1c32b2471daa438f0c84c9ca64~mv2.png")!important;}
+.cafasso-scene-mini.scene-patio{background-image:url("https://static.wixstatic.com/media/47bf07_cdc504f35b71463bb915ffd8d2e7ac11~mv2.png")!important;}
+.cafasso-scene-mini.scene-escuela{background-image:url("https://static.wixstatic.com/media/47bf07_c5f3e43750f1444fa72815b0e1a41d29~mv2.png")!important;}
+.cafasso-scene-mini.scene-parroquia{background-image:url("https://static.wixstatic.com/media/47bf07_3b13761cbef4423da04e5527ada9a61a~mv2.png")!important;}
+.cafasso-scene-mini.scene-recursos{background-image:url("https://static.wixstatic.com/media/47bf07_33e31976b41f4557a680527c6825e73f~mv2.png")!important;}
+.cafasso-scene-mini.scene-camino{background-image:url("https://static.wixstatic.com/media/47bf07_0b17cef580c84f3bbbb0003a86a2d908~mv2.png")!important;}
+.house-nav button .cafasso-scene-mini,.edu-mobile-nav button .cafasso-scene-mini{
+ background-color:transparent;background-size:contain;background-repeat:no-repeat;
+ border:0;border-radius:50%;box-shadow:none;
+ filter:none;opacity:1;
+}
+.house-nav button .cafasso-scene-mini::after,.edu-mobile-nav button .cafasso-scene-mini::after{display:none}
+.house-nav button:hover .cafasso-scene-mini,.house-nav button.active .cafasso-scene-mini,.edu-mobile-nav button.active .cafasso-scene-mini{
+ filter:none;opacity:1;border:0;box-shadow:none;
+}
