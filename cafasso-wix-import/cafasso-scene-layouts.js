@@ -13,6 +13,7 @@
       label:'Casa',
       sceneSelectors:['.cafasso-house-panorama','.cafasso-house-desktop-scene','.cafasso-house'],
       objects:[
+        {id:'experience-switch',label:'Cambiar experiencia',selector:'#cafassoAdminExperienceSwitch'},
         {id:'door-patio',label:'Acceso al Patio',selector:'.cafasso-space-link--casa[data-space="patio"]'},
         {id:'door-resources',label:'Acceso a Recursos',selector:'.cafasso-space-link--house-recursos'},
         {id:'admin-button',label:'Botón Administración',selector:'.cafasso-admin-button'},
@@ -28,6 +29,7 @@
       label:'Patio',
       sceneSelectors:['.cafasso-patio-panorama','.cafasso-patio-desktop-scene','.cafasso-patio'],
       objects:[
+        {id:'experience-switch',label:'Cambiar experiencia',selector:'#cafassoAdminExperienceSwitch'},
         {id:'door-house',label:'Acceso a Casa',selector:'.cafasso-space-link--patio-home'},
         {id:'door-school',label:'Acceso a Escuela',selector:'.cafasso-space-link--patio-escuela'},
         {id:'door-parish',label:'Acceso a Parroquia',selector:'.cafasso-space-link--patio-parroquia'},
@@ -42,6 +44,7 @@
       label:'Escuela',
       sceneSelectors:['.cafasso-school-panorama','.cafasso-school-desktop-scene','.cafasso-escuela'],
       objects:[
+        {id:'experience-switch',label:'Cambiar experiencia',selector:'#cafassoAdminExperienceSwitch'},
         {id:'door-patio',label:'Acceso al Patio',selector:'.cafasso-space-link--escuela-patio'},
         {id:'board',label:'Pizarra / cursos',selector:'.cafasso-school-board'},
         {id:'role-tool',label:'Selector de vista',selector:'.cafasso-role-tool--school,.cafasso-role-tool'},
@@ -54,6 +57,7 @@
       label:'Parroquia',
       sceneSelectors:['.cafasso-parish-panorama','.cafasso-parish-desktop-scene','.cafasso-parroquia'],
       objects:[
+        {id:'experience-switch',label:'Cambiar experiencia',selector:'#cafassoAdminExperienceSwitch'},
         {id:'door-patio',label:'Acceso al Patio',selector:'.cafasso-space-link--parroquia-patio'},
         {id:'admin-songbook',label:'Botón Cancionero',selector:'.cafasso-role-tool--parish'},
         {id:'lectionary',label:'Palabra del día / Leccionario',selector:'.cafasso-parish-lectionary'},
@@ -67,6 +71,7 @@
       label:'Recursos',
       sceneSelectors:['.cafasso-resources-panorama','.cafasso-resources-desktop-scene','.cafasso-recursos'],
       objects:[
+        {id:'experience-switch',label:'Cambiar experiencia',selector:'#cafassoAdminExperienceSwitch'},
         {id:'door-house',label:'Volver a Casa',selector:'.cafasso-space-link--recursos-home'},
         {id:'admin-library',label:'Botón Biblioteca',selector:'.cafasso-role-tool--resources'}
       ]
