@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script src="./auth-guard.js?v=20260923-2"></script>
+<title>CAFASSO · Seguimiento por casa</title>
+<style>
+:root{--navy:#12364a;--green:#245d4d;--gold:#e4b659;--cream:#f7f0e5;--ink:#203640;--muted:#62757a;--line:#ded9ce;--paper:#fffdfa}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif}
+header{background:#173e3a;color:#fff;padding:23px max(20px,calc((100vw - 1260px)/2));display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+header a{color:#fce9bc;text-decoration:none;font-weight:700}header strong{display:block;font-family:Georgia,serif;font-size:26px;font-weight:600}header small{color:#d7e6de}
+main{max-width:1260px;margin:auto;padding:30px 20px 80px}
+h1{font:500 clamp(29px,4vw,44px)/1.15 Georgia,serif;margin:0 0 8px;color:#173e3a}h2{font:500 26px/1.1 Georgia,serif;color:#173e3a;margin:0 0 13px}p{margin:6px 0 14px;color:#526760}
+.top{display:flex;align-items:end;justify-content:space-between;gap:18px;flex-wrap:wrap}
+label{font-weight:700;font-size:13px;display:grid;gap:6px;color:#244a43}
+select,input{border:1px solid #c9d3cc;border-radius:12px;background:white;color:#183831;font:inherit;padding:12px;min-width:200px}
+button,.link{border:0;border-radius:12px;background:#234e43;color:white;text-decoration:none;padding:11px 15px;cursor:pointer;font:700 13px Inter,system-ui;display:inline-block}
+button:hover,.link:hover{background:#32705c}button.secondary,.link.secondary{background:#eee8db;color:#234e43;border:1px solid #dcd6ca}
+.summary{display:grid;grid-template-columns:repeat(5,minmax(135px,1fr));gap:13px;margin:24px 0}
+.metric,.panel{background:var(--paper);border:1px solid #e5ded1;border-radius:17px;padding:21px;box-shadow:0 8px 25px #1c37210a}
+.metric b{display:block;font-size:34px;color:#173e3a}.metric span{font-size:12px;font-weight:750;color:#536c64}
+.columns{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);gap:18px;align-items:start}
+.panel{margin-bottom:18px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:680px}th{text-align:left;color:#64776f;font-size:11px;text-transform:uppercase;letter-spacing:.06em}td,th{padding:12px 8px;border-bottom:1px solid #eee6da}tr:last-child td{border-bottom:0}
+small{font-size:12px;color:var(--muted)}.role{font-size:11px;background:#edf1e9;border-radius:30px;padding:5px 9px;color:#2b5a4b;font-weight:750}
+.track{height:7px;border-radius:8px;background:#e9e7df;overflow:hidden;min-width:80px}.track span{display:block;height:100%;background:#6d9b74}.rowname{font-weight:700}
+.course{border:1px solid #eee6dc;border-radius:14px;padding:15px 13px;margin-bottom:9px}.course strong{display:block}.course small{display:block;margin-top:4px}
+.empty{padding:25px 4px;color:#697a70}.notice{font-size:13px;color:#6a5b45;background:#fff4dc;border-radius:11px;padding:12px;margin:10px 0}
+.status{font-size:13px;color:#5c7367;margin:15px 0}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:17px 0}.tabs button{background:#e6eadd;color:#244e40}.tabs button.active{background:#245d4d;color:#fff}
+@media(max-width:890px){.columns{grid-template-columns:1fr}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.metric:last-child{grid-column:span 2}}
+</style></head>
+<body><header><div><strong>CAFASSO</strong><small>Administración · Seguimiento por casa</small></div><nav><a href="./admin.html">Resumen</a>　<a href="./animadores.html">Personas</a>　<a href="./casas.html">Casas</a></nav></header>
+<main><div class="top"><div><h1>Comunidades formativas</h1><p>Personas, cursos y caminos formativos organizados por casa salesiana.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end"><label>Casa salesiana<select id="houseSelect"><option value="">Cargando casas…</option></select></label><button id="refresh" class="secondary" type="button">Actualizar datos</button></div></div>
+<div id="status" class="status">Consultando Wix…</div><div class="summary" id="summary"></div>
+<div class="columns"><section class="panel"><div class="panel-head"><div><h2>Personas de la casa</h2><p id="personLabel"></p></div><label>Buscar<input id="search" placeholder="Nombre o correo" aria-label="Buscar personas" style="min-width:150px"></label></div><div class="tabs" id="roleTabs"><button data-role="" class="active">Todas</button><button data-role="Animador">Animadores</button><button data-role="Formador">Educadores / formadores</button><button data-role="Administrador">Administradores</button></div><div class="table-wrap"><table><thead><tr><th>Persona</th><th>Rol</th><th>Grupo</th><th>Cursos</th><th>Progreso</th><th>Acciones</th></tr></thead><tbody id="peopleBody"></tbody></table></div></section>
+<div><section class="panel"><div class="panel-head"><h2>Cursos de la casa</h2><a class="link secondary" href="./asignaciones.html">Asignaciones</a></div><p>Incluye cursos asignados directamente a integrantes o a sus grupos.</p><div id="courses"></div></section><section class="panel"><div class="panel-head"><h2>Gestión de la casa</h2><a class="link secondary" href="./animadores.html">Editar personas</a></div><div id="houseDetails"></div></section></div></div></main>
+<script>
+(()=>{
+'use strict';
+const ADMIN='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoAdmin';
+const HOUSES='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoHouses';
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'}[c]));
+let admin=null,houses=[],house='',role='',busy=false;
+function num(v){return Math.min(100,Math.max(0,Number(v)||0))}
+function people(){const all=admin?.users||[];return all.filter(p=>(p.houseId||'')===house)}
+function progress(u,course){return (admin.progress||[]).find(p=>String(p.userId)===String(u._id)&&String(p.courseId)===String(course._id))}
+function assigned(u){const rules=admin.assignments||[];const ids=new Set(rules.filter(a=>a.active!==false&&((a.targetType==='user'&&String(a.targetId)===String(u._id))||(a.targetType==='group'&&u.groupId&&String(a.targetId)===String(u.groupId)))).map(a=>String(a.courseId)));return (admin.courses||[]).filter(c=>ids.has(String(c._id)))}
+function courseSet(members){const map=new Map();for(const person of members){for(const course of assigned(person)){if(!map.has(course._id))map.set(course._id,{course,people:[]});map.get(course._id).people.push(person)}}return [...map.values()].sort((a,b)=>b.people.length-a.people.length)}
+function metric(label,value){return '<div class="metric"><b>'+esc(value)+'</b><span>'+esc(label)+'</span></div>'}
+function render(){
+ const h=houses.find(x=>x.slug===house);const members=people(),matched=members.filter(u=>!role||u.role===role).filter(u=>(u.name+' '+u.email).toLowerCase().includes($('search').value.trim().toLowerCase()));
+ const anim=members.filter(u=>u.role==='Animador').length,educ=members.filter(u=>u.role==='Formador').length;
+ const personCourses=members.flatMap(u=>assigned(u).map(c=>({user:u,course:c})));
+ const avg=personCourses.length?Math.round(personCourses.reduce((v,x)=>v+num(progress(x.user,x.course)?.percent),0)/personCourses.length):0;
+ const courses=courseSet(members);
+ $('summary').innerHTML=metric('Personas',members.length)+metric('Animadores',anim)+metric('Educadores / formadores',educ)+metric('Cursos asignados',courses.length)+metric('Avance medio de asignaciones',personCourses.length?avg+'%':'—');
+ $('personLabel').textContent=(h?.name||'Personas sin casa')+' · '+matched.length+' visibles de '+members.length;
+ $('peopleBody').innerHTML=matched.length?matched.map(u=>{const cs=assigned(u),percent=cs.length?Math.round(cs.reduce((v,c)=>v+num(progress(u,c)?.percent),0)/cs.length):0;return '<tr><td><span class="rowname">'+esc(u.name)+'</span><div><small>'+esc(u.email)+'</small></div></td><td><span class="role">'+esc(u.role)+'</span></td><td>'+esc(u.groupName||'—')+'</td><td>'+cs.length+'</td><td><div class="track"><span style="width:'+percent+'%"></span></div><small>'+(cs.length?percent+'%':'Sin cursos')+'</small></td><td><a class="link secondary" href="./animador.html?id='+encodeURIComponent(u._id)+'">Ver perfil</a></td></tr>'}).join(''):'<tr><td colspan="6" class="empty">No hay personas para este filtro.</td></tr>';
+ $('courses').innerHTML=courses.length?courses.map(({course,people:students})=>{const done=students.filter(u=>num(progress(u,course)?.percent)>=100).length;const doing=students.filter(u=>{const p=num(progress(u,course)?.percent);return p>0&&p<100}).length;return '<div class="course"><strong>'+esc(course.title)+'</strong><small>'+students.length+' asignados · '+doing+' en curso · '+done+' completados</small></div>'}).join(''):'<div class="empty">Todavía no hay cursos asignados a integrantes de esta casa.</div>';
+ $('houseDetails').innerHTML=house?'<p>La pertenencia a esta casa se define en <strong>Personas → Editar</strong>. No modifica el grupo ni el rol.</p><a class="link" href="./scene-layouts.html?house='+encodeURIComponent(house)+'">Diseño de escenas</a>':'<div class="notice">Estas personas todavía no tienen una casa asignada. Podés asignarles una desde Personas → Editar.</div><a class="link" href="./animadores.html">Asignar casa</a>';
+ $('roleTabs').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.role===role));
+}
+function populate(){
+ const select=$('houseSelect');const previous=house;select.replaceChildren();
+ for(const item of [...houses,{slug:'',name:'Sin casa asignada'}]){const el=document.createElement('option');el.value=item.slug;el.textContent=item.name;select.appendChild(el)}
+ const preferred=new URLSearchParams(location.search).get('house');
+ house=(previous&&houses.some(x=>x.slug===previous)?previous:(preferred&&houses.some(x=>x.slug===preferred)?preferred:(houses.find(x=>x.slug==='maturana')||houses[0])?.slug||''));
+ select.value=house;render();
+}
+async function hash(){const auth=JSON.parse(localStorage.getItem('cafassoAuth')||'{}');if(!auth.sessionToken)throw Error('Iniciá sesión como administrador');const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(auth.sessionToken));return Array.from(new Uint8Array(buf),b=>b.toString(16).padStart(2,'0')).join('')}
+async function load(){
+ if(busy)return;busy=true;$('refresh').disabled=true;$('status').textContent='Consultando personas, cursos y casas en Wix…';
+ try{
+ const [r1,r2]=await Promise.all([fetch(ADMIN,{cache:'no-store'}),fetch(HOUSES,{headers:{'X-Cafasso-Session-Hash':await hash()},cache:'no-store'})]);
+ const [d1,d2]=await Promise.all([r1.json(),r2.json()]);
+ if(!r1.ok||!d1.ok)throw Error(d1.error||'No se pudo cargar la administración');
+ if(!r2.ok||!d2.ok)throw Error(d2.error||'No se pudieron cargar las casas');
+ admin=d1;houses=d2.houses||[];populate();
+ $('status').textContent='Datos reales de Wix · '+new Date().toLocaleString('es-UY')+' · Los avances son por curso y persona.';
+ }catch(e){console.error(e);$('status').textContent='No se pudo completar la consulta: '+e.message}
+ finally{busy=false;$('refresh').disabled=false}
+}
+$('houseSelect').addEventListener('change',e=>{house=e.target.value;const url=new URL(location.href);if(house)url.searchParams.set('house',house);else url.searchParams.delete('house');history.replaceState(null,'',url);render()});
+$('search').addEventListener('input',render);
+$('roleTabs').addEventListener('click',e=>{const btn=e.target.closest('button[data-role]');if(btn){role=btn.dataset.role;render()}});
+$('refresh').addEventListener('click',load);
+load();
+})();
+</script>
+<script src="./admin-shared-nav.js?v=20261006-1"></script>
+</body></html>
