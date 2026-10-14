@@ -7,6 +7,7 @@
   const SPACES = ['house','patio','escuela','parroquia'];
   const API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoHouses';
   const CONFIG_URL = './data/cafasso-house-backgrounds.json?v=1';
+  const CACHE_KEY='cafasso-house-backgrounds-cache-v1';
   function currentUser(){try{return JSON.parse(localStorage.getItem('cafassoSession')||'{}')?.user||{}}catch(_){return {}}}
   // La casa es independiente del grupo de animadores; nunca inferirla del nombre del grupo.
   function houseId() {
@@ -46,7 +47,23 @@
     Object.assign(exit.style,{marginLeft:'auto',padding:'7px',color:'#264940'});bar.append(exit);
     document.body.append(bar);
   }
-  let config = { houses:{} };
+  function cachedConfig(){
+    try{
+      const data=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');
+      return data&&typeof data==='object'&&data.houses&&typeof data.houses==='object'?data:{houses:{}};
+    }catch(_){return {houses:{}}}
+  }
+  let config = cachedConfig();
+  function cacheBackgrounds(){
+    try{
+      const houses={};
+      for(const [slug,item] of Object.entries(config.houses||{})){
+        if(!item||typeof item!=='object')continue;
+        houses[slug]={name:item.name||slug,backgrounds:item.backgrounds||{}};
+      }
+      localStorage.setItem(CACHE_KEY,JSON.stringify({houses}));
+    }catch(_){}
+  }
   async function sessionHash(){
     try{const auth=JSON.parse(localStorage.getItem('cafassoAuth')||'{}');
       if(!auth.sessionToken)return '';
@@ -55,7 +72,7 @@
     }catch(_){return ''}
   }
   async function loadConfig(){
-    try{const r=await fetch(CONFIG_URL,{cache:'no-store'});if(r.ok){const data=await r.json();if(data&&typeof data==='object')config=data}}catch(_){}
+    try{const r=await fetch(CONFIG_URL,{cache:'no-store'});if(r.ok){const data=await r.json();if(data&&typeof data==='object')config={...data,houses:{...(data.houses||{}),...(config.houses||{})}}}}catch(_){}
     try{
       const hash=await sessionHash();
       if(!hash)return config;
@@ -82,6 +99,7 @@
         }
         config.houses[house.slug]={...prev,name:house.name||prev.name||house.slug,backgrounds};
       }
+      cacheBackgrounds();
     }catch(_){}
     return config;
   }
@@ -123,9 +141,12 @@
       img.src=src;
       img.dataset.cafassoHouseBackground=houseId();
     }
-    if(img && !src && img.dataset.cafassoHouseBackground){
-      delete img.dataset.cafassoHouseBackground;
-      document.dispatchEvent(new CustomEvent('cafasso:house-background-cleared',{detail:{space,period}}));
+    if(img && !src){
+      // Sin fondo propio (o Wix inaccesible): recuperar imagen general, nunca dejar un fondo neutro permanente.
+      const general=window.CafassoOriginalSceneBackgrounds?.[space]?.[period]
+        ||window.CafassoOriginalSceneBackgrounds?.[space]?.afternoon||'';
+      if(general&&img.getAttribute('src')!==general)img.src=general;
+      if(img.dataset.cafassoHouseBackground)delete img.dataset.cafassoHouseBackground;
     }
     lastApplied={space,src,house:houseId(),period};
     document.documentElement.dataset.cafassoSalesianHouse = houseId() || 'general';
