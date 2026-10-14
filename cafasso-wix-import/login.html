@@ -62,12 +62,14 @@ button{cursor:pointer}
 }
 .brand{
   position:relative;z-index:1;display:flex;align-items:center;
-  width:13.7cqw;min-width:190px;max-width:72%;
-  padding:.8cqw 1.05cqw;border-radius:.65cqw;
-  background:linear-gradient(135deg,var(--petrol),#164b47);
-  box-shadow:0 .55cqw 1.3cqw rgba(29,54,49,.14)
+  width:14.8cqw;min-width:205px;max-width:74%;
+  margin-left:-.18cqw;padding:0;
+  background:transparent
 }
-.brand img{display:block;width:100%;height:auto}
+.brand img{
+  display:block;width:100%;height:auto;
+  filter:drop-shadow(0 .08cqw .08cqw rgba(56,46,31,.08))
+}
 .formative-kicker{
   position:relative;z-index:1;margin:1.55cqw 0 .5cqw;
   color:#9b7845;font:850 .55cqw/1.2 Inter,system-ui,sans-serif;
@@ -191,8 +193,8 @@ button{cursor:pointer}
     box-shadow:0 22px 48px rgba(30,24,16,.30)
   }
   .brand{
-    width:168px;min-width:0;max-width:67%;
-    padding:9px 11px;border-radius:10px
+    width:176px;min-width:0;max-width:69%;
+    margin-left:-2px;padding:0
   }
   .formative-kicker{margin:16px 0 5px;font-size:7px}
   .formative-title{font-size:31px}
@@ -273,7 +275,7 @@ button{cursor:pointer}
       alt="" aria-hidden="true" fetchpriority="high" decoding="async">
 
     <section class="formative-panel" aria-label="Ingreso a CAFASSO">
-      <div class="brand"><img src="./cafasso-logo.svg" alt="CAFASSO"></div>
+      <div class="brand"><img src="./cafasso-logo-formative.svg?v=1" alt="CAFASSO"></div>
       <div class="formative-kicker">Una misma puerta de entrada</div>
       <h1 class="formative-title">Bienvenido/a</h1>
       <p class="formative-lead">Ingresá para continuar en CAFASSO. Después te llevamos directamente a la experiencia que te corresponde.</p>
@@ -411,6 +413,6 @@ $('repeatPassword').addEventListener('keydown',e=>{if(e.key==='Enter')changePass
   }catch(e){clearLocalSession()}
 })();
 </script>
-<script src="./pwa-register.js?v=20261006-06"></script>
+<script src="./pwa-register.js?v=20261014-01"></script>
 </body>
 </html>
