@@ -103,6 +103,8 @@
   }
 
   async function resolveSource(time) {
+    const custom = window.CafassoHouseBackgrounds?.image('house',time);
+    if (custom) { try { return await preload(custom); } catch (_) { /* conservar imagen general */ } }
     const config = IMAGES[time];
     if (!config) throw new Error('UNKNOWN_PERIOD');
     try {
