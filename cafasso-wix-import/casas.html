@@ -7,9 +7,9 @@ const API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoHou
 const $=id=>document.getElementById(id);
 const slug=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,50);
 let houses=[];
-function sessionHash(){try{const x=JSON.parse(localStorage.getItem('cafassoAuth')||'{}');return x.sessionTokenHash||x.tokenHash||''}catch(e){return ''}}
+async function sessionHash(){try{const x=JSON.parse(localStorage.getItem('cafassoAuth')||'{}');if(!x.sessionToken)return '';const bytes=new TextEncoder().encode(x.sessionToken);const digest=await crypto.subtle.digest('SHA-256',bytes);return Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('')}catch(e){return ''}}
 async function request(method,body){
-  const hash=sessionHash();
+  const hash=await sessionHash();
   const headers={'Content-Type':'application/json','X-Cafasso-Session-Hash':hash};
   const r=await fetch(API,{method,headers,cache:'no-store',...(body?{body:JSON.stringify(body)}:{})});
   const j=await r.json();
