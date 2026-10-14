@@ -48,8 +48,8 @@ async function request(method,body){
   const hash=await sessionHash();
   const headers={'Content-Type':'application/json','X-Cafasso-Session-Hash':hash};
   const r=await fetch(API,{method,headers,cache:'no-store',...(body?{body:JSON.stringify(body)}:{})});
-  const j=await r.json();
-  if(!r.ok||!j.ok)throw Error(j.error||'Servicio de casas no disponible');
+  const raw=await r.text();let j;try{j=JSON.parse(raw)}catch(_){throw Error('Wix respondió '+r.status+' con contenido no válido. Puede faltar publicar el backend.')}
+  if(!r.ok||!j.ok)throw Error((j.error||'Servicio de casas no disponible')+' (HTTP '+r.status+')');
   return j;
 }
 function render(){const root=$('houses');root.replaceChildren();if(!houses.length){const empty=document.createElement('p');empty.className='lead';empty.textContent='Todavía no hay casas guardadas.';root.append(empty)}houses.forEach(h=>{const el=document.createElement('div');el.className='house';const title=document.createElement('strong');title.textContent=h.name;const sub=document.createElement('small');sub.textContent=h.slug;const actions=document.createElement('div');actions.className='buttons';const edit=document.createElement('button');edit.type='button';edit.className='outline';edit.textContent='Editar fondos';edit.onclick=()=>openBackgrounds(h);const preview=document.createElement('button');preview.type='button';preview.className='outline';preview.textContent='Probar escenas';preview.onclick=()=>{const url=new URL('./world.html',location.href);url.searchParams.set('space','house');url.searchParams.set('previewHouse',h.slug);location.href=url.toString()};const del=document.createElement('button');del.type='button';del.className='danger';del.textContent='Borrar casa';del.onclick=()=>deleteHouse(h);if(['maturana','tacuru','pio','paiva','talleres'].includes(h.slug)){del.disabled=true;del.title='Esta casa inicial está protegida';}const layout=document.createElement('button');layout.className='outline';layout.type='button';layout.textContent='Mover íconos';layout.onclick=()=>{const url=new URL('./scene-layouts.html',location.href);url.searchParams.set('house',h.slug);location.href=url.href};actions.append(edit,layout,preview,del);el.append(title,sub,actions);root.append(el)})}
@@ -83,7 +83,27 @@ async function loadPeople(){
 }
 $('loadPeople').onclick=loadPeople;
 $('peopleSearch').oninput=renderPeople;
-async function load(){try{const j=await request('GET');houses=j.houses||[];connected=true;render();if(people.length)renderPeople();$('syncNotice').textContent='Conectado a Wix · los cambios se guardan para todos los dispositivos.';$('newHouse').disabled=false}catch(e){connected=false;$('syncNotice').textContent='El servicio de guardado de Wix todavía no está publicado o tu sesión venció. No se crearán borradores locales.';$('newHouse').disabled=true}}
+async function load(){
+ try{
+   const j=await request('GET');
+   houses=j.houses||[];connected=true;render();if(people.length)renderPeople();
+   $('syncNotice').textContent='Conectado a Wix · '+houses.length+' casas sincronizadas. Los cambios se guardan para todos los dispositivos.';
+   $('newHouse').disabled=false;
+ }catch(e){
+   connected=false;$('newHouse').disabled=true;
+   const auth=(()=>{try{return JSON.parse(localStorage.getItem('cafassoAuth')||'{}')}catch(_){return {}}})();
+   const expired=!auth.sessionToken||Number(auth.expiresAt||0)<=Date.now();
+   const notice=$('syncNotice');notice.replaceChildren();
+   const message=document.createElement('span');
+   message.textContent=expired?'Tu sesión de CAFASSO venció. Las casas siguen guardadas en Wix.':'No se pudieron cargar las casas desde Wix: '+(e.message||'Error de conexión')+'. Las casas no se han borrado.';
+   notice.append(message);
+   const actions=document.createElement('div');actions.className='buttons';
+   const retry=document.createElement('button');retry.type='button';retry.className='outline';retry.textContent='Reintentar conexión';retry.onclick=load;
+   const login=document.createElement('a');login.href='./login.html';login.className='outline';login.textContent='Volver a iniciar sesión';login.style.cssText='display:inline-flex;align-items:center;border-radius:12px;padding:12px 17px';
+   actions.append(retry,login);notice.append(actions);
+   console.error('CAFASSO casas: error al conectar',e);
+ }
+}
 $('newHouse').disabled=true;
 $('newHouse').onclick=()=>{$('backgroundForm').hidden=true;$('form').hidden=false;$('name').value='';$('code').value='';$('status').textContent='';$('name').focus()};
 $('cancel').onclick=()=>{$('form').hidden=true};
