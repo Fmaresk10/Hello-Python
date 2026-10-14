@@ -52,6 +52,30 @@ export async function post_cafassoHouses(req){
   try{
     if(!await auth(req,true))return response(forbidden,{ok:false,error:'Solo Administración puede modificar casas.'});
     const body=await req.body.json();
+    if(body?.action==='delete'){
+      const id=String(body?.id||'').trim();
+      const slug=String(body?.confirmSlug||'').trim();
+      if(!id||!slug)return response(badRequest,{ok:false,error:'Falta confirmar la casa.'});
+      const current=await wixData.get(COLLECTION,id,{suppressAuth:true}).catch(()=>null);
+      if(!current||current.slug!==slug)return response(badRequest,{ok:false,error:'La confirmación no coincide con la casa.'});
+      if(current.isSystem===true)return response(forbidden,{ok:false,error:'Esta casa inicial está protegida.'});
+      await wixData.remove(COLLECTION,id,{suppressAuth:true});
+      return response(ok,{ok:true,deleted:id});
+    }
+    if(body?.action==='update-backgrounds'){
+      const id=String(body?.id||'').trim();
+      const current=id?await wixData.get(COLLECTION,id,{suppressAuth:true}).catch(()=>null):null;
+      if(!current)return response(badRequest,{ok:false,error:'La casa no existe.'});
+      const keys=['casa','patio','escuela','parroquia'];
+      const backgrounds={};
+      for(const key of keys){
+        const url=String(body?.backgrounds?.[key]||'').trim();
+        if(url.length>2048||url&&!/^https:\/\/[^\s]+$/i.test(url))return response(badRequest,{ok:false,error:'Usá direcciones HTTPS válidas para los fondos.'});
+        backgrounds[key]=url;
+      }
+      const updated=await wixData.update(COLLECTION,{...current,backgroundsJson:JSON.stringify(backgrounds)},{suppressAuth:true});
+      return response(ok,{ok:true,house:{id:updated._id,name:updated.name,slug:updated.slug,backgrounds}});
+    }
     const name=String(body?.name||'').trim();
     const slug=String(body?.slug||'').trim().toLowerCase();
     if(name.length<3||name.length>90||!/^[a-z0-9][a-z0-9-]{2,49}$/.test(slug))
