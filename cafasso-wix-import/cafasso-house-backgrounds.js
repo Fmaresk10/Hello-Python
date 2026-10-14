@@ -5,22 +5,50 @@
     paiva:'Instituto Benigno Paiva Irisarri', talleres:'Talleres Don Bosco'
   });
   const SPACES = ['house','patio','escuela','parroquia'];
+  const API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoHouses';
   const CONFIG_URL = './data/cafasso-house-backgrounds.json?v=1';
   const session = (() => { try { return JSON.parse(localStorage.getItem('cafassoSession')||'{}'); } catch (_) { return {}; } })();
   const user = session.user || {};
   // La casa es independiente del grupo de animadores; nunca inferirla del nombre del grupo.
   function houseId() {
     const candidate = String(user.houseId || user.salesianHouseId || user.casaId || user.salesianHouse || '').trim().toLowerCase();
-    if (HOUSES[candidate]) return candidate;
+    if (candidate) return candidate;
     const groupId = String(user.groupId || '').trim();
     const mapped = config.groupHouseMappings?.[groupId] || '';
-    return HOUSES[mapped] ? mapped : '';
+    return String(mapped || '').toLowerCase();
   }
   let config = { houses:{} };
-  const ready = fetch(CONFIG_URL, {cache:'no-store'})
-    .then(r => { if (!r.ok) throw new Error('config unavailable'); return r.json(); })
-    .then(data => { config = data && typeof data === 'object' ? data : {houses:{}}; return config; })
-    .catch(() => config);
+  async function sessionHash(){
+    try{const auth=JSON.parse(localStorage.getItem('cafassoAuth')||'{}');
+      if(!auth.sessionToken)return '';
+      const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(auth.sessionToken));
+      return Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
+    }catch(_){return ''}
+  }
+  async function loadConfig(){
+    try{const r=await fetch(CONFIG_URL,{cache:'no-store'});if(r.ok){const data=await r.json();if(data&&typeof data==='object')config=data}}catch(_){}
+    try{
+      const hash=await sessionHash();
+      if(!hash)return config;
+      const r=await fetch(API,{headers:{'X-Cafasso-Session-Hash':hash},cache:'no-store'});
+      if(!r.ok)return config;
+      const data=await r.json();
+      if(!data.ok||!Array.isArray(data.houses))return config;
+      config.houses=config.houses||{};
+      for(const house of data.houses){
+        if(!house.slug)continue;
+        const prev=config.houses[house.slug]||{};
+        const backgrounds={...prev.backgrounds};
+        for(const [key,value] of Object.entries(house.backgrounds||{})){
+          const normalized=key==='casa'?'house':key;
+          if(SPACES.includes(normalized)&&typeof value==='string'&&validURL(value))backgrounds[normalized]=value;
+        }
+        config.houses[house.slug]={...prev,backgrounds};
+      }
+    }catch(_){}
+    return config;
+  }
+  const ready=loadConfig();
   function image(space, period) {
     if (!SPACES.includes(space)) return '';
     const record = config.houses?.[houseId()]?.backgrounds?.[space];
