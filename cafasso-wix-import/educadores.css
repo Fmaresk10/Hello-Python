@@ -558,3 +558,172 @@ input,select,textarea{
   .house-space-copy{grid-template-columns:minmax(0,1fr) 25px;padding:17px 18px 18px}
   .house-space-copy h3{font-size:22px}
 }
+
+/* ===== Casa de Formación · tipografía definitiva = Administración =====
+   Esta capa va al final a propósito: evita que estilos editoriales anteriores
+   vuelvan a cambiar la jerarquía tipográfica del sistema administrativo. */
+:root{
+  --cafasso-admin-sans:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cafasso-admin-serif:Georgia,serif;
+  --cafasso-admin-title:clamp(34px,3.3vw,46px);
+  --cafasso-admin-section:22px;
+  --cafasso-admin-card-title:17px;
+  --cafasso-admin-body:12px;
+  --cafasso-admin-small:10px;
+  --cafasso-admin-label:9px;
+  --cafasso-admin-control:10px;
+  --cafasso-admin-quote:14px;
+}
+
+/* Base y textos funcionales */
+body,.edu-app,.edu-main,
+button,input,select,textarea,a,
+.house-nav,.house-sidebar-bottom,.edu-user-menu,.edu-mobile-nav,
+.edu-main p,.edu-main li,.edu-main span,.edu-main small,.edu-main label{
+  font-family:var(--cafasso-admin-sans)!important;
+}
+
+/* Marca */
+.house-brand strong,.house-mobile-brand strong{
+  font:500 25px/1 var(--cafasso-admin-serif)!important;
+  letter-spacing:0!important;
+}
+.house-brand small,.house-mobile-brand small{
+  font:800 var(--cafasso-admin-label)/1.2 var(--cafasso-admin-sans)!important;
+  letter-spacing:.14em!important;
+}
+
+/* Títulos de página = encabezado de Administración */
+.edu-page-title,
+.house-hero h1,.course-hero h1,.school-intro h1,
+.notebook-cover-main h1,.resources-intro h1,
+.parish-hero h1,.patio-hero h1{
+  font:500 var(--cafasso-admin-title)/1 var(--cafasso-admin-serif)!important;
+  letter-spacing:0!important;
+}
+
+/* Títulos de sección = títulos de cajas de Administración */
+.house-section-title h2,.today-strip h2,.section-head h2,
+.school-now .section-head h2,.school-shelf .section-head h2,
+.notebook-resume h2,.notebook-heading h2,
+.resource-feature .section-head h2,.resource-shelf .section-head h2,
+.resource-viewer-book aside h2,.resource-empty h2,
+.parish-word h2,.parish-practice h2,.parish-intention-modal h2,
+.patio-weekly h2,.patio-peer-copy h2{
+  font:500 var(--cafasso-admin-section)/1.1 var(--cafasso-admin-serif)!important;
+  letter-spacing:0!important;
+}
+
+/* Títulos de tarjetas y piezas */
+.desk-copy h2,.house-space-copy h3,.today-card strong,
+.course-body h3,.module h3,.placeholder h1,
+.school-book-cover b,.school-book-body h3,
+.chapter-copy h3,.resource-card-copy h3,.resource-audio strong,
+.parish-track strong,.parish-songbook-empty h3,
+.patio-board-note h3,.patio-empty-paper h3,.patio-story h3,.patio-stories-empty h3{
+  font:500 var(--cafasso-admin-card-title)/1.1 var(--cafasso-admin-serif)!important;
+  letter-spacing:0!important;
+}
+
+/* Cuerpo, ayudas y metadatos */
+.edu-lead,.house-hero p,.course-hero p,.school-intro p,
+.notebook-cover-main p,.resources-intro>div>p,.parish-hero p,.patio-hero p,
+.desk-copy p,.house-space-copy p,.today-card span,
+.section-head p,.course-body p,.module p,.placeholder p,
+.school-book-body p,.notebook-resume p,.notebook-heading p,.chapter-copy p,
+.resource-card-copy p,.resource-empty p,.resource-viewer-book aside p,
+.parish-word p,.parish-practice p,.parish-track small,.parish-songbook-empty p,
+.parish-closing p,.patio-weekly>p,.patio-board-note p,.patio-empty-paper p,
+.patio-story p,.patio-stories-empty p{
+  font-family:var(--cafasso-admin-sans)!important;
+  font-size:var(--cafasso-admin-body)!important;
+  line-height:1.5!important;
+}
+.desk-meta,.course-meta,.module-status,.notebook-meta,
+.notebook-progress>span,.chapter-meta,.school-book-note,.school-next,
+.resource-card-foot>span,.parish-readings,.patio-share-row small,.patio-own-answer small,
+.today-card cite{
+  font-family:var(--cafasso-admin-sans)!important;
+  font-size:var(--cafasso-admin-small)!important;
+  line-height:1.4!important;
+}
+
+/* Cejas y etiquetas */
+.edu-eyebrow,.school-kicker,.resource-category,
+.course-cover span,.school-book-cover span,
+.notebook-label,.notebook-resume small,.notebook-margin-note span,
+.chapter-state,.parish-closing>span,.patio-closing span,
+.today-card small,.desk-copy small,.resource-card-art small{
+  font:800 var(--cafasso-admin-label)/1.2 var(--cafasso-admin-sans)!important;
+  letter-spacing:.14em!important;
+}
+
+/* Navegación y controles */
+.house-nav button{
+  font:700 12px/1.2 var(--cafasso-admin-sans)!important;
+}
+.house-person strong,.house-person small,.house-side-action,
+.edu-user-menu strong,.edu-user-menu button,.back,
+.house-section-title button,.section-head button,
+.edu-primary,.edu-secondary,.resource-manage,.resource-chips button,
+.resource-viewer-actions a,.resource-viewer-actions button,
+.parish-word-link,.parish-practice>button,.parish-track button,
+.patio-share-row button,.notebook-chapter button,.school-book-foot .edu-primary{
+  font-family:var(--cafasso-admin-sans)!important;
+  font-size:var(--cafasso-admin-control)!important;
+  font-weight:800!important;
+  letter-spacing:0!important;
+}
+
+/* Inputs = misma Inter de Administración */
+input,select,textarea,
+.resource-search input,.patio-weekly textarea,.patio-peer textarea,
+.parish-intention-modal textarea{
+  font-family:var(--cafasso-admin-sans)!important;
+  font-size:12px!important;
+  line-height:1.5!important;
+}
+
+/* Frases editoriales: equivalente al motto de Administración */
+.house-hero-note,.today-card blockquote,.notebook-margin-note p,
+.school-intro aside span,.resources-intro aside span,
+.parish-hero-copy>span,.parish-songbook-loading,.parish-closing blockquote,
+.parish-silence-inner p,.patio-hero-copy>span,.patio-own-answer p,
+.patio-peer-copy p,.patio-closing blockquote,.motto{
+  font-family:var(--cafasso-admin-serif)!important;
+  font-size:var(--cafasso-admin-quote)!important;
+  line-height:1.45!important;
+}
+
+/* Números/estados destacados, como KPIs de Administración */
+.course-summary strong{
+  font:500 31px/1 var(--cafasso-admin-serif)!important;
+}
+.chapter-marker span,.parish-track>span{
+  font-family:var(--cafasso-admin-sans)!important;
+}
+
+/* Elementos simbólicos mantienen escala, pero usan las mismas familias */
+.house-space-copy i,.house-space-copy b,.resource-card-art>span,
+.resource-viewer-close,.parish-cross,.parish-practice-symbol,
+.parish-modal-close,.parish-silence-inner strong,
+.patio-hero-doodle,.patio-story-mark,.patio-stories-empty>span{
+  font-family:var(--cafasso-admin-serif)!important;
+}
+
+@media(max-width:700px){
+  .house-brand strong,.house-mobile-brand strong{font-size:20px!important}
+  .edu-page-title,
+  .house-hero h1,.course-hero h1,.school-intro h1,
+  .notebook-cover-main h1,.resources-intro h1,
+  .parish-hero h1,.patio-hero h1{
+    font-size:31px!important;
+    line-height:1.08!important;
+  }
+  input,select,textarea,
+  .resource-search input,.patio-weekly textarea,.patio-peer textarea,
+  .parish-intention-modal textarea{
+    font-size:16px!important;
+  }
+}
+
