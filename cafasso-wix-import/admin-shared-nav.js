@@ -10,6 +10,7 @@
   ];
   const MORE=[
     {key:'submissions',label:'Entregas',icon:'📥',href:'./entregas.html'},
+    {key:'housefollowup',label:'Seguimiento por casa',icon:'🏠',href:'./seguimiento-casas.html'},
     {key:'groups',label:'Grupos',icon:'◉',href:'./grupos.html'},
     {key:'assignments',label:'Asignaciones',icon:'↗',href:'./asignaciones.html'},
     {key:'resources',label:'Recursos',icon:'🗂',href:'./resource-admin.html'},
@@ -26,6 +27,7 @@
     if(page==='animadores.html')return'people';
     if(page==='entregas.html')return'submissions';
     if(page==='hologramas.html')return'holograms';
+    if(page==='seguimiento-casas.html')return'housefollowup';
     if(page==='grupos.html'||page==='grupo.html')return'groups';
     if(page==='asignaciones.html')return'assignments';
     if(page==='resource-admin.html')return'resources';
