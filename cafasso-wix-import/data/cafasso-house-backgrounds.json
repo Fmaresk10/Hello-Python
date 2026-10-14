@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "houses": {
+    "maturana": {
+      "name": "Maturana",
+      "backgrounds": {}
+    },
+    "tacuru": {
+      "name": "Movimiento Tacurú",
+      "backgrounds": {}
+    },
+    "pio": {
+      "name": "Colegio Pío IX",
+      "backgrounds": {}
+    },
+    "paiva": {
+      "name": "Instituto Benigno Paiva Irisarri",
+      "backgrounds": {}
+    },
+    "talleres": {
+      "name": "Talleres Don Bosco",
+      "backgrounds": {}
+    }
+  }
+}
