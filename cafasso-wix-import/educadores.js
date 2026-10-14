@@ -204,7 +204,7 @@ function home(){
     '</div>'+
   '</section>';
 }
-function houseSpace(view,klass,icon,title,copy){return '<button class="house-space '+klass+'" data-nav="'+view+'" type="button"><span class="house-space-copy"><i>'+icon+'</i><span><h3>'+title+'</h3><p>'+copy+'</p></span><b>→</b></span></button>'}
+function houseSpace(view,klass,icon,title,copy){return '<button class="house-space '+klass+'" data-nav="'+view+'" type="button"><span class="house-space-copy"><span><h3>'+title+'</h3><p>'+copy+'</p></span><b aria-hidden="true">→</b></span></button>'}
 function area(view,icon,title,copy){return '<button class="area-card" data-nav="'+view+'" type="button"><span class="area-icon">'+icon+'</span><h3>'+title+'</h3><p>'+copy+'</p></button>'}
 function formation(){
   const ongoing=courses.filter(c=>{const p=progressOf(courseId(c));return p>0&&p<100});
