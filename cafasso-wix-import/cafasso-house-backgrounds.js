@@ -11,7 +11,10 @@
   // La casa es independiente del grupo de animadores; nunca inferirla del nombre del grupo.
   function houseId() {
     const candidate = String(user.houseId || user.salesianHouseId || user.casaId || user.salesianHouse || '').trim().toLowerCase();
-    return HOUSES[candidate] ? candidate : '';
+    if (HOUSES[candidate]) return candidate;
+    const groupId = String(user.groupId || '').trim();
+    const mapped = config.groupHouseMappings?.[groupId] || '';
+    return HOUSES[mapped] ? mapped : '';
   }
   let config = { houses:{} };
   const ready = fetch(CONFIG_URL, {cache:'no-store'})
@@ -51,6 +54,12 @@
     return Boolean(src);
   }
   ready.then(apply);
+  const root = document.getElementById('app');
+  if (root) {
+    const observer = new MutationObserver(() => { if (Object.values(SELECTORS).some(selector => document.querySelector(selector))) apply(); });
+    observer.observe(root, {childList:true, subtree:true, attributes:true, attributeFilter:['src']});
+  }
+  window.addEventListener('pageshow',() => ready.then(apply));
   document.addEventListener('cafasso:time-period',() => ready.then(apply));
   window.CafassoHouseBackgrounds = Object.freeze({
     ready, image, apply, houseId, houses:HOUSES, spaces:SPACES
