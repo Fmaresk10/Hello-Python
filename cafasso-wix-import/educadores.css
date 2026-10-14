@@ -482,3 +482,79 @@ input,select,textarea{
  .edu-mobile-nav button .cafasso-scene-mini{width:29px;height:29px;margin:0 auto 3px;border-radius:8px}
  .house-space-copy{padding:15px 17px}
 }
+
+/* Casa de Formación · tratamiento delicado de escenas. Las imágenes originales siguen intactas. */
+.house-nav button .cafasso-scene-mini,
+.edu-mobile-nav button .cafasso-scene-mini{
+  position:relative;
+  width:25px;height:25px;
+  border:1px solid rgba(241,223,180,.19);
+  border-radius:50%;
+  box-shadow:none;
+  background-color:#587169;
+  background-size:cover;
+  background-position:center;
+  filter:saturate(.60) contrast(.86) brightness(1.15);
+  opacity:.73;
+  transition:opacity .2s ease,filter .2s ease,border-color .2s ease;
+}
+.house-nav button .cafasso-scene-mini::after,
+.edu-mobile-nav button .cafasso-scene-mini::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:rgba(234,221,188,.15);
+}
+.house-nav button{grid-template-columns:30px 1fr;gap:9px}
+.house-nav button:hover .cafasso-scene-mini,
+.house-nav button.active .cafasso-scene-mini,
+.edu-mobile-nav button.active .cafasso-scene-mini{
+  filter:saturate(.78) contrast(.94) brightness(1.10);
+  opacity:1;border-color:rgba(244,224,174,.55);box-shadow:none;
+}
+.house-space{
+  min-height:225px;
+  border:1px solid rgba(135,109,75,.16);
+  border-radius:17px;
+  background-position:center!important;
+  box-shadow:0 7px 24px rgba(61,48,34,.065);
+  transition:transform .22s ease,box-shadow .22s ease,filter .22s ease;
+}
+.house-space:before{
+  background:linear-gradient(180deg,
+    rgba(22,39,35,.02) 0%,
+    rgba(22,39,35,.03) 37%,
+    rgba(246,236,216,.45) 59%,
+    rgba(252,246,233,.93) 81%,
+    rgba(255,250,240,.98) 100%);
+}
+.house-space:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 29px rgba(61,48,34,.105);
+  filter:saturate(.96);
+}
+.house-space:hover:before{
+  background:linear-gradient(180deg,
+    rgba(22,39,35,0) 0%,
+    rgba(22,39,35,.025) 37%,
+    rgba(246,236,216,.39) 59%,
+    rgba(252,246,233,.92) 81%,
+    rgba(255,250,240,.98) 100%);
+}
+.house-space-copy{
+  grid-template-columns:minmax(0,1fr) 25px;
+  gap:11px;
+  padding:20px 22px 19px;
+}
+.house-space-copy h3{font-size:23px;font-weight:500;letter-spacing:-.012em}
+.house-space-copy p{margin-top:7px;max-width:350px;font-size:10.5px;line-height:1.5;color:#67746b}
+.house-space-copy b{
+  width:25px;height:25px;border:0;border-radius:50%;
+  background:rgba(97,118,101,.07);color:#667c6a;font:500 15px/1 Georgia,serif;
+}
+@media(max-width:700px){
+  .edu-mobile-nav button .cafasso-scene-mini{
+    width:23px;height:23px;margin:0 auto 4px;border-radius:50%;
+  }
+  .house-space{min-height:190px}
+  .house-space-copy{grid-template-columns:minmax(0,1fr) 25px;padding:17px 18px 18px}
+  .house-space-copy h3{font-size:22px}
+}
