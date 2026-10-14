@@ -59,7 +59,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
   <div class="toolbar"><div id="houseIndicator" style="width:100%;padding:9px 13px;border:1px solid #dfd1b8;border-radius:11px;background:#f9edcf;font-size:13px;font-weight:700">Diseño general · todas las casas</div>
     <div class="scene-tabs" id="sceneTabs"></div>
     <div class="device-tabs"><button class="chip active" data-profile="desktop">🖥 Escritorio</button><button class="chip" data-profile="mobile">📱 Móvil</button></div>
-    <div class="toolbar-actions"><button class="btn" id="discard" type="button">Descartar cambios</button><button class="btn primary" id="save" type="button">Guardar distribución</button></div>
+    <div class="toolbar-actions"><button class="btn" id="copyFromHouse" type="button" hidden>Copiar diseño de otra casa</button><button class="btn danger" id="resetHouse" type="button" hidden>Restablecer posiciones</button><button class="btn" id="discard" type="button">Descartar cambios</button><button class="btn primary" id="save" type="button">Guardar distribución</button></div>
   </div>
 
   <div class="compat-strip" id="compatStrip">
@@ -106,7 +106,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
 </main>
 </div>
 
-<script src="./cafasso-scene-layouts.js?v=15"></script>
+<script src="./cafasso-scene-layouts.js?v=16"></script>
 <script>
 (()=>{
   const api=window.CafassoSceneLayouts;
@@ -115,6 +115,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
   const HOUSE_SLUG=new URLSearchParams(location.search).get('house')||'';
   const HOUSES_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoHouses';
   let houseId='';
+  let availableHouses=[];
   let space='house';
   let profile='desktop';
   let saved=api.normalizeLayouts(api.getLayouts());
@@ -484,6 +485,56 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     if(!response.ok||!json.ok)throw Error(json.error||'No se pudo guardar la casa');
     return api.normalizeLayouts(json.layouts);
   }
+  function draftChanged(next){
+    draft=api.normalizeLayouts(next);
+    compatResults={};
+    updateDirty(JSON.stringify(draft)!==JSON.stringify(saved));
+    renderCompatibility();
+    renderObjectList();
+    renderSelected();
+    syncPreviewState();
+  }
+  function resetHouse(){
+    if(!HOUSE_SLUG||!houseId||saveBusy)return;
+    const scope=prompt('Restablecer posiciones de esta casa. Escribí ESCENA para borrar solo '+space+' en '+profile+' o TODO para borrar todas las posiciones personalizadas. Los cambios no se guardarán hasta pulsar «Guardar distribución».','ESCENA');
+    if(scope===null)return;
+    const choice=scope.trim().toUpperCase();
+    if(choice!=='ESCENA'&&choice!=='TODO'){alert('Escribí ESCENA o TODO. No se modificó nada.');return}
+    if(choice==='TODO'){draftChanged({version:1,spaces:{}});}
+    else{
+      const next=clone(draft);
+      if(next.spaces?.[space]){delete next.spaces[space][profile];if(!Object.keys(next.spaces[space]).length)delete next.spaces[space]}
+      draftChanged(next);
+    }
+    setStatus('Restablecimiento pendiente · guardá para confirmar','warn');
+  }
+  async function copyFromHouse(){
+    if(!HOUSE_SLUG||!houseId||saveBusy)return;
+    try{
+      const response=await fetch(HOUSES_API,{headers:{'X-Cafasso-Session-Hash':await authHash()},cache:'no-store'});
+      const result=await response.json();
+      if(!response.ok||!result.ok)throw Error(result.error||'No se pudieron cargar las casas');
+      availableHouses=result.houses||[];
+      const sources=availableHouses.filter(h=>h.slug!==HOUSE_SLUG&&Object.keys(api.normalizeLayouts(h.layouts).spaces||{}).length);
+      if(!sources.length){alert('Todavía no hay otra casa con posiciones personalizadas para copiar. Podés crear primero una distribución en la casa técnica.');return}
+      const labels=sources.map((h,i)=>(i+1)+'. '+h.name+' ('+h.slug+')').join('\n');
+      const responseText=prompt('Copiar posiciones desde otra casa:\n'+labels+'\n\nEscribí el número. Solo se copiará el ambiente '+space+' para '+profile+'. No se guardará hasta confirmar.', '1');
+      if(responseText===null)return;
+      const index=Number(responseText);
+      if(!Number.isInteger(index)||index<1||index>sources.length){alert('Número de casa no válido.');return}
+      const source=sources[index-1];
+      const sourceLayouts=api.normalizeLayouts(source.layouts);
+      const positions=sourceLayouts.spaces?.[space]?.[profile];
+      if(!positions||!Object.keys(positions).length){alert('Esa casa no tiene posiciones personalizadas para este ambiente y dispositivo.');return}
+      if(!confirm('¿Copiar '+Object.keys(positions).length+' posiciones de «'+source.name+'» al ambiente actual? Reemplazará solo las posiciones de '+space+' en '+profile+' y quedará pendiente de guardar.'))return;
+      const next=clone(draft);
+      next.spaces=next.spaces||{};
+      next.spaces[space]=next.spaces[space]||{};
+      next.spaces[space][profile]=clone(positions);
+      draftChanged(next);
+      setStatus('Diseño copiado · guardá para confirmar','warn');
+    }catch(error){alert('No se pudo copiar la distribución: '+error.message)}
+  }
   async function resolveHouse(){
     if(!HOUSE_SLUG)return;
     const response=await fetch(HOUSES_API,{headers:{'X-Cafasso-Session-Hash':await authHash()},cache:'no-store'});
@@ -492,6 +543,9 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     const house=(result.houses||[]).find(h=>h.slug===HOUSE_SLUG);
     if(!house)throw Error('Casa no encontrada');
     houseId=house.id;
+    availableHouses=result.houses||[];
+    $('copyFromHouse').hidden=false;
+    $('resetHouse').hidden=false;
     $('houseIndicator').textContent='Diseño exclusivo de '+house.name+' · los cambios no afectan las demás casas';
     return api.normalizeLayouts(house.layouts);
   }
@@ -696,6 +750,8 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     }));
     $('resetObject').addEventListener('click',()=>selected&&deleteValue(selected));
     $('resetScene').addEventListener('click',resetScene);
+    $('resetHouse').addEventListener('click',resetHouse);
+    $('copyFromHouse').addEventListener('click',copyFromHouse);
     $('save').addEventListener('click',save);
     $('discard').addEventListener('click',discard);
     $('preview').addEventListener('load',()=>setTimeout(()=>{
