@@ -1,4 +1,4 @@
-const CAFASSO_CACHE='cafasso-shell-20261014-8';
+const CAFASSO_CACHE='cafasso-shell-20261014-9';
 const SCOPE=self.registration.scope;
 const url=path=>new URL(path,SCOPE).href;
 const OFFLINE=url('./offline.html');
