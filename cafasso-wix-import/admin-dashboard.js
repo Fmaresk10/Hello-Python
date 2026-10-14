@@ -80,6 +80,7 @@
         <a href="./entregas.html">📥 Revisar entregas</a>
         <a href="./curso-editor.html">＋ Crear curso</a>
         <a href="./parish-songbook-admin.html">🎵 Editar cancionero</a>
+        <a href="./casas.html">🏠 Casas salesianas</a>
         <button class="wide" id="adm2PreviewUser">👁 Ver como un animador</button>
       </div>
       <div class="adm2-attention">
