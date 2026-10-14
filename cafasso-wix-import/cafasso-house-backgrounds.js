@@ -10,12 +10,35 @@
   function currentUser(){try{return JSON.parse(localStorage.getItem('cafassoSession')||'{}')?.user||{}}catch(_){return {}}}
   // La casa es independiente del grupo de animadores; nunca inferirla del nombre del grupo.
   function houseId() {
+    const preview=previewHouseId();
+    if(preview)return preview;
     const user=currentUser();
     const candidate = String(user.houseId || user.salesianHouseId || user.casaId || user.salesianHouse || '').trim().toLowerCase();
     if (candidate) return candidate;
     const groupId = String(user.groupId || '').trim();
     const mapped = config.groupHouseMappings?.[groupId] || '';
     return String(mapped || '').toLowerCase();
+  }
+  function previewHouseId(){
+    const user=currentUser();
+    const role=String(user.role||'').toLowerCase();
+    if(!role.includes('admin'))return '';
+    return String(new URLSearchParams(location.search).get('previewHouse')||'').trim().toLowerCase();
+  }
+  function installPreviewBar(){
+    const selected=previewHouseId();
+    if(!selected||document.getElementById('cafassoHousePreviewBar'))return;
+    const bar=document.createElement('nav');bar.id='cafassoHousePreviewBar';
+    Object.assign(bar.style,{position:'fixed',left:'12px',right:'12px',bottom:'12px',zIndex:'2147483645',display:'flex',gap:'8px',flexWrap:'wrap',alignItems:'center',padding:'12px 14px',borderRadius:'16px',background:'#f9f2e5',color:'#243f37',boxShadow:'0 8px 32px #0008',font:'600 13px system-ui,sans-serif'});
+    const label=document.createElement('span');label.textContent='Vista previa · '+(config.houses?.[selected]?.name||selected);bar.append(label);
+    for(const [space,title] of [['house','Casa'],['patio','Patio'],['escuela','Escuela'],['parroquia','Parroquia']]){
+      const link=document.createElement('a');link.textContent=title;
+      const dest=new URL(location.href);dest.searchParams.set('space',space);dest.searchParams.set('previewHouse',selected);link.href=dest.toString();
+      Object.assign(link.style,{borderRadius:'9px',padding:'7px 10px',background:space===(new URLSearchParams(location.search).get('space')||'house')?'#264940':'#e7dac6',color:space===(new URLSearchParams(location.search).get('space')||'house')?'white':'#264940',textDecoration:'none'});bar.append(link);
+    }
+    const exit=document.createElement('a');exit.textContent='Salir de la prueba';exit.href='./casas.html';
+    Object.assign(exit.style,{marginLeft:'auto',padding:'7px',color:'#264940'});bar.append(exit);
+    document.body.append(bar);
   }
   let config = { houses:{} };
   async function sessionHash(){
@@ -81,7 +104,7 @@
     document.documentElement.dataset.cafassoSalesianHouse = houseId() || 'general';
     return Boolean(src);
   }
-  ready.then(apply);
+  ready.then(()=>{apply();if(document.body)installPreviewBar();else document.addEventListener('DOMContentLoaded',installPreviewBar,{once:true})});
   const root = document.getElementById('app');
   if (root) {
     const observer = new MutationObserver(() => { if (Object.values(SELECTORS).some(selector => document.querySelector(selector))) apply(); });
