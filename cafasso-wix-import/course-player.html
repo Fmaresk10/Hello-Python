@@ -399,48 +399,78 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
 html[data-cafasso-educator="1"]{
   --cafasso-admin-sans:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
   --cafasso-admin-serif:Georgia,serif;
+  --cafasso-admin-title:clamp(34px,3.3vw,46px);
+  --cafasso-admin-section:22px;
+  --cafasso-admin-card-title:17px;
+  --cafasso-admin-body:12px;
+  --cafasso-admin-small:10px;
+  --cafasso-admin-label:9px;
+  --cafasso-admin-control:10px;
 }
 html[data-cafasso-educator="1"] body,
 html[data-cafasso-educator="1"] button,
 html[data-cafasso-educator="1"] input,
 html[data-cafasso-educator="1"] select,
 html[data-cafasso-educator="1"] textarea,
-html[data-cafasso-educator="1"] a{
+html[data-cafasso-educator="1"] a,
+html[data-cafasso-educator="1"] p,
+html[data-cafasso-educator="1"] span,
+html[data-cafasso-educator="1"] small,
+html[data-cafasso-educator="1"] label{
   font-family:var(--cafasso-admin-sans)!important;
 }
 html[data-cafasso-educator="1"] .educator-chapter-head h1{
-  font:500 clamp(34px,3.3vw,46px)/1 var(--cafasso-admin-serif)!important;
+  font:500 var(--cafasso-admin-title)/1 var(--cafasso-admin-serif)!important;
   letter-spacing:0!important;
 }
 html[data-cafasso-educator="1"] .educator-progress-note strong,
 html[data-cafasso-educator="1"] .educator-complete-box strong{
-  font:500 17px/1.1 var(--cafasso-admin-serif)!important;
+  font:500 var(--cafasso-admin-card-title)/1.1 var(--cafasso-admin-serif)!important;
 }
-html[data-cafasso-educator="1"] .educator-block h4{
-  font:500 22px/1.1 var(--cafasso-admin-serif)!important;
+html[data-cafasso-educator="1"] .educator-block h4,
+html[data-cafasso-educator="1"] .cafasso-course-finale h2{
+  font:500 var(--cafasso-admin-section)/1.1 var(--cafasso-admin-serif)!important;
+  letter-spacing:0!important;
 }
 html[data-cafasso-educator="1"] .linear-module-nav__meta strong{
   font:800 12px/1.25 var(--cafasso-admin-sans)!important;
 }
 html[data-cafasso-educator="1"] .educator-chapter-head p,
-html[data-cafasso-educator="1"] .educator-block .block-text{
+html[data-cafasso-educator="1"] .educator-block .block-text,
+html[data-cafasso-educator="1"] .educator-complete-box p,
+html[data-cafasso-educator="1"] .cafasso-course-finale__lead{
   font-family:var(--cafasso-admin-sans)!important;
-  font-size:13px!important;
-  line-height:1.55!important;
+  font-size:var(--cafasso-admin-body)!important;
+  line-height:1.5!important;
 }
-html[data-cafasso-educator="1"] .educator-block .activity label,
-html[data-cafasso-educator="1"] .educator-chapter-head__eyebrow,
-html[data-cafasso-educator="1"] .educator-block .block-type{
+html[data-cafasso-educator="1"] .linear-module-nav__meta small,
+html[data-cafasso-educator="1"] .educator-progress-note p,
+html[data-cafasso-educator="1"] .educator-progress-note__meter b,
+html[data-cafasso-educator="1"] .educator-block .review-row small{
   font-family:var(--cafasso-admin-sans)!important;
-  font-size:9px!important;
+  font-size:var(--cafasso-admin-small)!important;
+  line-height:1.4!important;
+}
+html[data-cafasso-educator="1"] .educator-chapter-head__eyebrow,
+html[data-cafasso-educator="1"] .educator-block .block-type,
+html[data-cafasso-educator="1"] .educator-block .required,
+html[data-cafasso-educator="1"] .educator-block .optional,
+html[data-cafasso-educator="1"] .educator-block .badge{
+  font-family:var(--cafasso-admin-sans)!important;
+  font-size:var(--cafasso-admin-label)!important;
   font-weight:800!important;
   letter-spacing:.14em!important;
 }
+html[data-cafasso-educator="1"] .educator-block .activity label{
+  font:800 10px/1.25 var(--cafasso-admin-sans)!important;
+  letter-spacing:0!important;
+}
 html[data-cafasso-educator="1"] .btn,
 html[data-cafasso-educator="1"] .linear-module-nav__back,
-html[data-cafasso-educator="1"] .linear-module-nav__step{
+html[data-cafasso-educator="1"] .linear-module-nav__step,
+html[data-cafasso-educator="1"] .cafasso-course-finale__action{
   font-family:var(--cafasso-admin-sans)!important;
-  font-size:10px!important;
+  font-size:var(--cafasso-admin-control)!important;
   font-weight:800!important;
 }
 html[data-cafasso-educator="1"] textarea,
@@ -449,6 +479,13 @@ html[data-cafasso-educator="1"] select{
   font-family:var(--cafasso-admin-sans)!important;
   font-size:12px!important;
   line-height:1.5!important;
+}
+html[data-cafasso-educator="1"] .educator-chapter-head__meta span,
+html[data-cafasso-educator="1"] .challenge-criteria,
+html[data-cafasso-educator="1"] .challenge-reward,
+html[data-cafasso-educator="1"] .feedback,
+html[data-cafasso-educator="1"] .saved-note{
+  font-family:var(--cafasso-admin-sans)!important;
 }
 @media(max-width:700px){
   html[data-cafasso-educator="1"] .educator-chapter-head h1{
