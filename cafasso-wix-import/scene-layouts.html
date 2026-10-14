@@ -59,7 +59,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
   <div class="toolbar"><div class="house-time-controls" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;width:100%;padding:12px 14px;background:#fffdf9;border:1px solid #e8dccb;border-radius:14px"><label style="display:grid;gap:5px;font-size:12px;font-weight:700">Casa salesiana<select id="houseSelect" style="min-width:215px;padding:10px;border:1px solid #d5c8b7;border-radius:10px;background:white"><option value="">Diseño general</option></select></label><label style="display:grid;gap:5px;font-size:12px;font-weight:700">Momento del día<select id="periodSelect" style="min-width:170px;padding:10px;border:1px solid #d5c8b7;border-radius:10px;background:white"><option value="default">Fondo general</option><option value="morning">Mañana</option><option value="afternoon">Tarde</option><option value="sunset">Atardecer</option><option value="night">Noche</option></select></label><label style="display:grid;gap:5px;font-size:12px;font-weight:700;flex:1;min-width:220px">Imagen de fondo para este horario<input id="periodBackground" type="url" placeholder="https://..." style="width:100%;padding:10px;border:1px solid #d5c8b7;border-radius:10px"></label><button class="btn" id="savePeriodBackground" type="button">Guardar fondo</button><button class="btn" id="clearPeriodBackground" type="button">Quitar fondo</button><span id="backgroundStatus" style="font-size:11px;color:#687386;flex-basis:100%">Seleccioná una casa para gestionar sus fondos. Los movimientos de objetos son independientes por casa y dispositivo.</span></div><div id="houseIndicator" style="width:100%;padding:9px 13px;border:1px solid #dfd1b8;border-radius:11px;background:#f9edcf;font-size:13px;font-weight:700">Diseño general · todas las casas</div>
     <div class="scene-tabs" id="sceneTabs"></div>
     <div class="device-tabs"><button class="chip active" data-profile="desktop">🖥 Escritorio</button><button class="chip" data-profile="mobile">📱 Móvil</button></div>
-    <div class="toolbar-actions"><button class="btn" id="copyFromHouse" type="button" hidden>Copiar diseño de otra casa</button><button class="btn danger" id="resetHouse" type="button" hidden>Restablecer posiciones</button><button class="btn" id="discard" type="button">Descartar cambios</button><button class="btn primary" id="save" type="button">Guardar distribución</button></div>
+    <div class="toolbar-actions"><button class="btn" id="copyFromHouse" type="button" hidden>Copiar diseño de otra casa</button><button class="btn danger" id="resetHouse" type="button" hidden>Restablecer posiciones</button><button class="btn" id="discard" type="button">Descartar cambios</button><button class="btn primary" id="save" type="button">Guardar borrador</button><button class="btn" id="publishDesign" type="button" hidden>Publicar diseño</button><button class="btn" id="duplicateScene" type="button" hidden>Duplicar escena</button><select id="versionSelect" aria-label="Versiones anteriores" hidden style="max-width:170px;padding:10px;border-radius:11px"><option value="">Versiones anteriores</option></select><button class="btn" id="restoreVersion" type="button" hidden>Restaurar</button></div>
   </div>
 
   <div class="compat-strip" id="compatStrip">
@@ -120,6 +120,9 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
   let availableHouses=[];
   let activeBackgrounds={};
   let backgroundBusy=false;
+  let workspaceSaved=null;
+  let versions=[];
+  let backgroundDirty=false;
   let space='house';
   let profile='desktop';
   let saved=api.normalizeLayouts(api.getLayouts());
@@ -230,8 +233,8 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     }
     $('dirtyDot').classList.toggle('on',dirty);
     $('dirtyText').textContent=dirty?'Hay cambios sin guardar':'Sin cambios pendientes';
-    $('save').disabled=saveBusy||!dirty;
-    $('discard').disabled=saveBusy||!dirty;
+    $('save').disabled=saveBusy||(!dirty&&!backgroundDirty);
+    $('discard').disabled=saveBusy||(!dirty&&!backgroundDirty);
   }
 
   function ensurePath(){
@@ -570,28 +573,95 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     if(periodValue!=='default')url.searchParams.set('period',periodValue);else url.searchParams.delete('period');
     location.assign(url.toString());
   }
+  function syncDraftBackgroundPreview(){
+    if(!HOUSE_SLUG||space==='recursos')return;
+    const frame=$('preview');
+    try{
+      const doc=frame.contentDocument;
+      const key=sceneBackgroundKey();
+      const record=activeBackgrounds[key]||{};
+      const url=(typeof record==='string'?record:record[period]||record.default||'');
+      const image=doc?.querySelector(({house:'.cafasso-house__image',patio:'.cafasso-patio__image',escuela:'.cafasso-escuela__image',parroquia:'.cafasso-parroquia__image'})[space]);
+      if(image&&url&&image.getAttribute('src')!==url)image.src=url;
+    }catch(error){}
+  }
+  function updateBackgroundDirty(){
+    backgroundDirty=JSON.stringify(activeBackgrounds)!==JSON.stringify(workspaceSaved?.backgrounds||{});
+    updateDirty(dirty);
+  }
   async function saveBackgroundForPeriod(clear=false){
     if(!HOUSE_SLUG||!houseId||backgroundBusy||space==='recursos')return;
     const raw=clear?'':$('periodBackground').value.trim();
     if(raw&&!/^https:\/\//i.test(raw)){alert('La imagen debe tener una URL pública HTTPS.');return}
-    const next=clone(activeBackgrounds);
     const key=sceneBackgroundKey();
-    let record=next[key]||{};
-    if(typeof record==='string')record={default:record};
+    let record=clone(activeBackgrounds[key]||{});
+    if(typeof activeBackgrounds[key]==='string')record={default:activeBackgrounds[key]};
     record[period]=raw;
-    next[key]=record;
-    backgroundBusy=true;fillBackgroundInput();$('backgroundStatus').textContent='Guardando imagen en Wix…';
+    activeBackgrounds[key]=record;
+    backgroundDirty=true;
+    updateDirty(dirty);
+    fillBackgroundInput();
+    syncDraftBackgroundPreview();
+    $('backgroundStatus').textContent='Fondo cambiado en la vista previa. Guardá el borrador y después publicalo para que lo vean los jóvenes.';
+    setStatus('Fondo sin publicar','warn');
+  }
+  async function designRequest(action,payload={}){
+    const response=await fetch(HOUSES_API,{method:'POST',headers:{'Content-Type':'application/json','X-Cafasso-Session-Hash':await authHash()},body:JSON.stringify({action,id:houseId,...payload})});
+    const result=await response.json();
+    if(!response.ok||!result.ok)throw Error(result.error||'No se pudo actualizar el diseño');
+    return result;
+  }
+  function renderVersions(){
+    const select=$('versionSelect');
+    select.replaceChildren();
+    const defaultOption=document.createElement('option');defaultOption.value='';defaultOption.textContent='Versiones anteriores';select.append(defaultOption);
+    for(const v of versions){const option=document.createElement('option');option.value=v.id;option.textContent=new Date(v.createdAt).toLocaleString('es-UY');select.append(option)}
+    $('restoreVersion').disabled=!versions.length;
+  }
+  async function publishDesign(){
+    if(!HOUSE_SLUG||!houseId||saveBusy)return;
+    if(!confirm('¿Publicar el diseño de '+HOUSE_SLUG+'? Los jóvenes verán el nuevo fondo y las posiciones. Se guardará la versión anterior.'))return;
     try{
-      const response=await fetch(HOUSES_API,{method:'POST',headers:{'Content-Type':'application/json','X-Cafasso-Session-Hash':await authHash()},body:JSON.stringify({action:'update-backgrounds',id:houseId,backgrounds:next})});
-      const result=await response.json();
-      if(!response.ok||!result.ok)throw Error(result.error||'No se pudo guardar el fondo');
-      activeBackgrounds=next;
-      $('backgroundStatus').textContent='Fondo guardado en Wix ✓';
-      if(clear)$('periodBackground').value='';
-      // Recargar la vista real para mostrar el nuevo fondo y su horario.
-      loadFrame();
-    }catch(error){$('backgroundStatus').textContent='Error al guardar: '+error.message}
-    finally{backgroundBusy=false;$('periodBackground').disabled=false;$('savePeriodBackground').disabled=false;$('clearPeriodBackground').disabled=false}
+      if(dirty||backgroundDirty)await save();
+      if(dirty||backgroundDirty)return;
+      const response=await designRequest('publish-design-draft');
+      versions=response.history||versions;
+      workspaceSaved={layouts:clone(draft),backgrounds:clone(activeBackgrounds)};
+      renderVersions();
+      setStatus('Diseño publicado en Wix ✓','ok');
+      $('backgroundStatus').textContent='Publicado. La versión anterior está disponible para restaurar.';
+    }catch(error){setStatus('Error al publicar: '+error.message,'bad')}
+  }
+  async function restoreVersion(){
+    const versionId=$('versionSelect').value;
+    if(!HOUSE_SLUG||!versionId)return;
+    if(!confirm('¿Restaurar esta versión como borrador? No cambiará el diseño publicado hasta que pulses Publicar.'))return;
+    try{
+      const result=await designRequest('restore-design-version',{versionId});
+      draft=api.normalizeLayouts(result.draft.layouts);
+      saved=api.normalizeLayouts(draft);
+      activeBackgrounds=clone(result.draft.backgrounds);
+      workspaceSaved={layouts:clone(draft),backgrounds:clone(activeBackgrounds)};
+      backgroundDirty=false;updateDirty(false);fillBackgroundInput();renderObjectList();renderSelected();syncPreviewState();syncDraftBackgroundPreview();
+      setStatus('Versión restaurada como borrador · pendiente de publicar','warn');
+    }catch(error){setStatus('No se pudo restaurar: '+error.message,'bad')}
+  }
+  function duplicateScene(){
+    if(!HOUSE_SLUG||!houseId)return;
+    const spaces=[['house','Casa'],['patio','Patio'],['escuela','Escuela'],['parroquia','Parroquia']];
+    const target=prompt('Duplicar fondo y posiciones de «'+space+'» hacia otro ambiente. Escribí: house, patio, escuela o parroquia.','');
+    if(!target)return;
+    if(!spaces.some(x=>x[0]===target)||target===space){alert('Elegí otro ambiente válido.');return}
+    if(!confirm('¿Reemplazar el fondo y las posiciones personalizadas de '+target+' en el borrador? No se publicará automáticamente.'))return;
+    const from=sceneBackgroundKey(),to=target==='house'?'casa':target;
+    activeBackgrounds[to]=clone(activeBackgrounds[from]||{});
+    const next=clone(draft);
+    next.spaces=next.spaces||{};
+    if(next.spaces[space])next.spaces[target]=clone(next.spaces[space]);
+    else delete next.spaces[target];
+    draftChanged(next);
+    backgroundDirty=true;updateDirty(true);
+    setStatus('Escena duplicada en el borrador · guardá para continuar','warn');
   }
   async function resolveHouse(){
     if(!HOUSE_SLUG)return;
@@ -605,38 +675,47 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     $('copyFromHouse').hidden=false;
     $('resetHouse').hidden=false;
     activeBackgrounds=clone(house.backgrounds||{});
+    $('publishDesign').hidden=false;
+    $('duplicateScene').hidden=false;
+    $('versionSelect').hidden=false;
+    $('restoreVersion').hidden=false;
     $('houseIndicator').textContent='Diseño exclusivo de '+house.name+' · los cambios no afectan las demás casas';
     return api.normalizeLayouts(house.layouts);
   }
   async function save(){
-    if(saveBusy||!dirty)return;
+    if(saveBusy||(!dirty&&!backgroundDirty))return;
     saveBusy=true;
     $('save').disabled=true;
     $('discard').disabled=true;
-    setStatus('Guardando en Wix…','warn');
+    setStatus(HOUSE_SLUG?'Guardando borrador en Wix…':'Guardando diseño general…','warn');
     try{
-      const result=HOUSE_SLUG ? await saveHouseLayouts(draft) : await api.saveRemote(draft);
-      saved=api.normalizeLayouts(result);
-      draft=api.normalizeLayouts(result);
-      updateDirty(false);
-      renderObjectList();
-      renderSelected();
-      syncPreviewState();
-      setStatus('Guardado en Wix ✓','ok');
+      if(HOUSE_SLUG){
+        const result=await designRequest('save-design-draft',{design:{layouts:draft,backgrounds:activeBackgrounds}});
+        saved=api.normalizeLayouts(result.draft.layouts);
+        draft=api.normalizeLayouts(result.draft.layouts);
+        workspaceSaved={layouts:clone(draft),backgrounds:clone(activeBackgrounds)};
+        backgroundDirty=false;
+        setStatus('Borrador guardado en Wix · todavía no publicado','ok');
+      }else{
+        const result=await api.saveRemote(draft);
+        saved=api.normalizeLayouts(result);draft=api.normalizeLayouts(result);
+        setStatus('Diseño general guardado en Wix ✓','ok');
+      }
+      updateDirty(false);renderObjectList();renderSelected();syncPreviewState();
     }catch(error){
-      console.error(error);
-      setStatus('No se pudo guardar','bad');
-      alert('No se pudo guardar la distribución: '+(error.message||'error desconocido'));
+      console.error(error);setStatus('No se pudo guardar: '+error.message,'bad');
       updateDirty(true);
     }finally{
       saveBusy=false;
-      $('save').disabled=!dirty;
-      $('discard').disabled=!dirty;
+      $('save').disabled=!dirty&&!backgroundDirty;
+      $('discard').disabled=!dirty&&!backgroundDirty;
     }
   }
 
   function discard(){
     draft=api.normalizeLayouts(saved);
+    if(workspaceSaved)activeBackgrounds=clone(workspaceSaved.backgrounds);
+    backgroundDirty=false;fillBackgroundInput();
     compatResults={};
     updateDirty(false);
     renderCompatibility();
@@ -809,6 +888,9 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     }));
     $('resetObject').addEventListener('click',()=>selected&&deleteValue(selected));
     $('resetScene').addEventListener('click',resetScene);
+    $('publishDesign').addEventListener('click',publishDesign);
+    $('duplicateScene').addEventListener('click',duplicateScene);
+    $('restoreVersion').addEventListener('click',restoreVersion);
     $('houseSelect').addEventListener('change',event=>reloadEditor(event.target.value,period));
     $('periodSelect').addEventListener('change',event=>reloadEditor(HOUSE_SLUG,event.target.value));
     $('savePeriodBackground').addEventListener('click',()=>saveBackgroundForPeriod(false));
@@ -818,6 +900,8 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     $('save').addEventListener('click',save);
     $('discard').addEventListener('click',discard);
     $('preview').addEventListener('load',()=>setTimeout(()=>{
+      syncDraftBackgroundPreview();
+      setTimeout(syncDraftBackgroundPreview,900);
       if(profile==='desktop')syncDesktopPreviewAspect();
       syncPreviewState();
     },120));
@@ -853,13 +937,22 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
         try{const response=await fetch(HOUSES_API,{headers:{'X-Cafasso-Session-Hash':await authHash()},cache:'no-store'});const result=await response.json();if(response.ok&&result.ok)availableHouses=result.houses||[]}catch(error){console.warn('Casas no disponibles para selector',error)}
       }
       saved=api.normalizeLayouts(HOUSE_SLUG?await resolveHouse():remote);
+      if(HOUSE_SLUG){
+        const workspace=await designRequest('get-design-workspace');
+        versions=workspace.history||[];renderVersions();
+        if(workspace.draft){
+          saved=api.normalizeLayouts(workspace.draft.layouts);
+          activeBackgrounds=clone(workspace.draft.backgrounds||{});
+        }
+        workspaceSaved={layouts:clone(saved),backgrounds:clone(activeBackgrounds)};
+      }
       fillHouseSelect();
       draft=api.normalizeLayouts(saved);
       updateDirty(false);
       renderObjectList();
       renderSelected();
-      syncPreviewState();
-      setStatus('Conectado a Wix CMS'+(HOUSE_SLUG?' · '+HOUSE_SLUG:''),'ok');
+      syncPreviewState();syncDraftBackgroundPreview();
+      setStatus('Conectado a Wix CMS'+(HOUSE_SLUG?' · borradores independientes de la publicación':''),'ok');
     }catch(error){
       console.warn(error);
       saved=api.normalizeLayouts(HOUSE_SLUG?{}:api.getLayouts());
