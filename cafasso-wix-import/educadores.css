@@ -744,3 +744,10 @@ input,select,textarea,
 .house-nav button:hover .cafasso-scene-mini,.house-nav button.active .cafasso-scene-mini,.edu-mobile-nav button.active .cafasso-scene-mini{
  filter:none;opacity:1;border:0;box-shadow:none;
 }
+
+
+/* El hogar de cada educador comparte los fondos publicados del mundo CAFASSO.
+   Las miniaturas y tarjetas se actualizan por casa y horario; Recursos permanece general. */
+.house-space.patio{background:var(--animadores-patio) center/cover no-repeat}
+.house-space.school{background:linear-gradient(0deg,rgba(22,66,62,.15),transparent 52%),var(--animadores-escuela) center/cover no-repeat}
+.house-space.pause{background:var(--animadores-parroquia) center/cover no-repeat}
