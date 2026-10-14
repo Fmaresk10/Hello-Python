@@ -56,7 +56,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     <div class="status" id="status">Conectando…</div>
   </header>
 
-  <div class="toolbar">
+  <div class="toolbar"><div id="houseIndicator" style="width:100%;padding:9px 13px;border:1px solid #dfd1b8;border-radius:11px;background:#f9edcf;font-size:13px;font-weight:700">Diseño general · todas las casas</div>
     <div class="scene-tabs" id="sceneTabs"></div>
     <div class="device-tabs"><button class="chip active" data-profile="desktop">🖥 Escritorio</button><button class="chip" data-profile="mobile">📱 Móvil</button></div>
     <div class="toolbar-actions"><button class="btn" id="discard" type="button">Descartar cambios</button><button class="btn primary" id="save" type="button">Guardar distribución</button></div>
@@ -112,6 +112,9 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
   const api=window.CafassoSceneLayouts;
   const $=id=>document.getElementById(id);
   const icons={house:'⌂',patio:'✦',escuela:'◇',parroquia:'✝',recursos:'▥'};
+  const HOUSE_SLUG=new URLSearchParams(location.search).get('house')||'';
+  const HOUSES_API='https://federicomaresca.wixstudio.com/my-site-1/_functions/cafassoHouses';
+  let houseId='';
   let space='house';
   let profile='desktop';
   let saved=api.normalizeLayouts(api.getLayouts());
@@ -378,6 +381,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
       sceneProfile:profile,
       __cafassoBuild:'1179'
     });
+    if(HOUSE_SLUG)query.set('house',HOUSE_SLUG);
     return './world.html?'+query.toString();
   }
 
@@ -467,6 +471,30 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     syncPreviewState();
   }
 
+  async function authHash(){
+    const auth=JSON.parse(localStorage.getItem('cafassoAuth')||'{}');
+    if(!auth.sessionToken)throw Error('Iniciá sesión de nuevo');
+    const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(auth.sessionToken));
+    return Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');
+  }
+  async function saveHouseLayouts(layouts){
+    if(!houseId)throw Error('La casa no está disponible');
+    const response=await fetch(HOUSES_API,{method:'POST',headers:{'Content-Type':'application/json','X-Cafasso-Session-Hash':await authHash()},body:JSON.stringify({action:'update-layouts',id:houseId,layouts})});
+    const json=await response.json();
+    if(!response.ok||!json.ok)throw Error(json.error||'No se pudo guardar la casa');
+    return api.normalizeLayouts(json.layouts);
+  }
+  async function resolveHouse(){
+    if(!HOUSE_SLUG)return;
+    const response=await fetch(HOUSES_API,{headers:{'X-Cafasso-Session-Hash':await authHash()},cache:'no-store'});
+    const result=await response.json();
+    if(!response.ok||!result.ok)throw Error(result.error||'No se pudieron consultar casas');
+    const house=(result.houses||[]).find(h=>h.slug===HOUSE_SLUG);
+    if(!house)throw Error('Casa no encontrada');
+    houseId=house.id;
+    $('houseIndicator').textContent='Diseño exclusivo de '+house.name+' · los cambios no afectan las demás casas';
+    return api.normalizeLayouts(house.layouts);
+  }
   async function save(){
     if(saveBusy||!dirty)return;
     saveBusy=true;
@@ -474,7 +502,7 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     $('discard').disabled=true;
     setStatus('Guardando en Wix…','warn');
     try{
-      const result=await api.saveRemote(draft);
+      const result=HOUSE_SLUG ? await saveHouseLayouts(draft) : await api.saveRemote(draft);
       saved=api.normalizeLayouts(result);
       draft=api.normalizeLayouts(result);
       updateDirty(false);
@@ -702,18 +730,19 @@ main{min-width:0;width:100%;max-width:1680px;margin:auto;padding:28px 30px 42px}
     setStatus('Conectando…');
     try{
       const remote=await api.loadRemote(true);
-      saved=api.normalizeLayouts(remote);
-      draft=api.normalizeLayouts(remote);
+      saved=api.normalizeLayouts(HOUSE_SLUG?await resolveHouse():remote);
+      draft=api.normalizeLayouts(saved);
       updateDirty(false);
       renderObjectList();
       renderSelected();
       syncPreviewState();
-      setStatus('Conectado a Wix CMS','ok');
+      setStatus('Conectado a Wix CMS'+(HOUSE_SLUG?' · '+HOUSE_SLUG:''),'ok');
     }catch(error){
       console.warn(error);
-      saved=api.normalizeLayouts(api.getLayouts());
+      saved=api.normalizeLayouts(HOUSE_SLUG?{}:api.getLayouts());
       draft=api.normalizeLayouts(saved);
-      setStatus('Usando copia local','warn');
+      setStatus('No se pudo cargar desde Wix: '+error.message,'bad');
+      if(HOUSE_SLUG){$('save').disabled=true;saveBusy=true;}
     }
   }
 
