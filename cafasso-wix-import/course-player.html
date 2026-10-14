@@ -393,7 +393,33 @@ html[data-cafasso-player="1"] .cafasso-scene-back{min-height:42px;touch-action:m
  .cafasso-course-finale__lead{font-size:13px}
  .cafasso-course-finale__action{width:100%;min-height:48px}
 }
-</style></head>
+</style>
+<style id="cafassoEducatorAdminTypography">
+/* Casa de Formación · misma tipografía que Administración */
+html[data-cafasso-educator="1"] body,
+html[data-cafasso-educator="1"] button,
+html[data-cafasso-educator="1"] input,
+html[data-cafasso-educator="1"] select,
+html[data-cafasso-educator="1"] textarea,
+html[data-cafasso-educator="1"] a{
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif!important;
+}
+html[data-cafasso-educator="1"] .educator-chapter-head h1,
+html[data-cafasso-educator="1"] .educator-progress-note strong,
+html[data-cafasso-educator="1"] .educator-block h4,
+html[data-cafasso-educator="1"] .educator-complete-box strong,
+html[data-cafasso-educator="1"] .linear-module-nav__meta strong{
+  font-family:Georgia,serif!important;
+  font-weight:500!important;
+}
+html[data-cafasso-educator="1"] .educator-block .activity label,
+html[data-cafasso-educator="1"] .educator-chapter-head__eyebrow,
+html[data-cafasso-educator="1"] .educator-block .block-type{
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif!important;
+  font-weight:800!important;
+}
+</style>
+</head>
 <body>
 <div id="app" class="loading">Cargando tu espacio CAFASSO…</div>
 <script>
