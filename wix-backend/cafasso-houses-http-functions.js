@@ -58,7 +58,7 @@ export async function post_cafassoHouses(req){
       if(!id||!slug)return response(badRequest,{ok:false,error:'Falta confirmar la casa.'});
       const current=await wixData.get(COLLECTION,id,{suppressAuth:true}).catch(()=>null);
       if(!current||current.slug!==slug)return response(badRequest,{ok:false,error:'La confirmación no coincide con la casa.'});
-      if(current.isSystem===true)return response(forbidden,{ok:false,error:'Esta casa inicial está protegida.'});
+      if(current.isSystem===true||['maturana','tacuru','pio','paiva','talleres'].includes(current.slug))return response(forbidden,{ok:false,error:'Esta casa inicial está protegida.'});
       await wixData.remove(COLLECTION,id,{suppressAuth:true});
       return response(ok,{ok:true,deleted:id});
     }
