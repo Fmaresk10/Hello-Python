@@ -273,6 +273,25 @@ linear-gradient(135deg,rgba(234,239,225,.94),rgba(247,239,222,.95));box-shadow:0
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 
+/* Fondos originales de los cuatro espacios del mundo Animadores (variante tarde). */
+:root{
+  --animadores-casa:url("https://static.wixstatic.com/media/47bf07_9bc5db4bdd144670b58b89d62684b300~mv2.jpg");
+  --animadores-patio:url("https://static.wixstatic.com/media/47bf07_794847b8f87d4577a04e10fb9adf630c~mv2.png");
+  --animadores-parroquia:url("https://static.wixstatic.com/media/47bf07_1c9e484e5ec8490781a6e54d6c262e1a~mv2.png");
+  --animadores-escuela:url("https://static.wixstatic.com/media/47bf07_3248c27ab7aa4fe5847c319c7e250cc4~mv2.png");
+}
+.house-hero{
+  background:linear-gradient(90deg,rgba(248,241,227,.94) 0%,rgba(248,241,227,.81) 39%,rgba(248,241,227,.13) 100%),var(--animadores-casa) center/cover no-repeat;
+}
+.house-space.school{background:var(--animadores-escuela) center/cover no-repeat}
+.house-space.patio{background:var(--animadores-patio) center/cover no-repeat}
+.house-space.pause{background:var(--animadores-parroquia) center/cover no-repeat}
+@media(max-width:700px){
+  .house-hero{
+    background:linear-gradient(180deg,rgba(247,240,227,.90) 0%,rgba(247,240,227,.80) 48%,rgba(247,240,227,.25) 78%,rgba(247,240,227,.08) 100%),var(--animadores-casa) center/cover no-repeat;
+  }
+}
+
 /* ===== Tipografía Casa = Administración ===== */
 :root{
   --cafasso-admin-sans:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
