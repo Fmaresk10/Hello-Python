@@ -27,7 +27,7 @@ function go(view){
   location.href=url.toString();
 }
 function patioPeriod(){const d=new Date(),h=d.getHours()+d.getMinutes()/60;if(h>=6&&h<12)return'morning';if(h>=12&&h<17.5)return'afternoon';if(h>=17.5&&h<20.5)return'sunset';return'night'}
-function patioHeroImage(){return PATIO_IMAGES[patioPeriod()]||PATIO_IMAGES.afternoon}
+function patioHeroImage(){return window.CafassoEducatorScenes?.image('patio')||PATIO_IMAGES[patioPeriod()]||PATIO_IMAGES.afternoon}
 function patioModules(){return [...(patioCourse?.modules||[])].sort((a,b)=>Number(a?.order||0)-Number(b?.order||0))}
 function patioModule(section){
   const names={weekly:'pregunta de la semana',board:'cartelera',stories:'experiencias',peer:'entre nosotros'};
@@ -125,3 +125,8 @@ async function start(){
 }
 start();
 })();
+// Keep the Patio hero synchronized with the educator's published house background.
+document.addEventListener('cafasso:educator-backgrounds-ready',()=>{
+  const page=document.querySelector('.patio-page');
+  if(page)page.style.setProperty('--patio-image','url("'+patioHeroImage().replace(/"/g,'%22')+'")');
+});
