@@ -16,13 +16,13 @@
         position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));z-index:2147483600;
         transform:translateX(-50%);width:min(430px,calc(100vw - 24px));
         display:flex;align-items:center;gap:12px;padding:12px 13px;border:1px solid rgba(255,255,255,.14);
-        border-radius:17px;background:rgba(15,45,77,.96);color:#fff;
+        border-radius:17px;background:rgba(32,42,45,.97);color:#fffaf0;
         box-shadow:0 18px 45px rgba(5,22,35,.28);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif
       }
       .cafasso-pwa-toast__text{min-width:0;flex:1}
       .cafasso-pwa-toast strong{display:block;font-size:13px}
       .cafasso-pwa-toast small{display:block;margin-top:2px;color:rgba(255,255,255,.68);font-size:10px;line-height:1.35}
-      .cafasso-pwa-toast button{border:0;border-radius:11px;padding:9px 11px;background:#F2C94C;color:#0F2D4D;font:800 11px Inter,system-ui;white-space:nowrap;cursor:pointer}
+      .cafasso-pwa-toast button{border:0;border-radius:11px;padding:9px 11px;background:#d8c07e;color:#263633;font:800 11px Inter,system-ui;white-space:nowrap;cursor:pointer}
       .cafasso-pwa-toast .cafasso-pwa-dismiss{background:transparent;color:rgba(255,255,255,.68);padding:6px;font-size:15px}
       html[data-cafasso-standalone="true"]{overscroll-behavior:none}
       @media(max-width:560px){.cafasso-pwa-toast{bottom:calc(12px + env(safe-area-inset-bottom));border-radius:15px}}
@@ -57,7 +57,7 @@
   const register=async()=>{
     if(!('serviceWorker' in navigator)||!/^https?:$/.test(location.protocol))return;
     try{
-      const reg=await navigator.serviceWorker.register('./service-worker.js?v=20261006-06',{scope:'./'});
+      const reg=await navigator.serviceWorker.register('./service-worker.js?v=20261015-34',{scope:'./'});
       window.CafassoPWA=window.CafassoPWA||{};
       window.CafassoPWA.registration=reg;
 
