@@ -780,3 +780,47 @@ body.cafasso-admin-center.cafasso-admin-submissions .top h1{
   body.cafasso-admin-import .card{padding:15px!important}
   body.cafasso-admin-holograms .card{padding:15px!important}
 }
+
+
+/* Perfil individual */
+body.cafasso-admin-profile .hero{
+  margin:0 0 11px!important;padding:23px 25px!important;border:1px solid var(--admin-line)!important;
+  border-radius:9px!important;background:#f6efe2!important;box-shadow:0 10px 26px rgba(59,52,41,.07)!important
+}
+body.cafasso-admin-profile .hero h1{
+  margin:6px 0 5px!important;font:500 clamp(34px,3.3vw,45px)/1 Georgia,serif!important;color:#2c3e39!important
+}
+body.cafasso-admin-profile .hero p{font-size:12px!important;color:#68716c!important}
+body.cafasso-admin-profile .kpis{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:8px!important;margin:0 0 11px!important}
+body.cafasso-admin-profile .grid{gap:11px!important}
+body.cafasso-admin-profile .course{
+  border-radius:6px!important;background:#fffaf0!important;border-color:#ddd0bb!important;padding:12px!important
+}
+body.cafasso-admin-profile .module-row{
+  border-radius:5px!important;background:#eee6d8!important;padding:8px 9px!important
+}
+body.cafasso-admin-profile .module-check{width:20px!important;height:20px!important;font-size:10px!important}
+body.cafasso-admin-profile .activity-item{
+  border-radius:0 6px 6px 0!important;background:#fffaf0!important;padding:10px 12px!important
+}
+body.cafasso-admin-profile .feedback{
+  border-radius:5px!important;background:#efe5cb!important;border-color:#dbc586!important
+}
+body.cafasso-admin-profile .tabs{gap:5px!important;margin-bottom:11px!important}
+body.cafasso-admin-profile .tab{
+  border-radius:5px!important;background:#eee6d8!important;border-color:#d6c8ae!important;
+  color:#59655f!important;font-size:9.5px!important;padding:7px 9px!important
+}
+body.cafasso-admin-profile .tab.active{
+  background:#e2d5b3!important;border-color:#c5aa68!important;color:#30443e!important
+}
+body.cafasso-admin-profile .note-area{
+  border-radius:6px!important;background:#fffaf0!important;border-color:#d6c8ae!important
+}
+@media(max-width:1100px){
+  body.cafasso-admin-profile .kpis{grid-template-columns:repeat(3,1fr)!important}
+}
+@media(max-width:700px){
+  body.cafasso-admin-profile .hero{padding:19px 17px!important}
+  body.cafasso-admin-profile .kpis{grid-template-columns:1fr 1fr!important}
+}
