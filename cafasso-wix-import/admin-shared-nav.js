@@ -2,6 +2,17 @@
   if(window.__cafassoAdminSharedNavInstalled)return;
   window.__cafassoAdminSharedNavInstalled=true;
 
+  const isAdminSession=()=>{
+    try{
+      const session=JSON.parse(localStorage.getItem('cafassoSession')||'null');
+      const user=session?.authenticated&&session?.user;
+      if(!user)return false;
+      const roles=[user.role,...(Array.isArray(user.roles)?user.roles:[user.roles])].filter(Boolean).join(' ').toLowerCase();
+      return /admin|administrador/.test(roles);
+    }catch(error){return false}
+  };
+  if(!isAdminSession())return;
+
   const PRIMARY=[
     {key:'home',label:'Inicio',icon:'⌂',href:'./admin.html'},
     {key:'people',label:'Personas',icon:'👥',href:'./animadores.html'},
@@ -44,30 +55,30 @@
     const style=document.createElement('style');
     style.id='cafassoAdminSharedNavStyles';
     style.textContent=`
-      .cafasso-admin-shared-desktop{display:grid;gap:7px;margin-top:30px;position:relative}
+      .cafasso-admin-shared-desktop{display:grid;gap:6px;margin-top:25px;position:relative}
       .cafasso-admin-shared-desktop>a,.cafasso-admin-shared-more>summary{
         display:flex;align-items:center;gap:10px;width:100%;min-height:43px;padding:10px 12px;
-        border:0;border-radius:12px;background:transparent;color:#fff;text-decoration:none;
-        font:800 13px/1.15 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer;list-style:none;
+        border:1px solid transparent;border-radius:7px;background:transparent;color:#e6ebe8;text-decoration:none;
+        font:750 12px/1.15 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer;list-style:none;
         transition:background .14s ease,color .14s ease
       }
       .cafasso-admin-shared-more>summary::-webkit-details-marker{display:none}
-      .cafasso-admin-shared-desktop>a:hover,.cafasso-admin-shared-more>summary:hover{background:rgba(255,255,255,.10)}
-      .cafasso-admin-shared-desktop>a.active,.cafasso-admin-shared-more.is-active>summary{background:rgba(255,255,255,.13);color:#fff}
+      .cafasso-admin-shared-desktop>a:hover,.cafasso-admin-shared-more>summary:hover{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.06)}
+      .cafasso-admin-shared-desktop>a.active,.cafasso-admin-shared-more.is-active>summary{background:linear-gradient(90deg,rgba(183,154,86,.18),rgba(255,255,255,.025));border-color:rgba(183,154,86,.18);box-shadow:inset 3px 0 #b79a56;color:#fff8e7}
       .cafasso-admin-shared-ico{width:21px;text-align:center;font-size:15px;flex:0 0 21px}
       .cafasso-admin-shared-label{min-width:0;flex:1}
       .cafasso-admin-shared-more{position:relative}
       .cafasso-admin-shared-more-menu{
         display:none;position:absolute;left:0;right:0;top:calc(100% + 7px);z-index:80;
-        padding:7px;border:1px solid rgba(255,255,255,.12);border-radius:14px;
-        background:#173d59;box-shadow:0 18px 42px rgba(4,20,34,.28)
+        padding:7px;border:1px solid rgba(183,154,86,.22);border-radius:9px;
+        background:#202a2d;box-shadow:0 18px 42px rgba(15,24,24,.32)
       }
       .cafasso-admin-shared-more[open] .cafasso-admin-shared-more-menu{display:grid;gap:3px}
       .cafasso-admin-shared-more-menu a{
-        display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:9px;color:#fff;
-        text-decoration:none;font:750 12px Inter,system-ui,sans-serif
+        display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:6px;color:#e8ece8;
+        text-decoration:none;font:750 11px Inter,system-ui,sans-serif
       }
-      .cafasso-admin-shared-more-menu a:hover,.cafasso-admin-shared-more-menu a.active{background:rgba(255,255,255,.10)}
+      .cafasso-admin-shared-more-menu a:hover,.cafasso-admin-shared-more-menu a.active{background:rgba(183,154,86,.14);color:#fff8e7}
       .cafasso-admin-shared-mobile,.cafasso-admin-shared-mobile-more{display:none}
       @media(max-width:1000px) and (min-width:701px){
         .cafasso-admin-shared-desktop{margin-top:28px}
@@ -82,34 +93,34 @@
         .admin-mobile-more,.core-mobile-more{display:none!important}
         .cafasso-admin-shared-mobile{
           display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:2147483200;
-          padding:7px 6px calc(7px + env(safe-area-inset-bottom));border-top:1px solid rgba(15,45,77,.10);
-          background:rgba(255,253,249,.97);backdrop-filter:blur(14px);box-shadow:0 -8px 24px rgba(15,45,77,.10)
+          padding:7px 6px calc(7px + env(safe-area-inset-bottom));border-top:1px solid #d8ccb7;
+          background:rgba(255,250,240,.98);backdrop-filter:blur(14px);box-shadow:0 -8px 24px rgba(45,50,47,.10)
         }
         .cafasso-admin-shared-mobile a,.cafasso-admin-shared-mobile button{
-          border:0;background:transparent;color:#647284;text-decoration:none;border-radius:13px;min-height:54px;
+          border:0;background:transparent;color:#6f7772;text-decoration:none;border-radius:9px;min-height:54px;
           padding:5px 2px;display:grid;place-items:center;gap:1px;font:750 9.5px Inter,system-ui,sans-serif;cursor:pointer
         }
         .cafasso-admin-shared-mobile .cafasso-admin-shared-ico{width:auto;font-size:19px}
-        .cafasso-admin-shared-mobile .active{background:#FFF4CC;color:#0F2D4D}
+        .cafasso-admin-shared-mobile .active{background:#eee1c0;color:#30443e}
         .cafasso-admin-shared-mobile-more{
           position:fixed;inset:0;z-index:2147483250;background:rgba(10,25,45,.38);align-items:flex-end;padding:14px
         }
         .cafasso-admin-shared-mobile-more.show{display:flex}
         .cafasso-admin-shared-mobile-sheet{
-          width:100%;max-height:min(78vh,620px);overflow:auto;background:#FFFDF9;border:1px solid #E8DCCB;
-          border-radius:24px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));box-shadow:0 22px 70px rgba(10,25,45,.28)
+          width:100%;max-height:min(78vh,620px);overflow:auto;background:#fffaf0;border:1px solid #d8ccb7;
+          border-radius:14px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));box-shadow:0 22px 70px rgba(10,25,45,.28)
         }
         .cafasso-admin-shared-mobile-sheet-head{display:flex;align-items:center;justify-content:space-between;padding:8px 8px 12px}
-        .cafasso-admin-shared-mobile-sheet-head strong{font:22px Georgia,serif;color:#0F2D4D}
+        .cafasso-admin-shared-mobile-sheet-head strong{font:500 22px Georgia,serif;color:#30443e}
         .cafasso-admin-shared-mobile-sheet-head button{
-          border:0;background:#F2ECE3;border-radius:50%;width:36px;height:36px;color:#0F2D4D;font-size:18px;cursor:pointer
+          border:1px solid #d8ccb7;background:#eee6d8;border-radius:7px;width:36px;height:36px;color:#30443e;font-size:18px;cursor:pointer
         }
         .cafasso-admin-shared-mobile-sheet a{
-          display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;color:#0F2D4D;text-decoration:none;
+          display:flex;align-items:center;gap:12px;padding:13px;border-radius:7px;color:#30443e;text-decoration:none;
           font:800 14px Inter,system-ui,sans-serif
         }
-        .cafasso-admin-shared-mobile-sheet a.active{background:#FFF4CC}
-        .cafasso-admin-shared-mobile-sheet a:active{background:#F7F1E8}
+        .cafasso-admin-shared-mobile-sheet a.active{background:#eee1c0}
+        .cafasso-admin-shared-mobile-sheet a:active{background:#eee6d8}
       }
     `;
     document.head.appendChild(style);
