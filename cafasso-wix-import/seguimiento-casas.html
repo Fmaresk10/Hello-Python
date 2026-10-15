@@ -26,12 +26,16 @@ small{font-size:12px;color:var(--muted)}.role{font-size:11px;background:#edf1e9;
 .empty{padding:25px 4px;color:#697a70}.notice{font-size:13px;color:#6a5b45;background:#fff4dc;border-radius:11px;padding:12px;margin:10px 0}
 .status{font-size:13px;color:#5c7367;margin:15px 0}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:17px 0}.tabs button{background:#e6eadd;color:#244e40}.tabs button.active{background:#245d4d;color:#fff}
 @media(max-width:890px){.columns{grid-template-columns:1fr}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.metric:last-child{grid-column:span 2}}
-</style></head>
-<body><header><div><strong>CAFASSO</strong><small>Administración · Seguimiento por casa</small></div><nav><a href="./admin.html">Resumen</a>　<a href="./animadores.html">Personas</a>　<a href="./casas.html">Casas</a></nav></header>
-<main><div class="top"><div><h1>Comunidades formativas</h1><p>Personas, cursos y caminos formativos organizados por casa salesiana.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end"><label>Casa salesiana<select id="houseSelect"><option value="">Cargando casas…</option></select></label><button id="refresh" class="secondary" type="button">Actualizar datos</button></div></div>
+</style><link rel="stylesheet" href="./admin-center.css?v=4"></head>
+<body class="cafasso-admin-center cafasso-admin-tool cafasso-admin-house-followup"><div class="shell">
+<aside class="side">
+  <div class="brand"><a href="./admin.html" aria-label="Inicio administración"><img src="./cafasso-mark.svg" alt="CAFASSO"></a><div><b>CAFASSO</b><small>Centro de Administración</small></div></div>
+  <nav class="menu"><a href="./admin.html">⌂ Inicio</a><a href="./animadores.html">👥 Personas</a><a href="./admin.html#cursos">📚 Cursos</a><a href="./hologramas.html">✦ Hologramas</a></nav>
+  <div class="side-foot"><div class="motto">Caminamos juntos,<br>animamos con el corazón.</div><a class="back" href="./admin.html">← Administración</a></div>
+</aside><main><div class="top head"><div><h1>Comunidades formativas</h1><p>Personas, cursos y caminos formativos organizados por casa salesiana.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end"><label>Casa salesiana<select id="houseSelect"><option value="">Cargando casas…</option></select></label><button id="refresh" class="secondary" type="button">Actualizar datos</button></div></div>
 <div id="status" class="status">Consultando Wix…</div><div class="summary" id="summary"></div>
-<div class="columns"><section class="panel"><div class="panel-head"><div><h2>Personas de la casa</h2><p id="personLabel"></p></div><label>Buscar<input id="search" placeholder="Nombre o correo" aria-label="Buscar personas" style="min-width:150px"></label></div><div class="tabs" id="roleTabs"><button data-role="" class="active">Todas</button><button data-role="Animador">Animadores</button><button data-role="Formador">Educadores / formadores</button><button data-role="Administrador">Administradores</button></div><div class="table-wrap"><table><thead><tr><th>Persona</th><th>Rol</th><th>Grupo</th><th>Cursos</th><th>Progreso</th><th>Acciones</th></tr></thead><tbody id="peopleBody"></tbody></table></div></section>
-<div><section class="panel"><div class="panel-head"><h2>Cursos de la casa</h2><a class="link secondary" href="./asignaciones.html">Asignaciones</a></div><p>Incluye cursos asignados directamente a integrantes o a sus grupos.</p><div id="courses"></div></section><section class="panel"><div class="panel-head"><h2>Gestión de la casa</h2><a class="link secondary" href="./animadores.html">Editar personas</a></div><div id="houseDetails"></div></section></div></div></main>
+<div class="columns"><section class="panel card box"><div class="panel-head"><div><h2>Personas de la casa</h2><p id="personLabel"></p></div><label>Buscar<input id="search" placeholder="Nombre o correo" aria-label="Buscar personas" style="min-width:150px"></label></div><div class="tabs" id="roleTabs"><button data-role="" class="active">Todas</button><button data-role="Animador">Animadores</button><button data-role="Formador">Educadores / formadores</button><button data-role="Administrador">Administradores</button></div><div class="table-wrap"><table><thead><tr><th>Persona</th><th>Rol</th><th>Grupo</th><th>Cursos</th><th>Progreso</th><th>Acciones</th></tr></thead><tbody id="peopleBody"></tbody></table></div></section>
+<div><section class="panel card box"><div class="panel-head"><h2>Cursos de la casa</h2><a class="link secondary" href="./asignaciones.html">Asignaciones</a></div><p>Incluye cursos asignados directamente a integrantes o a sus grupos.</p><div id="courses"></div></section><section class="panel card box"><div class="panel-head"><h2>Gestión de la casa</h2><a class="link secondary" href="./animadores.html">Editar personas</a></div><div id="houseDetails"></div></section></div></div></main></div>
 <script>
 (()=>{
 'use strict';
@@ -45,7 +49,7 @@ function people(){const all=admin?.users||[];return all.filter(p=>(p.houseId||''
 function progress(u,course){return (admin.progress||[]).find(p=>String(p.userId)===String(u._id)&&String(p.courseId)===String(course._id))}
 function assigned(u){const rules=admin.assignments||[];const ids=new Set(rules.filter(a=>a.active!==false&&((a.targetType==='user'&&String(a.targetId)===String(u._id))||(a.targetType==='group'&&u.groupId&&String(a.targetId)===String(u.groupId)))).map(a=>String(a.courseId)));return (admin.courses||[]).filter(c=>ids.has(String(c._id)))}
 function courseSet(members){const map=new Map();for(const person of members){for(const course of assigned(person)){if(!map.has(course._id))map.set(course._id,{course,people:[]});map.get(course._id).people.push(person)}}return [...map.values()].sort((a,b)=>b.people.length-a.people.length)}
-function metric(label,value){return '<div class="metric"><b>'+esc(value)+'</b><span>'+esc(label)+'</span></div>'}
+function metric(label,value){return '<div class="metric card kpi"><b>'+esc(value)+'</b><span>'+esc(label)+'</span></div>'}
 function render(){
  const h=houses.find(x=>x.slug===house);const members=people(),matched=members.filter(u=>!role||u.role===role).filter(u=>(u.name+' '+u.email).toLowerCase().includes($('search').value.trim().toLowerCase()));
  const anim=members.filter(u=>u.role==='Animador').length,educ=members.filter(u=>u.role==='Formador').length;
@@ -86,5 +90,5 @@ $('refresh').addEventListener('click',load);
 load();
 })();
 </script>
-<script src="./admin-shared-nav.js?v=20261014-2"></script>
+<script src="./admin-shared-nav.js?v=20261015-1"></script>
 </body></html>
