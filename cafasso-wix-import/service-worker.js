@@ -1,4 +1,4 @@
-const CAFASSO_CACHE='cafasso-shell-20261014-33';
+const CAFASSO_CACHE='cafasso-shell-20261015-34';
 const SCOPE=self.registration.scope;
 const url=path=>new URL(path,SCOPE).href;
 const OFFLINE=url('./offline.html');
@@ -29,6 +29,9 @@ const PRECACHE=[
   './cafasso-desktop-scene-lock.js',
   './scene-layouts.html',
   './admin-shared-nav.js',
+  './admin-center.css',
+  './formador-workbench.css',
+  './cafasso-admin-role-adapter.js',
   './cafasso-hologram.js',
   './cafasso-hologram-spots.js',
   './cafasso-hologram-cutout.js',
